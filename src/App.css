@@ -68,6 +68,21 @@
   display: flex;
 }
 
+.containerButton {
+  display: flex;
+  
+  
+}
+.containerButton > button {
+  margin-right: 10px;
+}
+
+.detail {
+  color:silver;
+  font-size: 16;
+  direction: row;
+}
+
 .iconTable {
   cursor: pointer;
   background: #FFFFFF;
@@ -77,6 +92,36 @@
   color: #4B5563;
   font-size: 14px;
   margin-right: 16px;
+}
+.employetext{
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  margin-top: 130px;
+  font-size: 20px;
+  color: grey;
+  margin-left: 150px;
+}
+.textnameemploye{
+  margin-right: 460px;
+}
+.employetextvalue{
+  display: flex;
+  /* flex-direction: row; */
+  position: absolute;
+  margin-top: 180px;
+  font-size: 20px;
+  margin-left: 150px;
+}
+.textnameemployevalue{
+  /* padding-right: 10px; */
+  margin-right: 460px;
+}
+
+.fotoprofile{
+  margin-top: 15px;
+  width: 120px;
+  height: 120px;
 }
 
 @keyframes App-logo-spin {
