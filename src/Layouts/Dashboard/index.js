@@ -6,7 +6,7 @@ const Dashboard = () => {
     <div>
       <SideBar>
         {/* <div> */}
-          <Jobgroup />
+        <Jobgroup />
         {/* </div> */}
       </SideBar>
     </div>
@@ -14,3 +14,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+
