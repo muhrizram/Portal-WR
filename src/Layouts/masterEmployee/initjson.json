@@ -1,0 +1,13 @@
+{
+  "datatempEmployee": [
+    {
+      "id": 1,
+      "no": "1",
+      "nip": "10101010",
+      "name": "Job Group 1",
+      "contract": "Fulltime",
+      "assignment": "Project",
+      "contractEnd":"01-01-2022"
+    }
+  ]
+}
