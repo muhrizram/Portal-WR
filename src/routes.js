@@ -1,15 +1,20 @@
-import React, {lazy} from 'react'
+import React, { lazy } from "react";
 
-const LoginScreen = lazy(() => import('./Layouts/Login'))
-const Dashboard = lazy(() => import('./Layouts/Dashboard'))
+const LoginScreen = lazy(() => import("./Layouts/Login"));
+const Dashboard = lazy(() => import("./Layouts/Dashboard"));
+const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
 
 export const routes = [
   {
-    path: '/',
+    path: "/",
     element: <LoginScreen />,
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     element: <Dashboard />,
-  }
-]
+  },
+  {
+    path: "/detail",
+    element: <DetailEmployee />,
+  },
+];
