@@ -1,5 +1,4 @@
-import React from 'react'
-import { lazy } from 'react';
+import React, {lazy} from 'react'
 
 const LoginScreen = lazy(() => import('./Layouts/Login'))
 const Dashboard = lazy(() => import('./Layouts/Dashboard'))

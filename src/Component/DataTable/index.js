@@ -1,19 +1,54 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography, Button } from '@mui/material';
 import SearchBar from '../Searchbar';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid } from '@mui/x-data-grid';
 
-const DataTable = ({title, data, columns, handleChangeSearch}) => {
+const DataTable = ({
+  title, 
+  data, 
+  columns, 
+  handleChangeSearch, 
+  placeSearch, 
+  searchTitle,
+  onAdd
+}) => {
 
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10})
-  
+  const [sorting, setSort] = useState([])
+  const [search, setSearch] =  useState('')
+
+ /**
+ * return fungsi model dari pagination.
+ *
+ * @param {model} object Page & page size saat ini.
+ */
   const changePagination = (model) => {
-    console.log('model pagination: ', model)
     setPagination({...model})
   }
+
+/**
+ * return fungsi model dari sorting.
+ *
+ * @param {model} object field & sort size saat ini dalam bentuk array.
+ */
+  const changeSort = (model) => {
+    setSort([{...model}])
+  }
+
+  const handleBuildList = (filter) => {
+    console.log('filter: ', filter)
+  }
+
+  useEffect(() => {
+    const filter = {
+      sorting: sorting.length > 0 ? { ...sorting[0] } : { field: '', sort: '' },
+      ...pagination
+    }
+    handleBuildList(filter)
+  }, [sorting, pagination])
 
   return (
     <Grid container rowSpacing={3}>
@@ -25,10 +60,10 @@ const DataTable = ({title, data, columns, handleChangeSearch}) => {
           </Grid>
           <Grid item justifyContent="space-between" container xs={12} paddingTop={3}>
             <Grid item xs={4}>
-              <SearchBar placeholder="project" onChange={handleChangeSearch} />
+              <SearchBar placeholder={placeSearch} label={searchTitle} onChange={handleChangeSearch} />
             </Grid>
             <Grid item xs={2} alignSelf="center" textAlign="right">
-              <Button variant="contained" startIcon={<AddIcon />}>
+              <Button variant="contained" onClick={() => onAdd()} startIcon={<AddIcon />}>
                 {`ADD NEW ${title}`}
               </Button>
             </Grid>
@@ -43,6 +78,7 @@ const DataTable = ({title, data, columns, handleChangeSearch}) => {
           pageSizeOptions={[10, 20, 50]}
           paginationModel={{ ...pagination }}
           onPaginationModelChange={(model) => changePagination(model)}
+          onSortModelChange={(model) => changeSort(model)}
         />
         
       </Grid>

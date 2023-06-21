@@ -35,11 +35,19 @@ const Jobgroup = () => {
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
   }
+  
+
+  const handleAdd = () => {
+    console.log('add')
+  }
   return (
       <DataTable
         title='Group'
         data={data}
         columns={columns}
+        placeSearch="project"
+        searchTitle="Search By"
+        onButtonClick={() => handleAdd()}
         handleChangeSearch={handleChangeSearch}
       />
   )
