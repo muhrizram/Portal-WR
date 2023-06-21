@@ -10,6 +10,9 @@ let globalTheme = createTheme({
     },
   },
   typography: {
+    fontFamily: [
+      'Poppins',
+    ],
     body2: {
       fontSize: ['28px'],
       fontWeight: [500],

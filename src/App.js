@@ -3,15 +3,15 @@ import React from 'react';
 import { ThemeProvider } from "@mui/material/styles";
 import { Route, Routes } from 'react-router';
 import globalTheme from './Theme';
-import LoginScreen from './Layouts/Login';
-import Dashboard from './Layouts/Dashboard';
+import { routes } from './routes';
 
 function App() {
   return (
     <ThemeProvider theme={globalTheme}>
       <Routes>
-        <Route path="/" element={<LoginScreen />} />
-        <Route path='dashboard' element={<Dashboard />} /> 
+        {routes.map((res, idx) => {
+          return <Route path={res.path} element={res.element} key={`${idx + 1}-route-path`} />
+        })}
       </Routes>
     </ThemeProvider>
   );

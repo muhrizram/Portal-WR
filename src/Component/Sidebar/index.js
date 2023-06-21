@@ -104,7 +104,7 @@ export default function SideBar({children}) {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, px: 2.5, py: 5 }}>
+      <Box component="main" sx={{ flexGrow: 1, px: 2.5, py: 2.5 }}>
         {/* <DrawerHeader /> */}
         {children}
       </Box>
