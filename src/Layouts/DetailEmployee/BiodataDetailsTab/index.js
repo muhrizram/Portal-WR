@@ -1,7 +1,5 @@
 import React from "react";
-import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 
 const BiodataDetailsTab = () => {
