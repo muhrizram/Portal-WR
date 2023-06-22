@@ -1,14 +1,12 @@
 import React from "react";
 import SideBar from "../../Component/Sidebar";
-import DetailEmployee from "../DetailEmployee";
+import Jobgroup from "../JobGroup";
 const Dashboard = () => {
   return (
     <div>
       <SideBar>
         {/* <div> */}
-          {/* <Jobgroup /> */}
-          <Employee />
-        {/* </div> */}
+          <Jobgroup />
       </SideBar>
     </div>
   );

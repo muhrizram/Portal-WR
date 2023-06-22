@@ -1,8 +1,10 @@
 import React from 'react';
 import datatempEmployee from './initjson.json'
-import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
+import DataTableEmployee from '../../Component/DataTable/employee';
+import LongMenu from '../../Component/menu';
+import PreviewOutlinedIcon from '@mui/icons-material/PreviewOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import DataTable from '../../Component/DataTable';
+
 const Employee = () => {
   const columns = [
     {
@@ -42,20 +44,25 @@ const Employee = () => {
       renderCell: () => {
         return (
           <div>
-            <DriveFileRenameOutlineOutlinedIcon className="iconTable" />
+            <PreviewOutlinedIcon className="iconTable" />
             <DeleteOutlineOutlinedIcon className="iconTable" />
+            {/* <LongMenu /> */}
           </div>
         )
       }
 
     },
   ];
+  const options = [
+    'Detail',
+    'Delete'
+  ]
   const data = datatempEmployee.datatempEmployee
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
   }
   return (
-      <DataTable
+      <DataTableEmployee
         title='Employee'
         data={data}
         columns={columns}
@@ -65,83 +72,3 @@ const Employee = () => {
 }
 
 export default Employee
-
-
-
-
-
-
-// import React from 'react';
-// import Grid from '@mui/material/Grid';
-// import { Typography, Button, Tab } from '@mui/material';
-// // import AddIcon from '@mui/icons-material/Add';
-// import SearchEmployee from '../../Component/Searchbar/s_employee';
-// import DownloadIcon from '@mui/icons-material/Download';
-// import UploadFileIcon from '@mui/icons-material/UploadFile';
-// import TableEmployee from '../../Component/tabEmployee';
-// import { DataGrid } from '@mui/x-data-grid';
-// import Stack from '@mui/material/Stack';
-// // import datatemp from './initjson.json'
-// import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-// import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-
-// const Employee = () => {
-//   const columns = [
-//     {
-//       field: 'name',
-//       headerName: 'Name',
-//       flex: 1 
-//     },
-//     {
-//       field: 'status',
-//       headerName: 'Status',
-//       flex: 1 
-//     },
-//     {
-//       field: 'actions',
-//       headerName: '',
-//       width: 200,
-//       renderCell: () => {
-//         return (
-//           <div>
-//             <DriveFileRenameOutlineOutlinedIcon className="iconTable" />
-//             <DeleteOutlineOutlinedIcon className="iconTable" />
-//           </div>
-//         )
-//       }
-
-//     },
-//   ];
-// //   const data = datatemp.datatemp
-
-//   const handleChangeSearch = (event) => {
-//     console.log('value search: ', event.target.value)
-//   }
-//   return (
-//       <Grid container rowSpacing={2.5}>
-//         <Grid item xs={12}>
-//           <Grid container>
-//             <div className="dividerHeader" />
-//             <Grid item xs={9.9}>
-//               <Typography variant="headerCardMenu">Master Employee</Typography>
-//             </Grid>
-//             <Grid item />
-//             <Grid item xs={2} alignSelf="center" textAlign="center">
-//                 <div className="containerButton">
-//                     <Button variant="contained" startIcon={<DownloadIcon />}>
-//                         New Employee
-//                     </Button>
-//                     <Button variant="outlined" startIcon={<UploadFileIcon />}>
-//                         Import Employee
-//                     </Button>
-//                 </div>  
-//             </Grid>
-//             <SearchEmployee />
-//             <TableEmployee />
-//           </Grid>
-//         </Grid>
-//       </Grid>
-//   )
-// }
-
-// export default Employee
