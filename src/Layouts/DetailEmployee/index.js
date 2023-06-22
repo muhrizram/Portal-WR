@@ -10,28 +10,11 @@ import Box from "@mui/material/Box";
 import BiodataDetailsTab from "./BiodataDetailsTab";
 import EmployeeBiodataTab from "./EmployeeBiodataTab";
 
-//dialog
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-
 //compinedit
 import StatusEmployeeTab from "./StatusEmployeeTab";
 import ProjectHistoryTab from "./ProjectHistoryTab";
 
 const DetailEmployee = () => {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const [value, setValue] = React.useState("one");
 
   const handleChange = (event, newValue) => {
@@ -78,28 +61,6 @@ const DetailEmployee = () => {
             </Box>
             {value1 === "one" && <EmployeeBiodataTab />}
             {value1 === "two" && <BiodataDetailsTab />}
-            <Grid
-              item
-              xs={12}
-              alignSelf="center"
-              textAlign="right"
-              sx={{ marginTop: "20px" }}
-            >
-              <Button
-                variant="outlined"
-                style={{ marginRight: "10px" }}
-                color="error"
-              >
-                Cancel Data
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleClickOpen}
-                style={{ marginRight: "10px" }}
-              >
-                Save Data
-              </Button>
-            </Grid>
           </Grid>
 
           <Grid container className="HeaderDetail">
@@ -115,33 +76,6 @@ const DetailEmployee = () => {
           </Grid>
         </Grid>
       </Grid>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle
-          sx={{ alignSelf: "center", fontSize: "30px", fontStyle: "Poppins" }}
-          id="alert-dialog-title"
-        >
-          {"Save Data"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Save your progress: Don't forget to save your data before leaving
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={handleClose}>
-            Back
-          </Button>
-          <Button variant="contained" onClick={handleClose} autoFocus>
-            Save Data
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

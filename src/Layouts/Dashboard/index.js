@@ -6,8 +6,8 @@ const Dashboard = () => {
     <div>
       <SideBar>
         {/* <div> */}
-          {/* <Jobgroup /> */}
-          <Employee />
+        {/* <Jobgroup /> */}
+        <DetailEmployee />
         {/* </div> */}
       </SideBar>
     </div>

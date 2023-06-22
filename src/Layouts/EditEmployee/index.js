@@ -24,13 +24,20 @@ import ProjectHistoryTab from "./ProjectHistoryTab";
 
 const EditEmployee = () => {
   const [open, setOpen] = React.useState(false);
+  const [open1, setOpen1] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const handleClickOpen1 = () => {
+    setOpen1(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleClose1 = () => {
+    setOpen1(false);
   };
 
   const [value, setValue] = React.useState("one");
@@ -87,6 +94,7 @@ const EditEmployee = () => {
                 sx={{ marginTop: "20px" }}
               >
                 <Button
+                  onClick={handleClickOpen1}
                   variant="outlined"
                   style={{ marginRight: "10px" }}
                   color="error"
@@ -140,6 +148,32 @@ const EditEmployee = () => {
             </Button>
             <Button variant="contained" onClick={handleClose} autoFocus>
               Save Data
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={open1}
+          onClose={handleClose1}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle
+            sx={{ alignSelf: "center", fontSize: "30px", fontStyle: "Poppins" }}
+            id="alert-dialog-title"
+          >
+            {"Cancel Data"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Warning: Canceling will result in data loss without saving!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={handleClose}>
+              Cancel Without Saving
+            </Button>
+            <Button variant="contained" onClick={handleClose} autoFocus>
+              Back
             </Button>
           </DialogActions>
         </Dialog>
