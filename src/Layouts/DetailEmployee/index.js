@@ -1,17 +1,49 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import { Typography, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
-import avatar from "../../assets/_Avatar_.png";
-import TextField from "@mui/material/TextField";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Breadcrumbs from "../../Component/BreadCumb/";
-import Header from "../../Component/Header/";
+import Breadcrumbs from "../../Component/BreadCumb";
+import Header from "../../Component/Header";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import BiodataDetailsTab from "./BiodataDetailsTab";
+import EmployeeBiodataTab from "./EmployeeBiodataTab";
+
+//dialog
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+//compinedit
+import StatusEmployeeTab from "./StatusEmployeeTab";
+import ProjectHistoryTab from "./ProjectHistoryTab";
 
 const DetailEmployee = () => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [value, setValue] = React.useState("one");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const [value1, setValue1] = React.useState("one");
+
+  const handleChange1 = (event1, newValue1) => {
+    setValue1(newValue1);
+  };
+
   return (
     <>
       <Breadcrumbs />
@@ -20,7 +52,7 @@ const DetailEmployee = () => {
           <Grid container>
             <div className="dividerHeader" />
             <Grid item xs={9.9}>
-              <Header judul="Employee Details" />
+              <Header judul="Detail Employee" />
             </Grid>
             <Grid item />
 
@@ -29,6 +61,7 @@ const DetailEmployee = () => {
                 variant="outlined"
                 startIcon={<CreateIcon />}
                 style={{ marginRight: "10px" }}
+                href="/edit-employee"
               >
                 Edit Data Employee
               </Button>
@@ -36,129 +69,79 @@ const DetailEmployee = () => {
           </Grid>
 
           <Grid container className="HeaderDetail">
-            <Grid>
-              <Typography>Profile Picture</Typography>
-              <img src={avatar} style={{ marginTop: "20px" }} />
+            <Box sx={{ width: "100%", marginBottom: "2%" }}>
+              <Tabs value={value1} onChange={handleChange1}>
+                <Tab value="one" label="Employee Biodata"></Tab>
+                <Tab value="two" label="Biodata Details" />
+                <Tab value="three" label="Insurance Details" />
+              </Tabs>
+            </Box>
+            {value1 === "one" && <EmployeeBiodataTab />}
+            {value1 === "two" && <BiodataDetailsTab />}
+            <Grid
+              item
+              xs={12}
+              alignSelf="center"
+              textAlign="right"
+              sx={{ marginTop: "20px" }}
+            >
+              <Button
+                variant="outlined"
+                style={{ marginRight: "10px" }}
+                color="error"
+              >
+                Cancel Data
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleClickOpen}
+                style={{ marginRight: "10px" }}
+              >
+                Save Data
+              </Button>
             </Grid>
+          </Grid>
 
-            <Grid container spacing={2}>
-              {/* <Grid item xs={12} sm container> */}
-              <Grid item xs container direction="column" spacing={2}>
-                <Grid
-                  container
-                  direction="row"
-                  style={{ marginTop: "30px", padding: "20px" }}
-                >
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%", paddingRight: "10px" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Nip"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Username"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container direction="row" style={{ padding: "20px" }}>
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%", paddingRight: "10px" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Employee First Name"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Employee Last Name"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container direction="row" style={{ padding: "20px" }}>
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%", paddingRight: "10px" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Contract Status"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      style={{ width: "100%" }}
-                      // error
-                      id="outlined-error-helper-text"
-                      label="Assignment Talent"
-                      // defaultValue="Hello World"
-                      // helperText="Incorrect entry."
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container direction="row" style={{ padding: "20px" }}>
-                  <Grid item xs={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DatePicker"]}>
-                        <DatePicker
-                          label="Contract Start Date"
-                          sx={{ width: "100%", paddingRight: "10px" }}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DatePicker"]}>
-                        <DatePicker
-                          label="Contract End Date"
-                          sx={{ width: "100%" }}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </Grid>
-                </Grid>
-                {/* <Typography variant="body2" color="text.primary">
-                        Nama
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.primary"
-                        style={{ marginLeft: "500px" }}
-                      >
-                        Role
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.primary"
-                        style={{ marginLeft: "500px" }}
-                      >
-                        Email
-                      </Typography> */}
-              </Grid>
-            </Grid>
+          <Grid container className="HeaderDetail">
+            <Box sx={{ width: "100%" }}>
+              <Tabs value={value} onChange={handleChange}>
+                <Tab value="one" label="Employee Status" />
+                <Tab value="two" label="Project History" />
+              </Tabs>
+            </Box>
+            {value === "one" && <StatusEmployeeTab />}
+
+            {value === "two" && <ProjectHistoryTab />}
           </Grid>
         </Grid>
       </Grid>
-      {/* </Grid> */}
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          sx={{ alignSelf: "center", fontSize: "30px", fontStyle: "Poppins" }}
+          id="alert-dialog-title"
+        >
+          {"Save Data"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Save your progress: Don't forget to save your data before leaving
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={handleClose}>
+            Back
+          </Button>
+          <Button variant="contained" onClick={handleClose} autoFocus>
+            Save Data
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

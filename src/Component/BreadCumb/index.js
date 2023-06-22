@@ -1,7 +1,7 @@
 import React from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Link from "@mui/material/Link";
-import { Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 function BreadCumbComp() {
   const breadcrumbs = [
@@ -17,6 +17,7 @@ function BreadCumbComp() {
     <Link
       underline="hover"
       key="2"
+      href="/"
       color="inherit"
       style={{ fontSize: "120%" }}
     >
