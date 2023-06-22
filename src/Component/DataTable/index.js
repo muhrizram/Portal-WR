@@ -1,10 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, IconButton } from '@mui/material';
 import SearchBar from '../Searchbar';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid } from '@mui/x-data-grid';
+import PreviewIcon from '@mui/icons-material/Preview';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const DataTable = ({
   title, 
@@ -13,27 +15,29 @@ const DataTable = ({
   handleChangeSearch, 
   placeSearch, 
   searchTitle,
-  onAdd
+  onAdd,
+  onDetail,
+  onDelete
 }) => {
 
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10})
   const [sorting, setSort] = useState([])
-  const [search, setSearch] =  useState('')
+  const [dataColumns, setDataColumns] = useState([])
 
- /**
- * return fungsi model dari pagination.
- *
- * @param {model} object Page & page size saat ini.
- */
+  /**
+   * return fungsi model dari pagination.
+   *
+   * @param {model} object Page & page size saat ini.
+   */
   const changePagination = (model) => {
     setPagination({...model})
   }
 
-/**
- * return fungsi model dari sorting.
- *
- * @param {model} object field & sort size saat ini dalam bentuk array.
- */
+  /**
+   * return fungsi model dari sorting.
+   *
+   * @param {model} object field & sort size saat ini dalam bentuk array.
+   */
   const changeSort = (model) => {
     setSort([{...model}])
   }
@@ -49,6 +53,29 @@ const DataTable = ({
     }
     handleBuildList(filter)
   }, [sorting, pagination])
+
+  useEffect(() => {
+    console.log("rebuild columns: ", columns)
+    const temp = [...columns]
+    temp.push({
+      field: 'actions',
+      headerName: 'Action',
+      width: 200,
+      renderCell: (data) => {
+        return (
+          <div>
+            <IconButton onClick={() => onDetail(data.id)}>
+              <PreviewIcon />
+            </IconButton>
+            <IconButton onClick={() => onDelete(data.id)}>
+              <DeleteIcon />
+            </IconButton >
+          </div>
+        )
+      }
+    })
+    setDataColumns(temp)
+  }, [columns])
 
   return (
     <Grid container rowSpacing={3}>
@@ -73,12 +100,14 @@ const DataTable = ({
       <Grid item xs={12}>
         <DataGrid 
           rows={data}
-          columns={columns}
+          columns={dataColumns}
           disableRowSelectionOnClick
           pageSizeOptions={[10, 20, 50]}
           paginationModel={{ ...pagination }}
           onPaginationModelChange={(model) => changePagination(model)}
           onSortModelChange={(model) => changeSort(model)}
+          disableColumnFilter
+          disableColumnMenu
         />
         
       </Grid>
