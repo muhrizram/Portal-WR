@@ -29,8 +29,8 @@ export default function TabsMenu() {
         </Tabs>
       </Box>
       {value === "one" && <CBiodataEmployee />}
-      {value == "two" && <CDetailBiodataEmployee />}
-      {value == "three" && <CInsuranceDetail />}
+      {value === "two" && <CDetailBiodataEmployee />}
+      {value === "three" && <CInsuranceDetail />}
     </Grid>
       </> 
   );

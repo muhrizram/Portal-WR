@@ -1,29 +1,27 @@
 import React, {useState, useEffect} from 'react';
-import content from './initjson.json';
-import { Avatar } from '@mui/material';
-
-// import content from '../JobGroup/initjson.json'
-import DataTableEmployee from '../../Component/DataTable/employee';
-import { IconButton, Button, Dialog, DialogContent, DialogTitle, DialogContentText,DialogActions, Typography } from '@mui/material';
-import PreviewIcon from '@mui/icons-material/Preview';
-import DeleteIcon from '@mui/icons-material/Delete';
+import content from '../fileJson/api/db.json';
+import { Avatar, Button, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
+import DataTable from '../../Component/DataTable';
+import SideBar from '../../Component/Sidebar';
+import { useNavigate } from 'react-router';
 
 const Employee = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(content.content);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/content");
-      const jsonData = await response.json();
-      setData(jsonData);
-    } catch (error) {
-      console.log("Error fetching data: ", error);
-    }
+    // setData([]);
+    // try {
+    //   const response = await fetch("http://localhost:4000/content");
+    //   const jsonData = await response.json();
+    //   setData(jsonData);
+    // } catch (error) {
+    //   console.log("Error fetching data: ", error);
+    // }
   };
 
   // const handleDelete = async (id) => {
@@ -46,13 +44,14 @@ const Employee = () => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false)
   const [Idnya, setIdnya] = useState("")
+  const navigate = useNavigate()
 
-  const handleClickOpen = (id) => {
-    console.log("IDNYA",id)
-    setIdnya(id)
-    console.log(Idnya)
-    setOpen(true);
-  };
+  // const handleClickOpen = (id) => {
+  //   console.log("IDNYA",id)
+  //   setIdnya(id)
+  //   console.log(Idnya)
+  //   setOpen(true);
+  // };
 
   const onDelete = () => {
     console.log("Idnya ",Idnya)
@@ -66,6 +65,10 @@ const Employee = () => {
 
   const handleCloseAlert = () => {
     setOpenAlert(false)
+  }
+
+  const handleDetail = (id) => {
+    navigate('/masteremployee/detail')
   }
 
   const columns = [
@@ -110,67 +113,73 @@ const Employee = () => {
         headerName: 'Contract End Date',
         flex: 1 
     },
-    {
-      field: 'actions',
-      headerName: 'Action',
-      width: 200,
-      renderCell: (data) => {
-        return (
-          <div>
-            <IconButton href="/detail">
-              <PreviewIcon />
-            </IconButton>
-            <IconButton onClick={() => handleClickOpen(data.id)}>
-              <DeleteIcon />
-            </IconButton >
-          </div>
-        )
-      }
-
-    },
+    // {
+    //   field: 'actions',
+    //   headerName: 'Action',
+    //   width: 200,
+    //   renderCell: (data) => {
+    //     return (
+    //       <div>
+    //         <IconButton href="/masteremployee/detail">
+    //           <PreviewIcon />
+    //         </IconButton>
+    //         <IconButton onClick={() => handleClickOpen(data.id)}>
+    //           <DeleteIcon />
+    //         </IconButton >
+    //       </div>
+    //     )
+    //   }
+    // },
   ];
   // const data = content.content
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
   }
+
+  const onAdd = () => {
+    navigate('/masteremployee/create')
+  }
   return (
     <div>
-      <CustomAlert
-        severity='warning'
-        message='Deletion completed: The item has been successfully remove from the database'
-        open={openAlert}
-        onClose={handleCloseAlert}
-      />
+      <SideBar>
+        <CustomAlert
+          severity='warning'
+          message='Deletion completed: The item has been successfully remove from the database'
+          open={openAlert}
+          onClose={handleCloseAlert}
+        />
 
-      <DataTableEmployee
-        title='Employee'
-        data={data}
-        columns={columns}
-        handleChangeSearch={handleChangeSearch}
-        onDetail={(id) => console.log('id detail: ', id)}
-        onDelete={(id) => console.log('id delete: ', id)}
-      />
+        <DataTable
+          title='Employee'
+          data={data}
+          columns={columns}
+          onAdd={() => onAdd()}
+          handleChangeSearch={handleChangeSearch}
+          onDetail={(id) => handleDetail(id)}
+          onDelete={(id) => console.log('id delete: ', id)}
+        />
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        className="dialog-delete"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Delete Data"}
-        </DialogTitle>
-        <DialogContent className="dialog-delete-content">
-          <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
-            Warning: Deleting this data is irreversible. Are you sure you want to proceed?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions className="dialog-delete-actions">
-          <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-          <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
-        </DialogActions>
-      </Dialog>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          className="dialog-delete"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Delete Data"}
+          </DialogTitle>
+          <DialogContent className="dialog-delete-content">
+            <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
+              Warning: Deleting this data is irreversible. Are you sure you want to proceed?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+            <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
+            <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
+          </DialogActions>
+        </Dialog>
+      </SideBar>
     </div>
   )
 }

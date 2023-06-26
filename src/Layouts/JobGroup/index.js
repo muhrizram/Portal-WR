@@ -5,6 +5,7 @@ import datatemp from './initjson.json'
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
+import SideBar from '../../Component/Sidebar';
 const Jobgroup = () => {
   const columns = [
     {
@@ -48,44 +49,46 @@ const Jobgroup = () => {
   }
   return (
     <div>
-      <CustomAlert
-        severity='warning'
-        message='This is a waring message!'
-        open={openAlert}
-        onClose={handleCloseAlert}
-      />
-      <DataTable
-        title='Group'
-        data={data}
-        columns={columns}
-        placeSearch="project"
-        searchTitle="Search By"
-        onButtonClick={() => handleAdd()}
-        handleChangeSearch={handleChangeSearch}
-        onDetail={(id) => console.log('id detail: ', id)}
-        onDelete={(id) => handleClickOpen()}
-      />
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        className="dialog-delete"
-      >
-        <DialogTitle id="alert-dialog-title" className='dialog-delete-header'>
-          {"Delete Data"}
-        </DialogTitle>
-        <DialogContent className="dialog-delete-content">
-          <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions className="dialog-delete-actions">
-          <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-          <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
-        </DialogActions>
-      </Dialog>
+      <SideBar>
+        <CustomAlert
+          severity='warning'
+          message='This is a waring message!'
+          open={openAlert}
+          onClose={handleCloseAlert}
+        />
+        <DataTable
+          title='Group'
+          data={data}
+          columns={columns}
+          placeSearch="project"
+          searchTitle="Search By"
+          onButtonClick={() => handleAdd()}
+          handleChangeSearch={handleChangeSearch}
+          onDetail={(id) => console.log('id detail: ', id)}
+          onDelete={(id) => handleClickOpen()}
+        />
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          className="dialog-delete"
+        >
+          <DialogTitle id="alert-dialog-title" className='dialog-delete-header'>
+            {"Delete Data"}
+          </DialogTitle>
+          <DialogContent className="dialog-delete-content">
+            <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
+              Let Google help apps determine location. This means sending anonymous
+              location data to Google, even when no apps are running.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+            <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
+            <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
+          </DialogActions>
+        </Dialog>
+      </SideBar>
     </div>
   )
 }

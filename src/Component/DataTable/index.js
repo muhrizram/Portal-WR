@@ -109,7 +109,6 @@ const DataTable = ({
           disableColumnFilter
           disableColumnMenu
         />
-        
       </Grid>
     </Grid>
   )

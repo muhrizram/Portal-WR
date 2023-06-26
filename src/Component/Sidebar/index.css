@@ -1,0 +1,112 @@
+.drawer-container > .MuiDrawer-paper{
+  background-color: #E6F2FB !important;
+}
+
+.drawer-container {
+  padding: 20px;
+}
+
+.drawer-logo {
+  width: 100%;
+}
+
+.drawer-header {
+
+}
+
+.container-img {
+  height: 100px;
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.margin-img { 
+  margin: 20px 12px
+}
+
+.container-chevron {
+  border-radius: 6px;
+  padding: 8px;
+  background: #EBF6EE;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.12), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.20);
+}
+
+.lg-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 6px !important;
+}
+
+.mini-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 6px !important;
+}
+
+.list-menu-container {
+  padding: 24px 10px !important;
+  height: inherit;
+  /* display: flex;
+  flex-wrap: wrap;
+  align-content: space-between; */
+}
+.list-menu-container-footer {
+  padding: 10px !important;
+}
+
+.drawer-header-container {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+.footer-logout-container {
+  border-radius: 4px;
+  border: 1px solid #F7B4AE;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.footer-logout-button {
+  justify-content: center !important;
+}
+
+.logout-text {
+  color: #EA4335;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+}
+
+.MuiListItemButton-root.Mui-selected {
+  border-radius: 4px !important;
+  background: #0078D7 !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 150% !important;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20);
+}
+
+.MuiListItemButton-root.Mui-selected > .MuiListItemIcon-root {
+  color: white !important;
+}
+
+.logout-button {
+  color: #EA4335 !important
+}
+
+.MuiListItemButton-root {
+  color: #0078D7 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 150% !important;
+}
+
+.button-list-icon {
+  color: #0078D7 !important;
+}
+
+/* .MuiListItemButton-root > .MuiListItemIcon-root {
+  color: #0078D7 !important;
+} */

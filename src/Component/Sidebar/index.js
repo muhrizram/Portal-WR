@@ -1,10 +1,10 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import Grid from '@mui/material/Grid';
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -12,7 +12,14 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
+import './index.css'
+import logo from '../../assets/logo.png'
+import logoMini from '../../assets/logo-mini.png'
+import { useAuth } from "react-oidc-context";
+import { Avatar, Typography } from "@mui/material";
+import { useNavigate } from "react-router";
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import { routes } from "../../routes";
 
 const drawerWidth = 240;
 
@@ -31,9 +38,9 @@ const closedMixin = (theme) => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  width: `calc(${theme.spacing(9)} + 1px)`,
   [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(10)} + 1px)`,
   },
 });
 
@@ -64,44 +71,125 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function SideBar({ children }) {
-  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate()
+  const auth = useAuth()
 
+  const username = auth.user ? auth.user.profile.name : ''
   const handleDrawerClose = () => {
     setOpen(!open);
   };
+  const currentMenu = JSON.parse(localStorage.getItem('currentMenu'))
+  const [open, setOpen] = useState(currentMenu.open || false);
+  const [selectedIndex, setSelectedIndex] = React.useState(parseInt(currentMenu.idx) || 0);
+  const dataRoute = routes.filter((res) => res.icon)
+
+  const handleLogout = () => {
+    auth.signoutSilent()
+    navigate('login')
+  }
+
+  const handleDirectPath = (path, idx) => {
+    const obj = {
+      idx,
+      open
+    }
+    localStorage.setItem('currentMenu', JSON.stringify(obj))
+    setSelectedIndex(idx)
+    navigate(path)
+  }
 
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
+      <Drawer className="drawer-container" variant="permanent" open={open}>
+        <DrawerHeader className='drawer-header-container'>
+          <div className="drawer-header">
+            <Grid container>
+              <Grid item xs={12}>
+                <div className={ open ? 'container-img margin-img' : 'container-img'}>
+                  <img className='drawer-logo' src={open ? logo : logoMini} alt='logo 79' />
+                </div>
+              </Grid>
+              <Grid item xs={12}>
+                <div className="container-chevron">
+                  <Grid container>
+                    <Grid item xs={open ? 4 : 12}>
+                      <Avatar variant="square" className={open ? 'mini-avatar': 'lg-avatar'} onClick={handleDrawerClose}/>
+                    </Grid>
+                    {open && (
+                      <Grid item container xs={8}>
+                        <Grid item container xs={8}>
+                          <Grid item container xs={12}>
+                            <Typography variant='drawerNameUser'>
+                              {username}
+                            </Typography>
+                          </Grid><Grid item container xs={12}>
+                            <Typography variant='drawerPostion'>
+                              UI/UX
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                        <Grid item xs={4} textAlign="end">
+                          <IconButton onClick={handleDrawerClose}>
+                            {!open ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Grid>
+                </div>
+              </Grid>
+            </Grid>
+          </div>
         </DrawerHeader>
-        <Divider />
-        <List>
-          <ListItem key="idlist-01" disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-            >
+        <List className="list-menu-container">
+          {dataRoute.map((res, index) => (
+            <ListItem key={`idlist-${index + 1}`} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                selected={selectedIndex === index}
+                onClick={() => handleDirectPath(res.path, index)}
+                sx={{
+                  // minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  className='button-list-icon'
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  {res.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={res.name}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List className="list-menu-container-footer">
+          <ListItem className='footer-logout-container'>
+            <ListItemButton className="footer-logout-button" onClick={() => handleLogout()}>
               <ListItemIcon
+                className='logout-button'
                 sx={{
                   minWidth: 0,
                   mr: open ? 3 : "auto",
                   justifyContent: "center",
                 }}
               >
-                <GroupAddOutlinedIcon />
+                <PowerSettingsNewIcon />
               </ListItemIcon>
-              <ListItemText
-                primary={"Job Group"}
-                sx={{ opacity: open ? 1 : 0 }}
-              />
+              {open && (
+                <span className='logout-text'>
+                  Log Out
+                </span>
+              )}
             </ListItemButton>
           </ListItem>
         </List>

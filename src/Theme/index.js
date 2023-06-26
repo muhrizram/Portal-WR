@@ -11,6 +11,9 @@ let globalTheme = createTheme({
   },
   typography: {
     fontFamily: ["Poppins"],
+    textDetail: {
+      fontSize: ['40px']
+    },
     body2: {
       fontSize: ["28px"],
       fontWeight: [500],
@@ -54,6 +57,17 @@ let globalTheme = createTheme({
     employeeDetail: {
       fontSize: ["16px"],
     },
+    drawerNameUser: {
+      fontSize: ['16px'],
+      color: ['#333'],
+      fontWeight: ['600'],
+      lineHeight: ['150%'],
+    },
+    drawerPostion: {
+      fontSize: ['14px'],
+      color: ['rgba(51, 51, 51, 0.9)'],
+      lineHeight: ['125%'],
+    }
   },
   // textfield: {
   //   textFieldEmployee: {

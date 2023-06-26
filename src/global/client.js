@@ -1,6 +1,9 @@
 import axios from "axios";
+import { useAuth } from "react-oidc-context";
+// import useasuth
 
 const instance = axios.create();
+const auth = useAuth()
 
 export const clientState = {
   requesting: false,
@@ -16,15 +19,13 @@ const requestAPI = async ({
   data,
   headers,
   otherConfig,
-  isAuth = false,
   isToken = true,
-  baseUrl = process?.env?.REACT_APP_SERVICE,
 }) => {
   let result = {};
-  const host = isAuth ? process?.env?.REACT_APP_AUTH : baseUrl;
+  const host = process?.env?.REACT_APP_AUTH;
   const url = `${host}${endpoint}`;
   const timeout = process?.env?.REACT_APP_DEFAULT_TIMEOUT;
-  const token = localStorage.getItem("token");
+  const token = auth.user.access_token
   let optHeaders = { ...headers, "Access-Control-Allow-Origin": "*" };
   if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
   const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };

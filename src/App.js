@@ -1,11 +1,27 @@
 import './App.css';
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect} from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { Route, Routes } from 'react-router';
+import { Route, Routes, useNavigate } from 'react-router';
 import globalTheme from './Theme';
 import { routes } from './routes';
+import { useAuth } from 'react-oidc-context';
 
-function App() {
+const App = () => {
+  const navigate = useNavigate()
+  const auth = useAuth();
+  useEffect(() => {
+    console.log('no token: ', auth)
+    if (!auth.isLoading) {
+      if (auth.isAuthenticated) {
+        navigate('/')
+      } else {
+        navigate('/login')
+      }
+    }
+  }, [auth.isLoading])
+
+  // console.log('no token: ', auth)
+
   return (
     <ThemeProvider theme={globalTheme}>
       <Suspense fallback={<p>Loading...</p>}>

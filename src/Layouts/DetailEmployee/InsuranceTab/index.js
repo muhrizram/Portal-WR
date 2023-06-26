@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import avatar from "../../../assets/_Avatar_.png";
+import React, { useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
@@ -17,7 +16,6 @@ const InsuranceTab = ({ isEdit }) => {
     { label: "The Dark Knight", year: 2008 },
   ];
   const [NoD, setNoD] = useState("");
-  const [EmployeeFirst, setEmployeeFirst] = useState("");
 
   return (
     <>
