@@ -1,0 +1,47 @@
+{
+    "create" : [
+        {
+            "ssoId" : "1234abcd",
+            "jobTypeId" : 2 ,
+            "placementType" : "40",
+            "group" : "8",
+            "position" : "10",
+            "ptkpStatus" : "37",
+            "statusOnsite" : "6",
+            "generation" : "G1",
+            "division" : "Developer",
+            "phoneNumber" : "08829669473",
+            "familyRelationshipName" : "Serim",
+            "nip":  "123456671211",
+            "npwp" : "327345",
+            "email" : "testdata1@gmail.com",
+            "school" : "Unpad",
+            "firstName" : "Abdul",
+            "lastName" : "Latif",
+            "userName" : "testdata11",
+            "education" : "31",
+            "postalCode" : "40222",
+            "placeOfBirth" : "Bandung",
+            "identityNumber" : "125543543",
+            "familyRelationship" : "Ibu",
+            "familyRelationshipNumber" : "0877999546",
+            "contractStatus" : "OJT",
+            "carrerStartDate" : "2023-05-03",
+            "contractEndDate":  "2023-08-05",
+            "lastContractStatus" : "Fulltime",
+            "numberOfDependents" : "G1",
+            "joinDate" : "2023-03-19",
+            "dateOfBirth" : "2000-01-09",
+            "major" : "Sistem Informasi",
+            "lastContractDate" : "2035-09-08",
+            "photoProfile" : "https//image.png",
+            "lastModifiedOn" : "2023-06-26",
+            "createdBy" : "5",
+            "deparment" : "Department",
+            "bpjsKesehatan" : "Bpjs",
+            "bpjsClass" : "34",
+            "lastModifiedBy" : "5"
+        }
+        
+    ]
+}

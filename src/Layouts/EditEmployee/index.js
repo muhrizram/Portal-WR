@@ -59,9 +59,8 @@ const EditEmployee = () => {
         <Grid container rowSpacing={2.5}>
           <Grid item xs={12}>
             <Grid container>
-              <div className="dividerHeader" />
               <Grid item xs={9.9}>
-                <Header judul="Edit Employee" />
+                <Header judul="Edit" />
               </Grid>
               <Grid item />
 

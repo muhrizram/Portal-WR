@@ -1,9 +1,9 @@
 import React from 'react';
-import Index from '../../Component/Header';
-import BreadCumbComp from '../../Component/BreadCumb';
+// import Index from '../../Component/Header';
+// import BreadCumbComp from '../../Component/BreadCumb';
+// import TabsMenu from '../../Component/menu/tabs';
 import Grid from '@mui/material/Grid';
 import { Button, Typography } from '@mui/material';
-import TabsMenu from '../../Component/menu/tabs';
 import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -28,91 +28,124 @@ const CDetailBiodataEmployee = ({
   
   return (
     <Grid container rowSpacing={3}>
-      <Grid item xs={12}>
+      <Grid item xs container direction="column" spacing={2}>
         <Grid container className="containerHeader">
-          <BreadCumbComp />
-          <Index judul='Create New'/>
-          <TabsMenu />
         
-          <Grid
-            style={{marginTop:30}}
-              component="form"
-              sx={{
-                '& .MuiTextField-root': { m: 1, width: '68ch' },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-place"
+                  style={{ width: "100%", paddingRight: "10px" }}
                   label="Place of Birth"
                 />
-
-                {/* DATE OF BIRTH */}
+              </Grid>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker 
                     label="Date of Birth"
+                    sx={{
+                      width: "100%",
+                    }}
                   />
                 </LocalizationProvider>
-                {/* DATE OF BIRTH */}
+              </Grid>
+            </Grid>
 
-
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-id"
                   label="National ID Number"
+                  style={{ width: "100%", paddingRight: "10px" }}
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-phone-number"
+                  style={{width:"100%"}}
                   label="Phone Number"
                 />
+              </Grid>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-address"
                   label="Address"
+                  style={{ width: "100%", paddingRight: "10px" }}
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-postal-code"
                   label="Postal Code"
+                  style={{width:"100%"}}
                 />
+              </Grid>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-family-contact"
                   label="Family Contact"
+                  style={{ width: "100%", paddingRight: "10px" }}
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-contact-name"
                   label="Contact Name"
+                  style={{width:"100%"}}
                 />
+              </Grid>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-contact-number"
                   label="Contact Number"
+                  style={{ width: "100%", paddingRight: "10px" }}
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-school"
                   label="School of Origin"
+                  style={{width:"100%"}}
                 />
+              </Grid>
+            </Grid>
 
-                <Grid container direction="row">
-                  <Autocomplete
-                      required
-                      id="outlined-education"
-                      options={placement}
-                      renderInput={(params) => <TextField {...params} label="Education" required/>}
-                  />
-                  <TextField
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
+                <Autocomplete
                     required
-                    id="outlined-major"
-                    label="Major"
-                  />
-                </Grid>
-              </div>
+                    id="outlined-education"
+                    style={{ width: "100%", paddingRight: "10px" }}
+                    options={placement}
+                    renderInput={(params) => <TextField {...params} label="Education" required/>}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required
+                  id="outlined-major"
+                  label="Major"
+                  style={{width:"100%"}}
+                />
+              </Grid>
           </Grid>
         </Grid>
       </Grid>

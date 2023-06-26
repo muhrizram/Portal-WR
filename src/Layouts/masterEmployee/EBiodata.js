@@ -1,9 +1,9 @@
-import React from 'react';
-import Index from '../../Component/Header';
-import BreadCumbComp from '../../Component/BreadCumb';
+import React, { useState } from 'react';
+// import Index from '../../Component/Header';
+// import BreadCumbComp from '../../Component/BreadCumb';
 import Grid from '@mui/material/Grid';
 import { Button, Typography } from '@mui/material';
-import TabsMenu from '../../Component/menu/tabs';
+// import TabsMenu from '../../Component/menu/tabs';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -52,147 +52,185 @@ const CBiodataEmployee = ({
   onCancel,
   onSave
 }) => {
-  
-  return (
-    <Grid container rowSpacing={3}>
-      <Grid item xs={12}>
-        <Grid container className="containerHeader">
-          <BreadCumbComp />
-          <Index judul='Create New'/>
-          <TabsMenu />
 
-          <Grid>
-            <Typography style={{marginTop:20}}>Profile Picture</Typography>
-            <Button variant="outlined" style={{marginTop:10}}>Upload Image</Button>
-            <Typography className="text">Single upload file should not be more 3MB. Only the .png/jpg file types are allowed</Typography>
-          </Grid>
-            
-          <Grid
-            style={{marginTop:30}}
-              component="form"
-              sx={{
-                '& .MuiTextField-root': { m: 1, width: '68ch' },
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
+  const [file, setFile] = useState();
+  function handleChange(e) {
+    console.log(e.target.files);
+    setFile(URL.createObjectURL(e.target.files[0]));
+  }
+
+
+
+  return (
+    <>
+      <Grid container rowSpacing={3}>
+        <Grid item xs container direction="column" spacing={2}>
+          <Grid container className="containerHeader">
+
+            <Grid>
+              <Typography style={{ marginTop: 20, marginLeft: 30 }}>Profile Picture</Typography>
+              <input type="file" accept=".png, .jpg" onChange={handleChange} />
+              {/* <img src={file} /> */}
+              {/* <Button variant="outlined" onClick={handleChange} style={{marginTop:10, marginLeft:30}}>Upload Image</Button> */}
+              <Typography className="text" style={{ marginLeft: 30 }}>Single upload file should not be more 3MB. Only the .png/jpg file types are allowed</Typography>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-number"
+                  style={{ width: "100%", paddingRight: "10px" }}
                   label="NIP"
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-required"
+                  style={{ width: "100%" }}
                   label="Generation"
                 />
+              </Grid>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-required"
+                  style={{ width: "100%", paddingRight: "10px" }}
                   label="Employee First Name"
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-required"
+                  style={{ width: "100%" }}
                   label="Employee Last Name"
                 />
+              </Grid>
+            </Grid>
+
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-number"
+                  style={{ width: "100%", paddingRight: "10px" }}
                   label="NPWP"
                 />
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   required
                   id="outlined-required"
+                  style={{ width: "100%" }}
                   label="Email"
                 />
+              </Grid>
+            </Grid>
 
-                <Grid container direction="row">
-                      {/* START JOIN */}
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker 
-                          label="Start Join Date"
-                        />
-                      </LocalizationProvider>
-                      {/* START JOIN */}
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start Join Date"
+                    sx={{
+                      width: "100%", paddingRight: "10px"
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={6}>
+                <Autocomplete
+                  required
+                  id="outlined-placement-type"
+                  style={{ width: "100%" }}
+                  options={placement}
+                  renderInput={(params) => <TextField {...params} label="Placement Type" required />}
+                />
+              </Grid>
+            </Grid>
 
-                    {/* PLACEMENT TYPE */}
-                    <Autocomplete
-                      required
-                      id="outlined-placement-type"
-                      options={placement}
-                      renderInput={(params) => <TextField {...params} label="Placement Type" required/>}
-                    />
-                    {/* PLACEMENT TYPE */}
-                    
-                    {/* CONTRACT STATUS */}
-                      <Autocomplete
-                        required
-                        id="outlined-contract-status"
-                        options={contractStatus}
-                        renderInput={(params) => <TextField {...params} label="Contract Status" required/>}
-                      />
-                    {/* CONTRACT STATUS */}
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
+                <Autocomplete
+                  required
+                  id="outlined-contract-status"
+                  style={{ width: "100%", paddingRight: "10px" }}
+                  options={contractStatus}
+                  renderInput={(params) => <TextField {...params} label="Contract Status" required />}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Autocomplete
+                  required
+                  id="outlined-onsite-status"
+                  style={{ width: "100%" }}
+                  options={placement}
+                  renderInput={(params) => <TextField {...params} label="Onsite Status" required />}
+                />
+              </Grid>
+            </Grid>
 
-                    {/* ONSITE STATUS */}
-                      <Autocomplete
-                        required
-                        id="outlined-onsite-status"
-                        options={placement}
-                        renderInput={(params) => <TextField {...params} label="Onsite Status" required/>}
-                      />
-                    {/* ONSITE STATUS */}
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}
+                  style={{ width: "100%", paddingRight: "10px" }}>
+                  <DatePicker
+                    label="Contract Start Date"
+                    sx={{
+                      width: "100%", paddingRight: "10px"
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={6}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Contract End Date"
+                    sx={{
+                      width: "100%",
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
 
-                    {/* CONTRACT START */}
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker 
-                        label="Contract Start Date"
-                      />
-                    </LocalizationProvider>
-                    {/* CONTRACT START */}
-
-                    {/* CONTRACT END */}
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker 
-                        label="Contract End Date"
-                      />
-                    </LocalizationProvider>
-                    {/* CONTRACT END */}
-
-                    {/* DIVISION GROUP */}
-                    <Autocomplete
-                      required
-                      id="outlined-division-group"
-                      options={placement}
-                      renderInput={(params) => <TextField {...params} label="Division Group" required/>}
-                    />
-                    {/* DIVISION GROUP */}
-
-                    {/* POSITION */}
-                    <Tooltip title="Select Division Group First">
-                      <Autocomplete
-                        required
-                        id="outlined-position"
-                        options={position}
-                        renderInput={(params) => <TextField {...params} label="Position" required/>}
-                      />
-                    </Tooltip>
-                    {/* POSITION */}
-                </Grid>
-              </div>
+            <Grid container direction="row" style={{ padding: "20px" }}>
+              <Grid item xs={6}>
+                <Autocomplete
+                  required
+                  id="outlined-division-group"
+                  style={{ width: "100%", paddingRight: "10px" }}
+                  options={placement}
+                  renderInput={(params) => <TextField {...params} label="Division Group" required />}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Tooltip title="Select Division Group First">
+                  <Autocomplete
+                    required
+                    id="outlined-position"
+                    style={{ width: "100%" }}
+                    options={position}
+                    renderInput={(params) => <TextField {...params} label="Position" required />}
+                  />
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
-
       <Grid item md={11.5} alignSelf="center" textAlign="right">
-        <Button variant="outlined" color="warning" style={{marginRight:3}} onClick={() => onCancel()}>
+        <Button variant="outlined" color="warning" style={{ marginRight: 3 }} onClick={() => onCancel()}>
           Cancel Data
         </Button>
         <Button variant="contained" onClick={() => onSave()}>
           Save Data
         </Button>
       </Grid>
-
-  </Grid>
+    </>
   )
 }
 
