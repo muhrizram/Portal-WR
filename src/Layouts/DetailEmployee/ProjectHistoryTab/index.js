@@ -6,13 +6,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Link from "@mui/material/Link";
 
 const ProjectHistoryTab = () => {
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
+  function createData(
+    project,
+    contractstart,
+    contractend,
+    contractfile,
+    action
+  ) {
+    return { project, contractstart, contractend, contractfile, action };
   }
   const rows = [
-    createData("On Job Training", "01/01/2019", "01/01/2020", "preview.pdf"),
+    createData("Fulltime", "01/01/2019", "01/01/2020", "preview.pdf"),
+    createData("On Job Training", "01/01/2019", "01/01/2019", "preview.pdf"),
     createData("Bootcamp", "01/01/2019", "01/01/2019", "preview.pdf"),
   ];
 
@@ -21,37 +29,46 @@ const ProjectHistoryTab = () => {
       <Table aria-label="caption table">
         <TableHead>
           <TableRow>
-            <TableCell sx={{ color: "#004881", fontSize: "20px" }}>
-              Project / Client
+            <TableCell sx={{ color: "#004881", fontSize: "13px" }}>
+              Contract Status
             </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "20px" }}>
+            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
               Contract Start Date
             </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "20px" }}>
+            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
               Contract End Date
+            </TableCell>
+            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
+              Contract File
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.name}>
+            <TableRow key={row.project}>
               <TableCell
-                sx={{ color: "text.secondary", fontSize: "20px" }}
+                sx={{ color: "text.secondary", fontSize: "14px" }}
                 scope="row"
               >
-                {row.name}
+                {row.project}
               </TableCell>
               <TableCell
-                sx={{ color: "text.secondary", fontSize: "20px" }}
+                sx={{ color: "text.secondary", fontSize: "14px" }}
                 align="left"
               >
-                {row.calories}
+                {row.contractstart}
               </TableCell>
               <TableCell
-                sx={{ color: "text.secondary", fontSize: "20px" }}
+                sx={{ color: "text.secondary", fontSize: "14px" }}
                 align="left"
               >
-                {row.fat}
+                {row.contractend}
+              </TableCell>
+              <TableCell
+                sx={{ color: "text.secondary", fontSize: "14px" }}
+                align="left"
+              >
+                <Link href="">{row.contractfile}</Link>
               </TableCell>
             </TableRow>
           ))}
