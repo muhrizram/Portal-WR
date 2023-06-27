@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 
-const EmployeeBiodataTab = ({ isEdit }) => {
+const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
   const top100Films = [
     { label: "The Shawshank Redemption", year: 1994 },
     { label: "The Godfather", year: 1972 },
@@ -17,7 +17,6 @@ const EmployeeBiodataTab = ({ isEdit }) => {
     { label: "The Dark Knight", year: 2008 },
   ];
   const [Generation, setGeneration] = useState("");
-  const [EmployeeFirst, setEmployeeFirst] = useState("");
 
   return (
     <>
@@ -93,12 +92,14 @@ const EmployeeBiodataTab = ({ isEdit }) => {
               </Grid>
               <Grid container direction="row" style={{ padding: "20px" }}>
                 <Grid item xs={6}>
-                  {EmployeeFirst ? (
+                  {dataEdit.firstName ? (
                     <TextField
                       required
                       style={{ width: "100%", paddingRight: "10px" }}
-                      value={EmployeeFirst}
-                      onChange={(e) => setEmployeeFirst(e.target.value)}
+                      value={dataEdit.firstName}
+                      onChange={(event) =>
+                        changeField("firstName", event.target.value)
+                      }
                       id="outlined-error-helper-text"
                       placeholder="Enter Employee First Name"
                       label="Pe"
@@ -109,8 +110,10 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                       error
                       style={{ width: "100%", paddingRight: "10px" }}
                       id="outlined-error-helper-text"
-                      value={EmployeeFirst}
-                      onChange={(e) => setEmployeeFirst(e.target.value)}
+                      value={dataEdit.firstName}
+                      onChange={(event) =>
+                        changeField("firstName", event.target.value)
+                      }
                       label="EmployeeFirst"
                       helperText="Please insert Employee First Name."
                     />
@@ -285,7 +288,9 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                     {" "}
                     NIP{" "}
                   </Typography>
-                  <Typography variant="employeeDetail">1010101010</Typography>
+                  <Typography variant="employeeDetail">
+                    {dataEdit.nip}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography
@@ -304,7 +309,9 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                   >
                     Employee First Name
                   </Typography>
-                  <Typography variant="employeeDetail">Jhon</Typography>
+                  <Typography variant="employeeDetail">
+                    {dataEdit.firstName}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography
@@ -312,7 +319,9 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                   >
                     Employee Last Name
                   </Typography>
-                  <Typography variant="employeeDetail">Doe</Typography>
+                  <Typography variant="employeeDetail">
+                    {dataEdit.lastName}
+                  </Typography>
                 </Grid>
               </Grid>
 
@@ -324,7 +333,7 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                     NPWP
                   </Typography>
                   <Typography variant="employeeDetail">
-                    08.178.554.2-123.321
+                    {dataEdit.npwp}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -334,7 +343,7 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                     Email
                   </Typography>
                   <Typography variant="employeeDetail">
-                    johndoe@mail.com
+                    {dataEdit.email}
                   </Typography>
                 </Grid>
               </Grid>
@@ -353,7 +362,9 @@ const EmployeeBiodataTab = ({ isEdit }) => {
                   >
                     Placement Type
                   </Typography>
-                  <Typography variant="employeeDetail">Bandung</Typography>
+                  <Typography variant="employeeDetail">
+                    {dataEdit.placementType}
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid container direction="row" style={{ padding: "30px" }}>
