@@ -7,44 +7,47 @@ import SideBar from '../../Component/Sidebar';
 import { useNavigate } from 'react-router';
 
 const Employee = () => {
-  const [data, setData] = useState(content.content);
+  const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false)
+  const [Idnya, setIdnya] = useState("")
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    // setData([]);
-    // try {
-    //   const response = await fetch("http://localhost:4000/content");
-    //   const jsonData = await response.json();
-    //   setData(jsonData);
-    // } catch (error) {
-    //   console.log("Error fetching data: ", error);
-    // }
-  };
-
-  // const handleDelete = async (id) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:4000/content/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (response.ok) {
-  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
-  //     } else {
-  //       console.error("Failed to delete data");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting data:", error);
-  //   }
-  // };
-
-
-  
-  const [open, setOpen] = useState(false);
+    try {
+      const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false)
   const [Idnya, setIdnya] = useState("")
   const navigate = useNavigate()
+  
+      const response = await fetch("http://localhost:4000/content");
+      const jsonData = await response.json();
+      const updatedData = jsonData.map((item, index) => ({ ...item, no: index + 1 }));
+      setData(updatedData);
+    } catch (error) {
+      console.log("Error fetching data: ", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:4000/content/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setOpenAlert(true);
+        fetchData(); // Ambil data terbaru setelah berhasil menghapus
+      } else {
+        console.error("Failed to delete data");
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+    handleClose();
+  };
 
   // const handleClickOpen = (id) => {
   //   console.log("IDNYA",id)
@@ -53,11 +56,11 @@ const Employee = () => {
   //   setOpen(true);
   // };
 
-  const onDelete = () => {
-    console.log("Idnya ",Idnya)
-    setOpenAlert(true);
-    handleClose()
-  }
+  // const onDelete = () => {
+  //   console.log("Idnya ",Idnya)
+  //   setOpenAlert(true);
+  //   handleClose()
+  // }
 
   const handleClose = () => {
     setOpen(false);
@@ -85,6 +88,7 @@ const Employee = () => {
     {
       field: 'name',
       headerName: 'Name',
+      width: 200,
       flex: 1 ,
       renderCell: (params) => {
         return (
@@ -113,23 +117,24 @@ const Employee = () => {
         headerName: 'Contract End Date',
         flex: 1 
     },
-    // {
-    //   field: 'actions',
-    //   headerName: 'Action',
-    //   width: 200,
-    //   renderCell: (data) => {
-    //     return (
-    //       <div>
-    //         <IconButton href="/masteremployee/detail">
-    //           <PreviewIcon />
-    //         </IconButton>
-    //         <IconButton onClick={() => handleClickOpen(data.id)}>
-    //           <DeleteIcon />
-    //         </IconButton >
-    //       </div>
-    //     )
-    //   }
-    // },
+    {
+      field: 'actions',
+      headerName: 'Action',
+      width: 150,
+      renderCell: (data) => {
+        return (
+          <div>
+            <IconButton href="/detail">
+              <PreviewIcon />
+            </IconButton>
+            <IconButton onClick={() => handleClickOpen(data.id)}>
+              <DeleteIcon />
+            </IconButton >
+          </div>
+        )
+      }
+
+    },
   ];
   // const data = content.content
   const handleChangeSearch = (event) => {

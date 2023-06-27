@@ -150,14 +150,14 @@ const CDetailBiodataEmployee = ({
         </Grid>
       </Grid>
 
-      <Grid item md={11.5} alignSelf="center" textAlign="right">
+      {/* <Grid item md={11.5} alignSelf="center" textAlign="right">
         <Button variant="outlined" color="warning" style={{marginRight:3}} onClick={() => onCancel()}>
           Cancel Data
         </Button>
         <Button variant="contained" onClick={() => onSave()}>
           Save Data
         </Button>
-      </Grid>
+      </Grid> */}
 
   </Grid>
   )
