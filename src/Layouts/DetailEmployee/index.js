@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -77,6 +77,11 @@ const DetailEmployee = () => {
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [dataEdit, setDataEdit] = useState({
+    nip: '123141',
+    phonenumber: '',
+    address: ''
+  })
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -113,6 +118,17 @@ const DetailEmployee = () => {
   const clickEdit = () => {
     setIsEdit(true);
   };
+
+  const onChangeField = (nameObj, value) => {
+    const temp = {
+      ...dataEdit,
+      [nameObj]: value
+    }
+    setDataEdit(temp)
+    // setDataEdit({
+    //   [nameObj]: value
+    // })
+  }
 
   return (
     <>
@@ -158,7 +174,7 @@ const DetailEmployee = () => {
                 </Tabs>
               </Box>
               {value1 === "one" && <EmployeeBiodataTab isEdit={isEdit} />}
-              {value1 === "two" && <BiodataDetailsTab isEdit={isEdit} />}
+              {value1 === "two" && <BiodataDetailsTab isEdit={isEdit} dataEdit={dataEdit} changeField={onChangeField} />}
               {value1 === "three" && <InsuranceTab isEdit={isEdit} />}
               {isEdit && (
                 <>

@@ -8,7 +8,7 @@ import { Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 
-const BiodataDetailsTab = ({ isEdit }) => {
+const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
   const top100Films = [
     { label: "The Shawshank Redemption", year: 1994 },
     { label: "The Godfather", year: 1972 },
@@ -53,6 +53,8 @@ const BiodataDetailsTab = ({ isEdit }) => {
                     style={{ width: "100%", paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="National ID Number"
+                    value={dataEdit.nip}
+                    onChange={(event) => changeField('nip', event.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -62,6 +64,7 @@ const BiodataDetailsTab = ({ isEdit }) => {
                     type="number"
                     id="outlined-error-helper-text"
                     label="Phone Number"
+                    onChange={(event) => changeField('phonenumber', event.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -72,6 +75,7 @@ const BiodataDetailsTab = ({ isEdit }) => {
                     style={{ width: "100%", paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="Address"
+                    onChange={(event) => changeField('address', event.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
