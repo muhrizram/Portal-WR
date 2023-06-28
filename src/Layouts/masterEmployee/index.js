@@ -15,14 +15,30 @@ import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 
 const Employee = () => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [Idnya, setIdnya] = useState("");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [data, setData] = useState({
+    nip: '',
+    // phonenumber: '',
+    // address: ''
+  })
+
+  const onField = (nameObj, value) => {
+    const temp = {
+      ...data,
+      [nameObj]: value
+    }
+    setData(temp)
+    // setDataEdit({
+    //   [nameObj]: value
+    // })
+  }
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const fetchData = async () => {
     try {
@@ -60,12 +76,12 @@ const Employee = () => {
     handleClose();
   };
 
-  // const handleClickOpen = (id) => {
-  //   console.log("IDNYA",id)
-  //   setIdnya(id)
-  //   console.log(Idnya)
-  //   setOpen(true);
-  // };
+  const handleClickOpen = (id) => {
+    console.log("IDNYA",id)
+    setIdnya(id)
+    console.log(Idnya)
+    setOpen(true);
+  };
 
   // const onDelete = () => {
   //   console.log("Idnya ",Idnya)

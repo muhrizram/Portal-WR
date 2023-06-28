@@ -57,6 +57,14 @@ let globalTheme = createTheme({
     employeeDetail: {
       fontSize: ["16px"],
     },
+    backlogDetail: {
+      /* Text - 2 xl/24/Medium */
+      color : ["#000000"],
+      fontSize: ["24px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ['500'],
+      lineHeight: ['200%'],
+    },
     drawerNameUser: {
       fontSize: ['16px'],
       color: ['#333'],

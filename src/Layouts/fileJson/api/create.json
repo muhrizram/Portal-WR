@@ -1,21 +1,20 @@
 {
     "create" : 
         {
-             "nip" : "",
-      "generation" : "",
-      "firstName" : "",
-      "lastName" : "",
-      "npwp" : "",
-      "email" : "",
-      "joinDate" : "",
-      "placementType" : "",
-      "contractStatus" : "",
-      "statusOnsite" : "",
-      "carrerStartDate" : "",
-      "contractEndDate" : "",
-      "division" : "",
-      "position" : ""
-
+          "nip" : "",
+          "generation" : "",
+          "firstName" : "",
+          "lastName" : "",
+          "npwp" : "",
+          "email" : "",
+          "joinDate" : "",
+          "placementType" : "",
+          "contractStatus" : "",
+          "statusOnsite" : "",
+          "carrerStartDate" : "",
+          "contractEndDate" : "",
+          "division" : "",
+          "position" : ""
         }
         
     

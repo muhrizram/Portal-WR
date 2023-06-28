@@ -22,7 +22,7 @@ const placement = [
   },
 ]
 
-const position = [
+const positions = [
   {
     value: 'ceo',
     label: 'Chief Executive Officer',
@@ -37,19 +37,10 @@ const position = [
   },
 ]
 
-const contractStatus = [
-  {
-    value: 'fulltime',
-    label: 'Fulltime',
-  },
-  {
-    value: 'parttime',
-    label: 'PartTime',
-  },
-]
 
 const CBiodataEmployee = ({
   onCancel,
+  data
   // onSave
 }) => {
 
@@ -64,7 +55,7 @@ const [joinDate, setJoinDate] = useState('');
 const [placementType, setPlacementType] = useState('');
 const [contractStatus, setContractStatus] = useState('');
 const [statusOnsite, setStatusOnsite] = useState('');
-// const [carrerStartDate, setCarrerStartDate] = useState('');
+const [carrerStartDate, setCarrerStartDate] = useState('');
 const [contractEndDate, setConntractEndDate] = useState('');
 const [division, setDivision] = useState('');
 const [position, setPosition] = useState('');
@@ -97,7 +88,7 @@ const [position, setPosition] = useState('');
       placementType,
       contractStatus,
       statusOnsite,
-      // carrerStartDate,
+      carrerStartDate,
       contractEndDate,
       division,
       position
@@ -221,8 +212,8 @@ const [position, setPosition] = useState('');
                     sx={{
                       width: "100%", paddingRight: "10px"
                     }}
-                    value={joinDate}
-                    onChange={(e) => setJoinDate(e.target.value)}
+                    // value={joinDate}
+                    // onChange={(e) => setJoinDate(e.target.value)}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -245,7 +236,7 @@ const [position, setPosition] = useState('');
                   required
                   id="outlined-contract-status"
                   style={{ width: "100%", paddingRight: "10px" }}
-                  options={contractStatus}
+                  options={placement}
                   renderInput={(params) => <TextField {...params} label="Contract Status" required />}
                   value={contractStatus}
                   onChange={(e) => setContractStatus(e.target.value)}
@@ -273,20 +264,20 @@ const [position, setPosition] = useState('');
                     sx={{
                       width: "100%", paddingRight: "10px"
                     }}
-                    // value={carrerStarDate}
+                    // value={carrerStartDate}
                     // onChange={(e) => setCarrerStartDate(e.target.value)}
                   />
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
+                  <DatePicker 
                     label="Contract End Date"
                     sx={{
                       width: "100%",
                     }}
-                    value={contractEndDate}
-                    onChange={(e) => setConntractEndDate(e.target.value)}
+                    // value={contractEndDate}
+                    // onChange={(e) => setConntractEndDate(date)}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -310,10 +301,10 @@ const [position, setPosition] = useState('');
                     required
                     id="outlined-position"
                     style={{ width: "100%" }}
-                    options={position}
+                    options={positions}
                     renderInput={(params) => <TextField {...params} label="Position" required />}
                     value={position}
-                    onChange={(e) => setPosition(e.target.value)}
+                  onChange={(e) => setPosition(e.target.value)}
                   />
                 </Tooltip>
               </Grid>
