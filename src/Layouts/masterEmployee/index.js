@@ -8,11 +8,14 @@ import {
   DialogTitle,
   DialogContentText,
   DialogActions,
+  IconButton
 } from "@mui/material";
 import CustomAlert from "../../Component/Alert";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
+import PreviewIcon from '@mui/icons-material/Preview';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Employee = () => {
   // const [data, setData] = useState([]);
@@ -40,12 +43,14 @@ const Employee = () => {
   //   fetchData();
   // }, []);
 
+  const navigate = useNavigate();
+
   const fetchData = async () => {
     try {
       const [open, setOpen] = useState(false);
       const [openAlert, setOpenAlert] = useState(false);
       const [Idnya, setIdnya] = useState("");
-      const navigate = useNavigate();
+      // const navigate = useNavigate();
 
       const response = await fetch("http://localhost:4000/content");
       const jsonData = await response.json();
@@ -219,7 +224,7 @@ const Employee = () => {
             >
               Cancel
             </Button>
-            <Button onClick={onDelete} className="delete-button button-text">
+            <Button onClick={handleDelete} className="delete-button button-text">
               Delete Data
             </Button>
           </DialogActions>
