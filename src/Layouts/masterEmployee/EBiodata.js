@@ -90,8 +90,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-number"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="NIP"
-                  value={nip}
-                  onChange={(e) => setNip(e.target.value)}
+                  // value={nip}
+                  // onChange={(e) => setNip(e.target.value)}
                   // onChange={handleNipChange}
                 />
               </Grid>
@@ -101,8 +101,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Generation"
-                  value={generation}
-                  onChange={(e) => setGeneration(e.target.value)}
+                  // value={generation}
+                  // onChange={(e) => setGeneration(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -114,8 +114,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="Employee First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  // value={firstName}
+                  // onChange={(e) => setFirstName(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -124,8 +124,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Employee Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  // value={lastName}
+                  // onChange={(e) => setLastName(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -136,8 +136,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-number"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="NPWP"
-                  value={npwp}
-                  onChange={(e) => setNPWP(e.target.value)}
+                  // value={npwp}
+                  // onChange={(e) => setNPWP(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -146,8 +146,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  // value={email}
+                  // onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -253,7 +253,7 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                     required
                     id="outlined-position"
                     style={{ width: "100%" }}
-                    options={position}
+                    options={positions}
                     renderInput={(params) => (
                       <TextField {...params} label="Position" required />
                     )}

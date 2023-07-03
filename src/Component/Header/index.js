@@ -9,7 +9,7 @@ const Index = (props) => {
         <Grid container className="containerHeader">
           <div className="dividerHeader" />
           <Grid item xs={11.9}>
-            <Typography variant="headerCardMenu">{`${judul} Employee`}</Typography>
+            <Typography variant="headerCardMenu">{`${judul}`}</Typography>
           </Grid>
         </Grid>
       </Grid>
