@@ -14,6 +14,13 @@ let globalTheme = createTheme({
     textDetail: {
       fontSize: ['40px']
     },
+    noDataTable : {
+      fontSize: ["16px"],
+      color: ["rgba(0, 0, 0, 0.60)"],
+      lineHeight: ["150%"],
+      fontWeight: ["500"],
+
+    },
     body2: {
       fontSize: ["28px"],
       fontWeight: [500],
@@ -101,6 +108,51 @@ let globalTheme = createTheme({
             },
           },
         },
+        {
+          props: {
+            variant: 'saveButton',
+          },
+          style: {
+            color: "#FFFFFF",
+            border: "none",
+            borderRadius: "4px",
+            padding: "6px 16px",
+            boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20)',
+            background: "#2196F3",
+            textTransform: 'none',
+            fontSize: '14px',
+            lineHeight: '125%',
+            "&:hover": {
+              backgroundColor: "#2c80c3",
+            },
+            "&:active": {
+              backgroundColor: "#2c80c3",
+            },
+          },
+        },
+        {
+          props: {
+            variant: 'cancelButton',
+          },
+          style: {
+            color: "#ED6C02",
+            border: "1px solid rgba(237, 108, 2, 0.50)",
+            borderRadius: "4px",
+            padding: "6px 16px",
+            background: "transparant",
+            textTransform: 'none',
+            fontSize: '14px',
+            lineHeight: '125%',
+            "&:hover": {
+              backgroundColor: "#ED6C02",
+              color: "#FFFFFF",
+            },
+            "&:active": {
+              backgroundColor: "#ED6C02",
+              color: "#FFFFFF",
+            },
+          }
+        }
       ],
     },
     MuiFormControlLabel: {

@@ -125,9 +125,6 @@ const DetailEmployee = () => {
       [nameObj]: value
     }
     setDataEdit(temp)
-    // setDataEdit({
-    //   [nameObj]: value
-    // })
   }
 
   return (
