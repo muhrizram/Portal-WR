@@ -26,8 +26,10 @@
 
 .dividerHeader {
   border: 3.5px solid #34a853;
+  background-color: #34a853;
   /* color: #34A853;
   width: 7px; */
+  height: 100%;
   border-radius: 100px;
 }
 
@@ -279,4 +281,9 @@ gap: 30px;  */
   height: 66px !important;
   flex-shrink: 0;
   margin-left: 1.5rem;
+}
+
+.cardHeader {
+  background: linear-gradient(0deg, #e3e8ef, #e3e8ef),
+    linear-gradient(0deg, #f5f5ff, #f5f5ff);
 }
