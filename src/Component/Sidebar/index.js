@@ -78,12 +78,10 @@ export default function SideBar({ children }) {
   const handleDrawerClose = () => {
     setOpen(!open);
   };
-  const currentMenu = JSON.parse(localStorage.getItem("currentMenu"));
-  const [open, setOpen] = useState(
-    currentMenu !== null ? currentMenu.open : false
-  );
+  const currentMenu = JSON.parse(localStorage.getItem("currentMenu") || null);
+  const [open, setOpen] = useState(currentMenu ? currentMenu.open : false);
   const [selectedIndex, setSelectedIndex] = React.useState(
-    currentMenu !== null ? parseInt(currentMenu.idx) : 0
+    parseInt(currentMenu ? currentMenu.idx : 0)
   );
   const dataRoute = routes.filter((res) => res.icon);
 

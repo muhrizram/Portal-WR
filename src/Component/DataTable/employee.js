@@ -5,7 +5,7 @@ import SearchBar from '../Searchbar';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid } from '@mui/x-data-grid';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-
+import { useNavigate } from 'react-router-dom';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -23,6 +23,7 @@ const DataTableEmployee = ({
   onAdd
 }) => {
 
+  const navigate = useNavigate();
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 })
   const [sorting, setSort] = useState([])
   const [search, setSearch] = useState('')
@@ -35,6 +36,10 @@ const DataTableEmployee = ({
   const handleClose = () => {
     setImportFile(false);
   };
+
+  const handleClick = () => {
+    navigate('/masteremployee/create');
+  }
 
   //importFile
   const [file, setFile] = useState();
@@ -88,7 +93,7 @@ const DataTableEmployee = ({
                   <SearchBar placeholder={placeSearch} label={searchTitle} onChange={handleChangeSearch} />
                 </Grid>
                 <Grid item md={11.5} alignSelf="center" textAlign="right">
-                  <Button variant="outlined" style={{ marginRight: 3 }} href="/create" startIcon={<AddIcon />}>
+                  <Button variant="outlined" style={{ marginRight: 3 }} onClick={handleClick} startIcon={<AddIcon />}>
                     {`ADD NEW ${title}`}
                   </Button>
                   <Button variant="contained" onClick={onImport} startIcon={<UploadFileIcon />}>

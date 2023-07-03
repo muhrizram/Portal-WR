@@ -22,7 +22,7 @@ const placement = [
   },
 ];
 
-const position = [
+const positions = [
   {
     value: "ceo",
     label: "Chief Executive Officer",
@@ -90,6 +90,9 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-number"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="NIP"
+                  value={nip}
+                  onChange={(e) => setNip(e.target.value)}
+                  // onChange={handleNipChange}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -98,6 +101,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Generation"
+                  value={generation}
+                  onChange={(e) => setGeneration(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -109,6 +114,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="Employee First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -117,6 +124,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Employee Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -127,6 +136,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-number"
                   style={{ width: "100%", paddingRight: "10px" }}
                   label="NPWP"
+                  value={npwp}
+                  onChange={(e) => setNPWP(e.target.value)}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -135,6 +146,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                   id="outlined-required"
                   style={{ width: "100%" }}
                   label="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -148,6 +161,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                       width: "100%",
                       paddingRight: "10px",
                     }}
+                    // value={joinDate}
+                    // onChange={(e) => setJoinDate(e.target.value)}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -201,6 +216,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                       width: "100%",
                       paddingRight: "10px",
                     }}
+                    // value={carrerStartDate}
+                    // onChange={(e) => setCarrerStartDate(e.target.value)}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -211,6 +228,8 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                     sx={{
                       width: "100%",
                     }}
+                    // value={contractEndDate}
+                    // onChange={(e) => setConntractEndDate(date)}
                   />
                 </LocalizationProvider>
               </Grid>
