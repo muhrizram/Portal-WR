@@ -21,7 +21,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <CreateNewBacklog />,
+    element: <DetailBacklog />,
   },
   {
     path: "/jobGroup",
