@@ -1,18 +1,18 @@
-import React from "react";
-import Grid from "@mui/material/Grid";
-import { Typography, Button } from "@mui/material";
-import FileDownload from "@mui/icons-material/FileDownload";
-import Settings from "@mui/icons-material/Settings";
-import SearchBar from "../../Component/Searchbar";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useState } from "react";
 import datatemp from "./initjson.json";
-import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRenameOutlineOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import logo from "../../assets/avatar.png";
-import DatePickerComp from "../../Component/Datepicker";
-import Calendar from "../../Component/Calendar";
-
-
+// import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
+// import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import DataTable from "../../Component/DataTable";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
+import CustomAlert from "../../Component/Alert";
+import SideBar from "../../Component/Sidebar";
 const Jobgroup = () => {
   const columns = [
     {
@@ -25,80 +25,89 @@ const Jobgroup = () => {
       headerName: "Status",
       flex: 1,
     },
-    {
-      field: "actions",
-      headerName: "",
-      width: 200,
-      renderCell: () => {
-        return (
-          <div>
-            <DriveFileRenameOutlineOutlinedIcon className="iconTable" />
-            <DeleteOutlineOutlinedIcon className="iconTable" />
-          </div>
-        );
-      },
-    },
   ];
   const data = datatemp.datatemp;
+  const [open, setOpen] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const onDelete = () => {
+    setOpenAlert(true);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
 
   const handleChangeSearch = (event) => {
     console.log("value search: ", event.target.value);
   };
-  return (
-    <>    
-    <Grid container rowSpacing={2.5}>
-      <Grid item xs={12}>
-        <Grid container className="containerHeader">
-          <div className="dividerHeader" />
-          <Grid item xs={9.9}>
-            <Typography variant="headerCardMenu">Working Report</Typography>
-          </Grid>
-          <Grid item />
 
-          <Grid item xs={2} alignSelf="center" textAlign="right">
-            
-              <div className="buttonContainer">
-                <Button variant="contained" startIcon={<FileDownload />}>
-                  Download
-                </Button>
-                <Button variant="outlined" startIcon={<Settings />}>
-                  Settings
-                </Button>
-              </div>
-            
-          </Grid>
-          <img src={logo} alt="logo" className="fotoprofile" />
-          <h1>Employee Details</h1>
-          <div className="containeremployee">
-            <p className="name">Name</p>
-            <p className="name">Role</p>
-            <p className="name">Email</p>
-          </div>
-          <div className="containeremployeevalue">
-            <strong className="namevalue">Diaz</strong>
-            <strong className="namevalue">FrontEnd</strong>
-            <strong className="namevalue">diazazhari32@gmail.com</strong>
-          </div>
-        </Grid>
-      </Grid>
-      {/* <DatePickerComp/> */}
-      {/* <Grid item xs={12}>
-        <Typography variant="searchTitleText">Search by group name</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <SearchBar placeholder="project" onChange={handleChangeSearch} />
-      </Grid>
-      <Grid item xs={12}>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          disableRowSelectionOnClick
-          hideFooter
+  const handleAdd = () => {
+    console.log("add");
+  };
+  return (
+    <div>
+      <SideBar>
+        <CustomAlert
+          severity="warning"
+          message="This is a waring message!"
+          open={openAlert}
+          onClose={handleCloseAlert}
         />
-      </Grid> */}
-    </Grid>
-      <Calendar/>
-    </>
+        <DataTable
+          title="Group"
+          data={data}
+          columns={columns}
+          placeSearch="project"
+          searchTitle="Search By"
+          onButtonClick={() => handleAdd()}
+          handleChangeSearch={handleChangeSearch}
+          onDetail={(id) => console.log("id detail: ", id)}
+          onDelete={(id) => handleClickOpen()}
+        />
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          className="dialog-delete"
+        >
+          <DialogTitle id="alert-dialog-title" className="dialog-delete-header">
+            {"Delete Data"}
+          </DialogTitle>
+          <DialogContent className="dialog-delete-content">
+            <DialogContentText
+              className="dialog-delete-text-content"
+              id="alert-dialog-description"
+            >
+              Let Google help apps determine location. This means sending
+              anonymous location data to Google, even when no apps are running.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+            <Button
+              onClick={handleClose}
+              variant="outlined"
+              className="button-text"
+            >
+              Cancel
+            </Button>
+            <Button onClick={onDelete} className="delete-button button-text">
+              Delete Data
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </SideBar>
+    </div>
   );
 };
 
