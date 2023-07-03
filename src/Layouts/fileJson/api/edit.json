@@ -1,0 +1,46 @@
+{
+    "data": {
+      "id": "11",
+      "type": "User",
+      "attributes": {
+        "jobTypeId": 7,
+        "nip": "328083927398",
+        "placementType": 1,
+        "ssoId": "1231454",
+        "group": 7,
+        "position": 1,
+        "statusOnsite": 1,
+        "userName": "john_doe",
+        "email": "john.doe@example.com",
+        "lastContractStatus": "Active",
+        "lastContractDate": 1687626000000,
+        "firstName": "John",
+        "lastName": "Doe",
+        "joinDate": 1687626000000,
+        "endContractThisMonth": false,
+        "photoProfile": null,
+        "lastModifiedOn": 1687774802207,
+        "lastModifiedBy": 789,
+        "createdBy": 567,
+        "createdOn": 1687708047991,
+        "placeOfBirth": "New York",
+        "dateOfBirth": 1687626000000,
+        "identityNumber": "1234567890",
+        "postalCode": "12345",
+        "familyRelationship": "Spouse",
+        "familyRelationshipNumber": "9876543210",
+        "school": "INDONESIA University",
+        "education": "Bachelor's Degree",
+        "bpjsKesehatan": "Health Insurance",
+        "numberOfDependents": "2",
+        "bpjsClass": 3,
+        "carrerStartDate": 1687626000000,
+        "ptkpStatus": 1,
+        "npwp": "124352",
+        "no": 123,
+        "department": "Sales",
+        "isActive": false
+      }
+    }
+  }
+  

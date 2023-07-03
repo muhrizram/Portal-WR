@@ -25,9 +25,11 @@
 }
 
 .dividerHeader {
-  border: 3.5px solid #34A853;
+  border: 3.5px solid #34a853;
+  background-color: #34a853;
   /* color: #34A853;
   width: 7px; */
+  height: 100%;
   border-radius: 100px;
 }
 
@@ -37,34 +39,55 @@
 }
 
 .customSearchBar fieldset {
-  border: 1px solid #DDDEE0;
+  border: 1px solid #dddee0;
   border-radius: 8px;
 }
 
 .MuiDataGrid-columnHeaderTitle {
+  font-family: "Poppins", sans-serif;
   font-style: normal;
-  font-weight: 700;
-  font-size: 18px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 125%;
+  color: #004881;
   /* line-height: 21px; */
 }
 
 .MuiDataGrid-cellContent {
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
-  color: #404040;
+  line-height: 125%;
+  color: #58585b;
+}
+
+.MuiTablePagination-selectLabel {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px !important;
+  line-height: 166% !important;
+  letter-spacing: 0.4px !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.MuiTablePagination-displayedRows {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px !important;
+  line-height: 166% !important;
+  letter-spacing: 0.4px !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.MuiDataGrid-footerContainer {
+  border: none !important;
 }
 
 .App-link {
   color: #61dafb;
 }
-
 .containerHeader {
-  background: #F5F5FF;
-  padding: 24px;
-  border: 1px solid #E3E8EF;
-  box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
-  border-radius: 6px;
   display: flex;
 }
 
@@ -85,13 +108,13 @@
 
 .iconTable {
   cursor: pointer;
-  background: #FFFFFF;
+  /* background: #FFFFFF;
   border: 1px solid #E5E7EB;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
   border-radius: 4px;
-  color: #4B5563;
+  color: #4B5563; */
   font-size: 14px;
-  margin-right: 16px;
+  /* margin-right: 16px; */
 }
 .employetext{
   display: flex;
@@ -124,6 +147,26 @@
   height: 120px;
 }
 
+  margin-top: 20px;
+  background: #ffffff;
+  padding: 24px;
+  border: 1px solid #e3e8ef;
+  box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1),
+    0px 1px 2px rgba(16, 24, 40, 0.06);
+  border-radius: 8px;
+  display: flex;
+  gap: 30px;
+}
+.containerButton {
+  display: flex;
+  width: 100px;
+  margin-left: 100px;
+}
+.text {
+  font-size: 12px;
+  color: grey;
+  /* margin-left: 30px; */
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -131,4 +174,155 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.MuiDataGrid-columnHeader:focus,
+.css-xiftjp-MuiDataGrid-root .MuiDataGrid-cell:focus {
+  outline: none !important;
+}
+
+.dialog-delete > .MuiDialog-container > .MuiPaper-root {
+  padding: 30px !important;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.dialog-delete-header {
+  font-size: 24px !important;
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 700 !important;
+  line-height: 200% !important;
+  color: #4b465c;
+  padding: 12px 24px !important;
+}
+
+.dialog-delete-text-content {
+  font-size: 16px !important;
+  font-family: "Poppins", sans-serif;
+  line-height: 150% !important;
+  color: #4b465c;
+}
+
+.dialog-delete-content {
+  padding: 0 24px 18px 24px !important;
+}
+
+.dialog-delete-actions {
+  justify-content: center !important;
+  gap: 16px;
+}
+
+.button-text {
+  font-size: 14px !important;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500 !important;
+  line-height: 125% !important;
+  text-transform: none !important;
+}
+
+.delete-button {
+  border-radius: 4px !important;
+  background-color: #ed6c02 !important;
+  /* elevation/2 */
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.12),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.2);
+  padding: 6px 16px !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff !important;
+  margin: 0 !important;
+}
+
+.custom-snackbar {
+  width: 100%;
+}
+
+.custom-alert {
+  justify-content: center;
+  align-items: center;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 150% !important;
+  letter-spacing: 0.15px !important;
+}
+
+.custom-alert > .MuiAlert-action,
+.custom-alert > .MuiAlert-icon,
+.custom-alert > .MuiAlert-message {
+  padding: 0 !important;
+}
+
+.text-name {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  color: #58585b;
+  /* Text - sm/14/Regular */
+  font-size: 14px;
+  font-family: Poppins;
+  line-height: 125%;
+}
+
+.text-position {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  color: #4b465c;
+  /* Text - xs/12/Regular */
+  font-size: 12px;
+  line-height: 150%;
+}
+.img-master-employee {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 100px;
+}
+
+.input-field-crud {
+  width: 100%;
+}
+
+.input-field-crud input {
+  font-size: 16px;
+  line-height: 150%;
+  /* color: rgba(0, 0, 0, 0.38); */
+  padding: 16px 12px !important;
+}
+
+.input-field-crud .MuiFormLabel-root.Mui-focused {
+  color: #00000099 !important;
+}
+
+.input-field-crud .MuiFormLabel-root.Mui-error {
+  color: #d32f2f !important;
+}
+
+.input-field-crud .Mui-focused fieldset {
+  border-color: rgba(0, 0, 0, 0.23) !important ;
+}
+
+.input-field-crud .Mui-error fieldset {
+  border-color: #d32f2f !important;
+}
+
+.card-container {
+  background-color: #ffffff;
+  padding: 24px;
+  min-height: calc(100vh - 600px);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+}
+.img-master-employee-create {
+  width: 66px !important;
+  height: 66px !important;
+  flex-shrink: 0;
+  margin-left: 1.5rem;
+}
+
+.cardHeader {
+  background: linear-gradient(0deg, #e3e8ef, #e3e8ef),
+    linear-gradient(0deg, #f5f5ff, #f5f5ff);
 }

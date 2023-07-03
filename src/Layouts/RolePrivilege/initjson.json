@@ -1,0 +1,76 @@
+{
+    "rolePrevilege": [
+      {
+        "id": 1,
+        "no" : "1",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 2,
+        "no" : "2",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 3,
+        "no" : "3",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 4,
+        "no" : "4",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 5,
+        "no" : "5",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 6,
+        "no" : "6",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 7,
+        "no" : "7",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 8,
+        "no" : "8",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 9,
+        "no" : "9",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 10,
+        "no" : "10",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 11,
+        "no" : "11",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      },
+      {
+        "id": 12,
+        "no" : "12",
+        "role": "HRD",
+        "previlege": "wr, jg"
+      }
+    ]
+  }

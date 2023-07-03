@@ -1,18 +1,16 @@
-import React from 'react';
-import SideBar from '../../Component/Sidebar';
-import Jobgroup from '../JobGroup';
-import WorkingReport from '../WorkingReport';
+import React from "react";
+import SideBar from "../../Component/Sidebar";
+// import Jobgroup from "../JobGroup";
+// import DetailBacklog from "../detailBacklog";
 const Dashboard = () => {
   return (
     <div>
       <SideBar>
-        {/* <div> */}
-          {/* <Jobgroup /> */}
-          <WorkingReport />
-        {/* </div> */}
+        {/* <Jobgroup /> */}
+        {/* <DetailBacklog /> */}
       </SideBar>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
