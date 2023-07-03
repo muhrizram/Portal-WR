@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,13 +12,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import './index.css'
-import logo from '../../assets/logo.png'
-import logoMini from '../../assets/logo-mini.png'
+import "./index.css";
+import logo from "../../assets/logo.png";
+import logoMini from "../../assets/logo-mini.png";
 import { useAuth } from "react-oidc-context";
 import { Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
-import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { routes } from "../../routes";
 
 const drawerWidth = 240;
@@ -71,60 +71,75 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function SideBar({ children }) {
-  const navigate = useNavigate()
-  const auth = useAuth()
+  const navigate = useNavigate();
+  const auth = useAuth();
 
-  const username = auth.user ? auth.user.profile.name : ''
+  const username = auth.user ? auth.user.profile.name : "";
   const handleDrawerClose = () => {
     setOpen(!open);
   };
-  const currentMenu = JSON.parse(localStorage.getItem('currentMenu') || null)
+  const currentMenu = JSON.parse(localStorage.getItem("currentMenu") || null);
   const [open, setOpen] = useState(currentMenu ? currentMenu.open : false);
-  const [selectedIndex, setSelectedIndex] = React.useState(parseInt(currentMenu ? currentMenu.idx : 0));
-  const dataRoute = routes.filter((res) => res.icon)
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    parseInt(currentMenu ? currentMenu.idx : 0)
+  );
+  const dataRoute = routes.filter((res) => res.icon);
 
   const handleLogout = () => {
-    auth.signoutSilent()
-    navigate('login')
-  }
+    auth.signoutSilent();
+    navigate("login");
+  };
 
   const handleDirectPath = (path, idx) => {
     const obj = {
       idx,
-      open
-    }
-    localStorage.setItem('currentMenu', JSON.stringify(obj))
-    setSelectedIndex(idx)
-    navigate(path)
-  }
+      open,
+    };
+    localStorage.setItem("currentMenu", JSON.stringify(obj));
+    setSelectedIndex(idx);
+    navigate(path);
+  };
 
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
       <Drawer className="drawer-container" variant="permanent" open={open}>
-        <DrawerHeader className='drawer-header-container'>
+        <DrawerHeader className="drawer-header-container">
           <div className="drawer-header">
             <Grid container>
               <Grid item xs={12}>
-                <div className={ open ? 'container-img margin-img' : 'container-img'}>
-                  <img className='drawer-logo' src={open ? logo : logoMini} alt='logo 79' />
+                <div
+                  className={
+                    open ? "container-img margin-img" : "container-img"
+                  }
+                >
+                  <img
+                    className="drawer-logo"
+                    src={open ? logo : logoMini}
+                    alt="logo 79"
+                  />
                 </div>
               </Grid>
               <Grid item xs={12}>
                 <div className="container-chevron">
                   <Grid container>
                     <Grid item xs={open ? 4 : 12}>
-                      <Avatar variant="square" className={open ? 'mini-avatar': 'lg-avatar'} onClick={handleDrawerClose}/>
+                      <Avatar
+                        variant="square"
+                        className={open ? "mini-avatar" : "lg-avatar"}
+                        onClick={handleDrawerClose}
+                      />
                     </Grid>
                     {open && (
                       <Grid item container xs={8}>
                         <Grid item container xs={8}>
                           <Grid item container xs={12}>
-                            <Typography variant='drawerNameUser'>
+                            <Typography variant="drawerNameUser">
                               {username}
                             </Typography>
-                          </Grid><Grid item container xs={12}>
-                            <Typography variant='drawerPostion'>
+                          </Grid>
+                          <Grid item container xs={12}>
+                            <Typography variant="drawerPostion">
                               UI/UX
                             </Typography>
                           </Grid>
@@ -144,7 +159,11 @@ export default function SideBar({ children }) {
         </DrawerHeader>
         <List className="list-menu-container">
           {dataRoute.map((res, index) => (
-            <ListItem key={`idlist-${index + 1}`} disablePadding sx={{ display: "block" }}>
+            <ListItem
+              key={`idlist-${index + 1}`}
+              disablePadding
+              sx={{ display: "block" }}
+            >
               <ListItemButton
                 selected={selectedIndex === index}
                 onClick={() => handleDirectPath(res.path, index)}
@@ -155,7 +174,7 @@ export default function SideBar({ children }) {
                 }}
               >
                 <ListItemIcon
-                  className='button-list-icon'
+                  className="button-list-icon"
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : "auto",
@@ -173,10 +192,13 @@ export default function SideBar({ children }) {
           ))}
         </List>
         <List className="list-menu-container-footer">
-          <ListItem className='footer-logout-container'>
-            <ListItemButton className="footer-logout-button" onClick={() => handleLogout()}>
+          <ListItem className="footer-logout-container">
+            <ListItemButton
+              className="footer-logout-button"
+              onClick={() => handleLogout()}
+            >
               <ListItemIcon
-                className='logout-button'
+                className="logout-button"
                 sx={{
                   minWidth: 0,
                   mr: open ? 3 : "auto",
@@ -185,11 +207,7 @@ export default function SideBar({ children }) {
               >
                 <PowerSettingsNewIcon />
               </ListItemIcon>
-              {open && (
-                <span className='logout-text'>
-                  Log Out
-                </span>
-              )}
+              {open && <span className="logout-text">Log Out</span>}
             </ListItemButton>
           </ListItem>
         </List>

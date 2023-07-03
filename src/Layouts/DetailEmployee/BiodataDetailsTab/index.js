@@ -54,7 +54,7 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                     id="outlined-error-helper-text"
                     label="National ID Number"
                     value={dataEdit.nip}
-                    onChange={(event) => changeField('nip', event.target.value)}
+                    onChange={(event) => changeField("nip", event.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -64,7 +64,9 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                     type="number"
                     id="outlined-error-helper-text"
                     label="Phone Number"
-                    onChange={(event) => changeField('phonenumber', event.target.value)}
+                    onChange={(event) =>
+                      changeField("phonenumber", event.target.value)
+                    }
                   />
                 </Grid>
               </Grid>
@@ -75,7 +77,9 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                     style={{ width: "100%", paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="Address"
-                    onChange={(event) => changeField('address', event.target.value)}
+                    onChange={(event) =>
+                      changeField("address", event.target.value)
+                    }
                   />
                 </Grid>
                 <Grid item xs={6}>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -77,11 +77,54 @@ const DetailEmployee = () => {
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
-  const [dataEdit, setDataEdit] = useState({
-    nip: '123141',
-    phonenumber: '',
-    address: ''
-  })
+  const [dataFix, setDataFix] = useState({
+    jobTypeId: "",
+    nip: "12345555",
+    placementType: "Bandung",
+    ssoId: "",
+    group: "",
+    position: "",
+    statusOnsite: "",
+    userName: "",
+    email: "johndoe@mail.com",
+    lastContractStatus: "",
+    lastContractDate: "",
+    firstName: "Jhon",
+    lastName: "Doe",
+    joinDate: "",
+    endContractThisMonth: "",
+    photoProfile: "",
+    lastModifiedOn: "",
+    lastModifiedBy: "",
+    createdBy: "",
+    createdOn: "",
+    placeOfBirth: "",
+    dateOfBirth: "",
+    identityNumber1234567890: "",
+    postalCode: "",
+    familyRelationship: "",
+    familyRelationshipNumber: "",
+    school: "",
+    education: "",
+    bpjsKesehatan: "",
+    numberOfDependents: "",
+    bpjsClass: "",
+    carrerStartDate: "",
+    ptkpStatus: "",
+    npwp: "08.178.554.2-123.321",
+    no: "",
+    department: "",
+    isActive: "",
+  });
+  const [dataEdit, setDataEdit] = useState(dataFix);
+
+  const onChangeField = (nameObj, value) => {
+    const temp = {
+      ...dataEdit,
+      [nameObj]: value,
+    };
+    setDataEdit(temp);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -92,18 +135,25 @@ const DetailEmployee = () => {
   const handleClickOpen2 = () => {
     setOpen2(true);
   };
-  const handleClose = () => {
-    setOpen(false);
-  };
   const handleClose1 = () => {
     setOpen1(false);
   };
   const handleCloseOpenCancelData = () => {
     setOpen1(false);
+    setDataEdit(dataFix);
     setIsEdit(false);
   };
   const handleClose2 = () => {
     setOpen2(false);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const SubmitSave = () => {
+    setOpen(false);
+    setIsEdit(false);
+    setDataFix(dataEdit);
   };
 
   const handleChange = (event, newValue) => {
@@ -118,14 +168,6 @@ const DetailEmployee = () => {
   const clickEdit = () => {
     setIsEdit(true);
   };
-
-  const onChangeField = (nameObj, value) => {
-    const temp = {
-      ...dataEdit,
-      [nameObj]: value
-    }
-    setDataEdit(temp)
-  }
 
   return (
     <>
@@ -170,9 +212,27 @@ const DetailEmployee = () => {
                   <Tab value="three" label="Insurance Details" />
                 </Tabs>
               </Box>
-              {value1 === "one" && <EmployeeBiodataTab isEdit={isEdit} />}
-              {value1 === "two" && <BiodataDetailsTab isEdit={isEdit} dataEdit={dataEdit} changeField={onChangeField} />}
-              {value1 === "three" && <InsuranceTab isEdit={isEdit} />}
+              {value1 === "one" && (
+                <EmployeeBiodataTab
+                  isEdit={isEdit}
+                  changeField={onChangeField}
+                  dataEdit={dataEdit}
+                />
+              )}
+              {value1 === "two" && (
+                <BiodataDetailsTab
+                  isEdit={isEdit}
+                  dataEdit={dataEdit}
+                  changeField={onChangeField}
+                />
+              )}
+              {value1 === "three" && (
+                <InsuranceTab
+                  isEdit={isEdit}
+                  dataEdit={dataEdit}
+                  changeField={onChangeField}
+                />
+              )}
               {isEdit && (
                 <>
                   <Grid
@@ -204,6 +264,7 @@ const DetailEmployee = () => {
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
+                    className="dialog-delete"
                   >
                     <DialogTitle
                       sx={{
@@ -213,7 +274,7 @@ const DetailEmployee = () => {
                       }}
                       id="alert-dialog-title"
                     >
-                      {"Save Data"}
+                      {"Cancel Save Data"}
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
@@ -243,6 +304,7 @@ const DetailEmployee = () => {
                     onClose={handleClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
+                    className="dialog-delete"
                   >
                     <DialogTitle
                       sx={{
@@ -266,7 +328,7 @@ const DetailEmployee = () => {
                       </Button>
                       <Button
                         variant="contained"
-                        onClick={handleClose}
+                        onClick={SubmitSave}
                         autoFocus
                       >
                         Save Data
@@ -308,6 +370,7 @@ const DetailEmployee = () => {
                 onClose={handleClose2}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                className="dialog-delete"
               >
                 <DialogTitle
                   sx={{

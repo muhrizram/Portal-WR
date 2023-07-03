@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 
-const InsuranceTab = ({ isEdit }) => {
+const InsuranceTab = ({ isEdit, data, dataEdit, changeField }) => {
   const top100Films = [
     { label: "The Shawshank Redemption", year: 1994 },
     { label: "The Godfather", year: 1972 },
@@ -161,7 +161,9 @@ const InsuranceTab = ({ isEdit }) => {
                   >
                     BPJS Class
                   </Typography>
-                  <Typography variant="employeeDetail">-</Typography>
+                  <Typography variant="employeeDetail">
+                    {data.bpjsClass}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography
@@ -188,7 +190,9 @@ const InsuranceTab = ({ isEdit }) => {
                   >
                     PTKP Status
                   </Typography>
-                  <Typography variant="employeeDetail">-</Typography>
+                  <Typography variant="employeeDetail">
+                    {data.ptkpStatus}
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid container direction="row" style={{ padding: "30px" }}>

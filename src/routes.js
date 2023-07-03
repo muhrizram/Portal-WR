@@ -8,6 +8,7 @@ const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
 const MasterCompany = lazy(() => import("./Layouts/Company"))
 const CreateCompany = lazy(() => import('./Layouts/Company/Create'))
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
+
 const CreateMasterEmployee = lazy(() => import("./Layouts/masterEmployee/Tabnya"));
 
 export const routes = [
@@ -17,16 +18,16 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Dashboard />, 
+    element: <Dashboard />,
   },
   {
     path: "/masteremployee",
     element: <Employee />,
-    name: 'Employee',
-    icon: <PersonPinOutlinedIcon />
+    name: "Employee",
+    icon: <PersonPinOutlinedIcon />,
   },
   {
-    path: '/masteremployee/detail',
+    path: "/masteremployee/detail",
     element: <DetailEmployee />,
   },
   {
