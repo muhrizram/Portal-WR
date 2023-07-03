@@ -54,6 +54,13 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
   }
+  const [nip, setNip] = useState("");
+  const [generation, setGeneration] = useState();
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
+  const [npwp, setNPWP] = useState();
+  const [email, setEmail] = useState();
+  const [position, setPosition] = useState();
 
   return (
     <>

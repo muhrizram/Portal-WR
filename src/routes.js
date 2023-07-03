@@ -5,10 +5,13 @@ import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
-const JobGroup = lazy(() => import("./Layouts/JobGroup"))
+const JobGroup = lazy(() => import("./Layouts/JobGroup"));
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
+const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 
-const CreateMasterEmployee = lazy(() => import("./Layouts/masterEmployee/Tabnya"));
+const CreateMasterEmployee = lazy(() =>
+  import("./Layouts/masterEmployee/Tabnya")
+);
 
 export const routes = [
   {
@@ -29,6 +32,12 @@ export const routes = [
     path: "/masteremployee",
     element: <Employee />,
     name: "Employee",
+    icon: <PersonPinOutlinedIcon />,
+  },
+  {
+    path: "/workingReport",
+    element: <WorkingReport />,
+    name: "Working Report",
     icon: <PersonPinOutlinedIcon />,
   },
   {
