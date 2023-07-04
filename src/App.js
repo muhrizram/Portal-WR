@@ -15,7 +15,7 @@ const App = () => {
       if (auth.isAuthenticated) {
         navigate('/')
       } else {
-        navigate('/login')
+        navigate('login')
       }
     }
   }, [auth.isLoading])
