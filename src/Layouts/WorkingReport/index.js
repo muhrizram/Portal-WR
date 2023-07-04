@@ -23,6 +23,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import CheckinTime from "../../Component/CheckinTime";
 import Attendance from "./Attandence";
+import Calendar from "../../Component/CalendarCustom";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -88,7 +89,20 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Attendance />
+          {isCheckin ? (
+            <CheckinTime
+              setIsCheckin={(param) => {
+                setIsCheckin(() => false);
+              }}
+            />
+          ) : (
+            <Calendar
+              setOnClick={(param) => {
+                setIsCheckin((p) => true);
+              }}
+            />
+          )}
+          {/* <Attendance /> */}
           {/* <Box sx={{ width: "100%", marginBottom: "2%" }}>
             <Tabs
               value={value}
@@ -99,7 +113,7 @@ export default function WorkingReport() {
               <Tab value={1} label="Attendance History" />
             </Tabs>
           </Box>
-          {value === 0 && <Calendar />} */}
+        {value === 0 && } */}
         </Grid>
       </Grid>
     </SideBar>

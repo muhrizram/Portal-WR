@@ -27,8 +27,6 @@ import Box from "@mui/material/Box";
 import Allura from "../../assets/Allura.png";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
-
 const DetailBacklog = () => {
   const ContractStatus = [
     { label: "Electronic Health Record" },

@@ -9,8 +9,6 @@ const Employee = lazy(() => import("./Layouts/masterEmployee"));
 const DetailBacklog = lazy(() => import("./Layouts/detailBacklog/index"));
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
-const WorkingReport = lazy(() => import('./Layouts/WorkingReport'))
-const DetailBacklog = lazy(() => import('./Layouts/detailBacklog'))
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
