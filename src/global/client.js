@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useAuth } from "react-oidc-context";
+// import { useAuth } from "react-oidc-context";
 // import useasuth
 
 const instance = axios.create();
-const auth = useAuth();
+// const auth = useAuth()
 
 export const clientState = {
   requesting: false,
@@ -18,24 +18,24 @@ const requestAPI = async ({
   endpoint,
   data,
   headers,
-  otherConfig,
-  isToken = true,
+  // otherConfig,
+  // isToken = true,
 }) => {
   let result = {};
-  const host = process?.env?.REACT_APP_AUTH;
+  const host = process.env.REACT_APP_BASE_API;
   const url = `${host}${endpoint}`;
-  const timeout = process?.env?.REACT_APP_DEFAULT_TIMEOUT;
-  const token = auth.user.access_token;
-  let optHeaders = { ...headers, "Access-Control-Allow-Origin": "*" };
-  if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
-  const reqConfig = {
-    url,
-    method,
-    timeout,
-    headers: optHeaders,
-    data,
-    ...otherConfig,
+  const timeout = process.env.REACT_APP_DEFAULT_TIMEOUT;
+  // const token = auth.user.access_token
+  let optHeaders = {
+    ...headers,
+    "Access-Control-Allow-Origin": "*",
+    "Content-Type": "application/vnd.api+json",
+    Accept: "application/vnd.api+json",
   };
+  // if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
+  // const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };
+
+  const reqConfig = { url, method, timeout, headers: optHeaders, data };
   if (!endpoint) throw new Error("url parameter is required");
 
   // Set Fetching State
@@ -65,13 +65,13 @@ const requestAPI = async ({
   } catch (error) {
     // Remove Fetching State
     clientState.requesting = false;
-    if (error?.response?.status === 401) {
-      localStorage.clear();
-      localStorage.setItem("isExpired", true);
-      window.location.reload();
-    }
+    // if (error?.response?.status === 401) {
+    //   localStorage.clear();
+    //   localStorage.setItem("isExpired", true);
+    //   window.location.reload();
+    // }
 
-    result = { status: error?.response?.status, error: error?.response?.data };
+    result = { status: error.response.status, error: error.response.data };
     return result;
   }
 };

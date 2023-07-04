@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { DataGrid } from '@mui/x-data-grid';
 import PreviewIcon from '@mui/icons-material/Preview';
 import DeleteIcon from '@mui/icons-material/Delete';
+import blanktable from '../../assets/blanktable.png'
 
 const DataTable = ({
   title, 
@@ -55,7 +56,6 @@ const DataTable = ({
   }, [sorting, pagination])
 
   useEffect(() => {
-    console.log("rebuild columns: ", columns)
     const temp = [...columns]
     temp.push({
       field: 'actions',
@@ -91,25 +91,41 @@ const DataTable = ({
             </Grid>
             <Grid item xs={2} alignSelf="center" textAlign="right">
               <Button variant="contained" onClick={() => onAdd()} startIcon={<AddIcon />}>
-                {`ADD NEW ${title}`}
+                {`NEW ${title}`}
               </Button>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <DataGrid 
-          rows={data}
-          columns={dataColumns}
-          disableRowSelectionOnClick
-          pageSizeOptions={[10, 20, 50]}
-          paginationModel={{ ...pagination }}
-          onPaginationModelChange={(model) => changePagination(model)}
-          onSortModelChange={(model) => changeSort(model)}
-          disableColumnFilter
-          disableColumnMenu
-        />
-      </Grid>
+      {data.length > 0 ? (
+        <Grid item xs={12}>
+          <DataGrid 
+            rows={data}
+            columns={dataColumns}
+            disableRowSelectionOnClick
+            pageSizeOptions={[10, 20, 50]}
+            paginationModel={{ ...pagination }}
+            onPaginationModelChange={(model) => changePagination(model)}
+            onSortModelChange={(model) => changeSort(model)}
+            disableColumnFilter
+            disableColumnMenu
+          />
+        </Grid>
+        ) : (
+          <Grid container item xs={12} minHeight='600px' alignContent='center' alignItems='center' display='flex' justifyContent='center' textAlign='center'>
+            <Grid item xs={12} pb={3.75}>
+              <img 
+                src={blanktable} 
+                alt='blank-table'
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant='noDataTable'>
+                Sorry, the data you are looking for could not be found.
+              </Typography>
+            </Grid>
+          </Grid>
+        )}
     </Grid>
   )
 }

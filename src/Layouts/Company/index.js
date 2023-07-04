@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import CustomAlert from "../../Component/Alert";
 import SideBar from "../../Component/Sidebar";
-const Jobgroup = () => {
+import { useNavigate } from "react-router";
+const MasterCompany = () => {
   const columns = [
     {
       field: "name",
@@ -26,9 +27,10 @@ const Jobgroup = () => {
       flex: 1,
     },
   ];
-  const data = datatemp.datatemp;
+  const data = [];
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -53,6 +55,7 @@ const Jobgroup = () => {
 
   const handleAdd = () => {
     console.log("add");
+    navigate("/master-company/create");
   };
   return (
     <div>
@@ -64,12 +67,12 @@ const Jobgroup = () => {
           onClose={handleCloseAlert}
         />
         <DataTable
-          title="Group"
+          title="Company"
           data={data}
           columns={columns}
-          placeSearch="project"
+          placeSearch="company"
           searchTitle="Search By"
-          onButtonClick={() => handleAdd()}
+          onAdd={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => console.log("id detail: ", id)}
           onDelete={(id) => handleClickOpen()}
@@ -111,4 +114,4 @@ const Jobgroup = () => {
   );
 };
 
-export default Jobgroup;
+export default MasterCompany;
