@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import backlog from './initjson.json'
-// import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-// import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import backlog from './initjson.json';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
 import SideBar from '../../Component/Sidebar';
+import Rating from '@mui/material/Rating';
+import { Box } from '@mui/material';
 
 
 const Backlog = () => {
@@ -33,12 +33,34 @@ const Backlog = () => {
     {
       field: 'priority',
       headerName: 'Priority',
-      flex: 1 
+      flex: 1,
+      renderCell: (data) => (
+        <Rating
+          name="rating"
+          value={data.row.priority} // Ambil nilai rating dari properti "priority"
+          readOnly
+          precision={0.5}
+        />
+      )
     },
     {
       field: 'status',
       headerName: 'Status',
-      flex: 1 
+      flex: 1,
+      renderCell: (data) => (
+        <Box
+          sx={{
+            backgroundColor: getStatusColor(data.row.status),
+            color: getStatusFontColor(data.row.status),
+            padding: '5px 10px',
+            gap: '10px',
+            borderRadius: '4px',
+            fontSize: '12px',
+          }}
+        >
+          {data.row.status}
+        </Box>
+      ),
     },
     {
       field: 'assignedTo',
@@ -46,7 +68,33 @@ const Backlog = () => {
       flex: 1 
     }
   ];
-  const data = backlog.backlog
+  const data = backlog.backlog.map(item => ({
+    ...item,
+    rating: item.priority // Ubah properti "priority" sesuai dengan properti "rating"
+  }));
+
+  const getStatusColor = (status) => {
+    const statusColors = {
+      Todo: '#FDECEB',
+      InProgress: '#E6F2FB',
+      Success: '#EBF6EE'
+    };
+  
+    // Return the color for the given status, default to a fallback color if not found
+    return statusColors[status] || '#ccc'; // Fallback color: gray
+  };
+
+  const getStatusFontColor = (status) => {
+    const statusFontColors = {
+      Todo: '#EE695D',
+      InProgress: '#3393DF',
+      Success: '#5DB975'
+    };
+  
+    // Return the color for the given status, default to a fallback color if not found
+    return statusFontColors[status] || '#ccc'; // Fallback color: gray
+  };
+
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false)
 
@@ -87,7 +135,7 @@ const Backlog = () => {
           title='Backlog'
           data={data}
           columns={columns}
-          placeSearch="project"
+          placeSearch="Project Name"
           searchTitle="Search By"
           onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}

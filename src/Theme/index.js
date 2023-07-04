@@ -69,8 +69,8 @@ let globalTheme = createTheme({
       color: ["#000000"],
       fontSize: ["24px"],
       fontFamily: ["Poppins"],
-      fontWeight: ["500"],
-      lineHeight: ["200%"],
+      fontWeight: ['400'],
+      lineHeight: ['133.4%'],
     },
     drawerNameUser: {
       fontSize: ["16px"],

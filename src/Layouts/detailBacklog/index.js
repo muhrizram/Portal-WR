@@ -5,9 +5,7 @@ import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../Component/BreadCumb";
 import Header from "../../Component/Header";
 import SideBar from "../../Component/Sidebar";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
+import Rating from '@mui/material/Rating';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
