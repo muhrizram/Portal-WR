@@ -14,6 +14,7 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Attendance from "./Attandence";
 
 export default function WorkingReport() {
   const [value, setValue] = React.useState(0);
@@ -23,7 +24,7 @@ export default function WorkingReport() {
   };
   return (
     <SideBar>
-      <Grid container>
+      <Grid container rowSpacing={2}>
         <Grid xs={12}>
           <Card className="cardHeader">
             <Grid container p={2} alignContent="space-between" spacing={1}>
@@ -82,7 +83,8 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Box sx={{ width: "100%", marginBottom: "2%" }}>
+          <Attendance />
+          {/* <Box sx={{ width: "100%", marginBottom: "2%" }}>
             <Tabs
               value={value}
               onChange={handleChange}
@@ -92,7 +94,7 @@ export default function WorkingReport() {
               <Tab value={1} label="Attendance History" />
             </Tabs>
           </Box>
-          {value === 0 && <Calendar />}
+          {value === 0 && <Calendar />} */}
         </Grid>
       </Grid>
     </SideBar>
