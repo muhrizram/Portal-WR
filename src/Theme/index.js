@@ -93,10 +93,9 @@ let globalTheme = createTheme({
       color: ["rgba(51, 51, 51, 0.9)"],
       lineHeight: ["125%"],
     },
-      fontSize: ["14px"],
-      color: ["rgba(51, 51, 51, 0.9)"],
-      lineHeight: ["125%"],
-    },
+    fontSize: ["14px"],
+    color: ["rgba(51, 51, 51, 0.9)"],
+    lineHeight: ["125%"],
   },
   // textfield: {
   //   textFieldEmployee: {
