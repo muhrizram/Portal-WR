@@ -25,7 +25,6 @@ import Box from "@mui/material/Box";
 
 //assets
 import Allura from "../../assets/Allura.png";
-
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 const DetailBacklog = () => {

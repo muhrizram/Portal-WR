@@ -1,14 +1,14 @@
 import React, { lazy } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
+const DetailBacklog = lazy(() => import("./Layouts/detailBacklog/index"));
+const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
-const WorkingReport = lazy(() => import('./Layouts/WorkingReport'))
-const DetailBacklog = lazy(() => import('./Layouts/detailBacklog'))
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
