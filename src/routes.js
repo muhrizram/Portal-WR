@@ -5,9 +5,10 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
-const JobGroup = lazy(() => import("./Layouts/JobGroup"));
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
+const WorkingReport = lazy(() => import('./Layouts/WorkingReport'))
+const DetailBacklog = lazy(() => import('./Layouts/detailBacklog'))
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")

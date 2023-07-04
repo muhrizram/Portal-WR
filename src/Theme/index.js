@@ -72,6 +72,20 @@ let globalTheme = createTheme({
       fontWeight: ['400'],
       lineHeight: ['133.4%'],
     },
+    attendanceHeader: {
+      color : ["#4B465C"],
+      fontSize: ["24px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ['700'],
+      lineHeight: ['200%'],
+    },
+    attendanceTrack: {
+      color : ["#4B465C"],
+      fontSize: ["16px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ['400'],
+      lineHeight: ['150%'],
+    },
     drawerNameUser: {
       fontSize: ["16px"],
       color: ["#333"],
@@ -118,6 +132,19 @@ let globalTheme = createTheme({
         },
         {
           props: {
+            variant: 'outlined',
+          },
+          style: {
+            textTransform: 'none',
+            padding: "6px 16px",
+            fontSize: '14px',
+            lineHeight: '125%',
+            color: '#2196F3',
+            borderColor: '#2196F380'
+          }
+        },
+        {
+          props: {
             variant: 'saveButton',
           },
           style: {
@@ -136,6 +163,11 @@ let globalTheme = createTheme({
             "&:active": {
               backgroundColor: "#2c80c3",
             },
+            "&:disabled": {
+              color: '#00000061',
+              boxShadow: 'none',
+              backgroundColor: "#0000001F",
+            }
           },
         },
         {
