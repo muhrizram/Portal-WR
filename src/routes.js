@@ -20,7 +20,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Dashboard />,
+    element: <DetailBacklog />,
   },
   {
     path: "/masteremployee",

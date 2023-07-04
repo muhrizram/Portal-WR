@@ -89,6 +89,7 @@
 }
 .containerHeader {
   display: flex;
+  height: 100%;
 }
 
 .containerButton {
@@ -146,7 +147,9 @@
   width: 120px;
   height: 120px;
 }
-
+.HeaderDetail {
+  width: Fill (1,320px);
+  height: 74vh;
   margin-top: 20px;
   background: #ffffff;
   padding: 24px;

@@ -1,11 +1,11 @@
-import { InputAdornment, TextField } from '@mui/material';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import React from 'react';
-const SearchBar = ({placeholder, onChange, label}) => {
+import { InputAdornment, TextField } from "@mui/material";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import React from "react";
+const SearchBar = ({ placeholder, onChange, label }) => {
   return (
     <TextField
-      placeholder={`Search "${placeholder}"`} 
-      className="customSearchBar" 
+      placeholder={`Search "${placeholder}"`}
+      className="customSearchBar"
       label={label}
       fullWidth
       onChange={(value) => onChange(value)}
@@ -18,7 +18,7 @@ const SearchBar = ({placeholder, onChange, label}) => {
         ),
       }}
     />
-  )
-}
+  );
+};
 
-export default SearchBar
+export default SearchBar;

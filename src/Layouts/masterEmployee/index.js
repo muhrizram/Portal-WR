@@ -8,50 +8,43 @@ import {
   DialogTitle,
   DialogContentText,
   DialogActions,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import CustomAlert from "../../Component/Alert";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
-import PreviewIcon from '@mui/icons-material/Preview';
-import DeleteIcon from '@mui/icons-material/Delete';
+import PreviewIcon from "@mui/icons-material/Preview";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Employee = () => {
   // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [Idnya, setIdnya] = useState("");
-
+  const navigate = useNavigate();
   const [data, setData] = useState({
-    nip: '',
+    nip: "",
     // phonenumber: '',
     // address: ''
-  })
+  });
 
   const onField = (nameObj, value) => {
     const temp = {
       ...data,
-      [nameObj]: value
-    }
-    setData(temp)
+      [nameObj]: value,
+    };
+    setData(temp);
     // setDataEdit({
     //   [nameObj]: value
     // })
-  }
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
-  const navigate = useNavigate();
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try {
-      const [open, setOpen] = useState(false);
-      const [openAlert, setOpenAlert] = useState(false);
-      const [Idnya, setIdnya] = useState("");
-      // const navigate = useNavigate();
-
       const response = await fetch("http://localhost:4000/content");
       const jsonData = await response.json();
       const updatedData = jsonData.map((item, index) => ({
@@ -82,9 +75,9 @@ const Employee = () => {
   };
 
   const handleClickOpen = (id) => {
-    console.log("IDNYA",id)
-    setIdnya(id)
-    console.log(Idnya)
+    console.log("IDNYA", id);
+    setIdnya(id);
+    console.log(Idnya);
     setOpen(true);
   };
 
@@ -171,7 +164,6 @@ const Employee = () => {
     //   },
     // },
   ];
-  // const data = content.content
   const handleChangeSearch = (event) => {
     console.log("value search: ", event.target.value);
   };
@@ -196,7 +188,7 @@ const Employee = () => {
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
-          onDelete={(id) => console.log("id delete: ", id)}
+          onDelete={(id) => handleDelete(id)}
         />
 
         <Dialog
@@ -224,7 +216,10 @@ const Employee = () => {
             >
               Cancel
             </Button>
-            <Button onClick={handleDelete} className="delete-button button-text">
+            <Button
+              onClick={handleDelete}
+              className="delete-button button-text"
+            >
               Delete Data
             </Button>
           </DialogActions>

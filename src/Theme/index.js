@@ -12,7 +12,7 @@ let globalTheme = createTheme({
   typography: {
     fontFamily: ["Poppins"],
     textDetail: {
-      fontSize: ['40px']
+      fontSize: ["40px"],
     },
     noDataTable : {
       fontSize: ["16px"],
@@ -66,23 +66,23 @@ let globalTheme = createTheme({
     },
     backlogDetail: {
       /* Text - 2 xl/24/Medium */
-      color : ["#000000"],
+      color: ["#000000"],
       fontSize: ["24px"],
       fontFamily: ["Poppins"],
       fontWeight: ['400'],
       lineHeight: ['133.4%'],
     },
     drawerNameUser: {
-      fontSize: ['16px'],
-      color: ['#333'],
-      fontWeight: ['600'],
-      lineHeight: ['150%'],
+      fontSize: ["16px"],
+      color: ["#333"],
+      fontWeight: ["600"],
+      lineHeight: ["150%"],
     },
     drawerPostion: {
-      fontSize: ['14px'],
-      color: ['rgba(51, 51, 51, 0.9)'],
-      lineHeight: ['125%'],
-    }
+      fontSize: ["14px"],
+      color: ["rgba(51, 51, 51, 0.9)"],
+      lineHeight: ["125%"],
+    },
   },
   // textfield: {
   //   textFieldEmployee: {
