@@ -7,8 +7,10 @@ const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
 const MasterCompany = lazy(() => import("./Layouts/Company"));
 const CreateCompany = lazy(() => import("./Layouts/Company/Create"));
-const Employee = lazy(() => import("./Layouts/masterEmployee"));
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
+const Employee = lazy(() => import("./Layouts/masterEmployee"));
+const CreateNewBacklog = lazy(() => import("./Layouts/CreateNewBacklog"));
+const DetailBacklog = lazy(() => import("./Layouts/detailBacklog"));
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -21,7 +23,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Dashboard />,
+    element: <DetailBacklog />,
   },
   {
     path: "/masteremployee",

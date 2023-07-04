@@ -89,6 +89,7 @@
 }
 .containerHeader {
   display: flex;
+  height: 100%;
 }
 
 .iconTable {
@@ -102,11 +103,8 @@
   /* margin-right: 16px; */
 }
 .HeaderDetail {
-  width: Fill (1, 320px);
-  height: Hug (920px);
-  /* padding: 24px;
-border-radius: 8px;
-gap: 30px;  */
+width: Fill (1,320px);
+height: 74vh;
 
   margin-top: 20px;
   background: #ffffff;

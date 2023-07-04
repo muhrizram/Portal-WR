@@ -4,9 +4,7 @@ import SideBar from "../../Component/Sidebar";
 const Dashboard = () => {
   return (
     <div>
-      <SideBar>
-        {/* <Jobgroup /> */}
-      </SideBar>
+      <SideBar>{/* <Jobgroup /> */}</SideBar>
     </div>
   );
 };

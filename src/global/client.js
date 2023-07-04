@@ -26,11 +26,11 @@ const requestAPI = async ({
   const url = `${host}${endpoint}`;
   const timeout = process.env.REACT_APP_DEFAULT_TIMEOUT;
   // const token = auth.user.access_token
-  let optHeaders = { 
-    ...headers, 
+  let optHeaders = {
+    ...headers,
     "Access-Control-Allow-Origin": "*",
-    'Content-Type': 'application/vnd.api+json',
-    Accept: 'application/vnd.api+json',
+    "Content-Type": "application/vnd.api+json",
+    Accept: "application/vnd.api+json",
   };
   // if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
   // const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };
