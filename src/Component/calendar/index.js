@@ -1,108 +1,93 @@
 import React, { useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import Grid from "@mui/material/Grid";
-import { Typography } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Switch from "@mui/material/Switch";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import format from "date-fns/format";
+import parse from "date-fns/parse";
+import startOfWeek from "date-fns/startOfWeek";
+import getDay from "date-fns/getDay";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+// import { DatePicker } from "react-datepicker";
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export default function Calendar({ setOnClick }) {
-  const [open, setOpen] = useState(false);
-  const [fullWidth, setFullWidth] = React.useState(true);
-  const [maxWidth, setMaxWidth] = React.useState("sm");
+const locales = {
+  "en-US": require("date-fns/locale/en-US"),
+};
 
-  function handleSelect() {
-    setOnClick("param");
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
+
+const events = [
+  {
+    start: new Date(),
+    end: new Date(),
+    allday: true,
+    title: "Rapat",
+    onclick: () => alert("Rapat"),
+  },
+];
+
+function MyCalendar() {
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    start: "",
+    end: "",
+  });
+  const [allEvents, setAllEvents] = useState(events);
+  const [value, setValue] = React.useState(dayjs("2022-04-17"));
+
+  function handleAddEvent() {
+    setAllEvents((prevState) => [...prevState, newEvent]);
+    // setNewEvent({
+    //     title: "",
+    //     start: "",
+    //     end: "",
+    // });
   }
-
-  function handleClose() {
-    setOpen(false);
-  }
-
-  const handleMaxWidthChange = (event) => {
-    setMaxWidth(
-      // @ts-expect-error autofill of arbitrary value is not handled.
-      event.target.value
-    );
-  };
-
-  const handleFullWidthChange = (event) => {
-    setFullWidth(event.target.checked);
-  };
 
   return (
-    <Grid>
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={"dayGridMonth"}
-        selectable={true}
-        dateClick={handleSelect}
-        headerToolbar={{
-          start: "title",
-          center: "",
-          end: "",
-        }}
-        // events={events}
-        height={"90vh"}
+    <div>
+      <h1>CALENDAR</h1>
+      <div>
+        <input
+          type="text"
+          placeholder="Add"
+          style={{ width: "20%", marginRight: "10px" }}
+          value={newEvent.title}
+          onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+        />
+        {/* <DatePicker selected={newEvent.start} onChange={(start) => setNewEvent({...newEvent, start})} />
+            <DatePicker selected={newEvent.end} onChange={(end) => setNewEvent({...newEvent, end})} /> */}
+      </div>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DemoContainer components={["DatePicker", "DatePicker"]}>
+          <DatePicker
+            label="Start Date"
+            selected={newEvent.start} onChange={(start) => setNewEvent({...newEvent, start})}
+          />
+          <DatePicker
+            label="End Date"
+            selected={newEvent.end} onChange={(end) => setNewEvent({...newEvent, end})}
+          />
+        </DemoContainer>
+      </LocalizationProvider>
+      <button onClick={handleAddEvent}>Add</button>
+      <Calendar
+        localizer={localizer}
+        events={allEvents}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
       />
-      <Dialog
-        fullWidth={fullWidth}
-        maxWidth={maxWidth}
-        open={open}
-        onClose={handleClose}
-      >
-        <DialogTitle>Employee Attendance</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Track and start your workday</DialogContentText>
-          <Box
-            noValidate
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              m: "auto",
-              width: "fit-content",
-            }}
-          >
-            <FormControl sx={{ mt: 2, minWidth: 120 }}>
-              <InputLabel htmlFor="max-width">Presence</InputLabel>
-              <Select
-                autoFocus
-                value={maxWidth}
-                onChange={handleMaxWidthChange}
-                label="maxWidth"
-                inputProps={{
-                  name: "max-width",
-                  id: "max-width",
-                }}
-              >
-                <MenuItem value={false}>false</MenuItem>
-                <MenuItem value="xs">xs</MenuItem>
-                <MenuItem value="sm">sm</MenuItem>
-                <MenuItem value="md">md</MenuItem>
-                <MenuItem value="lg">lg</MenuItem>
-                <MenuItem value="xl">xl</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
-    </Grid>
+    </div>
   );
 }
+
+export default MyCalendar;
