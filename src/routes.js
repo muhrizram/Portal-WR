@@ -1,14 +1,13 @@
 import React, { lazy } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
-import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
-const MasterCompany = lazy(() => import("./Layouts/Company"));
-const CreateCompany = lazy(() => import("./Layouts/Company/Create"));
+const JobGroup = lazy(() => import("./Layouts/JobGroup"));
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
-const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
+const Backlog = lazy(() => import("./Layouts/Backlog/index"));
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -21,7 +20,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <Dashboard />,
+    element: <DetailBacklog />,
   },
   {
     path: "/masteremployee",
@@ -44,13 +43,9 @@ export const routes = [
     element: <CreateMasterEmployee />,
   },
   {
-    path: "/master-company",
-    name: "Company",
-    element: <MasterCompany />,
-    icon: <BusinessOutlinedIcon />,
-  },
-  {
-    path: "/master-company/create",
-    element: <CreateCompany />,
+    path: "/masterbacklog",
+    element: <Backlog />,
+    name: "Backlog",
+    icon: <BookmarkBorderIcon />,
   },
 ];

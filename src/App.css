@@ -89,6 +89,22 @@
 }
 .containerHeader {
   display: flex;
+  height: 100%;
+}
+
+.containerButton {
+  display: flex;
+  
+  
+}
+.containerButton > button {
+  margin-right: 10px;
+}
+
+.detail {
+  color:silver;
+  font-size: 16;
+  direction: row;
 }
 
 .iconTable {
@@ -101,13 +117,39 @@
   font-size: 14px;
   /* margin-right: 16px; */
 }
-.HeaderDetail {
-  width: Fill (1, 320px);
-  height: Hug (920px);
-  /* padding: 24px;
-border-radius: 8px;
-gap: 30px;  */
+.employetext{
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  margin-top: 130px;
+  font-size: 20px;
+  color: grey;
+  margin-left: 150px;
+}
+.textnameemploye{
+  margin-right: 460px;
+}
+.employetextvalue{
+  display: flex;
+  /* flex-direction: row; */
+  position: absolute;
+  margin-top: 180px;
+  font-size: 20px;
+  margin-left: 150px;
+}
+.textnameemployevalue{
+  /* padding-right: 10px; */
+  margin-right: 460px;
+}
 
+.fotoprofile{
+  margin-top: 15px;
+  width: 120px;
+  height: 120px;
+}
+.HeaderDetail {
+  width: Fill (1,320px);
+  height: 74vh;
   margin-top: 20px;
   background: #ffffff;
   padding: 24px;

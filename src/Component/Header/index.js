@@ -15,7 +15,6 @@ const Index = (props) => {
       </Grid>
     </Grid>
 
-
     // <div>
     //   <Typography variant="headerCardMenu">{judul}</Typography>
     // </div>

@@ -70,13 +70,11 @@ function MyCalendar() {
         <DemoContainer components={["DatePicker", "DatePicker"]}>
           <DatePicker
             label="Start Date"
-            selected={newEvent.start}
-            onChange={(start) => setNewEvent({ ...newEvent, start })}
+            selected={newEvent.start} onChange={(start) => setNewEvent({...newEvent, start})}
           />
           <DatePicker
             label="End Date"
-            selected={newEvent.end}
-            onChange={(end) => setNewEvent({ ...newEvent, end })}
+            selected={newEvent.end} onChange={(end) => setNewEvent({...newEvent, end})}
           />
         </DemoContainer>
       </LocalizationProvider>

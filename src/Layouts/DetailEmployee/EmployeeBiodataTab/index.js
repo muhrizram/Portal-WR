@@ -102,7 +102,7 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                       }
                       id="outlined-error-helper-text"
                       placeholder="Enter Employee First Name"
-                      label="Pe"
+                      label="First Name"
                     />
                   ) : (
                     <TextField
@@ -114,18 +114,38 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                       onChange={(event) =>
                         changeField("firstName", event.target.value)
                       }
-                      label="EmployeeFirst"
+                      label="First Name"
                       helperText="Please insert Employee First Name."
                     />
                   )}
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField
-                    required
-                    style={{ width: "100%" }}
-                    id="outlined-error-helper-text"
-                    label="Employee Last Name"
-                  />
+                  {dataEdit.lastName ? (
+                    <TextField
+                      required
+                      style={{ width: "100%", paddingRight: "10px" }}
+                      value={dataEdit.lastName}
+                      onChange={(event) =>
+                        changeField("lastName", event.target.value)
+                      }
+                      id="outlined-error-helper-text"
+                      placeholder="Enter Employee First Name"
+                      label="Last Name"
+                    />
+                  ) : (
+                    <TextField
+                      required
+                      error
+                      style={{ width: "100%", paddingRight: "10px" }}
+                      id="outlined-error-helper-text"
+                      value={dataEdit.lastName}
+                      onChange={(event) =>
+                        changeField("lastName", event.target.value)
+                      }
+                      label="Last Name"
+                      helperText="Please insert Employee Last Name."
+                    />
+                  )}
                 </Grid>
               </Grid>
               <Grid container direction="row" style={{ padding: "20px" }}>
