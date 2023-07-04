@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SideBar from "../../Component/Sidebar";
-import Calendar from "../../Component/calendar";
+// import Calendar from "../../Component/CalendarCustom";
 import {
   Avatar,
   Box,
@@ -22,14 +22,15 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import CheckinTime from "../../Component/CheckinTime";
+import Attendance from "./Attandence";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
 
   return (
     <SideBar>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Grid container rowSpacing={2}>
+        <Grid xs={12}>
           <Card className="cardHeader">
             <Grid container p={2} alignContent="space-between" spacing={1}>
               <Grid item xs={0.1}>
@@ -87,15 +88,18 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          {isCheckin ? (
-            <CheckinTime setIsCheckin={() => setIsCheckin(() => false)} />
-          ) : (
-            <Calendar
-              setOnClick={(param) => {
-                setIsCheckin((p) => true);
-              }}
-            />
-          )}
+          <Attendance />
+          {/* <Box sx={{ width: "100%", marginBottom: "2%" }}>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              // aria-label="wrapped label tabs example"
+            >
+              <Tab value={0} label="Calendar" />
+              <Tab value={1} label="Attendance History" />
+            </Tabs>
+          </Box>
+          {value === 0 && <Calendar />} */}
         </Grid>
       </Grid>
     </SideBar>
