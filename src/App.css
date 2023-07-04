@@ -287,3 +287,9 @@ gap: 30px;  */
   background: linear-gradient(0deg, #e3e8ef, #e3e8ef),
     linear-gradient(0deg, #f5f5ff, #f5f5ff);
 }
+
+.full-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 6px !important;
+}

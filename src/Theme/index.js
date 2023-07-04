@@ -12,14 +12,13 @@ let globalTheme = createTheme({
   typography: {
     fontFamily: ["Poppins"],
     textDetail: {
-      fontSize: ['40px']
+      fontSize: ["40px"],
     },
-    noDataTable : {
+    noDataTable: {
       fontSize: ["16px"],
       color: ["rgba(0, 0, 0, 0.60)"],
       lineHeight: ["150%"],
       fontWeight: ["500"],
-
     },
     body2: {
       fontSize: ["28px"],
@@ -37,6 +36,12 @@ let globalTheme = createTheme({
       fontSize: ["14px"],
       color: ["#9E9E9E"],
       lineHeight: ["125%"],
+    },
+    title: {
+      fontSize: ["28px"],
+      fontWeight: ["700"],
+      color: ["#0A0A0A"],
+      letterSpacing: ["-0.021em"],
     },
     primaryText: {
       fontSize: ["14px"],
@@ -66,23 +71,23 @@ let globalTheme = createTheme({
     },
     backlogDetail: {
       /* Text - 2 xl/24/Medium */
-      color : ["#000000"],
+      color: ["#000000"],
       fontSize: ["24px"],
       fontFamily: ["Poppins"],
-      fontWeight: ['500'],
-      lineHeight: ['200%'],
+      fontWeight: ["500"],
+      lineHeight: ["200%"],
     },
     drawerNameUser: {
-      fontSize: ['16px'],
-      color: ['#333'],
-      fontWeight: ['600'],
-      lineHeight: ['150%'],
+      fontSize: ["16px"],
+      color: ["#333"],
+      fontWeight: ["600"],
+      lineHeight: ["150%"],
     },
     drawerPostion: {
-      fontSize: ['14px'],
-      color: ['rgba(51, 51, 51, 0.9)'],
-      lineHeight: ['125%'],
-    }
+      fontSize: ["14px"],
+      color: ["rgba(51, 51, 51, 0.9)"],
+      lineHeight: ["125%"],
+    },
   },
   // textfield: {
   //   textFieldEmployee: {
@@ -118,18 +123,19 @@ let globalTheme = createTheme({
         },
         {
           props: {
-            variant: 'saveButton',
+            variant: "saveButton",
           },
           style: {
             color: "#FFFFFF",
             border: "none",
             borderRadius: "4px",
             padding: "6px 16px",
-            boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20)',
+            boxShadow:
+              "0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20)",
             background: "#2196F3",
-            textTransform: 'none',
-            fontSize: '14px',
-            lineHeight: '125%',
+            textTransform: "none",
+            fontSize: "14px",
+            lineHeight: "125%",
             "&:hover": {
               backgroundColor: "#2c80c3",
             },
@@ -140,7 +146,7 @@ let globalTheme = createTheme({
         },
         {
           props: {
-            variant: 'cancelButton',
+            variant: "cancelButton",
           },
           style: {
             color: "#ED6C02",
@@ -148,9 +154,9 @@ let globalTheme = createTheme({
             borderRadius: "4px",
             padding: "6px 16px",
             background: "transparant",
-            textTransform: 'none',
-            fontSize: '14px',
-            lineHeight: '125%',
+            textTransform: "none",
+            fontSize: "14px",
+            lineHeight: "125%",
             "&:hover": {
               backgroundColor: "#ED6C02",
               color: "#FFFFFF",
@@ -159,8 +165,8 @@ let globalTheme = createTheme({
               backgroundColor: "#ED6C02",
               color: "#FFFFFF",
             },
-          }
-        }
+          },
+        },
       ],
     },
     MuiFormControlLabel: {
