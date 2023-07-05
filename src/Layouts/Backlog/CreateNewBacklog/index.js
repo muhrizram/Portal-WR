@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
-import Breadcrumbs from "../../Component/BreadCumb";
-import Header from "../../Component/Header";
+import Breadcrumbs from "../../../Component/BreadCumb";
+import Header from "../../../Component/Header";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router";
@@ -14,7 +14,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import SideBar from "../../Component/Sidebar";
+import SideBar from "../../../Component/Sidebar";
 
 //acordion
 import Accordion from "@mui/material/Accordion";
@@ -27,7 +27,7 @@ import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
 
 //assets
-import Allura from "../../assets/Allura.png";
+import Allura from "../../../assets/Allura.png";
 
 const CreateNewBacklog = () => {
   const ContractStatus = [
@@ -160,7 +160,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g Create Login Screen"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Task Name"
                           />
@@ -191,7 +192,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g Create Login Screen - Front End"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Task Decription"
                           />
@@ -199,7 +201,7 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g To Do"
-                            style={{ width: "100%" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Backlog Status"
                           />
@@ -213,7 +215,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g 1 Hour"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Estimation Duration"
                           />

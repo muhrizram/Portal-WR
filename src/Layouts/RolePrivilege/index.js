@@ -6,14 +6,32 @@ import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
 import SideBar from '../../Component/Sidebar';
+import { Box } from '@mui/system';
+import { useNavigate } from "react-router";
 
 
 const RolePrivilege = () => {
+  const getStatusColor = (privilege) => {
+      const statusColors = {
+        Inaccessible : '#FDECEB',
+      }
+      const onPrivilege = Array.isArray(privilege) ? privilege[0] : privilege;
+      return statusColors[onPrivilege] || '#7367F033';
+    };
+  
+    const getStatusFontColor = (privilege) => {
+      const statusFontColors = {
+        Inaccessible : '#EE695D',
+      }
+      const onPrivilege = Array.isArray(privilege) ? privilege[0] : privilege;
+      return statusFontColors[onPrivilege] || '#7367F0';
+    };
+
   const columns = [
     {
       field: 'no',
       headerName: 'No',
-      flex: 1 
+      // flex: 1 
     },
     {
       field: 'role',
@@ -21,21 +39,76 @@ const RolePrivilege = () => {
       flex: 1 
     },
     {
-      field: 'previlege',
-      headerName: 'Previlege',
-      flex: 1 
+      field: 'privilege',
+      headerName: 'Privilege',
+      flex: 1,
+      renderCell: (data) => (
+        <Box
+          sx={{
+            display: 'flex',
+            padding: '5px 10px',
+            alignItems: 'center',
+            alignContent: 'flex-start',
+            gap: '10px',
+            flex: '1 0 0',
+            // alignSelf: 'stretch',
+            flexWrap: 'wrap',
+            borderRadius: '4px',
+            fontSize: '12px'
+            // backgroundColor: getStatusColor,
+            // color: getStatusFontColor(data.row.privilege),
+            // padding: '5px 10px',
+            // display: 'flex',
+            // gap: '10px',
+            // borderRadius: '4px',
+            // fontSize: '12px'
+          }}
+        >
+            {Array.isArray(data.row.privilege) ? (
+          data.row.privilege.map((privilege, index) => (
+          <Box
+            key={privilege}
+            sx={{
+              padding: '5px 10px',
+              borderRadius: '4px',
+              backgroundColor: getStatusColor(privilege),
+              color: getStatusFontColor(privilege),
+            }}
+          >
+            {privilege}
+          </Box>
+        ))):(<></>)}
+        </Box>
+      ),
     }
   ];
+
+  // const getStatusColor = (privilege) => {
+  //   const statusColors = {
+  //     Inaccessible : '#FDECEB',
+  //   }
+  //   return statusColors[privilege] || '#7367F033';
+  // };
+
+  // const getStatusFontColor = (privilege) => {
+  //   const statusFontColors = {
+  //     Inaccessible : '#EE695D',
+  //   }
+  //   return statusFontColors[privilege] || '#7367F0';
+  // };
+
   const data = rolePrevilege.rolePrevilege
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false)
+  const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const onDelete = () => {
+  const onDelete = (id) => {
     setOpenAlert(true);
+    console.log('id delete: ', id)
     handleClose()
   }
 
@@ -51,6 +124,9 @@ const RolePrivilege = () => {
     console.log('value search: ', event.target.value)
   }
   
+  const handleDetail = () => {
+    navigate("/masterroleprivilege/detail");
+  }
   const handleAdd = () => {
     console.log('add')
   }
@@ -67,11 +143,11 @@ const RolePrivilege = () => {
           title='Role Privilege'
           data={data}
           columns={columns}
-          placeSearch="project"
+          placeSearch="Role, Privilege, etc"
           searchTitle="Search By"
           onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => console.log('id detail: ', id)}
+          onDetail={(id) => handleDetail()}
           onDelete={(id) => handleClickOpen()}
         />
         <Dialog

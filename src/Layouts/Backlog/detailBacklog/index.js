@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
-import Breadcrumbs from "../../Component/BreadCumb";
-import Header from "../../Component/Header";
-import SideBar from "../../Component/Sidebar";
-import Rating from '@mui/material/Rating';
+import Breadcrumbs from "../../../Component/BreadCumb";
+import Header from "../../../Component/Header";
+import SideBar from "../../../Component/Sidebar";
+import { Autocomplete } from "@mui/material";
+import { TextField } from "@mui/material";
+import { DeleteOutline } from "@mui/icons-material";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -25,7 +27,7 @@ import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
 
 //assets
-import Allura from "../../assets/Allura.png";
+import Allura from "../../../assets/Allura.png";
 
 const DetailBacklog = () => {
   const ContractStatus = [
@@ -130,7 +132,8 @@ const DetailBacklog = () => {
                     disablePortal
                     id="combo-box-demo"
                     options={ContractStatus}
-                    sx={{ width: "100%", marginTop: "8px" }}
+                    sx={{ marginTop: "8px" }}
+                    fullWidth
                     getOptionLabel={(option) => option.label}
                     value={valueproject}
                     onChange={(event, newValue) => {
@@ -185,7 +188,8 @@ const DetailBacklog = () => {
                             <Grid item xs={6}>
                               <TextField
                                 placeholder="e.g Create Login Screen"
-                                style={{ width: "100%", paddingRight: "10px" }}
+                                style={{ paddingRight: "10px" }}
+                                fullWidth
                                 id="outlined-error-helper-text"
                                 label="Task Name"
                               />
@@ -216,7 +220,8 @@ const DetailBacklog = () => {
                             <Grid item xs={6}>
                               <TextField
                                 placeholder="e.g Create Login Screen - Front End"
-                                style={{ width: "100%", paddingRight: "10px" }}
+                                style={{ paddingRight: "10px" }}
+                                fullWidth
                                 id="outlined-error-helper-text"
                                 label="Task Decription"
                               />
@@ -224,7 +229,7 @@ const DetailBacklog = () => {
                             <Grid item xs={6}>
                               <TextField
                                 placeholder="e.g To Do"
-                                style={{ width: "100%" }}
+                                fullWidth
                                 id="outlined-error-helper-text"
                                 label="Backlog Status"
                               />
@@ -238,7 +243,8 @@ const DetailBacklog = () => {
                             <Grid item xs={6}>
                               <TextField
                                 placeholder="e.g 1 Hour"
-                                style={{ width: "100%", paddingRight: "10px" }}
+                                style={{ paddingRight: "10px" }}
+                                fullWidth
                                 id="outlined-error-helper-text"
                                 label="Estimation Duration"
                               />
@@ -248,7 +254,7 @@ const DetailBacklog = () => {
                                 disablePortal
                                 id="combo-box-demo"
                                 options={ContractStatus}
-                                sx={{ width: "100%" }}
+                                fullWidth
                                 getOptionLabel={(option) => option.label}
                                 renderInput={(params) => (
                                   <TextField
@@ -459,19 +465,25 @@ const DetailBacklog = () => {
                           direction="row"
                           style={{ padding: "20px" }}
                         >
-                          <Grid item xs={5}>
-                            <Typography variant="backlogDetail">
-                              Create Mockup Screen Dashboard
-                            </Typography>
+                          <Grid item>
+                          <AccordionSummary
+                              expandIcon={<ExpandMoreIcon />}
+                              aria-controls="panel1a-content"
+                              id="panel1a-header"
+                            >
+                                <Typography variant="backlogDetailText">
+                                Create Mockup Screen Dashboard :: Task 1 / T-WR-0011
+                                </Typography>
+                            </AccordionSummary>
                           </Grid>
-                          <Grid item xs={1}>
+                          {/* <Grid item xs={1}>
                             <Typography variant="backlogDetail">::</Typography>
                           </Grid>
                           <Grid item xs={6}>
                             <Typography variant="backlogDetail">
                               Task 1 / T-WR-0011
                             </Typography>
-                          </Grid>
+                          </Grid> */}
                         </Grid>
 
                         <Grid
@@ -485,7 +497,7 @@ const DetailBacklog = () => {
                             >
                               Task Description
                             </Typography>
-                            <Typography variant="employeeDetail">
+                            <Typography variant="descBaklog">
                               Create Mockup Screen Dashboard - UI/UX
                             </Typography>
                           </Grid>
@@ -495,7 +507,7 @@ const DetailBacklog = () => {
                             >
                               Backlog Status
                             </Typography>
-                            <Typography variant="employeeDetail">
+                            <Typography variant="descBaklog">
                               Todo
                             </Typography>
                           </Grid>
@@ -505,9 +517,12 @@ const DetailBacklog = () => {
                             >
                               Priority
                             </Typography>
-                            <Typography variant="employeeDetail">
-                              abc
-                            </Typography>
+                            <Rating
+                                name="rating"
+                                value={5} // Ambil nilai rating dari properti "priority"
+                                readOnly
+                                precision={0.5}
+                            />
                           </Grid>
                         </Grid>
 
@@ -522,7 +537,7 @@ const DetailBacklog = () => {
                             >
                               Assigned To
                             </Typography>
-                            <Typography variant="employeeDetail">
+                            <Typography variant="descBaklog">
                               Abdan Hafidzul
                             </Typography>
                           </Grid>
@@ -532,7 +547,7 @@ const DetailBacklog = () => {
                             >
                               Estimation Duration
                             </Typography>
-                            <Typography variant="employeeDetail">
+                            <Typography variant="descBaklog">
                               3 Hours
                             </Typography>
                           </Grid>
@@ -542,7 +557,7 @@ const DetailBacklog = () => {
                             >
                               Actual Duration
                             </Typography>
-                            <Typography variant="employeeDetail">
+                            <Typography variant="descBaklog">
                               3 Hours
                             </Typography>
                           </Grid>
