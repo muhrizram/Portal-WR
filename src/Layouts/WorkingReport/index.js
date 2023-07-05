@@ -31,7 +31,7 @@ export default function WorkingReport() {
   return (
     <SideBar>
       <Grid container rowSpacing={2}>
-        <Grid xs={12}>
+        <Grid time xs={12}>
           <Card className="cardHeader">
             <Grid container p={2} alignContent="space-between" spacing={1}>
               <Grid item xs={0.1}>
