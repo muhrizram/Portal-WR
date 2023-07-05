@@ -59,7 +59,8 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                     defaultValue="1010101010"
                     required
                     disabled
-                    style={{ width: "100%", paddingRight: "10px" }}
+                    fullWidth
+                    style={{ paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="NIP"
                   />
@@ -68,7 +69,7 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                   {Generation ? (
                     <TextField
                       required
-                      style={{ width: "100%" }}
+                      fullWidth
                       defaultValue="1010101010"
                       value={Generation}
                       onChange={(e) => setGeneration(e.target.value)}
@@ -79,7 +80,7 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                     <TextField
                       required
                       error
-                      style={{ width: "100%" }}
+                      fullWidth
                       id="outlined-error-helper-text"
                       value={Generation}
                       defaultValue="1010101010"
@@ -95,7 +96,8 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                   {dataEdit.firstName ? (
                     <TextField
                       required
-                      style={{ width: "100%", paddingRight: "10px" }}
+                      fullWidth
+                      style={{ paddingRight: "10px" }}
                       value={dataEdit.firstName}
                       onChange={(event) =>
                         changeField("firstName", event.target.value)
@@ -108,7 +110,8 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                     <TextField
                       required
                       error
-                      style={{ width: "100%", paddingRight: "10px" }}
+                      fullWidth
+                      style={{ paddingRight: "10px" }}
                       id="outlined-error-helper-text"
                       value={dataEdit.firstName}
                       onChange={(event) =>
@@ -123,7 +126,8 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                   {dataEdit.lastName ? (
                     <TextField
                       required
-                      style={{ width: "100%", paddingRight: "10px" }}
+                      fullWidth
+                      style={{ paddingRight: "10px" }}
                       value={dataEdit.lastName}
                       onChange={(event) =>
                         changeField("lastName", event.target.value)
@@ -136,7 +140,8 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                     <TextField
                       required
                       error
-                      style={{ width: "100%", paddingRight: "10px" }}
+                      fullWidth
+                      style={{ paddingRight: "10px" }}
                       id="outlined-error-helper-text"
                       value={dataEdit.lastName}
                       onChange={(event) =>
@@ -151,8 +156,9 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
               <Grid container direction="row" style={{ padding: "20px" }}>
                 <Grid item xs={6}>
                   <TextField
+                  fullWidth
                     required
-                    style={{ width: "100%", paddingRight: "10px" }}
+                    style={{paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="NPWP"
                   />
@@ -160,7 +166,7 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%" }}
+                    fullWidth
                     id="outlined-error-helper-text"
                     label="Email"
                   />
@@ -179,10 +185,11 @@ const EmployeeBiodataTab = ({ isEdit, changeField, dataEdit }) => {
                 </Grid>
                 <Grid item xs={6}>
                   <Autocomplete
+                  fullWidth
                     disablePortal
                     id="combo-box-demo"
                     options={top100Films}
-                    sx={{ width: "100%", marginTop: "8px" }}
+                    sx={{ marginTop: "8px" }}
                     renderInput={(params) => (
                       <TextField required {...params} label="Placement Type" />
                     )}
