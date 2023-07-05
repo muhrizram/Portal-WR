@@ -1,7 +1,7 @@
 import React, { lazy } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { EmojiPeople } from "@mui/icons-material";
+import EmojiPeople from "@mui/icons-material/EmojiPeople";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -12,8 +12,9 @@ const DetailBacklog = lazy(() => import("./Layouts/Backlog/detailBacklog"));
 const MasterRoleUser = lazy(() => import("./Layouts/MasterUserRole"));
 const DetailUserRole = lazy(() => import("./Layouts/MasterUserRole/DetailUserRole"));
 const CreateUserRole = lazy(() => import("./Layouts/MasterUserRole/CreatenewUserRole"));
-const Backlog = lazy(() => import("./Layouts/Backlog"));
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
+const Backlog = lazy(() => import("./Layouts/Backlog/index"));
+const Project = lazy(() => import("./Layouts/Project"));
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -48,6 +49,12 @@ export const routes = [
     path: "/masteremployee",
     element: <Employee />,
     name: "Employee",
+    icon: <PersonPinOutlinedIcon />,
+  },
+  {
+    path: "/masterProject",
+    element: <Project />,
+    name: "Project",
     icon: <PersonPinOutlinedIcon />,
   },
   {
