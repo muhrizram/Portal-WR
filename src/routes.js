@@ -20,6 +20,7 @@ const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
 );
 const RolePrivilege = lazy(() => import("./Layouts/RolePrivilege/index"))
+const CreateRolePrivilege = lazy(() => import("./Layouts/RolePrivilege/createRolePrivilege/index"))
 const DetailPrivilege = lazy(() => import("./Layouts/RolePrivilege/detailRolePrivilege/index"))
 
 export const routes = [
@@ -98,6 +99,10 @@ export const routes = [
     element: <RolePrivilege />,
     name: "Role Privilege",
     icon: <SettingsAccessibilityIcon />,
+  },
+  {
+    path: "masterroleprivilege/create",
+    element: <CreateRolePrivilege />
   },
   {
     path: "masterroleprivilege/detail",

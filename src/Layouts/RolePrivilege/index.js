@@ -127,7 +127,8 @@ const RolePrivilege = () => {
   const handleDetail = () => {
     navigate("/masterroleprivilege/detail");
   }
-  const handleAdd = () => {
+  const onAdd = () => {
+    navigate("/masterroleprivilege/create");
     console.log('add')
   }
   return (
@@ -145,7 +146,8 @@ const RolePrivilege = () => {
           columns={columns}
           placeSearch="Role, Privilege, etc"
           searchTitle="Search By"
-          onButtonClick={() => handleAdd()}
+          onAdd={() => onAdd()}
+          // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail()}
           onDelete={(id) => handleClickOpen()}
