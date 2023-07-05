@@ -9,6 +9,7 @@ const Employee = lazy(() => import("./Layouts/masterEmployee"));
 const DetailBacklog = lazy(() => import("./Layouts/detailBacklog/index"));
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
+const Project = lazy(() => import("./Layouts/Project"));
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -27,6 +28,12 @@ export const routes = [
     path: "/masteremployee",
     element: <Employee />,
     name: "Employee",
+    icon: <PersonPinOutlinedIcon />,
+  },
+  {
+    path: "/masterProject",
+    element: <Project />,
+    name: "Project",
     icon: <PersonPinOutlinedIcon />,
   },
   {
