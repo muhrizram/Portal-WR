@@ -9,6 +9,7 @@ function BreadCumbComp({ breadcrumbs }) {
   const currentIndex = breadcrumbs.findIndex(
     (breadcrumb) => breadcrumb.current
   );
+  
   const filteredBreadcrumbs =
     currentIndex !== -1 ? breadcrumbs.slice(0, currentIndex + 1) : breadcrumbs;
   

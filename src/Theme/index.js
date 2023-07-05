@@ -13,13 +13,13 @@ let globalTheme = createTheme({
     fontFamily: ["Poppins"],
     textDetail: {
       fontSize: ["40px"],
+      fontSize: ["40px"],
     },
-    noDataTable : {
+    noDataTable: {
       fontSize: ["16px"],
       color: ["rgba(0, 0, 0, 0.60)"],
       lineHeight: ["150%"],
       fontWeight: ["500"],
-
     },
     body2: {
       fontSize: ["28px"],
@@ -37,6 +37,12 @@ let globalTheme = createTheme({
       fontSize: ["14px"],
       color: ["#9E9E9E"],
       lineHeight: ["125%"],
+    },
+    title: {
+      fontSize: ["28px"],
+      fontWeight: ["700"],
+      color: ["#0A0A0A"],
+      letterSpacing: ["-0.021em"],
     },
     primaryText: {
       fontSize: ["14px"],
@@ -93,9 +99,41 @@ let globalTheme = createTheme({
       fontFamily: ["Poppins"],
       fontStyle: ["normal"],
       fontWeight: ["400"],
+      lineHeight: ["133.4%"],
+    },
+    attendanceHeader: {
+      color: ["#4B465C"],
+      fontSize: ["24px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ["700"],
+      lineHeight: ["200%"],
+    },
+    attendanceTrack: {
+      color: ["#4B465C"],
+      fontSize: ["16px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ["400"],
+      lineHeight: ["150%"],
+    },
+    attendanceHeader: {
+      color: ["#4B465C"],
+      fontSize: ["24px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ["700"],
+      lineHeight: ["200%"],
+    },
+    attendanceTrack: {
+      color: ["#4B465C"],
+      fontSize: ["16px"],
+      fontFamily: ["Poppins"],
+      fontWeight: ["400"],
       lineHeight: ["150%"],
     },
     drawerNameUser: {
+      fontSize: ["16px"],
+      color: ["#333"],
+      fontWeight: ["600"],
+      lineHeight: ["150%"],
       fontSize: ["16px"],
       color: ["#333"],
       fontWeight: ["600"],
@@ -148,29 +186,61 @@ let globalTheme = createTheme({
         },
         {
           props: {
-            variant: 'saveButton',
+            variant: "outlined",
+          },
+          style: {
+            textTransform: "none",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            color: "#2196F3",
+            borderColor: "#2196F380",
+          },
+        },
+        {
+          props: {
+            variant: "outlined",
+          },
+          style: {
+            textTransform: "none",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            color: "#2196F3",
+            borderColor: "#2196F380",
+          },
+        },
+        {
+          props: {
+            variant: "saveButton",
           },
           style: {
             color: "#FFFFFF",
             border: "none",
             borderRadius: "4px",
             padding: "6px 16px",
-            boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20)',
+            boxShadow:
+              "0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20)",
             background: "#2196F3",
-            textTransform: 'none',
-            fontSize: '14px',
-            lineHeight: '125%',
+            textTransform: "none",
+            fontSize: "14px",
+            lineHeight: "125%",
             "&:hover": {
               backgroundColor: "#2c80c3",
             },
             "&:active": {
               backgroundColor: "#2c80c3",
             },
+            "&:disabled": {
+              color: "#00000061",
+              boxShadow: "none",
+              backgroundColor: "#0000001F",
+            },
           },
         },
         {
           props: {
-            variant: 'cancelButton',
+            variant: "cancelButton",
           },
           style: {
             color: "#ED6C02",
@@ -178,9 +248,9 @@ let globalTheme = createTheme({
             borderRadius: "4px",
             padding: "6px 16px",
             background: "transparant",
-            textTransform: 'none',
-            fontSize: '14px',
-            lineHeight: '125%',
+            textTransform: "none",
+            fontSize: "14px",
+            lineHeight: "125%",
             "&:hover": {
               backgroundColor: "#ED6C02",
               color: "#FFFFFF",
@@ -189,8 +259,8 @@ let globalTheme = createTheme({
               backgroundColor: "#ED6C02",
               color: "#FFFFFF",
             },
-          }
-        }
+          },
+        },
       ],
     },
     MuiFormControlLabel: {

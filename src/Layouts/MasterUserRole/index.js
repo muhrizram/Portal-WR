@@ -1,46 +1,31 @@
 import React, { useState, useEffect } from "react";
-import content from "../fileJson/api/db.json";
-import {
-  Avatar,
+import {  
   Button,
   Dialog,
   DialogContent,
   DialogTitle,
   DialogContentText,
   DialogActions,
-  IconButton,
 } from "@mui/material";
 import CustomAlert from "../../Component/Alert";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
-import PreviewIcon from "@mui/icons-material/Preview";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Box from "@mui/material/Box";
 
-const Employee = () => {
-  // const [data, setData] = useState([]);
+const RoleUser = () => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [Idnya, setIdnya] = useState("");
+  const [openAlertCreate, setOpenAlertCreate] = useState(false);
+  const [dataIduser, setDataIduser] = useState("");
   const navigate = useNavigate();
-  const [data, setData] = useState({
-    nip: "",
-    // phonenumber: '',
-    // address: ''
-  });
+  const [data, setData] = useState({});
 
-  const onField = (nameObj, value) => {
-    const temp = {
-      ...data,
-      [nameObj]: value,
-    };
-    setData(temp);
-    // setDataEdit({
-    //   [nameObj]: value
-    // })
-  };
   useEffect(() => {
     fetchData();
+    let isCreate = localStorage.getItem("isCreate")
+    setOpenAlertCreate(isCreate);
+    // console.log(localStorage.getItem("isCreate"));
   }, []);
 
   const fetchData = async () => {
@@ -58,34 +43,27 @@ const Employee = () => {
   };
 
   const handleDelete = async (id) => {
+    setDataIduser(id);
+    setOpen(true);
+  };
+
+  const onDeletenya = async (dataIduser) => {
     try {
-      const response = await fetch(`http://localhost:4000/content/${id}`, {
+      console.log(dataIduser);
+      const response = await fetch(`http://localhost:4000/content/${dataIduser}`, {
         method: "DELETE",
       });
       if (response.ok) {
         setOpenAlert(true);
-        fetchData(); // Ambil data terbaru setelah berhasil menghapus
+        fetchData();
       } else {
         console.error("Failed to delete data");
       }
     } catch (error) {
       console.error("Error deleting data:", error);
-    }
-    handleClose();
-  };
-      
-  const handleClickOpen = (id) => {
-    console.log("IDNYA", id);
-    setIdnya(id);
-    console.log(Idnya);
-    setOpen(true);
-  };
-
-  // const onDelete = () => {
-  //   console.log("Idnya ",Idnya)
-  //   setOpenAlert(true);
-  //   handleClose()
-  // }
+    }    
+    setOpen(false);
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -94,10 +72,17 @@ const Employee = () => {
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
-
-  const handleDetail = (id) => {
-    navigate("/masteremployee/detail");
+  const handleCloseAlertCreate = () => {
+    setOpenAlertCreate(false);
+    localStorage.removeItem("isCreate");
   };
+
+  const handleDetail = () => {
+    navigate("/masteruserrole/detail");
+  };
+
+  const statusColor = '#E5E3FA';
+  const statusFontColors ='#7367F0';
 
   const columns = [
     {
@@ -109,71 +94,73 @@ const Employee = () => {
       field: "nip",
       headerName: "NIP",
       flex: 1,
-    },
+    },   
     {
-      field: "name",
-      headerName: "Name",
+      field: "user",
+      headerName: "User",
       width: 200,
-      flex: 1,
-      renderCell: (params) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Avatar
-              src={params.row.image}
-              className="img-master-employee"
-              alt="Profile Image"
-            />
-            <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
-              <span className="text-position">{params.row.position}</span>
-            </div>
-          </div>
-        );
-      },
+      flex: 1,      
     },
     {
-      field: "contract",
-      headerName: "Contract Status",
+      field: "role",
+      headerName: "Role",
       flex: 1,
-    },
-    {
-      field: "assignment",
-      headerName: "Assignment",
-      flex: 1,
-    },
-    {
-      field: "contractEnd",
-      headerName: "Contract End Date",
-      flex: 1,
-    },
-    // {
-    //   field: "actions",
-    //   headerName: "Action",
-    //   width: 150,
-    //   renderCell: (data) => {
-    //     return (
-    //       <div>
-    //         <IconButton href="/detail">
-    //           <PreviewIcon />
-    //         </IconButton>
-    //         <IconButton onClick={() => handleClickOpen(data.id)}>
-    //           <DeleteIcon />
-    //         </IconButton>
-    //       </div>
-    //     );
-    //   },
-    // },
+      renderCell: (data) => (
+        <Box
+          sx={{            
+            display: 'flex',
+            padding: '5px 10px',
+            gap: '10px',
+            borderRadius: '4px',
+            fontSize: '12px',
+          }}
+        >
+           {Array.isArray(data.row.role) ? (
+        data.row.role.map((role) => (
+          <Box
+            key={role}
+            sx={{
+              padding: '5px 10px',
+              borderRadius: '4px',
+              backgroundColor: statusColor,
+              color: statusFontColors,
+            }}
+          >
+            {role}
+          </Box>
+        ))
+      ) : (
+        <Box
+          sx={{
+            padding: '5px 10px',
+            borderRadius: '4px',
+            backgroundColor: statusColor,
+            color: statusFontColors
+          }}
+        >
+          {data.row.role}
+        </Box>
+      )}
+        </Box>
+      ),
+    },   
   ];
   const handleChangeSearch = (event) => {
     console.log("value search: ", event.target.value);
   };
 
   const onAdd = () => {
-    navigate("/masteremployee/create");
+    navigate("/masteruserrole/create");
   };
   return (
     <div>
       <SideBar>
+      <CustomAlert
+          severity="success"
+          message="Success: New User Role created successfully!"
+          open={openAlertCreate}
+          onClose={handleCloseAlertCreate}
+        />
         <CustomAlert
           severity="warning"
           message="Deletion completed: The item has been successfully remove from the database"
@@ -182,11 +169,10 @@ const Employee = () => {
         />
 
         <DataTable
-          title="Employee"
+          title="User Role"
           data={data}
           columns={columns}
-          placeSearch="Name, NIP, etc"
-          searchTitle="Search By"
+          placeSearch="User, Role, etc"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
@@ -194,8 +180,7 @@ const Employee = () => {
         />
 
         <Dialog
-          open={open}
-          onClose={handleClose}
+          open={open}          
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           className="dialog-delete"
@@ -219,16 +204,17 @@ const Employee = () => {
               Cancel
             </Button>
             <Button
-              onClick={handleDelete}
+              onClick={() =>onDeletenya(dataIduser)}
               className="delete-button button-text"
             >
               Delete Data
             </Button>
           </DialogActions>
         </Dialog>
+        
       </SideBar>
     </div>
   );
 };
 
-export default Employee;
+export default RoleUser;
