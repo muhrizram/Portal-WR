@@ -1,17 +1,6 @@
 {
   "content": [
     {
-      "id": 1,
-      "no": "1",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd": "01-01-2022",
-      "position": "Software Developer",
-      "image": "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Free-Download.png"
-    },
-    {
       "id": 2,
       "no": "2",
       "nip": "10101010",
@@ -245,17 +234,6 @@
     {
       "id": 23,
       "no": "23",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd": "01-01-2022",
-      "position": "Software Developer",
-      "image": "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Free-Download.png"
-    },
-    {
-      "id": 24,
-      "no": "24",
       "nip": "10101010",
       "name": "Job Group 1",
       "contract": "Fulltime",

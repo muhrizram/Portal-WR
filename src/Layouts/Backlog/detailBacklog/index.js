@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Autocomplete, Button, TextField, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
-import Breadcrumbs from "../../Component/BreadCumb";
-import Header from "../../Component/Header";
-import SideBar from "../../Component/Sidebar";
+import Breadcrumbs from "../../../Component/BreadCumb";
+import Header from "../../../Component/Header";
+import SideBar from "../../../Component/Sidebar";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -24,7 +24,7 @@ import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
 
 //assets
-import Allura from "../../assets/Allura.png";
+import Allura from "../../../assets/Allura.png";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 const DetailBacklog = () => {

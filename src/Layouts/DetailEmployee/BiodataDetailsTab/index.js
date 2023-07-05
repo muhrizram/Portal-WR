@@ -25,8 +25,8 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%", paddingRight: "10px" }}
-                    // variant="textFieldEmployee"
+                    fullWidth
+                    style={{ paddingRight: "10px" }}                    
                     id="outlined-error-helper-text"
                     label="Place of Birth"
                   />
@@ -50,7 +50,8 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%", paddingRight: "10px" }}
+                    fullWidth
+                    style={{ paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="National ID Number"
                     value={dataEdit.nip}
@@ -59,8 +60,8 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
-                    required
-                    style={{ width: "100%" }}
+                    required                    
+                    fullWidth
                     type="number"
                     id="outlined-error-helper-text"
                     label="Phone Number"
@@ -74,7 +75,8 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%", paddingRight: "10px" }}
+                    fullWidth
+                    style={{ paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="Address"
                     onChange={(event) =>
@@ -85,7 +87,7 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%" }}
+                    fullWidth
                     id="outlined-error-helper-text"
                     label="Postal Code"
                   />
@@ -95,9 +97,10 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <Autocomplete
                     disablePortal
+                    fullWidth
                     id="combo-box-demo"
                     options={top100Films}
-                    sx={{ width: "100%", paddingRight: "10px" }}
+                    sx={{ paddingRight: "10px" }}
                     renderInput={(params) => (
                       <TextField required {...params} label="Family Contact" />
                     )}
@@ -106,7 +109,7 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%" }}
+                    fullWidth
                     id="outlined-error-helper-text"
                     label="Contact Name"
                   />
@@ -116,7 +119,8 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%", paddingRight: "10px" }}
+                    fullWidth
+                    style={{ paddingRight: "10px" }}
                     id="outlined-error-helper-text"
                     label="Contact Number"
                   />
@@ -124,7 +128,7 @@ const BiodataDetailsTab = ({ isEdit, changeField, dataEdit }) => {
                 <Grid item xs={6}>
                   <TextField
                     required
-                    style={{ width: "100%" }}
+                    fullWidth
                     id="outlined-error-helper-text"
                     label="School of Origin"
                   />

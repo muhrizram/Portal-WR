@@ -1,0 +1,96 @@
+{
+  "content": [
+    {
+      "id": 2,
+      "no": "2",
+      "nip": "487441",
+      "user": "Almira Kiyassathina",
+      "role": [
+        "Administrator",
+        "HRD"
+      ]
+    },
+    {
+      "id": 3,
+      "no": "3",
+      "nip": "558612",
+      "user": "Wandini Ardiansyah",
+      "role": [
+        "HRD",
+        "Finance"
+      ]
+    },
+    {
+      "id": 4,
+      "no": "4",
+      "nip": "558612",
+      "user": "Khairin Aulia",
+      "role": [
+        "HRD",
+        "Finance"
+      ]
+    },
+    {
+      "id": 5,
+      "no": "5",
+      "nip": "449003",
+      "user": "Boby Arnold Samsuelson",
+      "role": "Team Lead of Project"
+    },
+    {
+      "id": 6,
+      "no": "6",
+      "nip": "449003",
+      "user": "Boby Arnold Samsuelson",
+      "role": "Team Lead of Project"
+    },
+    {
+      "id": 7,
+      "no": "7",
+      "nip": "449003",
+      "user": "Boby Arnold Samsuelson",
+      "role": "Team Lead of Project"
+    },
+    {
+      "id": 8,
+      "no": "2",
+      "nip": "487441",
+      "user": "Almira Kiyassathina",
+      "role": [
+        "Administrator",
+        "HRD"
+      ]
+    },
+    {
+      "id": 9,
+      "no": "3",
+      "nip": "558612",
+      "user": "Wandini Ardiansyah",
+      "role": "Employee"
+    },
+    {
+      "id": 10,
+      "no": "4",
+      "nip": "558612",
+      "user": "Khairin Aulia",
+      "role": [
+        "HRD",
+        "Finance"
+      ]
+    },
+    {
+      "id": 11,
+      "no": "5",
+      "nip": "449003",
+      "user": "Boby Arnold Samsuelson",
+      "role": "Employee"
+    },
+    {
+      "id": 12,
+      "no": "6",
+      "nip": "449003",
+      "user": "Boby Arnold Samsuelson",
+      "role": "Employee"
+    }
+  ]
+}
