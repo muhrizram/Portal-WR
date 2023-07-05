@@ -87,7 +87,7 @@ const DataTable = ({
           </Grid>
           <Grid item justifyContent="space-between" container xs={12} paddingTop={3}>
             <Grid item xs={4}>
-              <SearchBar placeholder="User, Role, etc" label={searchTitle} onChange={handleChangeSearch} />
+              <SearchBar placeholder={placeSearch} label={searchTitle} onChange={handleChangeSearch} />
             </Grid>
             <Grid item xs={2} alignSelf="center" textAlign="right">
               <Button variant="contained" onClick={() => onAdd()} startIcon={<AddIcon />}>

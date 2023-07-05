@@ -172,6 +172,7 @@ const RoleUser = () => {
           title="User Role"
           data={data}
           columns={columns}
+          placeSearch="User, Role, etc"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
