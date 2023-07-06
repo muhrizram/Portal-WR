@@ -12,10 +12,11 @@ import {
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import ReplayIcon from "@mui/icons-material/Replay";
+import uploadFile from "./../../global/uploadFile";
 
 export default function CheckinTime({ setIsCheckin }) {
   const videoConstraints = {
@@ -30,6 +31,14 @@ export default function CheckinTime({ setIsCheckin }) {
     const imageSrc = webcamRef.current.getScreenshot();
     setPicture(imageSrc);
   }, [webcamRef]);
+  const checkIn = async () => {
+    const blob = await fetch(picture).then((res) => res.blob());
+    const file = new File([blob], "test_picture.jpg");
+    // URL.createObjectURL(blob)
+    const result = await uploadFile(file);
+
+    console.log(result);
+  };
 
   return (
     <Grid container>
@@ -100,10 +109,7 @@ export default function CheckinTime({ setIsCheckin }) {
                         </Button>
                       </Grid>
                       <Grid item xs={2} display="flex" alignItems="center">
-                        <Button
-                          variant="contained"
-                          onClick={() => setIsTakePicture(true)}
-                        >
+                        <Button variant="contained" onClick={() => checkIn()}>
                           Check In
                         </Button>
                       </Grid>
