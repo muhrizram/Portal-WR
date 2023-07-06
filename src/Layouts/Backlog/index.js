@@ -125,7 +125,6 @@ const [idHapus,setidHapus] = useState()
   };
 
   const onDelete = async(id) => {
-    console.log("INI IDNYA SA GA HADIR HOREE : ", id)
 
     try {
       const response = await fetch(`http://localhost:4000/backlog/${id}`, {

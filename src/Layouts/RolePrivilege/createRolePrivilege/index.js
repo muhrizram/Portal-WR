@@ -36,7 +36,7 @@ const CreateRolePrivilege = () => {
       current: false,
     },
     {
-      href: "/masteroleprivilege",
+      href: "/masterroleprivilege",
       title: "Master Role Privilege",
       current: false,
     },

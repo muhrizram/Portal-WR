@@ -5,8 +5,6 @@ import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
-import { Autocomplete } from "@mui/material";
-import { TextField } from "@mui/material";
 import { DeleteOutline } from "@mui/icons-material";
 
 //dialog
@@ -28,7 +26,6 @@ import Box from "@mui/material/Box";
 
 //assets
 import Allura from "../../../assets/Allura.png";
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 const DetailBacklog = () => {
   const ContractStatus = [
