@@ -71,6 +71,10 @@
   color: rgba(0, 0, 0, 0.6) !important;
 }
 
+.MuiTablePagination-select {
+  font-size: 12px !important;
+}
+
 .MuiTablePagination-displayedRows {
   font-style: normal;
   font-weight: 400;

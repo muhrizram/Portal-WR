@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
-import { Typography, Button, IconButton } from "@mui/material";
-import SearchBar from "../Searchbar";
-import AddIcon from "@mui/icons-material/Add";
-import { DataGrid } from "@mui/x-data-grid";
-import PreviewIcon from "@mui/icons-material/Preview";
-import DeleteIcon from "@mui/icons-material/Delete";
-import blanktable from "../../assets/blanktable.png";
+
+import React, { useEffect, useState } from 'react';
+import Grid from '@mui/material/Grid';
+import { Typography, Button, IconButton } from '@mui/material';
+import SearchBar from '../Searchbar';
+import AddIcon from '@mui/icons-material/Add';
+import { DataGrid } from '@mui/x-data-grid';
+import PreviewIcon from '@mui/icons-material/Preview';
+import DeleteIcon from '@mui/icons-material/Delete';
+import blanktable from '../../assets/blanktable.png'
+import '../../App.css'
 
 const DataTable = ({
   title,
@@ -18,11 +20,13 @@ const DataTable = ({
   onAdd,
   onDetail,
   onDelete,
+  onFilter,
+  totalData
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
   const [dataColumns, setDataColumns] = useState([]);
-
+  console.log('data new: ', data)
   /**
    * return fungsi model dari pagination.
    *
@@ -42,8 +46,8 @@ const DataTable = ({
   };
 
   const handleBuildList = (filter) => {
-    console.log("filter: ", filter);
-  };
+    onFilter(filter)
+  }
 
   useEffect(() => {
     const filter = {
@@ -79,8 +83,10 @@ const DataTable = ({
     <Grid container rowSpacing={3}>
       <Grid item xs={12}>
         <Grid container className="containerHeader">
-          <div className="dividerHeader" />
-          <Grid item xs={11.9}>
+          <Grid item>
+            <div className="dividerHeader" />
+          </Grid>
+          <Grid item xs={11}>
             <Typography variant="headerCardMenu">{`Master ${title}`}</Typography>
           </Grid>
         </Grid>
@@ -116,11 +122,14 @@ const DataTable = ({
             columns={dataColumns}
             disableRowSelectionOnClick
             pageSizeOptions={[10, 20, 50]}
+            paginationMode='server'
             paginationModel={{ ...pagination }}
             onPaginationModelChange={(model) => changePagination(model)}
             onSortModelChange={(model) => changeSort(model)}
             disableColumnFilter
             disableColumnMenu
+            rowCount={totalData}
+            getRowId={(row) => row.id}
           />
         </Grid>
       ) : (

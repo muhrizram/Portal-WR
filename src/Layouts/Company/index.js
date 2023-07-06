@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-import datatemp from "./initjson.json";
-// import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-// import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import React, { useEffect, useState } from "react";
 import DataTable from "../../Component/DataTable";
 import {
   Dialog,
@@ -10,26 +7,64 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Avatar,
 } from "@mui/material";
 import CustomAlert from "../../Component/Alert";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
+import client from "../../global/client";
 const MasterCompany = () => {
   const columns = [
     {
-      field: "name",
-      headerName: "Name",
+      field: "no",
+      headerName: 'No',
+      // flex: 1,
+    },
+    {
+      field: "companyName",
+      headerName: "Company Name",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <div style={{ display: "flex", alignItems: "center" }}>
+              <Avatar
+                src={params.row.companyProfile}
+                className="img-master-employee"
+                alt="Profile Image"
+              />
+            <div style={{ marginLeft: "0.5rem" }}>
+              <span className="text-name">{params.row.companyName}</span>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      field: "companyEmail",
+      headerName: "Company Email",
       flex: 1,
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: "address",
+      headerName: "Address",
       flex: 1,
     },
+    {
+      field: "npwp",
+      headerName: "Company NPWP",
+      flex: 1,
+    }
   ];
-  const data = [];
+  const [data, setData] = useState([]);
+  const [totalData, setTotalData] = useState()
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'companyName',
+    sortType: 'asc'
+  })
   const navigate = useNavigate();
 
   const handleClickOpen = () => {
@@ -40,6 +75,37 @@ const MasterCompany = () => {
     setOpenAlert(true);
     handleClose();
   };
+
+  useEffect(() => {
+    getData()
+  }, [filter])
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    rebuildData(res)
+  }
+
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        companyName: value.attributes.companyName,
+        companyProfile: value.attributes.companyProfile,
+        address: value.attributes.address,
+        companyEmail: value.attributes.companyEmail,
+        npwp: value.attributes.npwp
+      }
+    })
+    console.log('temp: ', temp)
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -57,6 +123,16 @@ const MasterCompany = () => {
     console.log("add");
     navigate("/master-company/create");
   };
+
+  const onFilter = (dataFilter) => {
+    console.log('on filter: ', dataFilter)
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+    })
+  }
   return (
     <div>
       <SideBar>
@@ -69,7 +145,9 @@ const MasterCompany = () => {
         <DataTable
           title="Company"
           data={data}
+          totalData={totalData}
           columns={columns}
+          onFilter={(dataFilter => onFilter(dataFilter))}
           placeSearch="company"
           searchTitle="Search By"
           onAdd={() => handleAdd()}

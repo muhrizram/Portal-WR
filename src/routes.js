@@ -3,6 +3,7 @@ import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
 import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -16,6 +17,8 @@ const CreateUserRole = lazy(() => import("./Layouts/MasterUserRole/CreatenewUser
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
 const Project = lazy(() => import("./Layouts/Project"));
+const Company = lazy(() => import('./Layouts/Company'))
+const CreateCompany = lazy(() => import('./Layouts/Company/Create'))
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -107,6 +110,16 @@ export const routes = [
   },
   {
     path: "masterroleprivilege/detail",
-    element: <DetailPrivilege />
+    element: <DetailPrivilege />,
+  },
+  {
+    path: "/master-company",
+    element: <Company />,
+    name: "Backlog",
+    icon: <BusinessOutlinedIcon />,
+  },
+  {
+    path: "/master-company/create",
+    element: <CreateCompany />,
   },
 ];
