@@ -29,7 +29,7 @@
   background-color: #34a853;
   /* color: #34A853;
   width: 7px; */
-  height: 100%;
+  /* height: 100%; */
   border-radius: 100px;
 }
 
@@ -87,15 +87,17 @@
 .App-link {
   color: #61dafb;
 }
+
 .containerHeader {
   display: flex;
-  height: 100%;
+
 }
 
 .containerButton {
   display: flex;
 }
-.containerButton > button {
+
+.containerButton>button {
   margin-right: 10px;
 }
 
@@ -115,6 +117,7 @@
   font-size: 14px;
   /* margin-right: 16px; */
 }
+
 .employetext {
   display: flex;
   flex-direction: row;
@@ -124,9 +127,11 @@
   color: grey;
   margin-left: 150px;
 }
+
 .textnameemploye {
   margin-right: 460px;
 }
+
 .employetextvalue {
   display: flex;
   /* flex-direction: row; */
@@ -135,6 +140,7 @@
   font-size: 20px;
   margin-left: 150px;
 }
+
 .textnameemployevalue {
   /* padding-right: 10px; */
   margin-right: 460px;
@@ -145,6 +151,7 @@
   width: 120px;
   height: 120px;
 }
+
 .HeaderDetail {
   width: Fill (1, 320px);
   height: 74vh;
@@ -158,20 +165,24 @@
   display: flex;
   gap: 30px;
 }
+
 .containerButton {
   display: flex;
   width: 100px;
   margin-left: 100px;
 }
+
 .text {
   font-size: 12px;
   color: grey;
   /* margin-left: 30px; */
 }
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -182,7 +193,7 @@
   outline: none !important;
 }
 
-.dialog-delete > .MuiDialog-container > .MuiPaper-root {
+.dialog-delete>.MuiDialog-container>.MuiPaper-root {
   padding: 30px !important;
   border-radius: 6px;
   text-align: center;
@@ -248,9 +259,9 @@
   letter-spacing: 0.15px !important;
 }
 
-.custom-alert > .MuiAlert-action,
-.custom-alert > .MuiAlert-icon,
-.custom-alert > .MuiAlert-message {
+.custom-alert>.MuiAlert-action,
+.custom-alert>.MuiAlert-icon,
+.custom-alert>.MuiAlert-message {
   padding: 0 !important;
 }
 
@@ -273,6 +284,12 @@
   font-size: 12px;
   line-height: 150%;
 }
+
+.DotClass {
+  display: flex;
+  align-items: center;
+}
+
 .img-master-employee {
   width: 32px;
   height: 32px;
@@ -300,7 +317,7 @@
 }
 
 .input-field-crud .Mui-focused fieldset {
-  border-color: rgba(0, 0, 0, 0.23) !important ;
+  border-color: rgba(0, 0, 0, 0.23) !important;
 }
 
 .input-field-crud .Mui-error fieldset {
@@ -315,6 +332,7 @@
   flex-wrap: wrap;
   align-content: space-between;
 }
+
 .img-master-employee-create {
   width: 66px !important;
   height: 66px !important;
@@ -332,6 +350,7 @@
   height: 100% !important;
   border-radius: 6px !important;
 }
+
 .card-attendance {
   padding: 30px;
   background: #ffffff;
