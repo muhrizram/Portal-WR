@@ -185,6 +185,8 @@ const Employee = () => {
           title="Employee"
           data={data}
           columns={columns}
+          placeSearch="Name, NIP, etc"
+          searchTitle="Search By"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}

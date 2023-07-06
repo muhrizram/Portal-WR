@@ -56,7 +56,7 @@ const CreateNewBacklog = () => {
       current: false,
     },
     {
-      href: "/masteremployee",
+      href: "/masterbacklog",
       title: "Master Backlog",
       current: false,
     },
@@ -161,7 +161,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g Create Login Screen"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Task Name"
                           />
@@ -192,7 +193,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g Create Login Screen - Front End"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Task Decription"
                           />
@@ -200,7 +202,7 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g To Do"
-                            style={{ width: "100%" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Backlog Status"
                           />
@@ -214,7 +216,8 @@ const CreateNewBacklog = () => {
                         <Grid item xs={6}>
                           <TextField
                             placeholder="e.g 1 Hour"
-                            style={{ width: "100%", paddingRight: "10px" }}
+                            style={{ paddingRight: "10px" }}
+                            fullWidth
                             id="outlined-error-helper-text"
                             label="Estimation Duration"
                           />

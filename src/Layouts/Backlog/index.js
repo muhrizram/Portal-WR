@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import backlog from './initjson.json';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
@@ -6,6 +6,7 @@ import CustomAlert from '../../Component/Alert';
 import SideBar from '../../Component/Sidebar';
 import Rating from '@mui/material/Rating';
 import { Box } from '@mui/material';
+import { useNavigate } from "react-router";
 
 
 const Backlog = () => {
@@ -13,7 +14,7 @@ const Backlog = () => {
     {
       field: 'no',
       headerName: 'No',
-      flex: 1 
+      // flex: 1 
     },
     {
       field: 'projectName',
@@ -34,14 +35,14 @@ const Backlog = () => {
       field: 'priority',
       headerName: 'Priority',
       flex: 1,
-      renderCell: (data) => (
-        <Rating
-          name="rating"
-          value={data.row.priority} // Ambil nilai rating dari properti "priority"
-          readOnly
-          precision={0.5}
-        />
-      )
+      // renderCell: (data) => (
+      //   <Rating
+      //     name="rating"
+      //     value={data.row.priority} // Ambil nilai rating dari properti "priority"
+      //     readOnly
+      //     precision={0.5}
+      //   />
+      // )
     },
     {
       field: 'status',
@@ -68,10 +69,7 @@ const Backlog = () => {
       flex: 1 
     }
   ];
-  const data = backlog.backlog.map(item => ({
-    ...item,
-    rating: item.priority // Ubah properti "priority" sesuai dengan properti "rating"
-  }));
+  const data = backlog.backlog
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -96,15 +94,53 @@ const Backlog = () => {
   };
 
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false)
+  const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate();
+  const [dat, setData] = useState();
+const [idHapus,setidHapus] = useState()
 
-  const handleClickOpen = () => {
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/backlog");
+      const jsonData = await response.json();
+      const updatedData = jsonData.map((item, index) => ({
+        ...item,
+        no: index + 1,
+      }));
+      console.log("INI FETCHING ",updatedData)
+      setData(updatedData);
+    } catch (error) {
+      console.log("Error fetching data: ", error);
+    }
+  };
+
+  const handleClickOpen = (id) => {
+    console.log("INI TESTING ID MUNCUL",id)
+    setidHapus(id);
     setOpen(true);
   };
 
-  const onDelete = () => {
-    setOpenAlert(true);
-    handleClose()
+  const onDelete = async(id) => {
+
+    try {
+      const response = await fetch(`http://localhost:4000/backlog/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setOpenAlert(true);
+        fetchData(); // Ambil data terbaru setelah berhasil menghapus
+      } else {
+        console.error("Failed to delete data");
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+    handleClose();
+
   }
 
   const handleClose = () => {
@@ -119,7 +155,12 @@ const Backlog = () => {
     console.log('value search: ', event.target.value)
   }
   
-  const handleAdd = () => {
+  const handleDetail = (id) => {
+    navigate("/masterbacklog/detail");
+  };
+
+  const onAdd = () => {
+    navigate("/masterbacklog/create");
     console.log('add')
   }
   return (
@@ -137,10 +178,12 @@ const Backlog = () => {
           columns={columns}
           placeSearch="Project Name"
           searchTitle="Search By"
-          onButtonClick={() => handleAdd()}
+          onAdd={() => onAdd()}
+          // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => console.log('id detail: ', id)}
-          onDelete={(id) => handleClickOpen()}
+          // onDetail={(id) => console.log('id detail: ', id)}
+          onDetail={(id) => handleDetail(id)}
+          onDelete={(id) => handleClickOpen(id)}
         />
         <Dialog
           open={open}
@@ -159,7 +202,7 @@ const Backlog = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
+            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
           </DialogActions>
         </Dialog>
       </SideBar>

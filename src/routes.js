@@ -2,6 +2,7 @@ import React, { lazy } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
+import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -19,6 +20,9 @@ const Project = lazy(() => import("./Layouts/Project"));
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
 );
+const RolePrivilege = lazy(() => import("./Layouts/RolePrivilege/index"))
+const CreateRolePrivilege = lazy(() => import("./Layouts/RolePrivilege/createRolePrivilege/index"))
+const DetailPrivilege = lazy(() => import("./Layouts/RolePrivilege/detailRolePrivilege/index"))
 
 export const routes = [
   {
@@ -82,5 +86,27 @@ export const routes = [
     element: <Backlog />,
     name: "Backlog",
     icon: <BookmarkBorderIcon />,
+  },
+  {
+    path: "masterbacklog/create",
+    element: <CreateNewBacklog />
+  },
+  {
+    path: "masterbacklog/detail",
+    element: <DetailBacklog />
+  },
+  {
+    path: "/masterroleprivilege",
+    element: <RolePrivilege />,
+    name: "Role Privilege",
+    icon: <SettingsAccessibilityIcon />,
+  },
+  {
+    path: "masterroleprivilege/create",
+    element: <CreateRolePrivilege />
+  },
+  {
+    path: "masterroleprivilege/detail",
+    element: <DetailPrivilege />
   },
 ];

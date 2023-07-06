@@ -1,124 +1,74 @@
 {
-    "backlog": [
-      {
-        "id": 1,
-        "no" : "1",
-        "projectName": "Electronic",
-        "taskCode": "T-WR-0011",
-        "taskName": "Menu Backlog",
-        "priority": 3,
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 2,
-        "no" : "2",
-        "projectName": "Biofarma",
-        "taskCode": "T-WR-0012",
-        "taskName": "Menu Backlog",
-        "priority": 4,
-        "status": "Success",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 3,
-        "no" : "3",
-        "projectName": "Biofarma",
-        "taskCode": "T-WR-0013",
-        "taskName": "Menu Backlog",
-        "priority": "2",
-        "status": "InProgress",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 4,
-        "no" : "4",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0014",
-        "taskName": "Menu Backlog",
-        "priority": "3",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 5,
-        "no" : "5",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0015",
-        "taskName": "Menu Backlog",
-        "priority": "3",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 6,
-        "no" : "6",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0016",
-        "taskName": "Menu Backlog",
-        "priority": "4",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 7,
-        "no" : "7",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0017",
-        "taskName": "Menu Backlog",
-        "priority": "4",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 8,
-        "no" : "8",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0018",
-        "taskName": "Menu Backlog",
-        "priority": "4",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 9,
-        "no" : "9",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0019",
-        "taskName": "Menu Backlog",
-        "priority": "5",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 10,
-        "no" : "10",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0020",
-        "taskName": "Menu Backlog",
-        "priority": "5",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 11,
-        "no" : "11",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0021",
-        "taskName": "Menu Backlog",
-        "priority": "2",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      },
-      {
-        "id": 12,
-        "no" : "12",
-        "projectName": "Job Group 1",
-        "taskCode": "T-WR-0022",
-        "taskName": "Menu Backlog",
-        "priority": "2",
-        "status": "Todo",
-        "assignedTo": "Abdan"
-      }
-    ]
-  }
+  "backlog": [
+    {
+      "id": 1,
+      "no": "1",
+      "projectName": "Electronic",
+      "taskCode": "T-WR-0011",
+      "taskName": "Menu Backlog",
+      "priority": 3,
+      "status": "Todo",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 2,
+      "no": "2",
+      "projectName": "Biofarma",
+      "taskCode": "T-WR-0012",
+      "taskName": "Menu Backlog",
+      "priority": 4,
+      "status": "Success",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 3,
+      "no": "3",
+      "projectName": "Biofarma",
+      "taskCode": "T-WR-0013",
+      "taskName": "Menu Backlog",
+      "priority": "2",
+      "status": "InProgress",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 4,
+      "no": "4",
+      "projectName": "Job Group 1",
+      "taskCode": "T-WR-0014",
+      "taskName": "Menu Backlog",
+      "priority": "3",
+      "status": "Todo",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 5,
+      "no": "5",
+      "projectName": "Job Group 1",
+      "taskCode": "T-WR-0015",
+      "taskName": "Menu Backlog",
+      "priority": "3",
+      "status": "Todo",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 6,
+      "no": "6",
+      "projectName": "Job Group 1",
+      "taskCode": "T-WR-0016",
+      "taskName": "Menu Backlog",
+      "priority": "4",
+      "status": "Todo",
+      "assignedTo": "Abdan"
+    },
+    {
+      "id": 8,
+      "no": "8",
+      "projectName": "Job Group 1",
+      "taskCode": "T-WR-0018",
+      "taskName": "Menu Backlog",
+      "priority": "4",
+      "status": "Todo",
+      "assignedTo": "Abdan"
+    }
+  ]
+}
