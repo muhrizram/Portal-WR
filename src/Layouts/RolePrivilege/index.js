@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import rolePrevilege from './initjson.json'
 // import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 // import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -8,6 +8,7 @@ import CustomAlert from '../../Component/Alert';
 import SideBar from '../../Component/Sidebar';
 import { Box } from '@mui/system';
 import { useNavigate } from "react-router";
+import client from "../../global/client";
 
 
 const RolePrivilege = () => {
@@ -98,19 +99,109 @@ const RolePrivilege = () => {
   // };
 
   const data = rolePrevilege.rolePrevilege
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const navigate = useNavigate();
+  const [dat, setData] = useState([]);
+  const [idHapus,setidHapus] = useState()
+  const [totalData, setTotalData] = useState()
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'roleCategoryName',
+    sortType: 'asc'
+  })
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const onDelete = (id) => {
+  const onDelete = () => {
     setOpenAlert(true);
-    console.log('id delete: ', id)
-    handleClose()
-  }
+    handleClose();
+  };
+
+  // useEffect(() => {
+  //   getData()
+  // }, [filter])
+
+  // const getData = async () => {
+  //   const res = await client.requestAPI({
+  //     method: 'GET',
+  //     // endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+  //   })
+  //   rebuildData(res)
+  // }
+
+  // const rebuildData = (resData) => {
+  //   let temp = []
+  //   let number = filter.page * filter.size
+  //   temp = resData.data.map((value, index) => {
+  //     return {
+  //       no: number + (index + 1),
+  //       id: value.id,
+  //       role: value.attributes.roleCategoryName,
+  //       privilege: value.attributes.privilegeCategoryName,
+  //       // taskName: value.attributes.taskName,
+  //       // priority: value.attributes.priority,
+  //       // status: value.attributes.status,
+  //       // assignedTo: value.attributes.assignedTo
+  //     }
+  //   })
+  //   console.log('temp: ', temp)
+  //   setData([...temp])
+  //   setTotalData(resData.meta.page.totalElements)
+  // }
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:4000/rolePrevilege");
+  //     const jsonData = await response.json();
+  //     const updatedData = jsonData.map((item, index) => ({
+  //       ...item,
+  //       no: index + 1,
+  //     }));
+  //     console.log("INI FETCHING ",updatedData)
+  //     setData(updatedData);
+  //   } catch (error) {
+  //     console.log("Error fetching data: ", error);
+  //   }
+  // };
+
+  // const onDelete = async(id) => {
+
+  //   try {
+  //     const response = await fetch(`http://localhost:4000/rolePrevilege/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       setOpenAlert(true);
+  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
+  //     } else {
+  //       console.error("Failed to delete data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting data:", error);
+  //   }
+  //   handleClose();
+
+  // }
+
+  // const handleClickOpen = (id) => {
+  //   console.log("INI TESTING ID MUNCUL",id)
+  //   setidHapus(id);
+  //   setOpen(true);
+  // };
+
+  // const onDelete = (id) => {
+  //   setOpenAlert(true);
+  //   console.log('id delete: ', id)
+  //   handleClose()
+  // }
 
   const handleClose = () => {
     setOpen(false);
@@ -124,13 +215,24 @@ const RolePrivilege = () => {
     console.log('value search: ', event.target.value)
   }
   
-  const handleDetail = () => {
+  const handleDetail = (id) => {
     navigate("/masterroleprivilege/detail");
   }
   const onAdd = () => {
     navigate("/masterroleprivilege/create");
     console.log('add')
   }
+
+  const onFilter = (dataFilter) => {
+    console.log('on filter: ', dataFilter)
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+    })
+  }
+
   return (
     <div>
       <SideBar>
@@ -147,10 +249,11 @@ const RolePrivilege = () => {
           placeSearch="Role, Privilege, etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
+          onFilter={(dataFilter => onFilter(dataFilter))}
           // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => handleDetail()}
-          onDelete={(id) => handleClickOpen()}
+          onDetail={(id) => handleDetail(id)}
+          onDelete={(id) => handleClickOpen(id)}
         />
         <Dialog
           open={open}
@@ -169,7 +272,7 @@ const RolePrivilege = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
+            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
           </DialogActions>
         </Dialog>
       </SideBar>

@@ -21,7 +21,8 @@ const DataTable = ({
   onDetail,
   onDelete,
   onFilter,
-  totalData
+  totalData,
+  onImport
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
@@ -105,7 +106,7 @@ const DataTable = ({
             onChange={handleChangeSearch}
           />
         </Grid>
-        <Grid item xs={2} alignSelf="center" textAlign="right">
+        <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
           <Button
             variant="contained"
             onClick={() => onAdd()}
@@ -113,6 +114,16 @@ const DataTable = ({
           >
             {`NEW ${title}`}
           </Button>
+          {onImport ? (
+            <Button
+            variant="outlined"
+            onClick={() => onImport()}
+            startIcon={<AddIcon />}
+          >
+            Import
+          </Button>
+          ) : (<></>)}
+          
         </Grid>
       </Grid>
       {data.length > 0 ? (

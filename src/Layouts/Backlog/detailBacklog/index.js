@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Autocomplete, Button, TextField, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -27,6 +27,10 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
+
+
+import client from "../../../global/client";
+
 const DetailBacklog = () => {
   const ContractStatus = [
     { label: "Electronic Health Record" },
@@ -37,19 +41,23 @@ const DetailBacklog = () => {
   const [addTask, setAddTask] = React.useState(true);
   const [valuerating, setValuerating] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+  
+  const [dataDetail, setDataDetail] = useState([]);
   const [valueproject, setValueproject] = useState({
     label: "Electronic Health Record",
   });
   const [open1, setOpen1] = React.useState(false);
 
-  const dataBread = [
+  let idDetail = localStorage.getItem("id")
+
+  const dataBreadDetailBacklog = [
     {
       href: "/dashboard",
       title: "Dashboard",
       current: false,
     },
     {
-      href: "/masteremployee",
+      href: "/masterbacklog",
       title: "Master Backlog",
       current: false,
     },
@@ -60,14 +68,14 @@ const DetailBacklog = () => {
     },
   ];
 
-  const dataBread2 = [
+  const dataBreadEditBacklog = [
     {
       href: "/dashboard",
       title: "Dashboard",
       current: false,
     },
     {
-      href: "/masteremployee",
+      href: "/masterbacklog",
       title: "Master Backlog",
       current: false,
     },
@@ -110,12 +118,48 @@ const DetailBacklog = () => {
     setIsEdit(false);
   };
 
+  useEffect(() => {
+    getData()
+  }, [])
+
+  const getData = async (idDetail) => {
+    // localStorage.setItem('id', id)
+    // console.log('idnya', id)
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/backlog/${idDetail}`
+      // endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    console.log('ini data detai', res)
+    rebuildDataDetail(res)
+    // navigate("/masterbacklog/detail");
+  };
+
+  const rebuildDataDetail = (resData) => {
+    let tempDetail = {
+        id: resData.data.id,
+        projectName: resData.data.attributes.projectName,
+        taskCode: resData.data.attributes.taskCode,
+        taskName: resData.data.attributes.taskName,
+        taskDescription: resData.data.attributes.taskDescription,
+        taskName: resData.data.attributes.taskName,
+        priority: resData.data.attributes.priority,
+        status: resData.data.attributes.status,
+        estimationTime: resData.data.attributes.estimationTime,
+        actualTime: resData.data.attributes.actualTime,
+        assignedTo: resData.data.attributes.assignedTo
+      }
+    
+    console.log('tempDetail: ', tempDetail)
+    setDataDetail(tempDetail)
+  }
+
   return (
     <>
       <SideBar>
         {isEdit ? (
           <>
-            <Breadcrumbs breadcrumbs={dataBread2} />
+            <Breadcrumbs breadcrumbs={dataBreadEditBacklog} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
@@ -420,7 +464,7 @@ const DetailBacklog = () => {
           </>
         ) : (
           <>
-            <Breadcrumbs breadcrumbs={dataBread} />
+            <Breadcrumbs breadcrumbs={dataBreadDetailBacklog} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
