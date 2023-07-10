@@ -70,8 +70,6 @@ const Backlog = () => {
       flex: 1 
     }
   ];
-  // const data = backlog.backlog
-
 
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -87,38 +85,37 @@ const Backlog = () => {
     search: ''
   })
 
-
   
   const getStatusColor = (status) => {
     const statusColors = {
       'to do': '#FDECEB',
+      'Backlog' : '#E6F2FB',
       'In Progress': '#E6F2FB',
-      'Success': '#EBF6EE'
+      'Completed' : '#EBF6EE', 
+      'Done': '#EBF6EE'
     };
-  
-    // Return the color for the given status, default to a fallback color if not found
-    return statusColors[status] || '#ccc'; // Fallback color: gray
+    return statusColors[status] || '#ccc';
   };
 
   const getStatusFontColor = (status) => {
     const statusFontColors = {
       'to do': '#EE695D',
+      'Backlog' : '#3393DF',
       'In Progress': '#3393DF',
-      'Success': '#5DB975'
+      'Completed' : '#5DB975',
+      'Done': '#5DB975'
     };
-  
-    // Return the color for the given status, default to a fallback color if not found
-    return statusFontColors[status] || '#fff'; // Fallback color: gray
+    return statusFontColors[status] || '#fff';
   };
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async (id) => {
     setOpen(true);
   };
 
-  const onDelete = () => {
-    setOpenAlert(true);
-    handleClose();
-  };
+  // const onDelete = () => {
+  //   setOpenAlert(true);
+  //   handleClose();
+  // };
 
   useEffect(() => {
     getData()
@@ -131,11 +128,6 @@ const Backlog = () => {
     })
     rebuildData(res)
   }
-
-  const handleDetail = async (id) => {
-    localStorage.setItem('id', id)
-    navigate("/masterbacklog/detail");
-  };
 
   const rebuildData = (resData) => {
     let temp = []
@@ -157,6 +149,15 @@ const Backlog = () => {
     setTotalData(resData.meta.page.totalElements)
   }
   
+  const deleteData = async (id) => {
+    const res = await client.requestAPI({
+      method: 'DELETE',
+      endpoint: `/backlog/${id}`
+    })
+    console.log('id', id)
+    setOpenAlert(true);
+    handleClose();
+  }
   // const handleClickOpen = (id) => {
   //   console.log("INI TESTING ID MUNCUL",id)
   //   setidHapus(id);
@@ -182,6 +183,13 @@ const Backlog = () => {
 
   // }
 
+  
+
+  const handleDetail = async (id) => {
+    localStorage.setItem('idBacklog', id)
+    navigate("/masterbacklog/detail");
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -192,10 +200,10 @@ const Backlog = () => {
 
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
-    setFilter((prevFilter) => ({
-      ...prevFilter,
+    setFilter({
+      ...filter,
       search: event.target.value
-    }));
+    });
   }
   
   
@@ -211,7 +219,7 @@ const Backlog = () => {
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'taskName',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
-      search: dataFilter.searchText
+      search: filter.search
     })
   }
 
@@ -255,7 +263,8 @@ const Backlog = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
+            <Button onClick={deleteData} className='delete-button button-text'>Delete Data</Button>
+            {/* <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button> */}
           </DialogActions>
         </Dialog>
       </SideBar>

@@ -94,7 +94,8 @@ const RolePrivilege = () => {
     page: 0,
     size: 10,
     sortName: 'roleCategoryName',
-    sortType: 'asc'
+    sortType: 'asc',
+    search: ''
   })
 
 
@@ -115,7 +116,6 @@ const RolePrivilege = () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/rolePrivilege`
-      // endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
     })
     rebuildData(res)
   }
@@ -127,8 +127,8 @@ const RolePrivilege = () => {
       return {
         no: number + (index + 1),
         id: value.id,
-        role: value.attributes.roleCategoryName,
-        privilege: value.attributes.privilegeCategoryName,
+        role: value.attributes.roleName,
+        privilege: value.attributes.privilegeName,
         // taskName: value.attributes.taskName,
         // priority: value.attributes.priority,
         // status: value.attributes.status,
@@ -200,6 +200,10 @@ const RolePrivilege = () => {
 
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
+    setFilter({
+      ...filter,
+      search: event.target.value
+    });
   }
   
   const handleDetail = (id) => {
@@ -217,6 +221,7 @@ const RolePrivilege = () => {
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      search: filter.search
     })
   }
 

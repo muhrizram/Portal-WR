@@ -6,6 +6,7 @@ import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import { DeleteOutline } from "@mui/icons-material";
+import client from "../../../global/client";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -28,9 +29,6 @@ import Box from "@mui/material/Box";
 import Allura from "../../../assets/Allura.png";
 
 
-
-import client from "../../../global/client";
-
 const DetailBacklog = () => {
   const ContractStatus = [
     { label: "Electronic Health Record" },
@@ -42,13 +40,12 @@ const DetailBacklog = () => {
   const [valuerating, setValuerating] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   
-  const [dataDetail, setDataDetail] = useState([]);
   const [valueproject, setValueproject] = useState({
     label: "Electronic Health Record",
   });
   const [open1, setOpen1] = React.useState(false);
 
-  let idDetail = localStorage.getItem("id")
+  const [dataDetail, setDataDetail] = useState({});
 
   const dataBreadDetailBacklog = [
     {
@@ -119,20 +116,17 @@ const DetailBacklog = () => {
   };
 
   useEffect(() => {
-    getData()
+    getDataDetail()
   }, [])
 
-  const getData = async (idDetail) => {
-    // localStorage.setItem('id', id)
-    // console.log('idnya', id)
+  const getDataDetail = async () => {
+    const idDetail = localStorage.getItem("idBacklog")
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
-      // endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
     })
     console.log('ini data detai', res)
     rebuildDataDetail(res)
-    // navigate("/masterbacklog/detail");
   };
 
   const rebuildDataDetail = (resData) => {
@@ -497,8 +491,7 @@ const DetailBacklog = () => {
                         >
                           <Grid item xs={12}>
                             <Typography variant="backlogDetail">
-                              {dataDetail && '${dataDetail.projectName} :: ${dataDetail.taskCode}'}
-                              {/* Electronic Health Record */}
+                              Project - {dataDetail.projectName}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -509,24 +502,17 @@ const DetailBacklog = () => {
                           style={{ padding: "20px" }}
                         >
                           <Grid item>
-                          <AccordionSummary
+                            <AccordionSummary
                               expandIcon={<ExpandMoreIcon />}
                               aria-controls="panel1a-content"
                               id="panel1a-header"
                             >
                                 <Typography variant="backlogDetailText">
-                                Create Mockup Screen Dashboard :: Task 1 / T-WR-0011
+                                  {dataDetail.taskName} :: {dataDetail.taskCode}
+                                {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
                                 </Typography>
                             </AccordionSummary>
                           </Grid>
-                          {/* <Grid item xs={1}>
-                            <Typography variant="backlogDetail">::</Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="backlogDetail">
-                              Task 1 / T-WR-0011
-                            </Typography>
-                          </Grid> */}
                         </Grid>
 
                         <Grid
@@ -541,7 +527,7 @@ const DetailBacklog = () => {
                               Task Description
                             </Typography>
                             <Typography variant="descBaklog">
-                              Create Mockup Screen Dashboard - UI/UX
+                              {dataDetail.taskDescription}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -551,7 +537,7 @@ const DetailBacklog = () => {
                               Backlog Status
                             </Typography>
                             <Typography variant="descBaklog">
-                              Todo
+                              {dataDetail.status}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -560,12 +546,14 @@ const DetailBacklog = () => {
                             >
                               Priority
                             </Typography>
-                            <Rating
-                                name="rating"
-                                value={5} // Ambil nilai rating dari properti "priority"
-                                readOnly
-                                precision={0.5}
-                            />
+                            {dataDetail && dataDetail.priority && (
+                              <Rating
+                                  name="rating"
+                                  value={dataDetail.priority} // Ambil nilai rating dari properti "priority"
+                                  readOnly
+                                  precision={0.5}
+                              />
+                            )}
                           </Grid>
                         </Grid>
 
@@ -581,7 +569,7 @@ const DetailBacklog = () => {
                               Assigned To
                             </Typography>
                             <Typography variant="descBaklog">
-                              Abdan Hafidzul
+                              {dataDetail.assignedTo}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -591,7 +579,7 @@ const DetailBacklog = () => {
                               Estimation Duration
                             </Typography>
                             <Typography variant="descBaklog">
-                              3 Hours
+                              {dataDetail.estimationTime}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -601,7 +589,7 @@ const DetailBacklog = () => {
                               Actual Duration
                             </Typography>
                             <Typography variant="descBaklog">
-                              3 Hours
+                              {dataDetail.actualTime}
                             </Typography>
                           </Grid>
                         </Grid>
