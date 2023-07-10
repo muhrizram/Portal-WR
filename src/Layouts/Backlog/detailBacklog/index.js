@@ -497,7 +497,8 @@ const DetailBacklog = () => {
                         >
                           <Grid item xs={12}>
                             <Typography variant="backlogDetail">
-                              Electronic Health Record
+                              {dataDetail && '${dataDetail.projectName} :: ${dataDetail.taskCode}'}
+                              {/* Electronic Health Record */}
                             </Typography>
                           </Grid>
                         </Grid>

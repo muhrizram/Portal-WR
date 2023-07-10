@@ -77,14 +77,14 @@ const Backlog = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [dataDetail, setDataDetail] = useState([]);
   const [idHapus,setidHapus] = useState();
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
     sortName: 'taskName',
-    sortType: 'asc'
+    sortType: 'asc',
+    search: ''
   })
 
 
@@ -127,43 +127,15 @@ const Backlog = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
-      // endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+      endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     rebuildData(res)
   }
 
   const handleDetail = async (id) => {
     localStorage.setItem('id', id)
-    // console.log('idnya', id)
-    // const res = await client.requestAPI({
-    //   method: 'GET',
-    //   endpoint: `/backlog/${id}`
-    //   // endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
-    // })
-    // console.log('ini data detai', res)
-    // rebuildDataDetail(res)
     navigate("/masterbacklog/detail");
   };
-
-  // const rebuildDataDetail = (resData) => {
-  //   let tempDetail = {
-  //       id: resData.data.id,
-  //       projectName: resData.data.attributes.projectName,
-  //       taskCode: resData.data.attributes.taskCode,
-  //       taskName: resData.data.attributes.taskName,
-  //       taskDescription: resData.data.attributes.taskDescription,
-  //       taskName: resData.data.attributes.taskName,
-  //       priority: resData.data.attributes.priority,
-  //       status: resData.data.attributes.status,
-  //       estimationTime: resData.data.attributes.estimationTime,
-  //       actualTime: resData.data.attributes.actualTime,
-  //       assignedTo: resData.data.attributes.assignedTo
-  //     }
-    
-  //   console.log('tempDetail: ', tempDetail)
-  //   setDataDetail(tempDetail)
-  // }
 
   const rebuildData = (resData) => {
     let temp = []
@@ -184,26 +156,7 @@ const Backlog = () => {
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:4000/backlog");
-  //     const jsonData = await response.json();
-  //     const updatedData = jsonData.map((item, index) => ({
-  //       ...item,
-  //       no: index + 1,
-  //     }));
-  //     console.log("INI FETCHING ",updatedData)
-  //     setData(updatedData);
-  //   } catch (error) {
-  //     console.log("Error fetching data: ", error);
-  //   }
-  // };
-
+  
   // const handleClickOpen = (id) => {
   //   console.log("INI TESTING ID MUNCUL",id)
   //   setidHapus(id);
@@ -239,6 +192,10 @@ const Backlog = () => {
 
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      search: event.target.value
+    }));
   }
   
   
@@ -254,6 +211,7 @@ const Backlog = () => {
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'taskName',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      search: dataFilter.searchText
     })
   }
 

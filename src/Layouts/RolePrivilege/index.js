@@ -52,7 +52,6 @@ const RolePrivilege = () => {
             alignContent: 'flex-start',
             gap: '10px',
             flex: '1 0 0',
-            // alignSelf: 'stretch',
             flexWrap: 'wrap',
             borderRadius: '4px',
             fontSize: '12px'
@@ -84,25 +83,11 @@ const RolePrivilege = () => {
     }
   ];
 
-  // const getStatusColor = (privilege) => {
-  //   const statusColors = {
-  //     Inaccessible : '#FDECEB',
-  //   }
-  //   return statusColors[privilege] || '#7367F033';
-  // };
-
-  // const getStatusFontColor = (privilege) => {
-  //   const statusFontColors = {
-  //     Inaccessible : '#EE695D',
-  //   }
-  //   return statusFontColors[privilege] || '#7367F0';
-  // };
-
-  const data = rolePrevilege.rolePrevilege
+  // const data = rolePrevilege.rolePrevilege
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [dat, setData] = useState([]);
+  const [data, setData] = useState([]);
   const [idHapus,setidHapus] = useState()
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
@@ -122,37 +107,39 @@ const RolePrivilege = () => {
     handleClose();
   };
 
-  // useEffect(() => {
-  //   getData()
-  // }, [filter])
+  useEffect(() => {
+    getData()
+  }, [filter])
 
-  // const getData = async () => {
-  //   const res = await client.requestAPI({
-  //     method: 'GET',
-  //     // endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
-  //   })
-  //   rebuildData(res)
-  // }
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/rolePrivilege`
+      // endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    rebuildData(res)
+  }
 
-  // const rebuildData = (resData) => {
-  //   let temp = []
-  //   let number = filter.page * filter.size
-  //   temp = resData.data.map((value, index) => {
-  //     return {
-  //       no: number + (index + 1),
-  //       id: value.id,
-  //       role: value.attributes.roleCategoryName,
-  //       privilege: value.attributes.privilegeCategoryName,
-  //       // taskName: value.attributes.taskName,
-  //       // priority: value.attributes.priority,
-  //       // status: value.attributes.status,
-  //       // assignedTo: value.attributes.assignedTo
-  //     }
-  //   })
-  //   console.log('temp: ', temp)
-  //   setData([...temp])
-  //   setTotalData(resData.meta.page.totalElements)
-  // }
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        role: value.attributes.roleCategoryName,
+        privilege: value.attributes.privilegeCategoryName,
+        // taskName: value.attributes.taskName,
+        // priority: value.attributes.priority,
+        // status: value.attributes.status,
+        // assignedTo: value.attributes.assignedTo
+      }
+    })
+    console.log('temp: ', temp)
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
+  }
+
   // useEffect(() => {
   //   fetchData();
   // }, []);
