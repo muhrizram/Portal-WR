@@ -12,6 +12,7 @@ import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import Box from "@mui/material/Box";
+import client from "../../global/client";
 
 const RoleUser = () => {
   const [open, setOpen] = useState(false);
@@ -19,24 +20,79 @@ const RoleUser = () => {
   const [openAlertCreate, setOpenAlertCreate] = useState(false);
   const [dataIduser, setDataIduser] = useState("");
   const navigate = useNavigate();
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
+  const [data2, setData2] = useState([]);
+  const [totalData, setTotalData] = useState()
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'companyName',
+    sortType: 'asc'
+  })
+  const onFilter = (dataFilter) => {
+    console.log('on filter: ', dataFilter)
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+    })
+  }
 
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        companyName: value.attributes.companyName,
+        companyProfile: value.attributes.companyProfile,
+        address: value.attributes.address,
+        companyEmail: value.attributes.companyEmail,
+        npwp: value.attributes.npwp
+      }
+    })
+    console.log('temp: ', temp)
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
+  }
   useEffect(() => {
-    fetchData();
-    let isCreate = localStorage.getItem("isCreate")
-    setOpenAlertCreate(isCreate);
-    // console.log(localStorage.getItem("isCreate"));
-  }, []);
+    // getData()
+    fetchData()
+  }, [])
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    rebuildData(res)
+  }
+
+  const deleteData = async (id) => {
+    const res = await client.requestAPI({
+      method: 'DELETE',
+      endpoint: `/userRole/delete/${id}`
+    })
+    rebuildData(res)
+  }
+
+  // useEffect(() => {
+  //   fetchData();
+  //   let isCreate = localStorage.getItem("isCreate")
+  //   setOpenAlertCreate(isCreate);  
+  // }, []);
 
   const fetchData = async () => {
     try {
       const response = await fetch("http://localhost:4000/content");
-      const jsonData = await response.json();
+      const jsonData = await response.json();      
       const updatedData = jsonData.map((item, index) => ({
         ...item,
         no: index + 1,
       }));
-      setData(updatedData);
+      setData2(updatedData);
     } catch (error) {
       console.log("Error fetching data: ", error);
     }
@@ -45,7 +101,7 @@ const RoleUser = () => {
   const handleDelete = async (id) => {
     setDataIduser(id);
     setOpen(true);
-  };
+  };  
 
   const onDeletenya = async (dataIduser) => {
     try {
@@ -80,7 +136,7 @@ const RoleUser = () => {
   const handleDetail = () => {
     navigate("/masteruserrole/detail");
   };
-
+  
   const statusColor = '#E5E3FA';
   const statusFontColors ='#7367F0';
 
@@ -170,13 +226,14 @@ const RoleUser = () => {
 
         <DataTable
           title="User Role"
-          data={data}
+          data={data2}
           columns={columns}
           placeSearch="User, Role, etc"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleDelete(id)}
+          onFilter={(dataFilter => onFilter(dataFilter))}
         />
 
         <Dialog
