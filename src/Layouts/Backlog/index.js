@@ -158,31 +158,6 @@ const Backlog = () => {
     setOpenAlert(true);
     handleClose();
   }
-  // const handleClickOpen = (id) => {
-  //   console.log("INI TESTING ID MUNCUL",id)
-  //   setidHapus(id);
-  //   setOpen(true);
-  // };
-
-  // const onDelete = async(id) => {
-
-  //   try {
-  //     const response = await fetch(`http://localhost:4000/backlog/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (response.ok) {
-  //       setOpenAlert(true);
-  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
-  //     } else {
-  //       console.error("Failed to delete data");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting data:", error);
-  //   }
-  //   handleClose();
-
-  // }
-
   
 
   const handleDetail = async (id) => {
