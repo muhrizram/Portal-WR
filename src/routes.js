@@ -2,55 +2,67 @@ import React, { lazy } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
-import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
-import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
+import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import DetailProject from "./Layouts/Project/Detail";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
 const DetailEmployee = lazy(() => import("./Layouts/DetailEmployee"));
 const Employee = lazy(() => import("./Layouts/masterEmployee"));
-const CreateNewBacklog = lazy(() => import("./Layouts/Backlog/CreateNewBacklog"));
+const CreateNewBacklog = lazy(() =>
+  import("./Layouts/Backlog/CreateNewBacklog")
+);
 const DetailBacklog = lazy(() => import("./Layouts/Backlog/detailBacklog"));
 const MasterRoleUser = lazy(() => import("./Layouts/MasterUserRole"));
-const DetailUserRole = lazy(() => import("./Layouts/MasterUserRole/DetailUserRole"));
-const CreateUserRole = lazy(() => import("./Layouts/MasterUserRole/CreatenewUserRole"));
+const DetailUserRole = lazy(() =>
+  import("./Layouts/MasterUserRole/DetailUserRole")
+);
+const CreateUserRole = lazy(() =>
+  import("./Layouts/MasterUserRole/CreatenewUserRole")
+);
 const WorkingReport = lazy(() => import("./Layouts/WorkingReport"));
 const Backlog = lazy(() => import("./Layouts/Backlog/index"));
 const Project = lazy(() => import("./Layouts/Project"));
-const Company = lazy(() => import('./Layouts/Company'))
-const CreateCompany = lazy(() => import('./Layouts/Company/Create'))
-const DetailCompany = lazy(() => import('./Layouts/Company/Detail'))
-
+const Company = lazy(() => import("./Layouts/Company"));
+const CreateCompany = lazy(() => import("./Layouts/Company/Create"));
+const DetailCompany = lazy(() => import("./Layouts/Company/Detail"));
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
 );
-const RolePrivilege = lazy(() => import("./Layouts/RolePrivilege/index"))
-const CreateRolePrivilege = lazy(() => import("./Layouts/RolePrivilege/createRolePrivilege/index"))
-const DetailPrivilege = lazy(() => import("./Layouts/RolePrivilege/detailRolePrivilege/index"))
+const RolePrivilege = lazy(() => import("./Layouts/RolePrivilege/index"));
+const CreateRolePrivilege = lazy(() =>
+  import("./Layouts/RolePrivilege/createRolePrivilege/index")
+);
+const DetailPrivilege = lazy(() =>
+  import("./Layouts/RolePrivilege/detailRolePrivilege/index")
+);
 
 export const routes = [
   {
     path: "/login",
-    element: <LoginScreen />,    
+    element: <LoginScreen />,
   },
   {
     path: "/",
     element: <Dashboard />,
-  }, 
+  },
   {
-    path:"/masterbacklog/detail",
+    path: "/masterbacklog/detail",
     element: <DetailBacklog />,
   },
   {
-    path:"/masterbacklog/create",
+    path: "/masterbacklog/create",
     element: <CreateNewBacklog />,
   },
   {
-    path:"/masteruserrole/detail",
+    path: "/masteruserrole/detail",
     element: <DetailUserRole />,
   },
   {
-    path:"/masteruserrole/create",
+    path: "/masteruserrole/create",
     element: <CreateUserRole />,
   },
   {
@@ -60,16 +72,21 @@ export const routes = [
     icon: <PersonPinOutlinedIcon />,
   },
   {
-    path: "/masterProject",
-    element: <Project />,
-    name: "Project",
-    icon: <PersonPinOutlinedIcon />,
-  },
-  {
     path: "/workingReport",
     element: <WorkingReport />,
     name: "Working Report",
-    icon: <PersonPinOutlinedIcon />,
+    icon: <WorkOutlineIcon />,
+  },
+  {
+    path: "/masterProject",
+    element: <Project />,
+    name: "Project",
+    icon: <AccountTreeIcon />,
+  },
+  {
+    path: "/master-project/detail",
+    element: <DetailProject />,
+    name: "Project",
   },
   {
     path: "/masteruserrole",
@@ -93,11 +110,11 @@ export const routes = [
   },
   {
     path: "masterbacklog/create",
-    element: <CreateNewBacklog />
+    element: <CreateNewBacklog />,
   },
   {
     path: "masterbacklog/detail",
-    element: <DetailBacklog />
+    element: <DetailBacklog />,
   },
   {
     path: "/masterroleprivilege",
@@ -107,7 +124,7 @@ export const routes = [
   },
   {
     path: "masterroleprivilege/create",
-    element: <CreateRolePrivilege />
+    element: <CreateRolePrivilege />,
   },
   {
     path: "masterroleprivilege/detail",
@@ -116,7 +133,7 @@ export const routes = [
   {
     path: "/master-company",
     element: <Company />,
-    name: "Backlog",
+    name: "Master Company",
     icon: <BusinessOutlinedIcon />,
   },
   {
@@ -124,7 +141,7 @@ export const routes = [
     element: <CreateCompany />,
   },
   {
-    path: '/master-company/detail',
-    element: <DetailCompany />
-  }
+    path: "/master-company/detail",
+    element: <DetailCompany />,
+  },
 ];
