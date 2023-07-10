@@ -7,9 +7,9 @@ const schemacompany = yup.object({
     companyEmail: yup.string().email(`${textPlease} Valid Email`).required(`${textPlease} Company Email`),
     npwp: yup.string().matches(/^(\d{2})[.](\d{3})[.](\d{3})[.](\d-)(\d{3})[.](\d{3})$/g, 'NPWP must be XX.XXX.XXX.X-XXX.XXX').required(`${textPlease} NPWP`),
     address: yup.string().required(`${textPlease} Adress`),
-    picName: yup.string().required(`${textPlease} PIC Name`),
-    picPhone: yup.number().positive().required(`${textPlease} PIC Name`),
-    picEmail: yup.string().email(`${textPlease} Valid Email`).required(`${textPlease} PIC Email`)
+    // picName: yup.string().required(`${textPlease} PIC Name`),
+    // picPhone: yup.number().positive().required(`${textPlease} PIC Name`),
+    // picEmail: yup.string().email(`${textPlease} Valid Email`).required(`${textPlease} PIC Email`)
   })
 
 export default schemacompany

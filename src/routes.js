@@ -19,6 +19,7 @@ const Backlog = lazy(() => import("./Layouts/Backlog/index"));
 const Project = lazy(() => import("./Layouts/Project"));
 const Company = lazy(() => import('./Layouts/Company'))
 const CreateCompany = lazy(() => import('./Layouts/Company/Create'))
+const DetailCompany = lazy(() => import('./Layouts/Company/Detail'))
 
 const CreateMasterEmployee = lazy(() =>
   import("./Layouts/masterEmployee/Tabnya")
@@ -122,4 +123,8 @@ export const routes = [
     path: "/master-company/create",
     element: <CreateCompany />,
   },
+  {
+    path: '/master-company/detail',
+    element: <DetailCompany />
+  }
 ];

@@ -25,10 +25,11 @@ const MasterCompany = () => {
       headerName: "Company Name",
       flex: 1,
       renderCell: (params) => {
+        const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
               <Avatar
-                src={params.row.companyProfile}
+                src={urlMinio}
                 className="img-master-employee"
                 alt="Profile Image"
               />
@@ -63,11 +64,12 @@ const MasterCompany = () => {
     page: 0,
     size: 10,
     sortName: 'companyName',
-    sortType: 'asc'
+    sortType: 'asc',
+    search: ''
   })
   const navigate = useNavigate();
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async (id) => {
     setOpen(true);
   };
 
@@ -77,18 +79,20 @@ const MasterCompany = () => {
   };
 
   useEffect(() => {
+    localStorage.removeItem('companyId')
     getData()
   }, [filter])
 
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     rebuildData(res)
   }
 
   const rebuildData = (resData) => {
+    console.log('data: ', resData)
     let temp = []
     let number = filter.page * filter.size
     temp = resData.data.map((value, index) => {
@@ -102,7 +106,6 @@ const MasterCompany = () => {
         npwp: value.attributes.npwp
       }
     })
-    console.log('temp: ', temp)
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
@@ -116,21 +119,28 @@ const MasterCompany = () => {
   };
 
   const handleChangeSearch = (event) => {
-    console.log("value search: ", event.target.value);
+    setFilter({
+      ...filter,
+      search: event.target.value
+    })
   };
 
   const handleAdd = () => {
-    console.log("add");
     navigate("/master-company/create");
   };
 
+  const redirectDetail = (id) => {
+    localStorage.setItem('companyId', id)
+    navigate('/master-company/detail')
+  }
+
   const onFilter = (dataFilter) => {
-    console.log('on filter: ', dataFilter)
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      search: filter.search
     })
   }
   return (
@@ -152,8 +162,8 @@ const MasterCompany = () => {
           searchTitle="Search By"
           onAdd={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => console.log("id detail: ", id)}
-          onDelete={(id) => handleClickOpen()}
+          onDetail={(id) => redirectDetail(id)}
+          onDelete={(id) => handleClickOpen(id)}
         />
         <Dialog
           open={open}
@@ -170,8 +180,7 @@ const MasterCompany = () => {
               className="dialog-delete-text-content"
               id="alert-dialog-description"
             >
-              Let Google help apps determine location. This means sending
-              anonymous location data to Google, even when no apps are running.
+              Warning: Deleting this data is irreversible. Are you sure you want to proceed?
             </DialogContentText>
           </DialogContent>
           <DialogActions className="dialog-delete-actions">

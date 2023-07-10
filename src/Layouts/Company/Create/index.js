@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid";
 import SideBar from '../../../Component/Sidebar';
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from '../../../Component/Header'
-import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Avatar } from '@mui/material';
 import '../../../App.css'
 import { useNavigate } from 'react-router';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,10 +11,20 @@ import { FormProvider, useForm } from "react-hook-form";
 import FormInputText from '../../../Component/FormInputText';
 import schemacompany from '../shema';
 import client from '../../../global/client';
+import uploadFile from '../../../global/uploadFile';
+import CustomAlert from '../../../Component/Alert';
 const CreateCompany = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const [sendData, setData] = useState({})
   const [isSave, setIsSave] = useState(false)
+  const [dataAlert, setDataAlert] = useState({
+    open: false,
+    severity: 'success',
+    message: ''
+  })
+  const [file, setFile] = useState('')
+  const [filePath, setFilePath] = useState('')
   const dataBread = [
     {
       href: "/dashboard",
@@ -34,21 +44,14 @@ const CreateCompany = () => {
   ];
 
   const cancelData = () => {
-    console.log('cancel data')
     setIsSave(false)
     setOpen(true)
   }
 
   const confirmSave = async (data) => {
-    console.log('data: ', data)
-    // setIsSave(true)
-    // setOpen(true)
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: '/company/addCompany',
-      data
-    })
-    console.log('res: ', res)
+    setIsSave(true)
+    setOpen(true)
+    setData(data)
   }
 
   const methods = useForm({
@@ -58,9 +61,6 @@ const CreateCompany = () => {
       companyEmail: '',
       npwp: '',
       address: '',
-      picName: '',
-      picPhone: undefined,
-      picEmail: ''
     }
   })
 
@@ -70,13 +70,41 @@ const CreateCompany = () => {
     }
     setOpen(false)
   }
-  const onSave = () => {
+  const onSave = async () => {
+    const data = {
+      ...sendData,
+      companyProfile: filePath
+    }
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: '/company/addCompany',
+      data
+    })
+    if (res.data.meta.message) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/master-company')
+      }, 3000)
+    }
     setOpen(false)
-    // console.log('data save: ', dataCompany)
+  }
+
+  const handleChange = async (e) => {
+    if (e.target.files) {
+      const tempFilePath = await uploadFile(e.target.files[0])
+      console.log('tempFilePath: ', tempFilePath)
+      setFilePath(tempFilePath)
+      setFile(URL.createObjectURL(e.target.files[0]));
+    }
   }
 
   return (
     <SideBar>
+      <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
           <Grid item xs={12} pb={2}>
@@ -93,6 +121,30 @@ const CreateCompany = () => {
                       rowSpacing={3.79}
                       xs={12}
                     >
+                      <Grid item xs={12}>
+                        <Typography>
+                          Company Picture
+                        </Typography>
+                      </Grid>
+                      <Grid item container xs={12}>
+                        <Grid item mr={2}>
+                          <Avatar src={file} className="image-upload" />
+                        </Grid>
+                        <Grid item xs={2} className='custom-file-upload'>
+                          <label className='class-label-upload'>Upload Image</label>
+                          <input
+                            type="file"
+                            accept=".png, .jpg"
+                            className="custom-file-input"
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                        <Grid item xs={12} mt={1}>
+                          <Typography variant='titleTextWarningUpload'>
+                            Single upload file should not be more 3MB. Only the .png/jpg file types are allowed
+                          </Typography>
+                        </Grid>
+                      </Grid>
                       <Grid item xs={6}>
                         <FormInputText
                           focused
@@ -129,7 +181,7 @@ const CreateCompany = () => {
                           label='Company Address'
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      {/* <Grid item xs={6}>
                         <FormInputText
                           focused
                           name='picName'
@@ -155,13 +207,14 @@ const CreateCompany = () => {
                           placeholder='e.g pic@mail.com'
                           label='PIC Email'
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   <Grid
                     item 
                     container 
                     xs={12}
                     justifyContent='end'
+                    mt={3.5}
                   >
                     <Grid item xs={9} />
                     <Grid item xs textAlign='right'>

@@ -13,7 +13,6 @@ let globalTheme = createTheme({
     fontFamily: ["Poppins"],
     textDetail: {
       fontSize: ["40px"],
-      fontSize: ["40px"],
     },
     noDataTable: {
       fontSize: ["16px"],
@@ -115,25 +114,7 @@ let globalTheme = createTheme({
       fontWeight: ["400"],
       lineHeight: ["150%"],
     },
-    attendanceHeader: {
-      color: ["#4B465C"],
-      fontSize: ["24px"],
-      fontFamily: ["Poppins"],
-      fontWeight: ["700"],
-      lineHeight: ["200%"],
-    },
-    attendanceTrack: {
-      color: ["#4B465C"],
-      fontSize: ["16px"],
-      fontFamily: ["Poppins"],
-      fontWeight: ["400"],
-      lineHeight: ["150%"],
-    },
     drawerNameUser: {
-      fontSize: ["16px"],
-      color: ["#333"],
-      fontWeight: ["600"],
-      lineHeight: ["150%"],
       fontSize: ["16px"],
       color: ["#333"],
       fontWeight: ["600"],
@@ -151,6 +132,30 @@ let globalTheme = createTheme({
       fontWeight: ["600"],
       lineHeight: ["175%"],
     },
+    titleTextWarningUpload: {
+      color: ['rgba(0, 0, 0, 0.38)'],
+      fontSize: ["12px"],
+      fontFamily: ["Poppins"],
+      fontStyle: ["normal"],
+      fontWeight: ["400"],
+      lineHeight: ["150%"],
+    },
+    labelHeaderDetail: {
+      color: ['rgba(0, 0, 0, 0.60)'],
+      fontSize: ["12px"],
+      fontFamily: ["Poppins"],
+      fontStyle: ["normal"],
+      fontWeight: ["400"],
+      lineHeight: ["150%"],
+    },
+    inputDetail: {
+      color: ['rgba(0, 0, 0, 0.87)'],
+      fontSize: ["16px"],
+      fontFamily: ["Poppins"],
+      fontStyle: ["normal"],
+      fontWeight: ["400"],
+      lineHeight: ["150%"],
+    }
   },
   // textfield: {
   //   textFieldEmployee: {
