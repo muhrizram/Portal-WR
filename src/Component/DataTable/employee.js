@@ -105,8 +105,7 @@ const DataTableEmployee = ({
                   open={importFile}
                   onClose={handleClose}
                   aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                // style={{width:'100%'}}
+                  aria-describedby="alert-dialog-description"                
                 >
                   <DialogTitle id="alert-dialog-title" style={{ alignSelf: 'center' }}>
                     {"Import Data"}
