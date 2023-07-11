@@ -12,6 +12,12 @@ import {
   DialogActions,
   Typography,
   Avatar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -24,17 +30,63 @@ import uploadFile from "../../../global/uploadFile";
 import CustomAlert from "../../../Component/Alert";
 import TableNative from "../../../Component/DataTable/Native";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
 const DetailProject = () => {
-  const [dataProject, setDataProject] = useState([]);
+  const [dataProject, setDataProject] = useState([
+    {
+      id: 1,
+      no: 1,
+      nip: "0213819",
+      name: "Iqbal",
+      joinDate: "02/02/2023",
+      assignment: "Project",
+    },
+  ]);
   const columnsProject = [
     {
-      field: "projectName",
-      headerName: "Project Name",
+      field: "no",
+      headerName: "No",
       flex: 1,
     },
     {
-      field: "projectType",
-      headerName: "Project Type",
+      field: "nip",
+      headerName: "NIP",
+      flex: 1,
+    },
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 1,
+      renderCell: (params) => {
+        const urlMinio = params.row.photoProfile
+          ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
+          : "";
+        return (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Avatar
+              src={urlMinio}
+              className="img-master-employee"
+              alt="Profile Image"
+            />
+            <div style={{ marginLeft: "0.5rem" }}>
+              <span className="text-name">{params.row.name}</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      field: "joinDate",
+      headerName: "Join Date",
+      flex: 1,
+    },
+    {
+      field: "assignment",
+      headerName: "Assignment",
       flex: 1,
     },
   ];
@@ -104,10 +156,6 @@ const DetailProject = () => {
     setOpen(false);
   };
 
-  const handleProject = () => {
-    navigate("/masterProject");
-  };
-
   return (
     <SideBar>
       <CustomAlert
@@ -169,13 +217,17 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="company"
-                        className="input-field-crud"
-                        placeholder="e.g PT. company"
-                        label="Company Name"
-                      />
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo"
+                          options={top100Films}
+                          sx={{ width: "100%" }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Company Name" />
+                          )}
+                        />
+                      </FormControl>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -241,13 +293,14 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="picProject"
-                        className="input-field-crud"
-                        placeholder="e.g Selfi Muji Lestari"
-                        label="PIC Project Name"
-                      />
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="Start Date Project"
+                            sx={{ width: "100%", paddingRight: "20px" }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -265,13 +318,14 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="picProjectPhone"
-                        className="input-field-crud"
-                        placeholder="e.g PT. Jalan Gatot Subroto no 122"
-                        label="PIC Project Phone"
-                      />
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="End Date Project"
+                            sx={{ width: "100%", paddingRight: "20px" }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -313,13 +367,17 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="picProjectPhone"
-                        className="input-field-crud"
-                        placeholder="e.g PT. Jalan Gatot Subroto no 122"
-                        label="PIC Project Phone"
-                      />
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo"
+                          options={projectTypes}
+                          sx={{ width: "100%" }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Project Type" />
+                          )}
+                        />
+                      </FormControl>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -386,7 +444,12 @@ const DetailProject = () => {
               <Typography variant="inputDetail">Teams Member</Typography>
             </Grid>
             <Grid item xs={12}>
-              <TableNative data={dataProject} columns={columnsProject} />
+              <TableNative
+                data={dataProject}
+                columns={columnsProject}
+                checkboxSelection={isEdit}
+                disableRowSelectionOnClick={isEdit}
+              />
             </Grid>
           </div>
         </Grid>
@@ -427,5 +490,16 @@ const DetailProject = () => {
     </SideBar>
   );
 };
+
+const top100Films = [
+  { label: "PT ABC", year: 1994 },
+  { label: "PT WASD", year: 1972 },
+  { label: "PT QWE", year: 1974 },
+];
+
+const projectTypes = [
+  { label: "Outsource", year: 1994 },
+  { label: "Project", year: 1972 },
+];
 
 export default DetailProject;
