@@ -27,12 +27,9 @@ import Checkbox from '@mui/material/Checkbox';
 
 
 const DetailUserRole = () => {
-
   const [isEdit, setIsEdit] = React.useState(false);
-
   const [open, setOpen] = React.useState(false);
   const [role,setRole] = useState(["Team Lead of Project","Employe"])
-
   const [open1, setOpen1] = React.useState(false);
 
   const dataBread = [

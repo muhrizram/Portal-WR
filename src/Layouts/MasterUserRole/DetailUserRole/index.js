@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -7,6 +7,9 @@ import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
+import { FormProvider, useForm } from "react-hook-form";
+import client from '../../../global/client';
+import { useNavigate } from "react-router-dom";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -27,14 +30,26 @@ import Checkbox from '@mui/material/Checkbox';
 
 
 const DetailUserRole = () => {
-
   const [isEdit, setIsEdit] = React.useState(false);
-
   const [open, setOpen] = React.useState(false);
+  const [idUserRole, setidUserRole] = React.useState(null);
   const [role,setRole] = useState(["Team Lead of Project","Employe"])
-
   const [open1, setOpen1] = React.useState(false);
-
+  const [selectedRoles, setSelectedRoles] = useState([]);  
+  const [sendData, setData] = useState({})
+  const [dataAlert, setDataAlert] = useState({
+    open: false,
+    severity: 'success',
+    message: ''
+  })
+  const RoleCheck = [
+    { label: "Administrator", value: 56 },
+    { label: "Employee", value: 57 },
+    { label: "HRD", value: 58 },
+    { label: "Finance", value: 59 },
+    { label: "Team Lead of Project", value: 60 },
+    { label: "Talent Off", value: 61 },
+  ];
   const dataBread = [
     {
       href: "/dashboard",
@@ -71,6 +86,29 @@ const DetailUserRole = () => {
     },
   ];
 
+  const navigate = useNavigate();  
+
+  const handleRoleChange = (value) => {
+    if (selectedRoles.includes(value)) {
+      setSelectedRoles(selectedRoles.filter((role) => role !== value));
+    } else {
+      setSelectedRoles([...selectedRoles, value]);
+    }
+  };
+
+  const roleCheckboxes = RoleCheck.map((role) => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={selectedRoles.includes(role.value)}
+          onChange={() => handleRoleChange(role.value)}
+        />
+      }
+      label={role.label}
+      key={role.value}
+    />
+  ));
+
   const clickEdit = () => {
     setIsEdit(true);
   };
@@ -95,10 +133,47 @@ const DetailUserRole = () => {
     setOpen1(false);
   };
 
-  const SubmitSave = () => {
-    setOpen(false);
+  useEffect(() => {
+    console.log("INI ROLE",selectedRoles)
+    // getDataDetail() 
+  }, [selectedRoles])
+
+  const getDataDetail = async () => {
+    const id = localStorage.getItem('id')
+    setidUserRole(id)
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/userRole/${id}`
+    })
+    if (res.data.attributes) {
+      console.log(res.data.attributes)      
+    }
+  }
+
+  const SubmitSave = async () => {
+    const data = {
+      lastModifiedBy: 4,
+      roleId: selectedRoles,
+    }
+    console.log("MISI PAKET ",data)
+    // const res = await client.requestAPI({
+    //   method: 'PUT',
+    //   endpoint: `/userRole/update/${idUserRole}`,
+    //   data
+    // })
+    // if (res.data.meta.message) {
+    //   setDataAlert({
+    //     severity: 'success',
+    //     open: true,
+    //     message: res.data.meta.message
+    //   })
+    //   setTimeout(() => {
+    //     navigate('/masteruserrole')
+    //   }, 3000)
+    // }
+    setOpen(false)
     setIsEdit(false);
-  };
+  }
 
   return (
     <>
@@ -114,13 +189,14 @@ const DetailUserRole = () => {
                   </Grid>
                   <Grid item />                 
                 </Grid>
-
-                <Grid container className="HeaderDetail">
-                  <>
+                <Grid className="HeaderDetail">
+                <Grid item xs={12}>
+                  <FormProvider>
+                    <form>
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
-                          <TextField fullWidth disabled id="outlined-basic" label="User Name" value="02/01/03/23 - Fahreja Abdullah" variant="outlined" />                                                                        
+                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="User Name" value="02/01/03/23 - Fahreja Abdullah" variant="outlined" />                                                                        
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
@@ -128,46 +204,39 @@ const DetailUserRole = () => {
                             >
                               Role
                             </Typography>
-                            <Grid container direction="row" sx={{marginLeft:'25px'}}>
-                              <Grid item xs={6}>
-                            <FormGroup>
-                              <FormControlLabel control={<Checkbox  />} label="Administrator" />
-                              <FormControlLabel control={<Checkbox  />} label="HRD" />
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="Team Lead of Project" />
-                            </FormGroup>
+                          <Grid container direction="row" sx={{ marginLeft: "25px" }}>
+                            <Grid item xs={6}>
+                              <FormGroup>{roleCheckboxes.slice(0, 3)}</FormGroup>
                             </Grid>
                             <Grid item xs={6}>
-                            <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="Employee" />
-                              <FormControlLabel control={<Checkbox  />} label="Finance" />
-                              <FormControlLabel control={<Checkbox  />} label="Talent Off" />
-                            </FormGroup>
+                              <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
-                            </Grid>
+                          </Grid>
                       </Grid>
                     </Grid>
                     <Grid
-                  item
-                  xs={12}
-                  alignSelf="center"
-                  textAlign="right"                  
-                >
-                  <Button
-                    onClick={handleClickOpen1}
-                    variant="outlined"
-                    style={{ marginRight: "10px" }}
-                    color="error"
-                  >
-                    Cancel Data
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleClickOpen}
-                    style={{ marginRight: "10px" }}
-                  >
-                    Save Data
-                  </Button>
-                </Grid>
+                      item
+                      xs={12}
+                      alignSelf="center"
+                      textAlign="right"                  
+                    >
+                      <Button
+                        onClick={handleClickOpen1}
+                        variant="outlined"
+                        style={{ marginRight: "10px" }}
+                        color="error"
+                      >
+                        Cancel Data
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleClickOpen}
+                        style={{ marginRight: "10px" }}
+                      >
+                        Save Data
+                      </Button>
+                    </Grid>
+                
                 <Dialog
                 open={open}
                 onClose={handleClose}
@@ -240,8 +309,10 @@ const DetailUserRole = () => {
                       </Button>
                     </DialogActions>
                   </Dialog>
-                  </>
-                </Grid>
+                  </form>
+                  </FormProvider>
+                </Grid>             
+                </Grid>            
               </Grid>
             </Grid>            
           </>
