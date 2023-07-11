@@ -12,6 +12,12 @@ import {
   DialogActions,
   Typography,
   Avatar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -211,13 +217,17 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="company"
-                        className="input-field-crud"
-                        placeholder="e.g PT. company"
-                        label="Company Name"
-                      />
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo"
+                          options={top100Films}
+                          sx={{ width: "100%" }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Company Name" />
+                          )}
+                        />
+                      </FormControl>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -357,13 +367,17 @@ const DetailProject = () => {
                   </Grid>
                   <Grid item xs={6}>
                     {isEdit ? (
-                      <FormInputText
-                        focused
-                        name="picProjectPhone"
-                        className="input-field-crud"
-                        placeholder="e.g PT. Jalan Gatot Subroto no 122"
-                        label="PIC Project Phone"
-                      />
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo"
+                          options={projectTypes}
+                          sx={{ width: "100%" }}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Project Type" />
+                          )}
+                        />
+                      </FormControl>
                     ) : (
                       <Grid container>
                         <Grid item xs={12}>
@@ -476,5 +490,16 @@ const DetailProject = () => {
     </SideBar>
   );
 };
+
+const top100Films = [
+  { label: "PT ABC", year: 1994 },
+  { label: "PT WASD", year: 1972 },
+  { label: "PT QWE", year: 1974 },
+];
+
+const projectTypes = [
+  { label: "Outsource", year: 1994 },
+  { label: "Project", year: 1972 },
+];
 
 export default DetailProject;
