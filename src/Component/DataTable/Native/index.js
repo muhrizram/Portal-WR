@@ -1,15 +1,16 @@
-import React from 'react';
-import Grid from '@mui/material/Grid';
-import { DataGrid } from '@mui/x-data-grid';
-import { Typography } from '@mui/material';
-import blanktable from '../../../assets/blanktable.png'
-import '../../../App.css'
+import React from "react";
+import Grid from "@mui/material/Grid";
+import { DataGrid } from "@mui/x-data-grid";
+import { Typography } from "@mui/material";
+import blanktable from "../../../assets/blanktable.png";
+import "../../../App.css";
 
 const TableNative = ({
   data,
-  columns
+  columns,
+  disableRowSelectionOnClick = false,
+  checkboxSelection = false,
 }) => {
-
   return (
     <Grid container>
       {data.length > 0 ? (
@@ -17,11 +18,12 @@ const TableNative = ({
           <DataGrid
             rows={data}
             columns={columns}
-            disableRowSelectionOnClick
+            disableRowSelectionOnClick={disableRowSelectionOnClick}
             hideFooterPagination
             disableColumnFilter
             disableColumnMenu
             hideFooter
+            checkboxSelection={checkboxSelection}
             getRowId={(row) => row.id}
           />
         </Grid>
@@ -48,8 +50,7 @@ const TableNative = ({
         </Grid>
       )}
     </Grid>
-  )
+  );
+};
 
-}
-
-export default TableNative
+export default TableNative;

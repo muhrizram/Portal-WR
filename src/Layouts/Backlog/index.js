@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import backlog from './initjson.json';
+import backlog from './initjson.json';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
@@ -70,6 +70,8 @@ const Backlog = () => {
       flex: 1 
     }
   ];
+  // const data = backlog.backlog
+
 
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -81,41 +83,43 @@ const Backlog = () => {
     page: 0,
     size: 10,
     sortName: 'taskName',
-    sortType: 'asc',
-    search: ''
+    sortType: 'asc'
   })
+
 
   
   const getStatusColor = (status) => {
     const statusColors = {
-      'to do': '#FDECEB',
-      'Backlog' : '#E6F2FB',
-      'In Progress': '#E6F2FB',
-      'Completed' : '#EBF6EE', 
-      'Done': '#EBF6EE'
+      Todo: '#FDECEB',
+      InProgress: '#E6F2FB',
+      Success: '#EBF6EE'
     };
-    return statusColors[status] || '#ccc';
+  
+    // Return the color for the given status, default to a fallback color if not found
+    return statusColors[status] || '#ccc'; // Fallback color: gray
   };
 
   const getStatusFontColor = (status) => {
     const statusFontColors = {
-      'to do': '#EE695D',
-      'Backlog' : '#3393DF',
-      'In Progress': '#3393DF',
-      'Completed' : '#5DB975',
-      'Done': '#5DB975'
+      Todo: '#EE695D',
+      InProgress: '#3393DF',
+      Success: '#5DB975'
     };
-    return statusFontColors[status] || '#fff';
+  
+    // Return the color for the given status, default to a fallback color if not found
+    return statusFontColors[status] || '#ccc'; // Fallback color: gray
   };
 
   const handleClickOpen = async (id) => {
-    setOpen(true);
+    //setId
+    setidHapus(id)
+    setOpen(true)
   };
 
-  // const onDelete = () => {
-  //   setOpenAlert(true);
-  //   handleClose();
-  // };
+  const onDelete = () => {
+    setOpenAlert(true);
+    handleClose();
+  };
 
   useEffect(() => {
     getData()
@@ -124,7 +128,8 @@ const Backlog = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+      endpoint: `backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+      // endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
     })
     rebuildData(res)
   }
@@ -150,20 +155,60 @@ const Backlog = () => {
   }
   
   const deleteData = async (id) => {
-    const res = await client.requestAPI({
+    await client.requestAPI({
       method: 'DELETE',
       endpoint: `/backlog/${id}`
     })
     console.log('id', id)
     setOpenAlert(true);
+    getData()
     handleClose();
   }
   
 
-  const handleDetail = async (id) => {
-    localStorage.setItem('idBacklog', id)
-    navigate("/masterbacklog/detail");
-  };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:4000/backlog");
+  //     const jsonData = await response.json();
+  //     const updatedData = jsonData.map((item, index) => ({
+  //       ...item,
+  //       no: index + 1,
+  //     }));
+  //     console.log("INI FETCHING ",updatedData)
+  //     setData(updatedData);
+  //   } catch (error) {
+  //     console.log("Error fetching data: ", error);
+  //   }
+  // };
+
+  // const handleClickOpen = (id) => {
+  //   console.log("INI TESTING ID MUNCUL",id)
+  //   setidHapus(id);
+  //   setOpen(true);
+  // };
+
+  // const onDelete = async(id) => {
+
+  //   try {
+  //     const response = await fetch(`http://localhost:4000/backlog/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       setOpenAlert(true);
+  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
+  //     } else {
+  //       console.error("Failed to delete data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting data:", error);
+  //   }
+  //   handleClose();
+
+  // }
 
   const handleClose = () => {
     setOpen(false);
@@ -175,13 +220,12 @@ const Backlog = () => {
 
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
-    setFilter({
-      ...filter,
-      search: event.target.value
-    });
   }
   
-  
+  const handleDetail = (id) => {
+    navigate("/masterbacklog/detail");
+  };
+
   const onAdd = () => {
     navigate("/masterbacklog/create");
     console.log('add')
@@ -194,7 +238,6 @@ const Backlog = () => {
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'taskName',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
-      search: filter.search
     })
   }
 
@@ -238,8 +281,7 @@ const Backlog = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={deleteData} className='delete-button button-text'>Delete Data</Button>
-            {/* <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button> */}
+            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
           </DialogActions>
         </Dialog>
       </SideBar>

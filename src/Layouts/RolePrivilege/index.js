@@ -54,9 +54,9 @@ const RolePrivilege = () => {
             flex: '1 0 0',
             flexWrap: 'wrap',
             borderRadius: '4px',
-            fontSize: '12px'
-            // backgroundColor: getStatusColor,
-            // color: getStatusFontColor(data.row.privilege),
+            fontSize: '12px',
+            backgroundColor: getStatusColor(data.row.privilege),
+            color: getStatusFontColor(data.row.privilege),
             // padding: '5px 10px',
             // display: 'flex',
             // gap: '10px',
@@ -64,7 +64,8 @@ const RolePrivilege = () => {
             // fontSize: '12px'
           }}
         >
-            {Array.isArray(data.row.privilege) ? (
+          {data.row.privilege}
+            {/* {Array.isArray(data.row.privilege) ? (
           data.row.privilege.map((privilege, index) => (
           <Box
             key={privilege}
@@ -77,7 +78,7 @@ const RolePrivilege = () => {
           >
             {privilege}
           </Box>
-        ))):(<></>)}
+        ))):(<></>)} */}
         </Box>
       ),
     }
@@ -124,40 +125,18 @@ const RolePrivilege = () => {
     let temp = []
     let number = filter.page * filter.size
     temp = resData.data.map((value, index) => {
+      const privileges = value.attributes.listPrivilege.map((privilege) => privilege.privilegeName).join(', ')
       return {
         no: number + (index + 1),
         id: value.id,
         role: value.attributes.roleName,
-        privilege: value.attributes.privilegeName,
-        // taskName: value.attributes.taskName,
-        // priority: value.attributes.priority,
-        // status: value.attributes.status,
-        // assignedTo: value.attributes.assignedTo
+        privilege: privileges,
       }
     })
     console.log('temp: ', temp)
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:4000/rolePrevilege");
-  //     const jsonData = await response.json();
-  //     const updatedData = jsonData.map((item, index) => ({
-  //       ...item,
-  //       no: index + 1,
-  //     }));
-  //     console.log("INI FETCHING ",updatedData)
-  //     setData(updatedData);
-  //   } catch (error) {
-  //     console.log("Error fetching data: ", error);
-  //   }
-  // };
 
   // const onDelete = async(id) => {
 
