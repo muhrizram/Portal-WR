@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Autocomplete, Button, TextField, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -6,6 +6,7 @@ import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import { DeleteOutline } from "@mui/icons-material";
+import client from "../../../global/client";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -27,6 +28,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
+
 const DetailBacklog = () => {
   const ContractStatus = [
     { label: "Electronic Health Record" },
@@ -37,19 +39,22 @@ const DetailBacklog = () => {
   const [addTask, setAddTask] = React.useState(true);
   const [valuerating, setValuerating] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+  
   const [valueproject, setValueproject] = useState({
     label: "Electronic Health Record",
   });
   const [open1, setOpen1] = React.useState(false);
 
-  const dataBread = [
+  const [dataDetail, setDataDetail] = useState({});
+
+  const dataBreadDetailBacklog = [
     {
       href: "/dashboard",
       title: "Dashboard",
       current: false,
     },
     {
-      href: "/masteremployee",
+      href: "/masterbacklog",
       title: "Master Backlog",
       current: false,
     },
@@ -60,14 +65,14 @@ const DetailBacklog = () => {
     },
   ];
 
-  const dataBread2 = [
+  const dataBreadEditBacklog = [
     {
       href: "/dashboard",
       title: "Dashboard",
       current: false,
     },
     {
-      href: "/masteremployee",
+      href: "/masterbacklog",
       title: "Master Backlog",
       current: false,
     },
@@ -110,12 +115,45 @@ const DetailBacklog = () => {
     setIsEdit(false);
   };
 
+  useEffect(() => {
+    getDataDetail()
+  }, [])
+
+  const getDataDetail = async () => {
+    const idDetail = localStorage.getItem("idBacklog")
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/backlog/${idDetail}`
+    })
+    console.log('ini data detai', res)
+    rebuildDataDetail(res)
+  };
+
+  const rebuildDataDetail = (resData) => {
+    let tempDetail = {
+        id: resData.data.id,
+        projectName: resData.data.attributes.projectName,
+        taskCode: resData.data.attributes.taskCode,
+        taskName: resData.data.attributes.taskName,
+        taskDescription: resData.data.attributes.taskDescription,
+        taskName: resData.data.attributes.taskName,
+        priority: resData.data.attributes.priority,
+        status: resData.data.attributes.status,
+        estimationTime: resData.data.attributes.estimationTime,
+        actualTime: resData.data.attributes.actualTime,
+        assignedTo: resData.data.attributes.assignedTo
+      }
+    
+    console.log('tempDetail: ', tempDetail)
+    setDataDetail(tempDetail)
+  }
+
   return (
     <>
       <SideBar>
         {isEdit ? (
           <>
-            <Breadcrumbs breadcrumbs={dataBread2} />
+            <Breadcrumbs breadcrumbs={dataBreadEditBacklog} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
@@ -420,7 +458,7 @@ const DetailBacklog = () => {
           </>
         ) : (
           <>
-            <Breadcrumbs breadcrumbs={dataBread} />
+            <Breadcrumbs breadcrumbs={dataBreadDetailBacklog} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
@@ -453,7 +491,7 @@ const DetailBacklog = () => {
                         >
                           <Grid item xs={12}>
                             <Typography variant="backlogDetail">
-                              Electronic Health Record
+                              Project - {dataDetail.projectName}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -464,24 +502,17 @@ const DetailBacklog = () => {
                           style={{ padding: "20px" }}
                         >
                           <Grid item>
-                          <AccordionSummary
+                            <AccordionSummary
                               expandIcon={<ExpandMoreIcon />}
                               aria-controls="panel1a-content"
                               id="panel1a-header"
                             >
                                 <Typography variant="backlogDetailText">
-                                Create Mockup Screen Dashboard :: Task 1 / T-WR-0011
+                                  {dataDetail.taskName} :: {dataDetail.taskCode}
+                                {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
                                 </Typography>
                             </AccordionSummary>
                           </Grid>
-                          {/* <Grid item xs={1}>
-                            <Typography variant="backlogDetail">::</Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="backlogDetail">
-                              Task 1 / T-WR-0011
-                            </Typography>
-                          </Grid> */}
                         </Grid>
 
                         <Grid
@@ -496,7 +527,7 @@ const DetailBacklog = () => {
                               Task Description
                             </Typography>
                             <Typography variant="descBaklog">
-                              Create Mockup Screen Dashboard - UI/UX
+                              {dataDetail.taskDescription}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -506,7 +537,7 @@ const DetailBacklog = () => {
                               Backlog Status
                             </Typography>
                             <Typography variant="descBaklog">
-                              Todo
+                              {dataDetail.status}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -515,12 +546,14 @@ const DetailBacklog = () => {
                             >
                               Priority
                             </Typography>
-                            <Rating
-                                name="rating"
-                                value={5} // Ambil nilai rating dari properti "priority"
-                                readOnly
-                                precision={0.5}
-                            />
+                            {dataDetail && dataDetail.priority && (
+                              <Rating
+                                  name="rating"
+                                  value={dataDetail.priority} // Ambil nilai rating dari properti "priority"
+                                  readOnly
+                                  precision={0.5}
+                              />
+                            )}
                           </Grid>
                         </Grid>
 
@@ -536,7 +569,7 @@ const DetailBacklog = () => {
                               Assigned To
                             </Typography>
                             <Typography variant="descBaklog">
-                              Abdan Hafidzul
+                              {dataDetail.assignedTo}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -546,7 +579,7 @@ const DetailBacklog = () => {
                               Estimation Duration
                             </Typography>
                             <Typography variant="descBaklog">
-                              3 Hours
+                              {dataDetail.estimationTime}
                             </Typography>
                           </Grid>
                           <Grid item xs={4}>
@@ -556,7 +589,7 @@ const DetailBacklog = () => {
                               Actual Duration
                             </Typography>
                             <Typography variant="descBaklog">
-                              3 Hours
+                              {dataDetail.actualTime}
                             </Typography>
                           </Grid>
                         </Grid>
