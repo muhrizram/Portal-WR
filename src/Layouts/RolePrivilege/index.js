@@ -94,7 +94,7 @@ const RolePrivilege = () => {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'roleCategoryName',
+    sortName: 'roleId',
     sortType: 'asc',
     search: ''
   })
@@ -116,7 +116,8 @@ const RolePrivilege = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/rolePrivilege`
+      endpoint: `/rolePrivilege?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+      // 0&size=20&search=
     })
     rebuildData(res)
   }
@@ -137,37 +138,6 @@ const RolePrivilege = () => {
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
-
-  // const onDelete = async(id) => {
-
-  //   try {
-  //     const response = await fetch(`http://localhost:4000/rolePrevilege/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (response.ok) {
-  //       setOpenAlert(true);
-  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
-  //     } else {
-  //       console.error("Failed to delete data");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting data:", error);
-  //   }
-  //   handleClose();
-
-  // }
-
-  // const handleClickOpen = (id) => {
-  //   console.log("INI TESTING ID MUNCUL",id)
-  //   setidHapus(id);
-  //   setOpen(true);
-  // };
-
-  // const onDelete = (id) => {
-  //   setOpenAlert(true);
-  //   console.log('id delete: ', id)
-  //   handleClose()
-  // }
 
   const handleClose = () => {
     setOpen(false);
@@ -221,10 +191,10 @@ const RolePrivilege = () => {
           searchTitle="Search By"
           onAdd={() => onAdd()}
           onFilter={(dataFilter => onFilter(dataFilter))}
-          // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleClickOpen(id)}
+          totalData={totalData}
         />
         <Dialog
           open={open}

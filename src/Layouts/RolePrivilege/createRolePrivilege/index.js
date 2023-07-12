@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -10,7 +10,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import schemaprivilege from "../shema";
 import CustomAlert from "../../../Component/Alert";
 
 //dialog
@@ -31,6 +30,9 @@ const CreateRolePrivilege = () => {
   const [open, setOpen] = useState(false);
   const [isSave, setIsSave] = useState(false)
   const [sendData, setData] = useState({})
+  const [selectRole, setSelectRole] = useState();
+  const [selectRoleLabel, setSelectRoleLabel] = useState();
+  const [selectPrivilege, setSelectPrivilege] = useState([])
   const [dataAlert, setDataAlert] = useState({
     open: false,
     severity: 'success',
@@ -38,8 +40,25 @@ const CreateRolePrivilege = () => {
   })
   const navigate = useNavigate();
   const Role = [
-    "HRD","Administrator" 
+    {label: "Administrator", value: 56},
+    {label: "Employee", value: 57},
+    {label: "HRD", value: 58},
+    {label: "Finance", value: 59},
+    {label: "Team Lead of Project", value: 60},
+    {label: "Talent Off", value: 61}
   ];
+  const checkRolePrivilege = [
+    {label: "Working Report", value: 48},
+    {label: "Employee", value: 50},
+    {label: "Project", value: 54},
+
+    {label: "Role Privilege", value: 52},
+
+    {label: "Company", value: 53},
+    {label: "Backlog", value: 55},
+    {label: "User Role", value: 51},
+
+  ]
   const dataBread = [
     {
       href: "/dashboard",
@@ -58,26 +77,47 @@ const CreateRolePrivilege = () => {
     },
   ];
 
-  const handleClose = () => {
-    if (!isSave){
-      navigate('/masterroleprivilege')
-    }
-    setOpen(false);
-  };
+  const CheckboxRolePrivilege = checkRolePrivilege.map((privilege) => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={selectPrivilege.includes(privilege.value)}
+          // checked={selectPrivilege === privilege.value}
+          onChange={() => handleChangeCheckbox(privilege.value)}
+        />
+      }
+      label={privilege.label}
+      key={privilege.value}
+    />
+  ))
 
-  const methods = useForm({
-    // resolver: yupResolver(schemaprivilege),
-    defaultValues: {
-      roleName: '',
-      listPrivilege: ''
+  const handleChangeCheckbox = (value) => {
+    if (selectPrivilege.includes(value)) {
+      setSelectPrivilege(selectPrivilege.filter((privilege) => privilege !== value))
     }
-  })
+    else {
+      setSelectPrivilege([...selectPrivilege, value])
+    }
+  }
+
+  useEffect(() => {
+    console.log('checkbox', selectPrivilege)
+  }, [selectPrivilege])
 
   const onSave = async () => {
+    const listPrivilege = selectPrivilege.map(privilege => {
+      return{
+      roleId: selectRole,
+      privilegeId: privilege
+      }
+    })
+
     const data = {
-      ...sendData,
+      roleId: selectRole,
+      roleName: selectRoleLabel,
+      listPrivilege: listPrivilege
     }
-    console.log('data', data)
+    console.log('data nya', data)
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: '/rolePrivilege/addRolePrivilege',
@@ -108,6 +148,20 @@ const CreateRolePrivilege = () => {
     setOpen(true)
   }
 
+  const handleClose = () => {
+    if (!isSave){
+      navigate('/masterroleprivilege')
+    }
+    setOpen(false);
+  };
+
+  const handleChangeRole = (value) => {
+    console.log('isi data NYAA ', value)
+    console.log('INI LABEL ', value.label)
+    console.log('INI VALUE ', value.value)
+    setSelectRoleLabel(value.label)
+    setSelectRole(value.value)
+  }
   return (
     <SideBar>
       <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
@@ -119,8 +173,8 @@ const CreateRolePrivilege = () => {
         </Grid>
 
         <Grid item xs container direction="column" spacing={2}>
-          <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(confirmSave)}>  
+          <FormProvider>
+            <form>  
               <div>                        
                 <Grid style={{ padding: "30px" }}>                          
                 <Autocomplete
@@ -128,7 +182,9 @@ const CreateRolePrivilege = () => {
                         id="combo-box-demo"
                         options={Role}
                         sx={{ width: "100%" }}
-                        getOptionLabel={(option) => option}
+                        value={selectRole}
+                        onChange={(event, newValue) => handleChangeRole(newValue)}
+                        // isOptionEqualToValue={(option, value) => option.value === value.value}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -150,20 +206,12 @@ const CreateRolePrivilege = () => {
                 <Grid container direction="row" sx={{marginLeft:'30px'}}>
                   <Grid item xs={6}>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox  />} label="Working Report" />
-                      <FormControlLabel control={<Checkbox  />} label="Employee" />
-                      <FormControlLabel control={<Checkbox  />} label="Project" />
-                      <FormControlLabel control={<Checkbox  />} label="Holiday" />
-                      <FormControlLabel control={<Checkbox  />} label="Privilege" />
+                      {CheckboxRolePrivilege.slice(0,5)}
                     </FormGroup>
                     </Grid>
                     <Grid item xs={6}>
                     <FormGroup>
-                      <FormControlLabel control={<Checkbox  />} label="Job Group" />
-                      <FormControlLabel control={<Checkbox  />} label="Company" />
-                      <FormControlLabel control={<Checkbox  />} label="Backlog" />
-                      <FormControlLabel control={<Checkbox  />} label="User Role" />
-                      <FormControlLabel control={<Checkbox  />} label="Inaccessible" />
+                      {CheckboxRolePrivilege.slice(5)}
                     </FormGroup>
                   </Grid>
                 </Grid>
@@ -186,7 +234,7 @@ const CreateRolePrivilege = () => {
                     </Button>
                     <Button
                       variant='saveButton'
-                      type='submit'
+                      type='button'
                       onClick={confirmSave}
                     >
                       Save Data
