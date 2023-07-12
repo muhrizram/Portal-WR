@@ -35,13 +35,8 @@ const DetailUserRole = () => {
   const [idUserRole, setidUserRole] = React.useState(null);
   const [role,setRole] = useState(["Team Lead of Project","Employe"])
   const [open1, setOpen1] = React.useState(false);
-  const [selectedRoles, setSelectedRoles] = useState([]);  
-  const [sendData, setData] = useState({})
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
+  const [selectedRoles, setSelectedRoles] = useState([]);    
+
   const RoleCheck = [
     { label: "Administrator", value: 56 },
     { label: "Employee", value: 57 },
@@ -156,21 +151,17 @@ const DetailUserRole = () => {
       roleId: selectedRoles,
     }
     console.log("MISI PAKET ",data)
-    // const res = await client.requestAPI({
-    //   method: 'PUT',
-    //   endpoint: `/userRole/update/${idUserRole}`,
-    //   data
-    // })
-    // if (res.data.meta.message) {
-    //   setDataAlert({
-    //     severity: 'success',
-    //     open: true,
-    //     message: res.data.meta.message
-    //   })
-    //   setTimeout(() => {
-    //     navigate('/masteruserrole')
-    //   }, 3000)
-    // }
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: `/userRole/update/19`,
+      data
+    })
+    console.log("INI RES",res)
+    if (res.data.meta.message) {     
+      setTimeout(() => {
+        navigate('/masteruserrole')
+      }, 3000)
+    }
     setOpen(false)
     setIsEdit(false);
   }

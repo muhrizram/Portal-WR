@@ -47,7 +47,7 @@ export const routes = [
   },
   {
     path: "/",
-    element: <DetailUserRole />,
+    element: <Dashboard />,
   },
   {
     path: "/masterbacklog/detail",
