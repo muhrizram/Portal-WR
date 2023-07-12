@@ -45,6 +45,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
     { label: "To Do", value: 64 },
     { label: "Backlog", value: 65 },
     { label: "In Progress", value: 66 },
+    {  },
   ];
   const [taskData, setTaskData] = useState(task);
   
@@ -52,22 +53,13 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
     onUpdate(taskData);
   }, [taskData]);
 
-
-  const handleChange = (event, newValue) => {
-    // console.log("StatusBaacklog Value",taskData.statusBacklog);
-    const { name, value } = event.target;
-    if (name === 'statusBacklog') {
-      setTaskData((prevData) => ({
-        ...prevData,
-        statusBacklog: newValue ? newValue.value : null,
-      }));
-    } else {
-      setTaskData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
+  const handleChange = (event) => {    
+      const { name, value } = event.target;
+        setTaskData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+  }; 
 
   const handleDelete = () => {
     onDelete(taskData.id);
@@ -132,6 +124,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
                 Priority
               </Typography>
               <Rating
+                variant="outlined"
                 name="priority"
                 value={taskData.priority}
                 onChange={(event, newValue) => {
@@ -163,8 +156,20 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
                   id="combo-box-demo"
                   name='statusBacklog'
                   options={StatusBacklog}
-                  value={StatusBacklog.find((option) => option.value === taskData.statusBacklog)}
-                  onChange={handleChange}              
+                  value={taskData.statusBacklog ? StatusBacklog.find((option) => option.value === taskData.statusBacklog) : null}
+                  onChange={(event, newValue) => {
+                    if (newValue) {
+                      setTaskData((prevData) => ({
+                        ...prevData,
+                        statusBacklog: newValue.value,
+                      }))
+                    } else {
+                      setTaskData((prevData) => ({
+                        ...prevData,
+                        statusBacklog: null,
+                      }))
+                    }
+                  }}
                   sx={{ width: "100%" }}
                   getOptionLabel={(option) => option.label}
                   renderInput={(params) => (
@@ -174,16 +179,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
                       placeholder="Select Status"
                     />
                   )}
-                />
-            {/* <FormInputText                          
-              focused
-              name='statusBacklog'
-              value={taskData.statusBacklog}
-              onChange={handleChange}
-              className='input-field-crud'
-              placeholder='e.g To Do'
-              label='Backlog Status'
-            />           */}
+                />           
           </Grid>
         </Grid>
         <Grid
@@ -236,10 +232,10 @@ const CreateNewBacklog = () => {
   const [sendData, setData] = useState({})
   const [isSave, setIsSave] = useState(false)  
   const [addTask, setAddTask] = React.useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [valuerating, setValuerating] = React.useState(0);
+  const [tasks, setTasks] = useState([]);  
   const [open, setOpen] = React.useState(false);
-  const [valueproject, setValueproject] = React.useState("");  
+  const [opencancel, setOpencancel] = React.useState(false);
+  const [valueproject, setValueproject] = React.useState("");
   const [dataAlert, setDataAlert] = useState({
     open: false,
     severity: 'success',
@@ -266,20 +262,23 @@ const CreateNewBacklog = () => {
   ];
 
   const handleClickOpen = () => {
-    setOpen(true);
-    console.log(open);
+    setOpencancel(true);    
   };
 
-  const handleClose = () => {
-    if (!isSave) {
-      navigate('/master-company')
-    }
+  const handleClose = () => {   
     setOpen(false);
   };
 
-  const cancelData = () => {
+  const handleClosecancel = () => {
+    setOpencancel(false);
+  };
+
+  const SubmitcancelData = () => {
+    if (!isSave) {
+      navigate('/masterbacklog')
+    }
     setIsSave(false)
-    setOpen(true)
+    setOpencancel(false)
   }
 
   const handleDeleteTask = (taskId) => {
@@ -311,12 +310,12 @@ const CreateNewBacklog = () => {
       id: tasks.length + 1, 
       taskName: '',
       taskCode:`T-WR-00${tasks.length + 1}`,
-      priority: '',      
+      priority: null,      
       taskDescription: '',
       createdBy: 1,
       updatedBy: 1,
-      estimationTime: 0,
-      statusBacklog: 0,
+      estimationTime: null,
+      statusBacklog: null,
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -324,7 +323,7 @@ const CreateNewBacklog = () => {
   };
 
   const methods = useForm({
-    // resolver: yupResolver(shemabacklog),
+    resolver: yupResolver(shemabacklog),
     defaultValues: {      
       projectId: '',
       userId: '',
@@ -360,8 +359,7 @@ const CreateNewBacklog = () => {
         navigate('/masterbacklog')
       }, 3000)
     }
-    setOpen(false);
-    
+    setOpen(false);    
   }
 
   return (
@@ -512,7 +510,47 @@ const CreateNewBacklog = () => {
                       Save Data
                     </Button>
                   </DialogActions>
-                </Dialog>         
+                </Dialog>
+
+                <Dialog
+                    open={opencancel}
+                    onClose={handleClosecancel}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className="dialog-delete"
+                  >
+                    <DialogTitle
+                      sx={{
+                        alignSelf: "center",
+                        fontSize: "30px",
+                        fontStyle: "Poppins",
+                      }}
+                      id="alert-dialog-title"
+                    >
+                      {"Cancel Save Data"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Warning: canceling with result in data loss without
+                        saving!
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button
+                        variant='cancelButton'
+                        onClick={SubmitcancelData}
+                      >
+                        Cancel Without Saving
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleClosecancel}
+                        autoFocus
+                      >
+                        Back
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
               </Grid>
             </Grid>
           </Grid>
