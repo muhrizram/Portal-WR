@@ -7,7 +7,7 @@ import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import client from '../../../global/client';
 import { useNavigate } from "react-router-dom";
 
@@ -35,7 +35,7 @@ const DetailUserRole = () => {
   const [idUserRole, setidUserRole] = React.useState(null);
   const [role,setRole] = useState(["Team Lead of Project","Employe"])
   const [open1, setOpen1] = React.useState(false);
-  const [selectedRoles, setSelectedRoles] = useState([]);    
+  const [selectedRoles, setSelectedRoles] = useState([]);
 
   const RoleCheck = [
     { label: "Administrator", value: 56 },
@@ -147,18 +147,18 @@ const DetailUserRole = () => {
 
   const SubmitSave = async () => {
     const data = {
-      lastModifiedBy: 4,
+      // lastModifiedBy: 4,
       roleId: selectedRoles,
     }
     console.log("MISI PAKET ",data)
     const res = await client.requestAPI({
       method: 'PUT',
-      endpoint: `/userRole/update/19`,
+      endpoint: `/userRole/update/2`,
       data
     })
     console.log("INI RES",res)
     if (res.data.meta.message) {     
-      setTimeout(() => {
+      setTimeout(() => {                
         navigate('/masteruserrole')
       }, 3000)
     }
@@ -213,7 +213,7 @@ const DetailUserRole = () => {
                     >
                       <Button
                         onClick={handleClickOpen1}
-                        variant="outlined"
+                        variant='cancelButton'
                         style={{ marginRight: "10px" }}
                         color="error"
                       >
@@ -261,7 +261,7 @@ const DetailUserRole = () => {
                 </DialogActions>
               </Dialog>
 
-              <Dialog
+                  <Dialog
                     open={open1}
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
@@ -286,7 +286,7 @@ const DetailUserRole = () => {
                     </DialogContent>
                     <DialogActions>
                       <Button
-                        variant="outlined"
+                        variant='cancelButton'
                         onClick={handleCloseOpenCancelData}
                       >
                         Cancel Without Saving
@@ -303,10 +303,10 @@ const DetailUserRole = () => {
                   </form>
                   </FormProvider>
                 </Grid>             
-                </Grid>            
-              </Grid>
-            </Grid>            
-          </>
+              </Grid>            
+            </Grid>
+          </Grid>            
+        </>
         ) : (
           <>
             <Breadcrumbs breadcrumbs={dataBread} />

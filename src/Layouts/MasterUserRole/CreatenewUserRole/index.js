@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -8,6 +8,8 @@ import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
+import { FormProvider } from "react-hook-form";
+import client from '../../../global/client';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -25,9 +27,19 @@ import Checkbox from '@mui/material/Checkbox';
 const CreateUserRole = () => {
   const [open, setOpen] = React.useState(false);  
   const [open1, setOpen1] = React.useState(false);
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [selectedUser, setSelectedUser] = useState();
   const navigate = useNavigate();
   const UserName = [
-    "02/01/03/23 - Fahreja Abdullah", 
+    { label: "02/01/03/23 - Fahreja Abdullah", value: 9 }
+  ];
+  const RoleCheck = [
+    { label: "Administrator", value: 56 },
+    { label: "Employee", value: 57 },
+    { label: "HRD", value: 58 },
+    { label: "Finance", value: 59 },
+    { label: "Team Lead of Project", value: 60 },
+    { label: "Talent Off", value: 61 },
   ];
   const dataBread = [
     {
@@ -47,7 +59,6 @@ const CreateUserRole = () => {
     },
   ];
 
-
   const handleClickOpen = () => {
     setOpen(true);
     console.log(open);
@@ -65,13 +76,49 @@ const CreateUserRole = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+  };  
+
+  const handleRolesChange = (value) => {
+    if (selectedRoles.includes(value)) {
+      setSelectedRoles(selectedRoles.filter((role) => role !== value));
+    } else {
+      setSelectedRoles([...selectedRoles, value]);
+    }
   };
 
-  const SubmitSave = () => {
-    navigate("/masteruserrole");
+  const roleCheckboxes = RoleCheck.map((role) => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={selectedRoles.includes(role.value)}
+          onChange={() => handleRolesChange(role.value)}
+        />
+      }
+      label={role.label}
+      key={role.value}
+    />
+  ));
+
+  const SubmitSave = async () => {
+    const data = {     
+      userId: selectedUser, 
+      roleId: selectedRoles,
+    }
+    console.log("MISI PAKET ",data)
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: `/userRole/addUserRole/`,
+      data
+    })
+    console.log("INI RES",res)
+    if (res.data.meta.message) {     
+      setTimeout(() => {
+        navigate('/masteruserrole')
+      }, 3000)
+    }
+    setOpen(false)
     localStorage.setItem("isCreate", true);
-    setOpen(false);    
-  };
+  }
 
   return (
     <>
@@ -85,9 +132,10 @@ const CreateUserRole = () => {
                   </Grid>
                   <Grid item />                 
                 </Grid>
-
-                <Grid container className="HeaderDetail">
-                  <>
+                <Grid className="HeaderDetail">
+                <Grid item xs={12}>
+                  <FormProvider>
+                    <form>              
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
@@ -96,7 +144,8 @@ const CreateUserRole = () => {
                                 id="combo-box-demo"
                                 options={UserName}
                                 sx={{ width: "100%" }}
-                                getOptionLabel={(option) => option}
+                                value={selectedUser}
+                                onChange={(event, newValue) => setSelectedUser(newValue.value)}
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
@@ -112,123 +161,116 @@ const CreateUserRole = () => {
                             >
                               Role
                             </Typography>
-                            <Grid container direction="row" sx={{marginLeft:'30px'}}>
-                              <Grid item xs={6}>
-                            <FormGroup>
-                              <FormControlLabel control={<Checkbox  />} label="Administrator" />
-                              <FormControlLabel control={<Checkbox  />} label="HRD" />
-                              <FormControlLabel control={<Checkbox  />} label="Team Lead of Project" />
-                            </FormGroup>
+                            <Grid container direction="row" sx={{ marginLeft: "25px" }}>
+                            <Grid item xs={6}>
+                              <FormGroup>{roleCheckboxes.slice(0, 3)}</FormGroup>
                             </Grid>
                             <Grid item xs={6}>
-                            <FormGroup>
-                              <FormControlLabel control={<Checkbox  />} label="Employee" />
-                              <FormControlLabel control={<Checkbox  />} label="Finance" />
-                              <FormControlLabel control={<Checkbox  />} label="Talent Off" />
-                            </FormGroup>
+                              <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
-                            </Grid>
+                          </Grid>
                       </Grid>
                     </Grid>
                     <Grid
-                  item
-                  xs={12}
-                  alignSelf="center"
-                  textAlign="right"                  
-                >
-                  <Button
-                    onClick={handleClickOpen1}
-                    variant="outlined"
-                    style={{ marginRight: "10px" }}
-                    color="error"
-                  >
-                    Cancel Data
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleClickOpen}
-                    style={{ marginRight: "10px" }}
-                  >
-                    Save Data
-                  </Button>
-                </Grid>
-                <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                className="dialog-delete"
-              >
-                <DialogTitle
-                  sx={{
-                    alignSelf: "center",
-                    fontSize: "30px",
-                    fontStyle: "Poppins",
-                  }}
-                  id="alert-dialog-title"
-                >
-                  {"Save Data"}
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Save your progress: Don't forget to save your data before
-                    leaving
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button variant="outlined" onClick={handleClose}>
-                    Back
-                  </Button>
-                  <Button variant="contained" onClick={SubmitSave} autoFocus>
-                    Save Data
-                  </Button>
-                </DialogActions>
-              </Dialog>
-
-              <Dialog
-                    open={open1}
-                    onClose={handleClose1}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
-                    <DialogTitle
-                      sx={{
-                        alignSelf: "center",
-                        fontSize: "30px",
-                        fontStyle: "Poppins",
-                      }}
-                      id="alert-dialog-title"
+                      item
+                      xs={12}
+                      alignSelf="center"
+                      textAlign="right"                  
                     >
-                      {"Cancel Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Warning: canceling with result in data loss without
-                        saving!
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
                       <Button
+                        onClick={handleClickOpen1}
                         variant="outlined"
-                        onClick={handleCloseOpenCancelData}
+                        style={{ marginRight: "10px" }}
+                        color="error"
                       >
-                        Cancel Without Saving
+                        Cancel Data
                       </Button>
                       <Button
                         variant="contained"
-                        onClick={handleClose1}
-                        autoFocus
+                        onClick={handleClickOpen}
+                        style={{ marginRight: "10px" }}
                       >
-                        Back
+                        Save Data
                       </Button>
-                    </DialogActions>
-                  </Dialog>
-                  </>
+                    </Grid>
+                    <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    className="dialog-delete"
+                    >
+                      <DialogTitle
+                        sx={{
+                          alignSelf: "center",
+                          fontSize: "30px",
+                          fontStyle: "Poppins",
+                        }}
+                        id="alert-dialog-title"
+                      >
+                        {"Save Data"}
+                      </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            Save your progress: Don't forget to save your data before
+                            leaving
+                          </DialogContentText>
+                        </DialogContent>
+                      <DialogActions>
+                        <Button variant="outlined" onClick={handleClose}>
+                          Back
+                        </Button>
+                        <Button variant="contained" onClick={SubmitSave} autoFocus>
+                          Save Data
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                      open={open1}
+                      onClose={handleClose1}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                      className="dialog-delete"
+                    >
+                      <DialogTitle
+                        sx={{
+                          alignSelf: "center",
+                          fontSize: "30px",
+                          fontStyle: "Poppins",
+                        }}
+                        id="alert-dialog-title"
+                      >
+                        {"Cancel Save Data"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Warning: canceling with result in data loss without
+                          saving!
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button
+                          variant="outlined"
+                          onClick={handleCloseOpenCancelData}
+                        >
+                          Cancel Without Saving
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={handleClose1}
+                          autoFocus
+                        >
+                          Back
+                        </Button>
+                      </DialogActions>
+                    </Dialog>  
+                   </form>
+                  </FormProvider>
+                 </Grid>                       
                 </Grid>
               </Grid>
-            </Grid>            
-          
+            </Grid>                      
       </SideBar>
     </>
   );
