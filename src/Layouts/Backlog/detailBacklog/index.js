@@ -229,7 +229,6 @@ const DetailBacklog = () => {
   const [addTask, setAddTask] = React.useState(false);
   const [valuerating, setValuerating] = React.useState(0);
   const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
   const [dataDetail, setDataDetail] = useState({});
 
   //edit diaz rey {

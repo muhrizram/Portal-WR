@@ -34,7 +34,7 @@ const DetailUserRole = () => {
   const [open, setOpen] = React.useState(false);
   const [idUserRole, setidUserRole] = React.useState(null);
   const [role,setRole] = useState(["Team Lead of Project","Employe"])
-  const [open1, setOpen1] = React.useState(false);
+  const [Cancel, setCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const RoleCheck = [
@@ -112,20 +112,20 @@ const DetailUserRole = () => {
     setOpen(true);
     console.log(open);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickCancel = () => {
+    setCancel(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleCloseOpenCancelData = () => {
-    setOpen1(false);
+    setCancel(false);
     setIsEdit(false);
   };
 
   const handleClose1 = () => {
-    setOpen1(false);
+    setCancel(false);
   };
 
   useEffect(() => {
@@ -212,7 +212,7 @@ const DetailUserRole = () => {
                       textAlign="right"                  
                     >
                       <Button
-                        onClick={handleClickOpen1}
+                        onClick={handleClickCancel}
                         variant='cancelButton'
                         style={{ marginRight: "10px" }}
                         color="error"
@@ -262,7 +262,7 @@ const DetailUserRole = () => {
               </Dialog>
 
                   <Dialog
-                    open={open1}
+                    open={Cancel}
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"

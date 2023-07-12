@@ -75,7 +75,7 @@ const DetailEmployee = () => {
   const [value, setValue] = React.useState("one");
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
+  const [Cancel, setCancel] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [dataFix, setDataFix] = useState({
     jobTypeId: "",
@@ -129,17 +129,17 @@ const DetailEmployee = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickCancel = () => {
+    setCancel(true);
   };
   const handleClickOpen2 = () => {
     setOpen2(true);
   };
   const handleClose1 = () => {
-    setOpen1(false);
+    setCancel(false);
   };
   const handleCloseOpenCancelData = () => {
-    setOpen1(false);
+    setCancel(false);
     setDataEdit(dataFix);
     setIsEdit(false);
   };
@@ -243,7 +243,7 @@ const DetailEmployee = () => {
                     sx={{ marginTop: "20px" }}
                   >
                     <Button
-                      onClick={handleClickOpen1}
+                      onClick={handleClickCancel}
                       variant="outlined"
                       style={{ marginRight: "10px" }}
                       color="error"
@@ -260,7 +260,7 @@ const DetailEmployee = () => {
                   </Grid>
 
                   <Dialog
-                    open={open1}
+                    open={Cancel}
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"

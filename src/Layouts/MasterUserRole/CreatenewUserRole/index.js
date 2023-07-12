@@ -26,12 +26,12 @@ import Checkbox from '@mui/material/Checkbox';
 
 const CreateUserRole = () => {
   const [open, setOpen] = React.useState(false);  
-  const [open1, setOpen1] = React.useState(false);
+  const [openCancel, setOpenCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
   const navigate = useNavigate();
   const UserName = [
-    { label: "02/01/03/23 - Fahreja Abdullah", value: 9 }
+    { label: "02/01/03/23 - Fahreja Abdullah", value: 2 }
   ];
   const RoleCheck = [
     { label: "Administrator", value: 56 },
@@ -63,19 +63,20 @@ const CreateUserRole = () => {
     setOpen(true);
     console.log(open);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickOpenCancel = () => {
+    setOpenCancel(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleCloseOpenCancelData = () => {
-    setOpen1(false);    
+    navigate("/masteruserrole");
+    setOpenCancel(false);    
   };
 
-  const handleClose1 = () => {
-    setOpen1(false);
+  const handleCloseCancel = () => {
+    setOpenCancel(false);
   };  
 
   const handleRolesChange = (value) => {
@@ -178,8 +179,8 @@ const CreateUserRole = () => {
                       textAlign="right"                  
                     >
                       <Button
-                        onClick={handleClickOpen1}
-                        variant="outlined"
+                        onClick={handleClickOpenCancel}
+                        variant='cancelButton'
                         style={{ marginRight: "10px" }}
                         color="error"
                       >
@@ -227,8 +228,8 @@ const CreateUserRole = () => {
                     </Dialog>
 
                     <Dialog
-                      open={open1}
-                      onClose={handleClose1}
+                      open={openCancel}
+                      onClose={handleCloseCancel}
                       aria-labelledby="alert-dialog-title"
                       aria-describedby="alert-dialog-description"
                       className="dialog-delete"
@@ -257,8 +258,8 @@ const CreateUserRole = () => {
                           Cancel Without Saving
                         </Button>
                         <Button
-                          variant="contained"
-                          onClick={handleClose1}
+                          variant='cancelButton'
+                          onClick={handleCloseCancel}
                           autoFocus
                         >
                           Back
