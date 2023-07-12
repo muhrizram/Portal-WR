@@ -77,11 +77,19 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
                 <Avatar src={file} className="img-master-employee-create" />
               </Grid>
               <Grid item xs={10}>
-                <input
-                  type="file"
-                  accept=".png, .jpg"
-                  onChange={handleChange}
-                />
+                <Button
+                  variant="outlined"
+                  component="label"
+                  style={{marginTop:15}}
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    accept=".png, .jpg"
+                    style={{ display: 'none' }}
+                    onChange={handleChange}
+                  />
+                </Button>
               </Grid>
               {/* <img src={file}  /> */}
               {/* <Button variant="outlined" onClick={handleChange} style={{marginTop:10, marginLeft:30}}>Upload Image</Button> */}

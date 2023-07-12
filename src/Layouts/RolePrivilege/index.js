@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import rolePrevilege from './initjson.json'
 // import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 // import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -8,6 +8,7 @@ import CustomAlert from '../../Component/Alert';
 import SideBar from '../../Component/Sidebar';
 import { Box } from '@mui/system';
 import { useNavigate } from "react-router";
+import client from "../../global/client";
 
 
 const RolePrivilege = () => {
@@ -51,12 +52,11 @@ const RolePrivilege = () => {
             alignContent: 'flex-start',
             gap: '10px',
             flex: '1 0 0',
-            // alignSelf: 'stretch',
             flexWrap: 'wrap',
             borderRadius: '4px',
-            fontSize: '12px'
-            // backgroundColor: getStatusColor,
-            // color: getStatusFontColor(data.row.privilege),
+            fontSize: '12px',
+            backgroundColor: getStatusColor(data.row.privilege),
+            color: getStatusFontColor(data.row.privilege),
             // padding: '5px 10px',
             // display: 'flex',
             // gap: '10px',
@@ -64,7 +64,8 @@ const RolePrivilege = () => {
             // fontSize: '12px'
           }}
         >
-            {Array.isArray(data.row.privilege) ? (
+          {data.row.privilege}
+            {/* {Array.isArray(data.row.privilege) ? (
           data.row.privilege.map((privilege, index) => (
           <Box
             key={privilege}
@@ -77,40 +78,96 @@ const RolePrivilege = () => {
           >
             {privilege}
           </Box>
-        ))):(<></>)}
+        ))):(<></>)} */}
         </Box>
       ),
     }
   ];
 
-  // const getStatusColor = (privilege) => {
-  //   const statusColors = {
-  //     Inaccessible : '#FDECEB',
-  //   }
-  //   return statusColors[privilege] || '#7367F033';
-  // };
-
-  // const getStatusFontColor = (privilege) => {
-  //   const statusFontColors = {
-  //     Inaccessible : '#EE695D',
-  //   }
-  //   return statusFontColors[privilege] || '#7367F0';
-  // };
-
-  const data = rolePrevilege.rolePrevilege
+  // const data = rolePrevilege.rolePrevilege
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const [idHapus,setidHapus] = useState()
+  const [totalData, setTotalData] = useState()
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'roleCategoryName',
+    sortType: 'asc',
+    search: ''
+  })
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const onDelete = (id) => {
+  const onDelete = () => {
     setOpenAlert(true);
-    console.log('id delete: ', id)
-    handleClose()
+    handleClose();
+  };
+
+  useEffect(() => {
+    getData()
+  }, [filter])
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/rolePrivilege`
+    })
+    rebuildData(res)
   }
+
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      const privileges = value.attributes.listPrivilege.map((privilege) => privilege.privilegeName).join(', ')
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        role: value.attributes.roleName,
+        privilege: privileges,
+      }
+    })
+    console.log('temp: ', temp)
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
+  }
+
+  // const onDelete = async(id) => {
+
+  //   try {
+  //     const response = await fetch(`http://localhost:4000/rolePrevilege/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       setOpenAlert(true);
+  //       fetchData(); // Ambil data terbaru setelah berhasil menghapus
+  //     } else {
+  //       console.error("Failed to delete data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting data:", error);
+  //   }
+  //   handleClose();
+
+  // }
+
+  // const handleClickOpen = (id) => {
+  //   console.log("INI TESTING ID MUNCUL",id)
+  //   setidHapus(id);
+  //   setOpen(true);
+  // };
+
+  // const onDelete = (id) => {
+  //   setOpenAlert(true);
+  //   console.log('id delete: ', id)
+  //   handleClose()
+  // }
 
   const handleClose = () => {
     setOpen(false);
@@ -122,15 +179,31 @@ const RolePrivilege = () => {
 
   const handleChangeSearch = (event) => {
     console.log('value search: ', event.target.value)
+    setFilter({
+      ...filter,
+      search: event.target.value
+    });
   }
   
-  const handleDetail = () => {
+  const handleDetail = (id) => {
     navigate("/masterroleprivilege/detail");
   }
   const onAdd = () => {
     navigate("/masterroleprivilege/create");
     console.log('add')
   }
+
+  const onFilter = (dataFilter) => {
+    console.log('on filter: ', dataFilter)
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      search: filter.search
+    })
+  }
+
   return (
     <div>
       <SideBar>
@@ -147,10 +220,11 @@ const RolePrivilege = () => {
           placeSearch="Role, Privilege, etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
+          onFilter={(dataFilter => onFilter(dataFilter))}
           // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => handleDetail()}
-          onDelete={(id) => handleClickOpen()}
+          onDetail={(id) => handleDetail(id)}
+          onDelete={(id) => handleClickOpen(id)}
         />
         <Dialog
           open={open}
@@ -169,7 +243,7 @@ const RolePrivilege = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={onDelete} className='delete-button button-text'>Delete Data</Button>
+            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
           </DialogActions>
         </Dialog>
       </SideBar>

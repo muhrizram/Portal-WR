@@ -14,14 +14,13 @@ import CustomAlert from "../../Component/Alert";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
-import PreviewIcon from "@mui/icons-material/Preview";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 const Employee = () => {
   // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [Idnya, setIdnya] = useState("");
+  const [buttonImport, setButtonImport] = useState(true)
   const navigate = useNavigate();
   const [data, setData] = useState({
     nip: "",
@@ -146,23 +145,6 @@ const Employee = () => {
       headerName: "Contract End Date",
       flex: 1,
     },
-    // {
-    //   field: "actions",
-    //   headerName: "Action",
-    //   width: 150,
-    //   renderCell: (data) => {
-    //     return (
-    //       <div>
-    //         <IconButton href="/detail">
-    //           <PreviewIcon />
-    //         </IconButton>
-    //         <IconButton onClick={() => handleClickOpen(data.id)}>
-    //           <DeleteIcon />
-    //         </IconButton>
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
   const handleChangeSearch = (event) => {
     console.log("value search: ", event.target.value);
@@ -171,6 +153,25 @@ const Employee = () => {
   const onAdd = () => {
     navigate("/masteremployee/create");
   };
+
+
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'companyName',
+    sortType: 'asc'
+  })
+
+  const onFilter = (dataFilter) => {
+    console.log('on filter: ', dataFilter)
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+    })
+  }
+
   return (
     <div>
       <SideBar>
@@ -188,6 +189,8 @@ const Employee = () => {
           placeSearch="Name, NIP, etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
+          onImport={buttonImport}
+          onFilter={(dataFilter => onFilter(dataFilter))}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleDelete(id)}
