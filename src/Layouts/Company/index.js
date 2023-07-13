@@ -59,7 +59,12 @@ const MasterCompany = () => {
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [idCompany, setIdCompany] = useState(null)
+  const [dataAlert, setDataAlert] = useState({
+    open: false,
+    message: '',
+    severity: 'warning'
+  });
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -69,13 +74,25 @@ const MasterCompany = () => {
   })
   const navigate = useNavigate();
 
-  const handleClickOpen = async (id) => {
-    setOpen(true);
+  const handleClickOpen = (id) => {
+    setOpen(true)
+    setIdCompany(id)
   };
 
-  const onDelete = () => {
-    setOpenAlert(true);
-    handleClose();
+  const onDelete = async () => {
+    const res = await client.requestAPI({
+      method: 'DELETE',
+      endpoint: `/company/${idCompany}`
+    })
+    console.log('res: ', res)
+    if (res.meta.message) {
+      setDataAlert({
+        ...dataAlert,
+        open: true,
+        message: res.meta.message
+      })
+      handleClose();
+    }
   };
 
   useEffect(() => {
@@ -112,10 +129,20 @@ const MasterCompany = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setFilter({
+      page: 0,
+      size: 10,
+      sortName: 'companyName',
+      sortType: 'asc',
+      search: ''
+    })
   };
 
   const handleCloseAlert = () => {
-    setOpenAlert(false);
+    setDataAlert({
+      ...dataAlert,
+      open: false
+    })
   };
 
   const handleChangeSearch = (event) => {
@@ -147,9 +174,9 @@ const MasterCompany = () => {
     <div>
       <SideBar>
         <CustomAlert
-          severity="warning"
-          message="This is a waring message!"
-          open={openAlert}
+          severity={dataAlert.severity}
+          message={dataAlert.message}
+          open={dataAlert.open}
           onClose={handleCloseAlert}
         />
         <DataTable
