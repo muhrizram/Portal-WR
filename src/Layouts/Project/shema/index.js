@@ -3,11 +3,8 @@ import * as yup from "yup";
 const textPlease = "Please Input";
 
 const schemacompany = yup.object({
-  projectName: yup.string().max(30).required(`${textPlease} Company Name`),
-  companyEmail: yup
-    .string()
-    .email(`${textPlease} Valid Email`)
-    .required(`${textPlease} Company Email`),
+  projectName: yup.string().max(30).required(`${textPlease} Project Name`),
+  companyName: yup.string().max(30).required(`${textPlease} Company Name`),
   npwp: yup
     .string()
     .matches(

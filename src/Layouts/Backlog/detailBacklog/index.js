@@ -651,103 +651,109 @@ const DetailBacklog = () => {
                           </Grid>
                         </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "20px" }}
-                        >
-                          <Grid item>
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
+                        <Accordion>
+                          <Grid
+                            container
+                            direction="row"
+                            style={{ padding: "20px" }}
+                          >
+                            <Grid item>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                              >
+                                  <Typography variant="backlogDetailText">
+                                    {dataDetail.taskName} :: {dataDetail.taskCode}
+                                  {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
+                                  </Typography>
+                              </AccordionSummary> 
+                            </Grid>
+                          </Grid>
+
+                          <AccordionDetails>
+                            
+                            <Grid
+                              container
+                              direction="row"
+                              style={{ padding: "30px" }}
                             >
-                                <Typography variant="backlogDetailText">
-                                  {dataDetail.taskName} :: {dataDetail.taskCode}
-                                {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Task Description
                                 </Typography>
-                            </AccordionSummary>
-                          </Grid>
-                        </Grid>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.taskDescription}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Backlog Status
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.status}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Priority
+                                </Typography>
+                                {dataDetail && dataDetail.priority && (
+                                  <Rating
+                                      name="rating"
+                                      value={parseFloat(dataDetail.priority)} // Ambil nilai rating dari properti "priority"
+                                      readOnly
+                                      precision={0.5}
+                                  />
+                                )}
+                              </Grid>
+                            </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "30px" }}
-                        >
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
+                            <Grid
+                              container
+                              direction="row"
+                              style={{ padding: "30px" }}
                             >
-                              Task Description
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.taskDescription}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Backlog Status
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.status}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Priority
-                            </Typography>
-                            {dataDetail && dataDetail.priority && (
-                              <Rating
-                                  name="rating"
-                                  value={dataDetail.priority} // Ambil nilai rating dari properti "priority"
-                                  readOnly
-                                  precision={0.5}
-                              />
-                            )}
-                          </Grid>
-                        </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Assigned To
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.assignedTo}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Estimation Duration
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.estimationTime}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Actual Duration
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.actualTime}
+                                </Typography>
+                              </Grid>
+                            </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "30px" }}
-                        >
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Assigned To
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.assignedTo}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Estimation Duration
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.estimationTime}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Actual Duration
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.actualTime}
-                            </Typography>
-                          </Grid>
-                        </Grid>
+                          </AccordionDetails>
+                        </Accordion>
                       </Grid>
                     </Grid>
                   </>

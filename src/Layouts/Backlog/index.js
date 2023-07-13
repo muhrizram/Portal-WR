@@ -39,7 +39,7 @@ const Backlog = () => {
       renderCell: (data) => (
         <Rating
           name="rating"
-          value={data.row.priority} // Ambil nilai rating dari properti "priority"
+          value={parseFloat(data.row.priority)} // Ambil nilai rating dari properti "priority"
           readOnly
           precision={0.5}
         />
@@ -85,6 +85,11 @@ const Backlog = () => {
     search: ''
   })
 
+  const [dataAlert, setDataAlert] = useState({
+    open: false,
+    severity: 'success',
+    message: ''
+  })
   
   const getStatusColor = (status) => {
     const statusColors = {
@@ -146,19 +151,30 @@ const Backlog = () => {
         assignedTo: value.attributes.assignedTo
       }
     })
-    console.log('temp: ', temp)
+    // console.log('temp: ', temp)
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
   
   const deleteData = async (id) => {
-    await client.requestAPI({
+    const res = await client.requestAPI({
       method: 'DELETE',
       endpoint: `/backlog/${id}`
     })
     console.log('id', id)
-    setOpenAlert(true);
-    getData()
+    // setOpenAlert(true);
+    // getData()
+    
+    if (res.data.meta.message) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/masterroleprivilege')
+      }, 3000)
+    }
     handleClose();
   }
   
@@ -204,12 +220,13 @@ const Backlog = () => {
   return (
     <div>
       <SideBar>
-        <CustomAlert
+        <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
+        {/* <CustomAlert
           severity='warning'
           message='Deletion completed: The item has been successfully removed from the database'
           open={openAlert}
           onClose={handleCloseAlert}
-        />
+        /> */}
         <DataTable
           title='Backlog'
           data={data}
@@ -218,11 +235,10 @@ const Backlog = () => {
           searchTitle="Search By"
           onAdd={() => onAdd()}
           onFilter={(dataFilter => onFilter(dataFilter))}
-          // onButtonClick={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
-          // onDetail={(id) => console.log('id detail: ', id)}
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleClickOpen(id)}
+          totalData={totalData}
         />
         <Dialog
           open={open}

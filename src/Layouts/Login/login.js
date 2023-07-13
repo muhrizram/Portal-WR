@@ -14,12 +14,12 @@ import React from "react";
 // import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 // import VisibilityIcon from '@mui/icons-material/Visibility';
 // import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-// import { useNavigate } from 'react-router';
-import { useAuth } from "react-oidc-context";
+import { useNavigate } from 'react-router';
+// import { useAuth } from "react-oidc-context";
 const Login = ({ changeStat }) => {
-  const auth = useAuth();
+  // const auth = useAuth();
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // const [showPassword, setShowPassword] = React.useState(false);
 
@@ -28,10 +28,10 @@ const Login = ({ changeStat }) => {
   // const handleMouseDownPassword = (event) => {
   //   event.preventDefault();
   // };
-  console.log("auth login: ", auth);
+  // console.log("auth login: ", auth);
   const handleLogin = () => {
-    // navigate('/dashboard')
-    auth.signinRedirect();
+    navigate('/')
+    // auth.signinRedirect();
   };
   return (
     <Grid container paddingTop={20}>
