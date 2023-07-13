@@ -7,6 +7,9 @@ import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import { DeleteOutline } from "@mui/icons-material";
 import client from "../../../global/client";
+import FormInputText from '../../../Component/FormInputText';
+import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -28,24 +31,215 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
+//edit diaz rey {
+const TaskItem = ({ task, onDelete, onUpdate }) => {
+  const ProjectName = [
+    { label: "Electronic Health Record" },
+    { label: "API Factory" },
+    { label: "Selection Exam" },
+  ];  
+  const StatusBacklog = [
+    { label: "To Do", value: 64 },
+    { label: "Backlog", value: 65 },
+    { label: "In Progress", value: 66 },
+  ];
+  const [taskData, setTaskData] = useState(task);
+  
+  useEffect(() => {
+    onUpdate(taskData);
+  }, [taskData]);
+
+  const handlechangeStatusBacklog = (event, newValue) => {
+    console.log(newValue)
+    setTaskData((prevData) => ({
+      ...prevData,
+      statusBacklog: newValue,
+    }));
+  };
+
+  const handleChange = (event) => {    
+      const { name, value } = event.target;
+        setTaskData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+  }; 
+
+  const handleDelete = () => {
+    onDelete(taskData.id);
+  };
+
+  return (
+    <Accordion key={taskData.id} sx={{ boxShadow: 'none', width: '100%' }}>
+      <Grid
+        container
+        direction="row"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginRight: "80%",
+        }}
+      >
+        <Grid item>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography sx={{ fontSize: "24px" }}>
+              Task {taskData.id} / {taskData.taskCode}
+            </Typography>
+          </AccordionSummary>
+        </Grid>
+        <Grid item>
+          <Button
+            variant='cancelButton'
+            color="error"
+            onClick={handleDelete}
+            startIcon={<DeleteOutline />}
+            style={{ marginRight: "10px" }}
+          >
+            Delete Task
+          </Button>
+        </Grid>
+      </Grid>
+
+      <AccordionDetails>
+        <Grid container direction="row">
+          <Grid item xs={6}>
+            <TextField
+              style={{ paddingRight: "10px" }}
+              focused
+              name='taskName'
+              value={taskData.taskName}
+              onChange={handleChange}
+              className='input-field-crud'
+              placeholder='e.g Create Login Screen"'
+              label='Task Name'
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Box sx={{ width: "100%", paddingLeft: "10px" }}>
+              <Typography
+                component="legend"
+                sx={{ color: "grey" }}
+              >
+                Priority
+              </Typography>
+              <Rating
+                variant="outlined"
+                name="priority"
+                value={taskData.priority}
+                onChange={(event, newValue) => {
+                  setTaskData((prevData) => ({
+                    ...prevData,
+                    priority: newValue,
+                  }));
+                }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
+        <Grid container direction="row" style={{ marginTop: "30px" }}>
+          <Grid item xs={6}>
+            <FormInputText
+              style={{ paddingRight: "10px" }}
+              focused
+              value={taskData.taskDescription}
+              onChange={handleChange}
+              name='taskDescription'
+              className='input-field-crud'
+              placeholder='e.g Create Login Screen - Front End'
+              label='Task Decription'
+            />                   
+          </Grid>
+          <Grid item xs={6}>
+            <Autocomplete                                
+                  disablePortal
+                  id="combo-box-demo"
+                  name='statusBacklog'
+                  options={StatusBacklog}
+                  value={StatusBacklog.find((option) => option.value === taskData.statusBacklog)}
+                  onChange={(event, newValue) => setTaskData((prevData) => ({
+                    ...prevData,
+                    statusBacklog: newValue.value,
+                  }))}
+                  sx={{ width: "100%" }}
+                  getOptionLabel={(option) => option.label}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}                             
+                      label="Backlog Status"
+                      placeholder="Select Status"
+                    />
+                  )}
+                />           
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          style={{ marginTop: "30px" }}
+        >
+          <Grid item xs={6}>
+            <FormInputText
+              style={{ paddingRight: "10px" }}
+              focused
+              value={taskData.estimationTime}
+              onChange={handleChange}
+              name='estimationTime'
+              className='input-field-crud'
+              placeholder='e.g 1 Hour'
+              label='Estimation Duration'
+            />
+          </Grid>
+            <Grid item xs={6}>
+              <Autocomplete                                
+                disablePortal
+                id="combo-box-demo"
+                value={taskData.assignedTo}
+                options={ProjectName}
+                onChange={handleChange}              
+                sx={{ width: "100%" }}
+                getOptionLabel={(option) => option.label || ""}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}                             
+                    label="Assigned To"
+                    placeholder="Select Talent"
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+      </AccordionDetails>
+    </Accordion>
+  );
+};  
+//edit diaz }
 
 const DetailBacklog = () => {
-  const ContractStatus = [
+  const ProjectName = [
     { label: "Electronic Health Record" },
     { label: "API Factory" },
     { label: "Selection Exam" },
   ];
   const [isEdit, setIsEdit] = React.useState(false);
-  const [addTask, setAddTask] = React.useState(true);
+  const [addTask, setAddTask] = React.useState(false);
   const [valuerating, setValuerating] = React.useState(0);
   const [open, setOpen] = React.useState(false);
-  
-  const [valueproject, setValueproject] = useState({
-    label: "Electronic Health Record",
-  });
   const [open1, setOpen1] = React.useState(false);
-
   const [dataDetail, setDataDetail] = useState({});
+
+  //edit diaz rey {
+    const [opencancel, setOpencancel] = React.useState(false);
+  const [sendData, setData] = useState({})
+  const [isSave, setIsSave] = useState(false)  
+  const [tasks, setTasks] = useState([]);
+  const [valueproject, setValueproject] = React.useState("");
+  const navigate = useNavigate();  
+  //edit diaz }
 
   const dataBreadDetailBacklog = [
     {
@@ -86,34 +280,16 @@ const DetailBacklog = () => {
   const clickEdit = () => {
     setIsEdit(true);
   };
-  const handleClickTask = () => {
-    setAddTask(true);
-  };
 
   const handleClickOpen = () => {
-    setOpen(true);
-    console.log(open);
-  };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+    setOpencancel(true);
   };
 
-  const handleClose = () => {
+  //diaz edit {
+  const handleClose = () => {    
     setOpen(false);
   };
-  const handleCloseOpenCancelData = () => {
-    setOpen1(false);
-    setIsEdit(false);
-  };
-
-  const handleClose1 = () => {
-    setOpen1(false);
-  };
-
-  const SubmitSave = () => {
-    setOpen(false);
-    setIsEdit(false);
-  };
+  //diaz edit }
 
   useEffect(() => {
     getDataDetail()
@@ -148,6 +324,98 @@ const DetailBacklog = () => {
     setDataDetail(tempDetail)
   }
 
+  //ini aku Diaz edit dari sini
+  const handleClosecancel = () => {
+    setOpencancel(false);
+  };
+
+  const SubmitcancelData = () => {
+    setIsEdit(false)
+    setIsSave(false)
+    setOpencancel(false)
+  }
+  const handleDeleteTask = (taskId) => {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTasks);
+  };
+
+  const handleUpdateTask = (updatedTask) => {
+    console.log("updatedTask NYA",updatedTask)
+    const updatedTasks = tasks.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
+    );
+    setTasks(updatedTasks);
+  };
+
+  const confirmSave = async () => {
+    console.log("Datanya",tasks)
+    setIsSave(true)
+    setOpen(true)
+    setData(tasks)
+  }
+
+  const handleClickTask = () => {
+    setAddTask(true);
+    const newTask = {
+      projectId : 1,
+      userId : 2,
+      id: tasks.length + 1, 
+      taskName: '',
+      taskCode:`T-WR-00${tasks.length + 1}`,
+      priority: null,      
+      taskDescription: '',
+      createdBy: 1,
+      updatedBy: 1,
+      estimationTime: null,
+      statusBacklog: null,
+    };
+    const newTasks = JSON.parse(JSON.stringify(tasks));
+    newTasks.push(newTask);
+    setTasks(newTasks);
+  };
+
+  const methods = useForm({
+    // resolver: yupResolver(shemabacklog),
+    defaultValues: {      
+      projectId: '',
+      userId: '',
+      actualTime:'',   
+      taskCode:'',
+      //
+      projectName:'',
+      priority:'',
+      taskName:'',
+      taskDescription: '',
+      estimationTime:'',
+      statusBacklog:'',
+    }
+  })
+
+  const onSave = async () => {
+    const data = {
+      ...sendData,
+    }
+    console.log("INI DATA",data)
+    // const res = await client.requestAPI({
+    //   method: 'PUT',
+    //   endpoint: '/backlog/addBacklog',
+    //   data
+    // })
+    // if (res.data.meta.message) {
+    //   setDataAlert({
+    //     severity: 'success',
+    //     open: true,
+    //     message: res.data.meta.message
+    //   })
+    //   setTimeout(() => {
+    //     navigate('/masterbacklog')
+    //   }, 3000)
+    // }
+    setOpen(false);    
+  }
+  
+  //diaz edit sampe sini
+
   return (
     <>
       <SideBar>
@@ -155,27 +423,27 @@ const DetailBacklog = () => {
           <>
             <Breadcrumbs breadcrumbs={dataBreadEditBacklog} />
             <Grid container rowSpacing={2.5}>
+          <Grid item xs={12}>
+            <Grid container>
+              <Grid item xs={9.9}>
+                <Header judul="Create New Backlog" />
+              </Grid>
+              <Grid item />
+            </Grid>
+            <Grid className="HeaderDetail" >
               <Grid item xs={12}>
-                <Grid container>
-                  <Grid item xs={9.9}>
-                    <Header judul="Edit Backlog" />
-                  </Grid>
-                  <Grid item />
-                </Grid>
-
-                <Grid container className="HeaderDetail">
-                  <Autocomplete
+              <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(confirmSave)}>
+                  <Autocomplete                    
                     disablePortal
                     id="combo-box-demo"
-                    options={ContractStatus}
-                    sx={{ marginTop: "8px" }}
-                    fullWidth
+                    name="projectName"
+                    options={ProjectName}
+                    sx={{ width: "100%", marginTop: "8px" }}
                     getOptionLabel={(option) => option.label}
-                    value={valueproject}
                     onChange={(event, newValue) => {
                       setValueproject(newValue);
-                      if (!newValue) {
-                        console.log("kosong");
+                      if (!newValue) {                    
                         setAddTask(false);
                       }
                     }}
@@ -185,125 +453,14 @@ const DetailBacklog = () => {
                   />
                   {addTask ? (
                     <>
-                      <Accordion sx={{ boxShadow: "none", width: "100%" }}>
-                        <Grid
-                          container
-                          direction="row"
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginRight: "80%",
-                          }}
-                        >
-                          <Grid item>
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                            >
-                              <Typography sx={{ fontSize: "24px" }}>
-                                Task 1 / T-WR-0011
-                              </Typography>
-                            </AccordionSummary>
-                          </Grid>
-                          <Grid item>
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              startIcon={<DeleteOutline />}
-                              style={{ marginRight: "10px" }}
-                            >
-                              Delete Task
-                            </Button>
-                          </Grid>
-                        </Grid>
-
-                        <AccordionDetails>
-                          <Grid container direction="row">
-                            <Grid item xs={6}>
-                              <TextField
-                                placeholder="e.g Create Login Screen"
-                                style={{ paddingRight: "10px" }}
-                                fullWidth
-                                id="outlined-error-helper-text"
-                                label="Task Name"
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Box sx={{ width: "100%", paddingLeft: "10px" }}>
-                                <Typography
-                                  component="legend"
-                                  sx={{ color: "grey" }}
-                                >
-                                  Priority
-                                </Typography>
-                                <Rating
-                                  name="simple-controlled"
-                                  value={valuerating}
-                                  onChange={(event, newValue) => {
-                                    setValuerating(newValue);
-                                  }}
-                                />
-                              </Box>
-                            </Grid>
-                          </Grid>
-                          <Grid
-                            container
-                            direction="row"
-                            style={{ marginTop: "30px" }}
-                          >
-                            <Grid item xs={6}>
-                              <TextField
-                                placeholder="e.g Create Login Screen - Front End"
-                                style={{ paddingRight: "10px" }}
-                                fullWidth
-                                id="outlined-error-helper-text"
-                                label="Task Decription"
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <TextField
-                                placeholder="e.g To Do"
-                                fullWidth
-                                id="outlined-error-helper-text"
-                                label="Backlog Status"
-                              />
-                            </Grid>
-                          </Grid>
-                          <Grid
-                            container
-                            direction="row"
-                            style={{ marginTop: "30px" }}
-                          >
-                            <Grid item xs={6}>
-                              <TextField
-                                placeholder="e.g 1 Hour"
-                                style={{ paddingRight: "10px" }}
-                                fullWidth
-                                id="outlined-error-helper-text"
-                                label="Estimation Duration"
-                              />
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                options={ContractStatus}
-                                fullWidth
-                                getOptionLabel={(option) => option.label}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Assigned To"
-                                    placeholder="Select Talent"
-                                  />
-                                )}
-                              />
-                            </Grid>
-                          </Grid>
-                        </AccordionDetails>
-                      </Accordion>
+                    {tasks.map((task, index) => (
+                         <TaskItem
+                         key={task.id}
+                         task={task}
+                         onDelete={handleDeleteTask}
+                         onUpdate={handleUpdateTask}
+                       />
+                    ))}
                     </>
                   ) : (
                     <>
@@ -359,26 +516,61 @@ const DetailBacklog = () => {
                       sx={{ marginTop: "20px" }}
                     >
                       <Button
-                        onClick={handleClickOpen1}
-                        variant="outlined"
+                        onClick={handleClickOpen}
+                        variant='cancelButton'
                         style={{ marginRight: "10px" }}
                         color="error"
                       >
                         Cancel Data
                       </Button>
                       <Button
-                        variant="contained"
-                        onClick={handleClickOpen}
+                        variant="saveButton"
+                        type="submit"
                         style={{ marginRight: "10px" }}
                       >
                         Save Data
                       </Button>
                     </Grid>
                   </Grid>
+                </form>
+              </FormProvider>
 
-                  <Dialog
-                    open={open1}
-                    onClose={handleClose1}
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                  className="dialog-delete"
+                >
+                  <DialogTitle
+                    sx={{
+                      alignSelf: "center",
+                      fontSize: "30px",
+                      fontStyle: "Poppins",
+                    }}
+                    id="alert-dialog-title"
+                  >
+                    {"Save Data"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Save your progress: Don't forget to save your data before
+                      leaving
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant="outlined" onClick={handleClose}>
+                      Back
+                    </Button>
+                    <Button variant="contained" onClick={onSave} autoFocus>
+                      Save Data
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={opencancel}
+                    onClose={handleClosecancel}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     className="dialog-delete"
@@ -401,60 +593,24 @@ const DetailBacklog = () => {
                     </DialogContent>
                     <DialogActions>
                       <Button
-                        variant="outlined"
-                        onClick={handleCloseOpenCancelData}
+                        variant='cancelButton'
+                        onClick={SubmitcancelData}
                       >
                         Cancel Without Saving
                       </Button>
                       <Button
                         variant="contained"
-                        onClick={handleClose1}
+                        onClick={handleClosecancel}
                         autoFocus
                       >
                         Back
                       </Button>
                     </DialogActions>
                   </Dialog>
-
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
-                    <DialogTitle
-                      sx={{
-                        alignSelf: "center",
-                        fontSize: "30px",
-                        fontStyle: "Poppins",
-                      }}
-                      id="alert-dialog-title"
-                    >
-                      {"Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Save your progress: Don't forget to save your data
-                        before leaving
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="outlined" onClick={handleClose}>
-                        Back
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={SubmitSave}
-                        autoFocus
-                      >
-                        Save Data
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </Grid>
               </Grid>
             </Grid>
+          </Grid>
+        </Grid>
           </>
         ) : (
           <>
@@ -496,103 +652,109 @@ const DetailBacklog = () => {
                           </Grid>
                         </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "20px" }}
-                        >
-                          <Grid item>
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
+                        <Accordion>
+                          <Grid
+                            container
+                            direction="row"
+                            style={{ padding: "20px" }}
+                          >
+                            <Grid item>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                              >
+                                  <Typography variant="backlogDetailText">
+                                    {dataDetail.taskName} :: {dataDetail.taskCode}
+                                  {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
+                                  </Typography>
+                              </AccordionSummary> 
+                            </Grid>
+                          </Grid>
+
+                          <AccordionDetails>
+                            
+                            <Grid
+                              container
+                              direction="row"
+                              style={{ padding: "30px" }}
                             >
-                                <Typography variant="backlogDetailText">
-                                  {dataDetail.taskName} :: {dataDetail.taskCode}
-                                {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Task Description
                                 </Typography>
-                            </AccordionSummary>
-                          </Grid>
-                        </Grid>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.taskDescription}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Backlog Status
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.status}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Priority
+                                </Typography>
+                                {dataDetail && dataDetail.priority && (
+                                  <Rating
+                                      name="rating"
+                                      value={parseFloat(dataDetail.priority)} // Ambil nilai rating dari properti "priority"
+                                      readOnly
+                                      precision={0.5}
+                                  />
+                                )}
+                              </Grid>
+                            </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "30px" }}
-                        >
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
+                            <Grid
+                              container
+                              direction="row"
+                              style={{ padding: "30px" }}
                             >
-                              Task Description
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.taskDescription}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Backlog Status
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.status}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Priority
-                            </Typography>
-                            {dataDetail && dataDetail.priority && (
-                              <Rating
-                                  name="rating"
-                                  value={dataDetail.priority} // Ambil nilai rating dari properti "priority"
-                                  readOnly
-                                  precision={0.5}
-                              />
-                            )}
-                          </Grid>
-                        </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Assigned To
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.assignedTo}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Estimation Duration
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.estimationTime}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Typography
+                                  sx={{ color: "text.secondary", fontSize: "12px" }}
+                                >
+                                  Actual Duration
+                                </Typography>
+                                <Typography variant="descBaklog">
+                                  {dataDetail.actualTime}
+                                </Typography>
+                              </Grid>
+                            </Grid>
 
-                        <Grid
-                          container
-                          direction="row"
-                          style={{ padding: "30px" }}
-                        >
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Assigned To
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.assignedTo}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Estimation Duration
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.estimationTime}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography
-                              sx={{ color: "text.secondary", fontSize: "12px" }}
-                            >
-                              Actual Duration
-                            </Typography>
-                            <Typography variant="descBaklog">
-                              {dataDetail.actualTime}
-                            </Typography>
-                          </Grid>
-                        </Grid>
+                          </AccordionDetails>
+                        </Accordion>
                       </Grid>
                     </Grid>
                   </>

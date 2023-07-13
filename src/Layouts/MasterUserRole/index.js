@@ -18,15 +18,15 @@ const RoleUser = () => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [openAlertCreate, setOpenAlertCreate] = useState(false);
-  const [dataIduser, setDataIduser] = useState("");
+  // const [openAlertUpdated, setOpenAlertUpdated] = useState(false);
+  const [dataIduser, setDataIduser] = useState();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
-  const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'companyName',
+    sortName: 'first_name',
     sortType: 'asc'
   })
   const onFilter = (dataFilter) => {
@@ -34,33 +34,24 @@ const RoleUser = () => {
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'first_name',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
     })
   }
-
-  const rebuildData = (resData) => {
-    let temp = []
-    let number = filter.page * filter.size
-    temp = resData.data.map((value, index) => {
-      return {
-        no: number + (index + 1),
-        id: value.id,
-        companyName: value.attributes.companyName,
-        companyProfile: value.attributes.companyProfile,
-        address: value.attributes.address,
-        companyEmail: value.attributes.companyEmail,
-        npwp: value.attributes.npwp
-      }
-    })
-    console.log('temp: ', temp)
-    setData([...temp])
-    setTotalData(resData.meta.page.totalElements)
-  }
+  
   useEffect(() => {
     // getData()
+    // CheckAlert()    
     fetchData()
   }, [])
+
+  // const CheckAlert = () => {
+  //   if (localStorage.getItem("isCreate")) {
+  //     setOpenAlertCreate(true);
+  //   } else if (localStorage.getItem("isUpdated")) {
+  //     setOpenAlertUpdated(true);
+  //   }
+  // }
 
   const getData = async () => {
     const res = await client.requestAPI({
@@ -70,19 +61,39 @@ const RoleUser = () => {
     rebuildData(res)
   }
 
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.userId,
+        firstName: value.attributes.firstName,
+        lastName: value.attributes.lastName,
+        nip: value.attributes.nip,
+        userRoleDTOs: value.attributes.userRoleDTOs.map((userRole) => ({
+          userRoleId: userRole.userRoleId,
+          roleId: userRole.roleId,
+          role: userRole.role,
+          active: userRole.active,
+        })),      
+      }
+    })
+    console.log('temp: ', temp)
+    setData([...temp])    
+  }
+
   const deleteData = async (id) => {
-    const res = await client.requestAPI({
+    await client.requestAPI({
       method: 'DELETE',
       endpoint: `/userRole/delete/${id}`
     })
-    rebuildData(res)
+    console.log('id', id)
+    setOpenAlert(true);
+    getData()
+    handleClose();
   }
 
-  // useEffect(() => {
-  //   fetchData();
-  //   let isCreate = localStorage.getItem("isCreate")
-  //   setOpenAlertCreate(isCreate);  
-  // }, []);
 
   const fetchData = async () => {
     try {
@@ -103,24 +114,6 @@ const RoleUser = () => {
     setOpen(true);
   };  
 
-  const onDeletenya = async (dataIduser) => {
-    try {
-      console.log(dataIduser);
-      const response = await fetch(`http://localhost:4000/content/${dataIduser}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setOpenAlert(true);
-        fetchData();
-      } else {
-        console.error("Failed to delete data");
-      }
-    } catch (error) {
-      console.error("Error deleting data:", error);
-    }    
-    setOpen(false);
-  }
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -130,10 +123,11 @@ const RoleUser = () => {
   };
   const handleCloseAlertCreate = () => {
     setOpenAlertCreate(false);
-    localStorage.removeItem("isCreate");
+    localStorage.removeItem("isCreate");    
   };
 
-  const handleDetail = () => {
+  const handleDetail = async (id) => {
+    localStorage.setItem('idBacklog', id)
     navigate("/masteruserrole/detail");
   };
   
@@ -147,18 +141,24 @@ const RoleUser = () => {
       flex: 1,
     },
     {
+      field: "user",
+      headerName: "User",
+      width: 200,
+      flex: 1,
+      renderCell: (data) => (
+        <Box sx={{color: '#4B465C', fontSize: '15px'}}>
+          {data.row.firstName + " " + data.row.lastName}
+        </Box>
+      ),
+    },
+    {
       field: "nip",
       headerName: "NIP",
       flex: 1,
     },   
+    
     {
-      field: "user",
-      headerName: "User",
-      width: 200,
-      flex: 1,      
-    },
-    {
-      field: "role",
+      field: "userRoleDTOs",
       headerName: "Role",
       flex: 1,
       renderCell: (data) => (
@@ -171,10 +171,10 @@ const RoleUser = () => {
             fontSize: '12px',
           }}
         >
-           {Array.isArray(data.row.role) ? (
-        data.row.role.map((role) => (
+           {Array.isArray(data.row.userRoleDTOs) ? (
+        data.row.userRoleDTOs.map((userRoleDTOs) => (
           <Box
-            key={role}
+            key={userRoleDTOs}
             sx={{
               padding: '5px 10px',
               borderRadius: '4px',
@@ -182,7 +182,7 @@ const RoleUser = () => {
               color: statusFontColors,
             }}
           >
-            {role}
+            {userRoleDTOs}
           </Box>
         ))
       ) : (
@@ -194,20 +194,26 @@ const RoleUser = () => {
             color: statusFontColors
           }}
         >
-          {data.row.role}
+          {data.row.userRoleDTOs}
         </Box>
       )}
         </Box>
       ),
     },   
   ];
+  
   const handleChangeSearch = (event) => {
-    console.log("value search: ", event.target.value);
-  };
+    console.log('value search: ', event.target.value)
+    setFilter({
+      ...filter,
+      search: event.target.value
+    });
+  }
 
   const onAdd = () => {
     navigate("/masteruserrole/create");
   };
+
   return (
     <div>
       <SideBar>
@@ -223,6 +229,12 @@ const RoleUser = () => {
           open={openAlert}
           onClose={handleCloseAlert}
         />
+        {/* <CustomAlert
+          severity="warning"
+          message="Data updated: Your changes have been successfully saved"
+          open={openAlertUpdated}
+          onClose={setOpenAlertUpdated(false)}
+        /> */}
 
         <DataTable
           title="User Role"
@@ -261,7 +273,7 @@ const RoleUser = () => {
               Cancel
             </Button>
             <Button
-              onClick={() =>onDeletenya(dataIduser)}
+              onClick={() =>deleteData(dataIduser)}
               className="delete-button button-text"
             >
               Delete Data

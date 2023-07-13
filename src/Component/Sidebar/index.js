@@ -15,7 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import "./index.css";
 import logo from "../../assets/logo.png";
 import logoMini from "../../assets/logo-mini.png";
-import { useAuth } from "react-oidc-context";
+// import { useAuth } from "react-oidc-context";
 import { Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
@@ -72,9 +72,10 @@ const Drawer = styled(MuiDrawer, {
 
 export default function SideBar({ children }) {
   const navigate = useNavigate();
-  const auth = useAuth();
+  // const auth = useAuth();
 
-  const username = auth.user ? auth.user.profile.name : "";
+  // const username = auth.user ? auth.user.profile.name : "";
+  const username = ''
   const handleDrawerClose = () => {
     setOpen(!open);
   };
@@ -86,7 +87,7 @@ export default function SideBar({ children }) {
   const dataRoute = routes.filter((res) => res.icon);
 
   const handleLogout = () => {
-    auth.signoutSilent();
+    // auth.signoutSilent();
     navigate("login");
   };
 
