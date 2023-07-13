@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -19,14 +19,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 
-export default function Calendar({ setOnClick }) {
+export default function Calendar({ setOnClick, events }) {
   const [open, setOpen] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
-
-  function handleSelect() {
-    setOnClick("param");
-  }
 
   function handleClose() {
     setOpen(false);
@@ -39,6 +35,16 @@ export default function Calendar({ setOnClick }) {
     );
   };
 
+  function renderEventContent(eventInfo) {
+    console.log("dataEvent", eventInfo);
+    return (
+      <>
+        <b>{eventInfo.timeText}</b>
+        <i>{eventInfo.event.title}</i>
+      </>
+    );
+  }
+
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
   };
@@ -48,14 +54,42 @@ export default function Calendar({ setOnClick }) {
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
+        dayCellContent={(info, create) => {
+          console.log(info);
+          return (
+            <Grid container spacing={2}>
+              <Grid item xs={12} display="flex" justifyContent="right">
+                <Typography variant="h6">{info.dayNumberText}</Typography>
+              </Grid>
+              <Grid item xs={12} display="flex" justifyContent="center">
+                {info.isToday ? (
+                  <Button variant="outlined" onClick={() => setOnClick(info)}>
+                    Attendance
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Grid>
+              <Grid item xs={12} display="flex" justifyContent="center">
+                <Button variant="contained">View Task</Button>
+              </Grid>
+            </Grid>
+          );
+          // const element = create(
+          //   "span",
+          //   { id: "fc-day-span-" + info.date.getDay() },
+          //   info.dayNumberText
+          // );
+          // return element;
+        }}
         selectable={true}
-        dateClick={handleSelect}
+        eventContent={renderEventContent}
         headerToolbar={{
           start: "title",
           center: "",
           end: "",
         }}
-        // events={events}
+        events={events}
         height={"90vh"}
       />
       <Dialog
