@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
 import {
@@ -24,9 +24,58 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import CheckinTime from "../../Component/CheckinTime";
 import Attendance from "./Attandence";
 import Calendar from "../../Component/CalendarCustom";
+import { useNavigate } from "react-router-dom";
+import client from "../../global/client";
+import moment from "moment/moment";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
+
+  const [filter, setFilter] = useState({
+    startDate: "",
+    endDate: "",
+  });
+  const navigate = useNavigate();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    localStorage.removeItem("companyId");
+    getData();
+  }, [filter]);
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: "GET",
+      endpoint: `/workingReport/2023-07-01/2023-07-30/2`,
+    });
+    rebuildData(res);
+  };
+
+  const rebuildData = (resData) => {
+    console.log("data: ", resData);
+    let temp = [];
+    temp = resData.data.map((value, index) => {
+      return value.attributes.listDate.holiday
+        ? {
+            title: "Libur",
+            date: moment(value.attributes.listDate.dateHoliday).format(
+              "yyyy-MM-DD"
+            ),
+            tanggal: moment(value.attributes.listDate.dateHoliday).format(
+              "yyyy-MM-DD"
+            ),
+            period: value.attributes.period,
+          }
+        : {
+            period: value.attributes.period,
+            tanggal: moment(value.attributes.listDate.dateHoliday).format(
+              "yyyy-MM-DD"
+            ),
+          };
+    });
+    console.log(temp);
+    setData([...temp]);
+  };
 
   return (
     <SideBar>
@@ -98,8 +147,14 @@ export default function WorkingReport() {
           ) : (
             <Calendar
               setOnClick={(param) => {
-                setIsCheckin((p) => true);
+                console.log(param);
+                const _data = data.filter(
+                  (val) =>
+                    val.tanggal == moment(param.date).format("yyyy-MM-DD")
+                );
+                console.log(_data);
               }}
+              events={data}
             />
           )}
           {/* <Attendance /> */}

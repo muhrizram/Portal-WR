@@ -119,7 +119,7 @@ const DetailProject = () => {
       current: false,
     },
     {
-      href: "/master-project/edit",
+      href: "/master-project/detail",
       title: isEdit ? "Edit Project" : "Detail Project",
       current: true,
     },
@@ -139,8 +139,8 @@ const DetailProject = () => {
   let methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
+      projectName: "",
       companyName: "",
-      companyEmail: "",
       npwp: "",
       address: "",
     },
