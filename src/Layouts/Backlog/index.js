@@ -8,6 +8,7 @@ import Rating from '@mui/material/Rating';
 import { Box } from '@mui/material';
 import { useNavigate } from "react-router";
 import client from "../../global/client";
+import { blueGrey } from '@mui/material/colors';
 
 
 const Backlog = () => {
@@ -38,6 +39,8 @@ const Backlog = () => {
       flex: 1,
       renderCell: (data) => (
         <Rating
+          // className="rating-outline"
+          variant="outlined"
           name="rating"
           value={parseFloat(data.row.priority)} // Ambil nilai rating dari properti "priority"
           readOnly
@@ -76,7 +79,8 @@ const Backlog = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [idHapus,setidHapus] = useState();
-  const [totalData, setTotalData] = useState()
+  const [totalData, setTotalData] = useState();
+  // const [isDelete, setIsDelete] = (false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -119,11 +123,6 @@ const Backlog = () => {
     setOpen(true)
   };
 
-  // const onDelete = () => {
-  //   setOpenAlert(true);
-  //   handleClose();
-  // };
-
   useEffect(() => {
     getData()
   }, [filter])
@@ -134,6 +133,7 @@ const Backlog = () => {
       endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     rebuildData(res)
+    console.log('integrasi backlog:', res)
   }
 
   const rebuildData = (resData) => {
@@ -161,18 +161,19 @@ const Backlog = () => {
       method: 'DELETE',
       endpoint: `/backlog/${id}`
     })
-    console.log('id', id)
-    // setOpenAlert(true);
-    // getData()
+    console.log('response', res)
+    // console.log('id', id)
+    setOpenAlert(true);
+    getData()
     
-    if (res.data.meta.message) {
+    if (res.meta.message) {
       setDataAlert({
         severity: 'success',
         open: true,
-        message: res.data.meta.message
+        message: res.meta.message
       })
       setTimeout(() => {
-        navigate('/masterroleprivilege')
+        navigate('/masterbacklog')
       }, 3000)
     }
     handleClose();
@@ -231,7 +232,7 @@ const Backlog = () => {
           title='Backlog'
           data={data}
           columns={columns}
-          placeSearch="Project Name"
+          placeSearch="Project Name, task code, etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
           onFilter={(dataFilter => onFilter(dataFilter))}

@@ -274,6 +274,28 @@ const DetailBacklog = () => {
     },
   ];
 
+  const getStatusColor = (status) => {
+    const statusColors = {
+      'to do': '#FDECEB',
+      'Backlog' : '#E6F2FB',
+      'In Progress': '#E6F2FB',
+      'Completed' : '#EBF6EE', 
+      'Done': '#EBF6EE'
+    };
+    return statusColors[status] || '#ccc';
+  };
+
+  const getStatusFontColor = (status) => {
+    const statusFontColors = {
+      'to do': '#EE695D',
+      'Backlog' : '#3393DF',
+      'In Progress': '#3393DF',
+      'Completed' : '#5DB975',
+      'Done': '#5DB975'
+    };
+    return statusFontColors[status] || '#fff';
+  };
+
   const clickEdit = () => {
     setIsEdit(true);
   };
@@ -722,7 +744,15 @@ const DetailBacklog = () => {
                                 >
                                   Backlog Status
                                 </Typography>
-                                <Typography variant="descBaklog">
+                                <Typography variant="descBaklog"
+                                sx={{
+                                  backgroundColor: getStatusColor(dataDetail.status),
+                                  color: getStatusFontColor(dataDetail.status),
+                                  padding: '5px 10px',
+                                  gap: '10px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                }}>
                                   {dataDetail.status}
                                 </Typography>
                               </Grid>

@@ -8,6 +8,7 @@ import SideBar from "../../../Component/Sidebar";
 import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
 import Autocomplete from "@mui/material/Autocomplete";
+import { useNavigate } from "react-router";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -28,6 +29,7 @@ import Checkbox from '@mui/material/Checkbox';
 
 
 const DetailPrivilege = () => {
+  const navigate = useNavigate();
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [role,setRole] = useState(["Working Report","Job Group"])
@@ -97,6 +99,7 @@ const DetailPrivilege = () => {
   };
 
   const SubmitSave = () => {
+    navigate('/masterroleprivilege')
     setOpen(false);
     setIsEdit(false);
   };
@@ -172,9 +175,9 @@ const DetailPrivilege = () => {
                 >
                   <Button
                     onClick={handleClickCancel}
-                    variant="outlined"
+                    variant='cancelButton'
                     style={{ marginRight: "10px" }}
-                    color="error"
+                    // color="error"
                   >
                     Cancel Data
                   </Button>
@@ -204,12 +207,13 @@ const DetailPrivilege = () => {
                   {"Save Data"}
                 </DialogTitle>
                 <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
+                  <DialogContentText id="alert-dialog-description"
+                    className="dialogDescription">
                     Save your progress: Don't forget to save your data before
                     leaving
                   </DialogContentText>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions className="dialog-delete-actions">
                   <Button variant="outlined" onClick={handleClose}>
                     Back
                   </Button>
@@ -234,16 +238,19 @@ const DetailPrivilege = () => {
                       }}
                       id="alert-dialog-title"
                     >
-                      {"Cancel Save Data"}
+                      {"Cancel Data"}
                     </DialogTitle>
                     <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
+                      <DialogContentText id="alert-dialog-description"
+                        className="dialogDescription">
                         Warning: canceling with result in data loss without
                         saving!
                       </DialogContentText>
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions className="dialog-delete-actions">
                       <Button
+                        className="button-text"
+                        // style={{ marginRight: '16px' }}
                         variant="outlined"
                         onClick={handleCloseOpenCancelData}
                       >
