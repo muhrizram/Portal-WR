@@ -513,3 +513,22 @@
   width: 67px !important;
   height: 67px !important;
 }
+
+.dialogDescription {
+  width: 370px;
+  text-align: center;
+  /* Text - base/16/Regular */
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 24px */
+}
+
+.dialogButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+  }

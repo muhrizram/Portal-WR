@@ -49,14 +49,13 @@ const CreateRolePrivilege = () => {
   ];
   const checkRolePrivilege = [
     {label: "Working Report", value: 48},
-    {label: "Employee", value: 50},
-    {label: "Project", value: 54},
-
-    {label: "Role Privilege", value: 52},
-
-    {label: "Company", value: 53},
-    {label: "Backlog", value: 55},
-    {label: "User Role", value: 51},
+    {label: "Task", value: 49},
+    {label: "Master Employee", value: 50},
+    {label: "Master User Role", value: 51},
+    {label: "Master Role Privilege", value: 52},
+    {label: "Master Company", value: 53},
+    {label: "Master Project", value: 54},
+    {label: "Master Backlog", value: 55},
 
   ]
   const dataBread = [
@@ -72,7 +71,7 @@ const CreateRolePrivilege = () => {
     },
     {
       href: "/",
-      title: "Create Role Privilege",
+      title: "Create New Role Privilege",
       current: true,
     },
   ];
@@ -123,6 +122,7 @@ const CreateRolePrivilege = () => {
       endpoint: '/rolePrivilege/addRolePrivilege',
       data
     })
+    console.log('data res', res)
     if (res.data.meta.message) {
       setDataAlert({
         severity: 'success',
@@ -156,9 +156,9 @@ const CreateRolePrivilege = () => {
   };
 
   const handleChangeRole = (value) => {
-    console.log('isi data NYAA ', value)
-    console.log('INI LABEL ', value.label)
-    console.log('INI VALUE ', value.value)
+    console.log('data role: ', value)
+    console.log('nama label ', value.label)
+    console.log('value ', value.value)
     setSelectRoleLabel(value.label)
     setSelectRole(value.value)
   }
@@ -176,23 +176,37 @@ const CreateRolePrivilege = () => {
           <FormProvider>
             <form>  
               <div>                        
-                <Grid style={{ padding: "30px" }}>                          
-                <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        options={Role}
-                        sx={{ width: "100%" }}
-                        value={selectRole}
-                        onChange={(event, newValue) => handleChangeRole(newValue)}
-                        // isOptionEqualToValue={(option, value) => option.value === value.value}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Role"
-                            placeholder="Select Role"
-                          />
-                        )}
+                <Grid style={{ padding: "30px" }}>  
+                  <Autocomplete                    
+                      disablePortal
+                      id="combo-box-demo"
+                      name="role"
+                      options={Role}
+                      sx={{ width: "100%", marginTop: "8px" }}
+                      getOptionLabel={(option) => option.label}
+                      onChange={(event, newValue) => handleChangeRole(newValue)}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Role" placeholder="Select Role" />
+                      )}
+                    />                        
+                  {/* <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={Role}
+                    sx={{ width: "100%" }}
+                    value={selectRole}
+                    getOptionLabel={(option) => option.label}
+                    onChange={(event, newValue) => handleChangeRole(newValue)}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Role"
+                        placeholder="Select Role"
                       />
+                    )}
+                  /> */}
                 </Grid>  
 
                 <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>
@@ -206,12 +220,12 @@ const CreateRolePrivilege = () => {
                 <Grid container direction="row" sx={{marginLeft:'30px'}}>
                   <Grid item xs={6}>
                     <FormGroup>
-                      {CheckboxRolePrivilege.slice(0,5)}
+                      {CheckboxRolePrivilege.slice(0,4)}
                     </FormGroup>
                     </Grid>
                     <Grid item xs={6}>
                     <FormGroup>
-                      {CheckboxRolePrivilege.slice(5)}
+                      {CheckboxRolePrivilege.slice(4)}
                     </FormGroup>
                   </Grid>
                 </Grid>
@@ -269,7 +283,7 @@ const CreateRolePrivilege = () => {
               {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
+          <DialogActions className="dialog-delete-actions">
             <Button variant="outlined" onClick={handleClose}>
               {isSave ? "Back" : "Cancel without saving"}
             </Button>

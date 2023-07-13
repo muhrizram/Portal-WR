@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import rolePrevilege from './initjson.json'
-// import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-// import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
@@ -35,7 +32,7 @@ const RolePrivilege = () => {
       // flex: 1 
     },
     {
-      field: 'role',
+      field: 'roleName',
       headerName: 'Role',
       flex: 1 
     },
@@ -55,32 +52,23 @@ const RolePrivilege = () => {
             flexWrap: 'wrap',
             borderRadius: '4px',
             fontSize: '12px',
-            backgroundColor: getStatusColor(data.row.privilege),
-            color: getStatusFontColor(data.row.privilege),
-            // padding: '5px 10px',
-            // display: 'flex',
-            // gap: '10px',
-            // borderRadius: '4px',
-            // fontSize: '12px'
           }}
         >
-          {data.row.privilege}
-            {/* {Array.isArray(data.row.privilege) ? (
-          data.row.privilege.map((privilege, index) => (
-          <Box
-            key={privilege}
-            sx={{
-              padding: '5px 10px',
-              borderRadius: '4px',
-              backgroundColor: getStatusColor(privilege),
-              color: getStatusFontColor(privilege),
-            }}
-          >
-            {privilege}
+          {Array.isArray(data.row.privilege) ? (data.row.privilege.map((privilege, index) => (
+            <Box
+              key={`${privilege}-${index}`}
+              sx={{
+                padding: '5px 10px',
+                borderRadius: '4px',
+                backgroundColor: getStatusColor(privilege),
+                color: getStatusFontColor(privilege),
+              }}
+            >
+              {privilege}
+            </Box>
+          ))):(<></>)}
           </Box>
-        ))):(<></>)} */}
-        </Box>
-      ),
+        ),
     }
   ];
 
@@ -93,9 +81,11 @@ const RolePrivilege = () => {
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
     page: 0,
-    size: 10,
-    sortName: 'roleId',
-    sortType: 'asc',
+    size: 20,
+    sortName: 'roleName',
+    sortPrivilege: 'privilege',
+    sortNameType: 'asc',
+    sortPrivilegeType: 'desc',
     search: ''
   })
 
@@ -116,21 +106,21 @@ const RolePrivilege = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/rolePrivilege?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
-      // 0&size=20&search=
+      endpoint: `/rolePrivilege?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortNameType}&sort=${filter.sortPrivilege},${filter.sortPrivilegeType}&search=${filter.search}`
     })
     rebuildData(res)
+    console.log('list role privilege', res)
   }
 
   const rebuildData = (resData) => {
     let temp = []
     let number = filter.page * filter.size
     temp = resData.data.map((value, index) => {
-      const privileges = value.attributes.listPrivilege.map((privilege) => privilege.privilegeName).join(', ')
+      const privileges = value.attributes.listPrivilege.map((privilege) => privilege.privilegeName)
       return {
         no: number + (index + 1),
         id: value.id,
-        role: value.attributes.roleName,
+        roleName: value.attributes.roleName,
         privilege: privileges,
       }
     })
@@ -164,14 +154,17 @@ const RolePrivilege = () => {
   }
 
   const onFilter = (dataFilter) => {
-    console.log('on filter: ', dataFilter)
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
-      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'roleName',
+      sortNameType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      sortPrivilege: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'privilege',
+      sortPrivilegeType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
       search: filter.search
     })
+    
+    console.log('on filter: ', dataFilter)
   }
 
   return (
