@@ -75,8 +75,8 @@ const DetailEmployee = () => {
   const [value, setValue] = React.useState("one");
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
+  const [Cancel, setCancel] = React.useState(false);
+  const [AddContract, setAddContract] = React.useState(false);
   const [dataFix, setDataFix] = useState({
     jobTypeId: "",
     nip: "12345555",
@@ -129,22 +129,22 @@ const DetailEmployee = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickCancel = () => {
+    setCancel(true);
   };
-  const handleClickOpen2 = () => {
-    setOpen2(true);
+  const handleClickAddContract = () => {
+    setAddContract(true);
   };
   const handleClose1 = () => {
-    setOpen1(false);
+    setCancel(false);
   };
   const handleCloseOpenCancelData = () => {
-    setOpen1(false);
+    setCancel(false);
     setDataEdit(dataFix);
     setIsEdit(false);
   };
-  const handleClose2 = () => {
-    setOpen2(false);
+  const handleCloseContract = () => {
+    setAddContract(false);
   };
   const handleClose = () => {
     setOpen(false);
@@ -243,7 +243,7 @@ const DetailEmployee = () => {
                     sx={{ marginTop: "20px" }}
                   >
                     <Button
-                      onClick={handleClickOpen1}
+                      onClick={handleClickCancel}
                       variant="outlined"
                       style={{ marginRight: "10px" }}
                       color="error"
@@ -260,7 +260,7 @@ const DetailEmployee = () => {
                   </Grid>
 
                   <Dialog
-                    open={open1}
+                    open={Cancel}
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
@@ -345,7 +345,7 @@ const DetailEmployee = () => {
                     variant="outlined"
                     startIcon={<CreateIcon />}
                     style={{ marginRight: "10px" }}
-                    onClick={handleClickOpen2}
+                    onClick={handleClickAddContract}
                   >
                     <Typography sx={{ fontSize: "14px" }}>
                       {" "}
@@ -366,8 +366,8 @@ const DetailEmployee = () => {
               <Dialog
                 maxWidth="xl"
                 maxHeight="xl"
-                open={open2}
-                onClose={handleClose2}
+                open={AddContract}
+                onClose={handleCloseContract}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
                 className="dialog-delete"
@@ -428,15 +428,15 @@ const DetailEmployee = () => {
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions sx={{ alignSelf: "center" }}>
-                  <Button variant="outlined" onClick={handleClose2}>
+                  <Button variant="outlined" onClick={handleCloseContract}>
                     Back
                   </Button>
-                  <Button variant="contained" onClick={handleClose2} autoFocus>
+                  <Button variant="contained" onClick={handleCloseContract} autoFocus>
                     Save Data
                   </Button>
                 </DialogActions>
               </Dialog>
-              {/* <DialogBox open={open2} title="Test" deskripsi="Test" /> */}
+              {/* <DialogBox open={AddContract} title="Test" deskripsi="Test" /> */}
             </Grid>
           </Grid>
         </Grid>

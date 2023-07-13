@@ -31,7 +31,7 @@ const DetailPrivilege = () => {
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [role,setRole] = useState(["Working Report","Job Group"])
-  const [open1, setOpen1] = React.useState(false);
+  const [Cancel, setCancel] = React.useState(false);
   const Role = [
     "Employee",
   ];
@@ -80,20 +80,20 @@ const DetailPrivilege = () => {
     setOpen(true);
     console.log(open);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickCancel = () => {
+    setCancel(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleCloseOpenCancelData = () => {
-    setOpen1(false);
+    setCancel(false);
     setIsEdit(false);
   };
 
   const handleClose1 = () => {
-    setOpen1(false);
+    setCancel(false);
   };
 
   const SubmitSave = () => {
@@ -171,7 +171,7 @@ const DetailPrivilege = () => {
                   textAlign="right"                  
                 >
                   <Button
-                    onClick={handleClickOpen1}
+                    onClick={handleClickCancel}
                     variant="outlined"
                     style={{ marginRight: "10px" }}
                     color="error"
@@ -220,7 +220,7 @@ const DetailPrivilege = () => {
               </Dialog>
 
               <Dialog
-                    open={open1}
+                    open={Cancel}
                     onClose={handleClose1}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"

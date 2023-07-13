@@ -35,7 +35,7 @@ import Box from "@mui/material/Box";
 import Allura from "../../../assets/Allura.png";
 
 
-const TaskItem = ({ task, onDelete, onUpdate }) => {
+const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   const ProjectName = [
     { label: "Electronic Health Record" },
     { label: "API Factory" },
@@ -63,6 +63,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
 
   const handleDelete = () => {
     onDelete(taskData.id);
+    onUpdateTasks(taskData.id);
   };
 
   return (
@@ -130,7 +131,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
                 onChange={(event, newValue) => {
                   setTaskData((prevData) => ({
                     ...prevData,
-                    priority: newValue,
+                    priority: newValue.toString(),
                   }));
                 }}
               />
@@ -232,7 +233,7 @@ const CreateNewBacklog = () => {
   const [sendData, setData] = useState({})
   const [isSave, setIsSave] = useState(false)  
   const [addTask, setAddTask] = React.useState(false);
-  const [tasks, setTasks] = useState([]);  
+  const [tasks, setTasks] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [opencancel, setOpencancel] = React.useState(false);
   const [valueproject, setValueproject] = React.useState("");
@@ -281,7 +282,25 @@ const CreateNewBacklog = () => {
     setOpencancel(false)
   }
 
+  const handleUpdateTasks = (deletedTaskId) => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === deletedTaskId) {
+        return null; 
+      }
+      if (task.id > deletedTaskId) {
+        return {
+          ...task,
+          id: task.id - 1,
+        };
+      }
+      return task;
+    });  
+    const filteredTasks = updatedTasks.filter((task) => task !== null); 
+    setTasks(filteredTasks);
+  };
+
   const handleDeleteTask = (taskId) => {
+    handleUpdateTasks(taskId);
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
   };
@@ -305,17 +324,20 @@ const CreateNewBacklog = () => {
   const handleClickTask = () => {
     setAddTask(true);
     const newTask = {
+      id: tasks.length + 1,
       projectId : 1,
+      statusBacklog: null,
       userId : 2,
-      id: tasks.length + 1, 
       taskName: '',
-      taskCode:`T-WR-00${tasks.length + 1}`,
-      priority: null,      
       taskDescription: '',
+      estimationTime: null,
+      actualTime: 5,
+      estimationDate: "2023-08-07",
+      actualDate: "2023-08-07",
       createdBy: 1,
       updatedBy: 1,
-      estimationTime: null,
-      statusBacklog: null,
+      priority: '0',           
+      taskCode:`T-WR-00${tasks.length + 1}`,        
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -340,27 +362,31 @@ const CreateNewBacklog = () => {
   })
 
   const onSave = async () => {
-    const data = {
-      ...sendData,
+    try {      
+      for (let i = 0; i < tasks.length; i++) {
+        const taskObject = tasks[i];        
+      const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: '/backlog/addBacklog',
+        data: taskObject,
+      });
+  
+      if (res.data.meta.message) {
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        });
+  
+        setTimeout(() => {
+          navigate('/masterbacklog');
+        }, 3000);
+      }
+      setOpen(false);
+    }} catch (error) {
+      console.error('Error:', error);
     }
-    console.log("INI DATA",data)
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: '/backlog/addBacklog',
-      data
-    })
-    if (res.data.meta.message) {
-      setDataAlert({
-        severity: 'success',
-        open: true,
-        message: res.data.meta.message
-      })
-      setTimeout(() => {
-        navigate('/masterbacklog')
-      }, 3000)
-    }
-    setOpen(false);    
-  }
+  };
 
   return (
     <>
@@ -403,6 +429,7 @@ const CreateNewBacklog = () => {
                          task={task}
                          onDelete={handleDeleteTask}
                          onUpdate={handleUpdateTask}
+                         onUpdateTasks={handleUpdateTasks}
                        />
                     ))}
                     </>

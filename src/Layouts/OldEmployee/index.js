@@ -24,20 +24,20 @@ import ProjectHistoryTab from "./ProjectHistoryTab";
 
 const EditEmployee = () => {
   const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
+  const [Cancel, setCancel] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const handleClickOpen1 = () => {
-    setOpen1(true);
+  const handleClickCancel = () => {
+    setCancel(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
   const handleClose1 = () => {
-    setOpen1(false);
+    setCancel(false);
   };
 
   const [value, setValue] = React.useState("one");
@@ -93,7 +93,7 @@ const EditEmployee = () => {
                 sx={{ marginTop: "20px" }}
               >
                 <Button
-                  onClick={handleClickOpen1}
+                  onClick={handleClickCancel}
                   variant="outlined"
                   style={{ marginRight: "10px" }}
                   color="error"
@@ -151,7 +151,7 @@ const EditEmployee = () => {
           </DialogActions>
         </Dialog>
         <Dialog
-          open={open1}
+          open={Cancel}
           onClose={handleClose1}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
