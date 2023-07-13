@@ -4,21 +4,21 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Route, Routes, useNavigate } from 'react-router';
 import globalTheme from './Theme';
 import { routes } from './routes';
-import { useAuth } from 'react-oidc-context';
+// import { useAuth } from 'react-oidc-context';
 
 const App = () => {
   const navigate = useNavigate()
-  const auth = useAuth();
-  useEffect(() => {
-    console.log('no token: ', auth)
-    if (!auth.isLoading) {
-      if (auth.isAuthenticated) {
-        navigate('/')
-      } else {
-        navigate('login')
-      }
-    }
-  }, [auth.isLoading])
+  // const auth = useAuth();
+  // useEffect(() => {
+  //   console.log('no token: ', auth)
+  //   if (!auth.isLoading) {
+  //     if (auth.isAuthenticated) {
+  //       navigate('/')
+  //     } else {
+  //       navigate('login')
+  //     }
+  //   }
+  // }, [auth.isLoading])
 
   // console.log('no token: ', auth)
 

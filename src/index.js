@@ -15,11 +15,11 @@ const oidcConfig = {
   client_secret: "OPFP3ue9racnGasvUmvDYkt1w1X3O8HV",
 };
 root.render(
-  <AuthProvider {...oidcConfig}>
+  // <AuthProvider {...oidcConfig}>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </AuthProvider>
+  // </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
