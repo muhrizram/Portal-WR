@@ -32,7 +32,7 @@ import Box from "@mui/material/Box";
 import Allura from "../../../assets/Allura.png";
 
 //edit diaz rey {
-const TaskItem = ({ task, onDelete, onUpdate }) => {
+const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
   const ProjectName = [
     { label: "Electronic Health Record" },
     { label: "API Factory" },
@@ -49,13 +49,6 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
     onUpdate(taskData);
   }, [taskData]);
 
-  const handlechangeStatusBacklog = (event, newValue) => {
-    console.log(newValue)
-    setTaskData((prevData) => ({
-      ...prevData,
-      statusBacklog: newValue,
-    }));
-  };
 
   const handleChange = (event) => {    
       const { name, value } = event.target;
@@ -67,6 +60,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
 
   const handleDelete = () => {
     onDelete(taskData.id);
+    onUpdateTasks(taskData.id);
   };
 
   return (
@@ -134,7 +128,7 @@ const TaskItem = ({ task, onDelete, onUpdate }) => {
                 onChange={(event, newValue) => {
                   setTaskData((prevData) => ({
                     ...prevData,
-                    priority: newValue,
+                    priority: newValue.toString(),
                   }));
                 }}
               />
@@ -226,17 +220,21 @@ const DetailBacklog = () => {
     { label: "Selection Exam" },
   ];
   const [isEdit, setIsEdit] = React.useState(false);
-  const [addTask, setAddTask] = React.useState(false);
-  const [valuerating, setValuerating] = React.useState(0);
+  const [addTask, setAddTask] = React.useState(true);  
   const [open, setOpen] = React.useState(false);
   const [dataDetail, setDataDetail] = useState({});
 
   //edit diaz rey {
-    const [opencancel, setOpencancel] = React.useState(false);
-  const [sendData, setData] = useState({})
+  const [opencancel, setOpencancel] = React.useState(false);
+  const [sendIdUpdate, setIdUpdate] = useState()
   const [isSave, setIsSave] = useState(false)  
   const [tasks, setTasks] = useState([]);
   const [valueproject, setValueproject] = React.useState("");
+  const [dataAlert, setDataAlert] = useState({
+    open: false,
+    severity: 'success',
+    message: ''
+  })
   const navigate = useNavigate();  
   //edit diaz }
 
@@ -300,11 +298,12 @@ const DetailBacklog = () => {
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
     })
-    console.log('ini data detai', res)
+
     rebuildDataDetail(res)
   };
 
   const rebuildDataDetail = (resData) => {
+    setIdUpdate(resData.data.id,)
     let tempDetail = {
         id: resData.data.id,
         projectName: resData.data.attributes.projectName,
@@ -321,6 +320,9 @@ const DetailBacklog = () => {
     
     console.log('tempDetail: ', tempDetail)
     setDataDetail(tempDetail)
+    const newTasks = JSON.parse(JSON.stringify(tasks));
+    newTasks.push(tempDetail);
+    setTasks(newTasks);
   }
 
   //ini aku Diaz edit dari sini
@@ -333,7 +335,26 @@ const DetailBacklog = () => {
     setIsSave(false)
     setOpencancel(false)
   }
+
+  const handleUpdateTasks = (deletedTaskId) => {
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === deletedTaskId) {
+        return null; 
+      }
+      if (task.id > deletedTaskId) {
+        return {
+          ...task,
+          id: task.id - 1,
+        };
+      }
+      return task;
+    });  
+    const filteredTasks = updatedTasks.filter((task) => task !== null); 
+    setTasks(filteredTasks);
+  };
+
   const handleDeleteTask = (taskId) => {
+    handleUpdateTasks(taskId);
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
   };
@@ -349,24 +370,26 @@ const DetailBacklog = () => {
   const confirmSave = async () => {
     console.log("Datanya",tasks)
     setIsSave(true)
-    setOpen(true)
-    setData(tasks)
-  }
+    setOpen(true)    
+  }  
 
   const handleClickTask = () => {
     setAddTask(true);
     const newTask = {
+      id: tasks.length + 1,
       projectId : 1,
+      statusBacklog: 64,
       userId : 2,
-      id: tasks.length + 1, 
       taskName: '',
-      taskCode:`T-WR-00${tasks.length + 1}`,
-      priority: null,      
       taskDescription: '',
+      estimationTime: 5,
+      actualTime: 5,
+      estimationDate: "2023-08-07",
+      actualDate: "2023-08-07",
       createdBy: 1,
       updatedBy: 1,
-      estimationTime: null,
-      statusBacklog: null,
+      priority: '3',           
+      taskCode:`T-WR-00${tasks.length + 1}`,
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -391,26 +414,30 @@ const DetailBacklog = () => {
   })
 
   const onSave = async () => {
-    const data = {
-      ...sendData,
-    }
-    console.log("INI DATA",data)
-    // const res = await client.requestAPI({
-    //   method: 'PUT',
-    //   endpoint: '/backlog/addBacklog',
-    //   data
-    // })
-    // if (res.data.meta.message) {
-    //   setDataAlert({
-    //     severity: 'success',
-    //     open: true,
-    //     message: res.data.meta.message
-    //   })
-    //   setTimeout(() => {
-    //     navigate('/masterbacklog')
-    //   }, 3000)
-    // }
-    setOpen(false);    
+    try {      
+      for (let i = 0; i < tasks.length; i++) {
+        const taskObject = tasks[i];        
+      const res = await client.requestAPI({
+        method: 'PUT',
+        endpoint: `/backlog/${sendIdUpdate}`,
+        data: taskObject,
+      });
+      console.log("INI RES UPDATE ", res)
+      if (res.data.meta.message) {
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        });
+  
+        setTimeout(() => {
+          navigate('/masterbacklog');
+        }, 3000);
+      }
+      setOpen(false);
+    }} catch (error) {
+      console.error('Error:', error);
+    } 
   }
   
   //diaz edit sampe sini
@@ -458,6 +485,7 @@ const DetailBacklog = () => {
                          task={task}
                          onDelete={handleDeleteTask}
                          onUpdate={handleUpdateTask}
+                         onUpdateTasks={handleUpdateTasks}
                        />
                     ))}
                     </>

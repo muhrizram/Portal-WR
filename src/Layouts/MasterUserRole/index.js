@@ -26,7 +26,7 @@ const RoleUser = () => {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'first_name',
+    sortName: 'firstName',
     sortType: 'asc'
   })
   const onFilter = (dataFilter) => {
@@ -40,9 +40,9 @@ const RoleUser = () => {
   }
   
   useEffect(() => {
-    // getData()
+    getData()
     // CheckAlert()    
-    fetchData()
+    // fetchData()
   }, [])
 
   // const CheckAlert = () => {
@@ -56,8 +56,9 @@ const RoleUser = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+      endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
     })
+    console.log("INI RES",res)
     rebuildData(res)
   }
 
@@ -238,7 +239,7 @@ const RoleUser = () => {
 
         <DataTable
           title="User Role"
-          data={data2}
+          data={data}
           columns={columns}
           placeSearch="User, Role, etc"
           onAdd={() => onAdd()}
