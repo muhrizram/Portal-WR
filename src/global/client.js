@@ -5,6 +5,7 @@ import axios from "axios";
 const instance = axios.create();
 // const auth = useAuth()
 
+
 export const clientState = {
   requesting: false,
 };
@@ -56,7 +57,7 @@ const requestAPI = async ({
         reject(error);
       }
     });
-    result = apiResponse.data;
+    result = {...apiResponse.data, isError: false};
 
     // Remove Fetching State
     clientState.requesting = false;
@@ -65,13 +66,7 @@ const requestAPI = async ({
   } catch (error) {
     // Remove Fetching State
     clientState.requesting = false;
-    // if (error?.response?.status === 401) {
-    //   localStorage.clear();
-    //   localStorage.setItem("isExpired", true);
-    //   window.location.reload();
-    // }
-
-    result = { status: error.response.status, error: error.response.data };
+    result = { status: error.response.status, error: error.response.data, isError: true };
     return result;
   }
 };

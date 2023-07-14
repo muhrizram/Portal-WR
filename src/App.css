@@ -195,10 +195,14 @@
   outline: none !important;
 }
 
-.dialog-delete>.MuiDialog-container>.MuiPaper-root {
+.dialog-delete > .MuiDialog-container > .MuiPaper-root {
   padding: 30px !important;
   border-radius: 6px;
   text-align: center;
+}
+
+.dialog-task > .MuiDialog-container > .MuiPaper-root {
+  min-height: 25rem;
 }
 
 .dialog-delete-header {
@@ -219,6 +223,11 @@
 
 .dialog-delete-content {
   padding: 0 24px 18px 24px !important;
+}
+
+.dialog-task-content {
+  padding: 0 8px 8px 8px !important;
+
 }
 
 .dialog-delete-actions {
@@ -324,6 +333,10 @@
 
 .input-field-crud .Mui-error fieldset {
   border-color: #d32f2f !important;
+}
+
+.input-field-crud textarea {
+  min-height: 118px;
 }
 
 .card-container {
@@ -532,3 +545,53 @@
   gap: 16px;
   align-self: stretch;
   }
+.autocomplete-input input {
+ padding: 7.5px 4px 7.5px 5px !important;
+}
+
+.autocomplete-on-popup .MuiAutocomplete-popper {
+  z-index: 1301;
+}
+
+.card-project {
+  border-radius: 8px;
+  border: 1px solid #0078D7;
+  background: #E6F2FB;
+  padding: 16px 10px;
+  margin-top: 16px;
+}
+
+.MuiAccordion-root {
+  background-color: transparent !important;
+}
+
+.header-accordion {
+  flex-direction: row-reverse;
+}
+
+.header-accordion .MuiAccordionSummary-content {
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icon-trash {
+  color: #EE695D;
+}
+
+.green-button {
+  color: #34A853 !important;
+  border-color: #34A853 !important;
+}
+
+.left-container {
+  width: 100%;
+  text-align: left;
+}
+
+.right-container {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}

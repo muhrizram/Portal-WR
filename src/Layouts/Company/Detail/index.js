@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Grid from "@mui/material/Grid";
 import SideBar from '../../../Component/Sidebar';
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -12,9 +12,10 @@ import FormInputText from '../../../Component/FormInputText';
 import schemacompany from '../shema';
 import client from '../../../global/client';
 import uploadFile from '../../../global/uploadFile';
-import CustomAlert from '../../../Component/Alert';
 import TableNative from '../../../Component/DataTable/Native';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { AlertContext } from '../../../context';
+
 const DetailCompany = () => {
   const [dataProject, setDataProject] = useState([]) 
   const columnsProject = [
@@ -34,11 +35,7 @@ const DetailCompany = () => {
   const [open, setOpen] = useState(false)
   const [sendData, setData] = useState({})
   const [isSave, setIsSave] = useState(false)
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
+  const { setDataAlert } = useContext(AlertContext)
   const [file, setFile] = useState('')
   const [companyId, setCompanyId] = useState(null)
   const [isEdit, setIsEdit] = useState(false)
@@ -138,15 +135,19 @@ const DetailCompany = () => {
       endpoint: `/company/${companyId}`,
       data
     })
-    if (res.data.meta.message) {
+    if (!res.isError) {
       setDataAlert({
         severity: 'success',
         open: true,
         message: res.data.meta.message
       })
-      setTimeout(() => {
-        navigate('/master-company')
-      }, 3000)
+      navigate('/master-company')
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
     }
     setOpen(false)
   }
@@ -166,7 +167,6 @@ const DetailCompany = () => {
 
   return (
     <SideBar>
-      <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
           <Grid item xs={8} pb={2}>

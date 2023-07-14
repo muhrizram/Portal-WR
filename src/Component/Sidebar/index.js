@@ -20,6 +20,7 @@ import { Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { routes } from "../../routes";
+import CustomAlert from "../Alert";
 
 const drawerWidth = 240;
 
@@ -214,7 +215,7 @@ export default function SideBar({ children }) {
         </List>
       </Drawer>
       <Box component="main" className='drawer-main-children' sx={{ flexGrow: 1, px: 2.5, py: 5 }}>
-        {/* <DrawerHeader /> */}
+        <CustomAlert />
         {children}
       </Box>
     </Box>
