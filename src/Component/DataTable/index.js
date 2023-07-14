@@ -67,13 +67,13 @@ const DataTable = ({
       width: 200,
       renderCell: (data) => {
         return (
-          <div>
+          <div> 
             <IconButton onClick={() => onDetail(data.id)}>
-              <PreviewIcon />
-            </IconButton>
-            <IconButton onClick={() => onDelete(data.id)}>
-              <DeleteIcon />
-            </IconButton>
+                <PreviewIcon />
+              </IconButton>
+              <IconButton onClick={() => onDelete(data.id)}>
+                <DeleteIcon />
+              </IconButton>                      
           </div>
         );
       },
