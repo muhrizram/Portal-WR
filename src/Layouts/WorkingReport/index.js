@@ -27,9 +27,11 @@ import Calendar from "../../Component/CalendarCustom";
 import { useNavigate } from "react-router-dom";
 import client from "../../global/client";
 import moment from "moment/moment";
+import PopupTask from "./PopupTask";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
+  const [openTask, setOpenTask] = useState(false)
 
   const [filter, setFilter] = useState({
     startDate: "",
@@ -37,6 +39,10 @@ export default function WorkingReport() {
   });
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [dataAttandance, setAttandance] = useState({
+    isAttandance: false,
+    dataPeriod: null
+  })
 
   useEffect(() => {
     localStorage.removeItem("companyId");
@@ -76,6 +82,43 @@ export default function WorkingReport() {
     console.log(temp);
     setData([...temp]);
   };
+
+  const onAttendence = (value) => {
+    setAttandance({
+      dataPeriod: value[0],
+      isAttandance: true
+    })
+  }
+
+  const renderCheckin = () => {
+    let dom = null
+    if (isCheckin) {
+      dom = (
+        <CheckinTime
+          setIsCheckin={(param) => {
+            setIsCheckin(() => false);
+          }}
+        />
+      )
+    } else if (dataAttandance.isAttandance) {
+      dom = <Attendance dataPeriod={dataAttandance.dataPeriod} />
+    } else {
+      dom = (
+        <Calendar
+          setOnClick={(param) => {
+            const _data = data.filter(
+              (val) =>
+                val.tanggal == moment(param.date).format("yyyy-MM-DD")
+            );
+            onAttendence(_data)
+          }}
+          events={data}
+        />
+      )
+    }
+
+    return dom
+  }
 
   return (
     <SideBar>
@@ -138,39 +181,16 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          {isCheckin ? (
-            <CheckinTime
-              setIsCheckin={(param) => {
-                setIsCheckin(() => false);
-              }}
-            />
-          ) : (
-            <Calendar
-              setOnClick={(param) => {
-                console.log(param);
-                const _data = data.filter(
-                  (val) =>
-                    val.tanggal == moment(param.date).format("yyyy-MM-DD")
-                );
-                console.log(_data);
-              }}
-              events={data}
-            />
-          )}
-          {/* <Attendance /> */}
-          {/* <Box sx={{ width: "100%", marginBottom: "2%" }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              // aria-label="wrapped label tabs example"
-            >
-              <Tab value={0} label="Calendar" />
-              <Tab value={1} label="Attendance History" />
-            </Tabs>
-          </Box>
-        {value === 0 && } */}
+          <Button onClick={() => setOpenTask(true)}>Open task</Button>
+        </Grid>
+        <Grid item xs={12}>
+          {renderCheckin()}
         </Grid>
       </Grid>
+      <PopupTask 
+        open={openTask}
+        closeTask={() => setOpenTask(false)}
+      />
     </SideBar>
   );
 }

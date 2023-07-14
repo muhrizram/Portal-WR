@@ -22,7 +22,8 @@ const DataTable = ({
   onDelete,
   onFilter,
   totalData,
-  onImport
+  onImport,
+  loading = false
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
@@ -138,6 +139,7 @@ const DataTable = ({
             onPaginationModelChange={(model) => changePagination(model)}
             onSortModelChange={(model) => changeSort(model)}
             disableColumnFilter
+            loading={loading}
             disableColumnMenu
             rowCount={totalData}
             getRowId={(row) => row.id}

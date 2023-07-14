@@ -4,19 +4,21 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader'
 import '../../App.css'
-const UploaderFile = () => {
+const UploaderFile = ({onCompleteUpload}) => {
   const [status, setStatus] = useState('Loading')
 
   // specify upload params and url for your files
-  const getUploadParams = ({ meta }) => { return { url: 'https://httpbin.org/post' } }
+  const getUploadParams = ({ meta }) => { return { url: 'https://portalwr-dev.cloudias79.com/apis/minio/uploadFile' } }
   
   // called every time a file's `status` changes
-  const handleChangeStatus = ({ meta, file }, status) => { 
-    console.log(status, meta, file)
+  const handleChangeStatus = ({ meta, file, xhr }, status) => { 
     if (status === 'uploading') {
       setStatus('Loading')
     } else if (status === 'done') {
+      const json = JSON.parse(xhr.response)
+      const text = `minio/view?file=${json.data.attributes.filePath}`
       setStatus('Complete')
+      onCompleteUpload(text)
     }
     let elementCard = document.getElementById('card-uploader-custom')
     if (elementCard) {
@@ -53,7 +55,6 @@ const UploaderFile = () => {
 
 
   const renderDom = (props) => {
-    console.log('props: ', props)
     return (
       <Grid container rowSpacing={2}>
         <Grid item xs={12}>
@@ -108,11 +109,6 @@ const UploaderFile = () => {
       </Grid>
     )
   } 
-
-  const renderPreview = (props) => {
-    console.log('props preview: ', props)
-    return {...props}
-  }
   return (
     <Dropzone
       getUploadParams={getUploadParams}

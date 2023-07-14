@@ -1,44 +1,31 @@
 import { Grid, Typography, Button, MenuItem, TextField, Autocomplete } from '@mui/material'
 import '../../../App.css'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import UploaderFile from '../../../Component/UploaderFile'
 import client from '../../../global/client'
-const Attendance = () => {
-  // const listPresence = [
-  //   {
-  //     label: 'Check in Present',
-  //     value: 1
-  //   },
-  //   {
-  //     label: 'Sick Leave',
-  //     value: 2
-  //   },
-  //   {
-  //     label: 'Authorize Absence',
-  //     value: 3
-  //   },
-  // ]
-
+import { AlertContext } from '../../../context'
+const Attendance = ({
+  dataPeriod
+}) => {
   const listLocation = [
     {
       label: 'Work From Home',
-      value: 1
+      value: 'Work From Home'
     },
     {
       label: 'Work From Office',
-      value: 2
+      value: 'Work From Office'
     },
   ]
-
   const [presence, setPresence] = useState({
     value: undefined,
     label: ''
   })
   const [location, setLocation] = useState('')
   const [listPresence, setListPresence] = useState([])
-
+  const [filePath, setFilePath] = useState('')
+  const {setDataAlert} = useContext(AlertContext)
   const handleChange = (value) => {
-    console.log("value: ", value)
     setPresence(value);
   };
 
@@ -58,13 +45,64 @@ const Attendance = () => {
         label: value.attributes.name
       }
     })
-    console.log('temp: ', temp)
     setListPresence(temp)
   }
   
   useEffect(() => {
     getDatalist()
   }, [])
+
+  const onContinue = async () => {
+    let body = {}
+    let workingReportId = null
+    if (presence.value === '42') {
+      body = {
+        periodId: dataPeriod.period,
+        presenceId: parseInt(presence.value),
+        userId: 2,
+        date: dataPeriod.tanggal,
+        workLocation: location
+      }
+      const res = await client.requestAPI({
+        endpoint: '/workingReport/attendance',
+        method: 'POST',
+        data: body
+      })
+      console.log('res: ', res)
+      if (!res.isError) {
+        workingReportId = res.data.attributes.workingReportId
+      } else {
+        setDataAlert({
+          severity: 'error',
+          message: res.error.detail,
+          open: true
+        })
+      }
+    } else {
+      body = {
+        periodId: dataPeriod.period,
+        presenceId: parseInt(presence.value),
+        userId: 2,
+        date: dataPeriod.tanggal,
+        file: filePath
+      }
+      const res = await client.requestAPI({
+        endpoint: '/workingReport/notAttendance',
+        method: 'POST',
+        data: body
+      })
+      console.log('res: ', res)
+      if (!res.isError) {
+        workingReportId = res.data.attributes.workingReportId
+      } {
+        setDataAlert({
+          severity: 'error',
+          message: res.error.detail,
+          open: true
+        })
+      }
+    }
+  }
 
   const renderBottom = () => {
     let dom = null
@@ -86,7 +124,7 @@ const Attendance = () => {
         </TextField>
       )
     } else if (presence.value !== '42' && presence.value !== undefined) {
-      dom = <UploaderFile />
+      dom = <UploaderFile onCompleteUpload={(urlFile) => setFilePath(urlFile)}/>
     }
     return dom
   }
@@ -111,33 +149,20 @@ const Attendance = () => {
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={listPresence}
-          sx={{ width: "100%", marginTop: "20px" }}
-          onChange={(_event, newValue) => handleChange(newValue)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              className='input-field-crud'
-              label='Presence'
-              placeholder='Select status'
-            />
-          )}
+            disablePortal
+            className='autocomplete-input'
+            options={listPresence}
+            sx={{ width: "100%", marginTop: "20px" }}
+            onChange={(_event, newValue) => handleChange(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                className='input-field-crud'
+                label='Presence'
+                placeholder='Select status'
+              />
+            )}
           />
-          {/* <TextField
-            value={presence}
-            select
-            className='input-field-crud'
-            label='Presence'
-            placeholder='Select status'
-            fullWidth
-            onChange={handleChange}
-          >
-            {listPresence.map((res, index) => (
-              <MenuItem value={res.value} key={`${index+1}-menu-item`}>{res.label}</MenuItem>
-            ))}
-          </TextField> */}
         </Grid>
         <Grid item xs={12}>
         {renderBottom()}
@@ -146,14 +171,13 @@ const Attendance = () => {
           <Button
             style={{ marginRight: '16px' }} 
             variant='outlined'
-            // onClick={() => cancelData()}
           >
             Cancel
           </Button>
           <Button
-            disabled={presence.value === undefined || location === ''}
+            disabled={(presence.value === undefined || location === '') && filePath === ''}
             variant='saveButton'
-            // onClick={() => cancelData()}
+            onClick={() => onContinue()}
           >
             Continue
           </Button>

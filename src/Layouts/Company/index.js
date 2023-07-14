@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DataTable from "../../Component/DataTable";
 import {
   Dialog,
@@ -9,10 +9,10 @@ import {
   Button,
   Avatar,
 } from "@mui/material";
-import CustomAlert from "../../Component/Alert";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import client from "../../global/client";
+import { AlertContext } from "../../context";
 const MasterCompany = () => {
   const columns = [
     {
@@ -60,11 +60,8 @@ const MasterCompany = () => {
   const [totalData, setTotalData] = useState()
   const [open, setOpen] = useState(false);
   const [idCompany, setIdCompany] = useState(null)
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    message: '',
-    severity: 'warning'
-  });
+  const { setDataAlert } = useContext(AlertContext)
+  const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -84,14 +81,20 @@ const MasterCompany = () => {
       method: 'DELETE',
       endpoint: `/company/${idCompany}`
     })
-    console.log('res: ', res)
-    if (res.meta.message) {
+    if (!res.isError) {
       setDataAlert({
-        ...dataAlert,
+        severity: 'success',
         open: true,
         message: res.meta.message
       })
       handleClose();
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+      setOpen(false)
     }
   };
 
@@ -101,11 +104,21 @@ const MasterCompany = () => {
   }, [filter])
 
   const getData = async () => {
+    setLoading(true)
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
-    rebuildData(res)
+    if (!res.isError) {
+      rebuildData(res)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    setLoading(false)
   }
 
   const rebuildData = (resData) => {
@@ -138,13 +151,6 @@ const MasterCompany = () => {
     })
   };
 
-  const handleCloseAlert = () => {
-    setDataAlert({
-      ...dataAlert,
-      open: false
-    })
-  };
-
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,
@@ -173,15 +179,10 @@ const MasterCompany = () => {
   return (
     <div>
       <SideBar>
-        <CustomAlert
-          severity={dataAlert.severity}
-          message={dataAlert.message}
-          open={dataAlert.open}
-          onClose={handleCloseAlert}
-        />
         <DataTable
           title="Company"
           data={data}
+          loading={loading}
           totalData={totalData}
           columns={columns}
           onFilter={(dataFilter => onFilter(dataFilter))}
@@ -194,7 +195,7 @@ const MasterCompany = () => {
         />
         <Dialog
           open={open}
-          onClose={handleClose}
+          onClose={() => setOpen(false)}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           className="dialog-delete"
@@ -212,7 +213,7 @@ const MasterCompany = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button
-              onClick={handleClose}
+              onClick={() => setOpen(false)}
               variant="outlined"
               className="button-text"
             >
