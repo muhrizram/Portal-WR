@@ -150,8 +150,7 @@ const Backlog = () => {
         status: value.attributes.status,
         assignedTo: value.attributes.assignedTo
       }
-    })
-    // console.log('temp: ', temp)
+    })    
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
