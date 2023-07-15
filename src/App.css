@@ -595,3 +595,23 @@
   gap: 16px;
   justify-content: flex-end;
 }
+
+.chips {
+  display: flex;
+  padding: 5px 10px;
+  align-items: center;
+  align-content: flex-start;
+  gap: 10px;
+  flex: 1 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 50px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

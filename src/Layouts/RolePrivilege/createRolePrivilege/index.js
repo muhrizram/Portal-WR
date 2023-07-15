@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import CustomAlert from "../../../Component/Alert";
+import { AlertContext } from '../../../context';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -32,32 +33,13 @@ const CreateRolePrivilege = () => {
   const [sendData, setData] = useState({})
   const [selectRole, setSelectRole] = useState();
   const [selectRoleLabel, setSelectRoleLabel] = useState();
+  const { setDataAlert } = useContext(AlertContext)
   const [selectPrivilege, setSelectPrivilege] = useState([])
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
   const navigate = useNavigate();
-  const Role = [
-    {label: "Administrator", value: 56},
-    {label: "Employee", value: 57},
-    {label: "HRD", value: 58},
-    {label: "Finance", value: 59},
-    {label: "Team Lead of Project", value: 60},
-    {label: "Talent Off", value: 61}
-  ];
-  const checkRolePrivilege = [
-    {label: "Working Report", value: 48},
-    {label: "Task", value: 49},
-    {label: "Master Employee", value: 50},
-    {label: "Master User Role", value: 51},
-    {label: "Master Role Privilege", value: 52},
-    {label: "Master Company", value: 53},
-    {label: "Master Project", value: 54},
-    {label: "Master Backlog", value: 55},
-
-  ]
+  const [optPrivilege, setOptPrivilege] = useState([])
+  const [optRole, setOptRole] = useState([])
+  const [createdby, setCreatedby] = useState('')
+  
   const dataBread = [
     {
       href: "/dashboard",
@@ -76,20 +58,6 @@ const CreateRolePrivilege = () => {
     },
   ];
 
-  const CheckboxRolePrivilege = checkRolePrivilege.map((privilege) => (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={selectPrivilege.includes(privilege.value)}
-          // checked={selectPrivilege === privilege.value}
-          onChange={() => handleChangeCheckbox(privilege.value)}
-        />
-      }
-      label={privilege.label}
-      key={privilege.value}
-    />
-  ))
-
   const handleChangeCheckbox = (value) => {
     if (selectPrivilege.includes(value)) {
       setSelectPrivilege(selectPrivilege.filter((privilege) => privilege !== value))
@@ -101,20 +69,43 @@ const CreateRolePrivilege = () => {
 
   useEffect(() => {
     console.log('checkbox', selectPrivilege)
-  }, [selectPrivilege])
+    getDataPrivilege()
+    getDataRole()
+  }, [])
+
+  //option role
+  const getDataRole = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/role?search=`
+    })
+    // rebuildData(res)
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
+    console.log('list ol role', res)
+    setOptRole(data)
+  }
+  //option role
+
+  //option privilege
+  const getDataPrivilege = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/privilege?search=`
+    })
+    // rebuildData(res)
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
+    console.log('list ol privilege', res)
+    setOptPrivilege(data)
+  }
+  //option privilege
+
 
   const onSave = async () => {
-    const listPrivilege = selectPrivilege.map(privilege => {
-      return{
-      roleId: selectRole,
-      privilegeId: privilege
-      }
-    })
 
     const data = {
-      roleId: selectRole,
-      roleName: selectRoleLabel,
-      listPrivilege: listPrivilege
+      roleId: optRole,
+      listPrivilege: selectPrivilege,
+      createdBy: parseInt(localStorage.getItem('createRolePrivilege'))
     }
     console.log('data nya', data)
     const res = await client.requestAPI({
@@ -123,7 +114,7 @@ const CreateRolePrivilege = () => {
       data
     })
     console.log('data res', res)
-    if (res.data.meta.message) {
+    if(!res.isError){
       setDataAlert({
         severity: 'success',
         open: true,
@@ -132,8 +123,15 @@ const CreateRolePrivilege = () => {
       setTimeout(() => {
         navigate('/masterroleprivilege')
       }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
     }
     setOpen(false)
+    // localStorage.setItem("createRolePrivilege", true);
   }
 
   const confirmSave = async (data) => {
@@ -157,14 +155,14 @@ const CreateRolePrivilege = () => {
 
   const handleChangeRole = (value) => {
     console.log('data role: ', value)
-    console.log('nama label ', value.label)
-    console.log('value ', value.value)
-    setSelectRoleLabel(value.label)
-    setSelectRole(value.value)
+    console.log('nama label ', value.name)
+    console.log('value ', value.id)
+    setOptRole(value.name)
+    setOptRole(value.id)
   }
+  const options = Array.isArray(optRole) ? optRole : [];
   return (
     <SideBar>
-      <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
           <Grid item xs={9.9}>
@@ -181,32 +179,15 @@ const CreateRolePrivilege = () => {
                       disablePortal
                       id="combo-box-demo"
                       name="role"
-                      options={Role}
+                      options={options}
                       sx={{ width: "100%", marginTop: "8px" }}
-                      getOptionLabel={(option) => option.label}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => handleChangeRole(newValue)}
-                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      // isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
                         <TextField {...params} label="Role" placeholder="Select Role" />
                       )}
-                    />                        
-                  {/* <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    options={Role}
-                    sx={{ width: "100%" }}
-                    value={selectRole}
-                    getOptionLabel={(option) => option.label}
-                    onChange={(event, newValue) => handleChangeRole(newValue)}
-                    isOptionEqualToValue={(option, value) => option.value === value.value}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Role"
-                        placeholder="Select Role"
-                      />
-                    )}
-                  /> */}
+                    />      
                 </Grid>  
 
                 <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>
@@ -219,14 +200,37 @@ const CreateRolePrivilege = () => {
 
                 <Grid container direction="row" sx={{marginLeft:'30px'}}>
                   <Grid item xs={6}>
-                    <FormGroup>
-                      {CheckboxRolePrivilege.slice(0,4)}
-                    </FormGroup>
-                    </Grid>
-                    <Grid item xs={6}>
-                    <FormGroup>
-                      {CheckboxRolePrivilege.slice(4)}
-                    </FormGroup>
+                  <FormGroup>
+                    {optPrivilege.slice(0, 4).map((privilege) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={selectPrivilege.includes(privilege.id)}
+                            onChange={() => handleChangeCheckbox(privilege.id)}
+                          />
+                        }
+                        label={privilege.name}
+                        key={privilege.id}
+                      />
+                    ))}
+                  </FormGroup>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                  <FormGroup>
+                    {optPrivilege.slice(4).map((privilege) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={selectPrivilege.includes(privilege.id)}
+                            onChange={() => handleChangeCheckbox(privilege.id)}
+                          />
+                        }
+                        label={privilege.name}
+                        key={privilege.id}
+                      />
+                    ))}
+                  </FormGroup>
                   </Grid>
                 </Grid>
 

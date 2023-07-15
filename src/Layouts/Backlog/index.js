@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 // import backlog from './initjson.json';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
@@ -9,6 +9,7 @@ import { Box } from '@mui/material';
 import { useNavigate } from "react-router";
 import client from "../../global/client";
 import { blueGrey } from '@mui/material/colors';
+import { AlertContext } from "../../context";
 
 
 const Backlog = () => {
@@ -16,17 +17,17 @@ const Backlog = () => {
     {
       field: 'no',
       headerName: 'No',
-      // flex: 1 
+      flex: 0.3
     },
     {
       field: 'projectName',
       headerName: 'Project Name',
-      flex: 1 
+      flex: 0.7
     },
     {
       field: 'taskCode',
       headerName: 'Task Code',
-      flex: 1 
+      flex: 0.7
     },
     {
       field: 'taskName',
@@ -80,6 +81,7 @@ const Backlog = () => {
   const [data, setData] = useState([]);
   const [idHapus,setidHapus] = useState();
   const [totalData, setTotalData] = useState();
+  const { setDataAlert } = useContext(AlertContext)
   // const [isDelete, setIsDelete] = (false)
   const [filter, setFilter] = useState({
     page: 0,
@@ -88,20 +90,14 @@ const Backlog = () => {
     sortType: 'asc',
     search: ''
   })
-
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
   
   const getStatusColor = (status) => {
     const statusColors = {
       'to do': '#FDECEB',
       'Backlog' : '#E6F2FB',
-      'In Progress': '#E6F2FB',
+      'In Progress': '#FFFACD',
       'Completed' : '#EBF6EE', 
-      'Done': '#EBF6EE'
+      'Done': '#E6E6FA'
     };
     return statusColors[status] || '#ccc';
   };
@@ -110,9 +106,9 @@ const Backlog = () => {
     const statusFontColors = {
       'to do': '#EE695D',
       'Backlog' : '#3393DF',
-      'In Progress': '#3393DF',
+      'In Progress': '#000',
       'Completed' : '#5DB975',
-      'Done': '#5DB975'
+      'Done': '#D8BFD8'
     };
     return statusFontColors[status] || '#fff';
   };
@@ -164,16 +160,19 @@ const Backlog = () => {
     // console.log('id', id)
     setOpenAlert(true);
     getData()
-    
-    if (res.meta.message) {
+    if (!res.isError) {
       setDataAlert({
-        severity: 'success',
+        severity: 'warning',
         open: true,
         message: res.meta.message
       })
-      setTimeout(() => {
-        navigate('/masterbacklog')
-      }, 3000)
+      handleClose();
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
     }
     handleClose();
   }
@@ -220,13 +219,6 @@ const Backlog = () => {
   return (
     <div>
       <SideBar>
-        <CustomAlert open={dataAlert.open} message={dataAlert.message} severity={dataAlert.severity} />
-        {/* <CustomAlert
-          severity='warning'
-          message='Deletion completed: The item has been successfully removed from the database'
-          open={openAlert}
-          onClose={handleCloseAlert}
-        /> */}
         <DataTable
           title='Backlog'
           data={data}
@@ -239,6 +231,7 @@ const Backlog = () => {
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleClickOpen(id)}
           totalData={totalData}
+          getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200}
         />
         <Dialog
           open={open}

@@ -6,6 +6,8 @@ import SideBar from '../../Component/Sidebar';
 import { Box } from '@mui/system';
 import { useNavigate } from "react-router";
 import client from "../../global/client";
+import Grid from '@mui/material/Grid';
+import { gridClasses } from '@mui/x-data-grid';
 
 
 const RolePrivilege = () => {
@@ -29,32 +31,23 @@ const RolePrivilege = () => {
     {
       field: 'no',
       headerName: 'No',
-      // flex: 1 
+      width: 60,
+      flex: 0.2
     },
     {
       field: 'roleName',
       headerName: 'Role',
-      flex: 1 
+      flex: 1,
+      width: 80
     },
     {
       field: 'privilege',
       headerName: 'Privilege',
       flex: 1,
       renderCell: (data) => (
-        <Box
-          sx={{
-            display: 'flex',
-            padding: '5px 10px',
-            alignItems: 'center',
-            alignContent: 'flex-start',
-            gap: '10px',
-            flex: '1 0 0',
-            flexWrap: 'wrap',
-            borderRadius: '4px',
-            fontSize: '12px',
-          }}
-        >
-          {Array.isArray(data.row.privilege) ? (data.row.privilege.map((privilege, index) => (
+        <Box className="chips"
+        > 
+          {Array.isArray(data.row.privilege) ? (data.row.privilege.slice(0,4).map((privilege, index) => (
             <Box
               key={`${privilege}-${index}`}
               sx={{
@@ -63,8 +56,9 @@ const RolePrivilege = () => {
                 backgroundColor: getStatusColor(privilege),
                 color: getStatusFontColor(privilege),
               }}
+              className={index >= 3 ? 'ellipsis' : ''}
             >
-              {privilege}
+              {index >= 3 ? '...' : privilege}
             </Box>
           ))):(<></>)}
           </Box>
@@ -148,7 +142,8 @@ const RolePrivilege = () => {
   const handleDetail = (id) => {
     navigate("/masterroleprivilege/detail");
   }
-  const onAdd = () => {
+  const onAdd = (createdBy) => {
+    // localStorage.setItem('createdBy', createdBy)
     navigate("/masterroleprivilege/create");
     console.log('add')
   }
@@ -167,6 +162,7 @@ const RolePrivilege = () => {
     console.log('on filter: ', dataFilter)
   }
 
+  
   return (
     <div>
       <SideBar>
@@ -176,6 +172,7 @@ const RolePrivilege = () => {
           open={openAlert}
           onClose={handleCloseAlert}
         />
+        <Grid container wrap="nowrap">
         <DataTable
           title='Role Privilege'
           data={data}
@@ -188,7 +185,10 @@ const RolePrivilege = () => {
           onDetail={(id) => handleDetail(id)}
           onDelete={(id) => handleClickOpen(id)}
           totalData={totalData}
+          getRowHeight={() => 'auto'}
+          // slots={{ toolbar: GridToolbar }}
         />
+        </Grid>
         <Dialog
           open={open}
           onClose={handleClose}

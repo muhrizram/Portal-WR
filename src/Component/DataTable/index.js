@@ -143,6 +143,7 @@ const DataTable = ({
             disableColumnMenu
             rowCount={totalData}
             getRowId={(row) => row.id}
+            // getRowHeight={() => 'auto'}
           />
         </Grid>
       ) : (
