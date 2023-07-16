@@ -92,14 +92,13 @@
 
 .containerHeader {
   display: flex;
-
 }
 
 .containerButton {
   display: flex;
 }
 
-.containerButton>button {
+.containerButton > button {
   margin-right: 10px;
 }
 
@@ -227,7 +226,6 @@
 
 .dialog-task-content {
   padding: 0 8px 8px 8px !important;
-
 }
 
 .dialog-delete-actions {
@@ -250,7 +248,6 @@
   box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.12),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.2);
   padding: 6px 16px !important;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   color: #ffffff !important;
@@ -270,9 +267,9 @@
   letter-spacing: 0.15px !important;
 }
 
-.custom-alert>.MuiAlert-action,
-.custom-alert>.MuiAlert-icon,
-.custom-alert>.MuiAlert-message {
+.custom-alert > .MuiAlert-action,
+.custom-alert > .MuiAlert-icon,
+.custom-alert > .MuiAlert-message {
   padding: 0 !important;
 }
 
@@ -506,12 +503,12 @@
   padding: 4px 10px;
   align-items: center;
   border-radius: 4px;
-  color: #2196F3;
+  color: #2196f3;
   font-size: 12px;
   font-style: normal;
   font-weight: 500;
   line-height: 100%;
-  border: 1px solid rgba(33, 150, 243, 0.50);
+  border: 1px solid rgba(33, 150, 243, 0.5);
 }
 
 .custom-file-upload {
@@ -544,9 +541,9 @@
   align-items: center;
   gap: 16px;
   align-self: stretch;
-  }
+}
 .autocomplete-input input {
- padding: 7.5px 4px 7.5px 5px !important;
+  padding: 7.5px 4px 7.5px 5px !important;
 }
 
 .autocomplete-on-popup .MuiAutocomplete-popper {
@@ -555,8 +552,8 @@
 
 .card-project {
   border-radius: 8px;
-  border: 1px solid #0078D7;
-  background: #E6F2FB;
+  border: 1px solid #0078d7;
+  background: #e6f2fb;
   padding: 16px 10px;
   margin-top: 16px;
 }
@@ -576,12 +573,12 @@
 }
 
 .icon-trash {
-  color: #EE695D;
+  color: #ee695d;
 }
 
 .green-button {
-  color: #34A853 !important;
-  border-color: #34A853 !important;
+  color: #34a853 !important;
+  border-color: #34a853 !important;
 }
 
 .left-container {

@@ -20,7 +20,7 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
 
-export default function Calendar({ setOnClick, events }) {
+export default function Calendar({ setOnClick, setIsViewTask, events }) {
   const [open, setOpen] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
@@ -72,7 +72,18 @@ export default function Calendar({ setOnClick, events }) {
           </Grid>
           {data[0].workingReportId !== null ? (
             <Grid item xs={12} display="flex" justifyContent="center">
-              <Button variant="contained">View Task</Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  localStorage.setItem(
+                    "workingReportId",
+                    data[0].workingReportId
+                  );
+                  setIsViewTask(true);
+                }}
+              >
+                View Task
+              </Button>
             </Grid>
           ) : (
             <></>

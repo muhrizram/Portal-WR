@@ -13,9 +13,13 @@ import client from "../../global/client";
 import moment from "moment/moment";
 import PopupTask from "./PopupTask";
 import { AlertContext } from "../../context";
+import ViewTask from "./ViewTask";
+import CheckOut from "./CheckOut";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
+  const [isViewTask, setIsViewTask] = useState(false);
+  const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const date = new Date(),
     y = date.getFullYear(),
@@ -116,6 +120,17 @@ export default function WorkingReport() {
           }}
         />
       );
+    } else if (isCheckOut) {
+      dom = <CheckOut />;
+    } else if (isViewTask) {
+      dom = (
+        <ViewTask
+          setIsCheckOut={() => {
+            setIsViewTask(false);
+            setIsCheckOut(true);
+          }}
+        />
+      );
     } else {
       dom = (
         <Calendar
@@ -125,6 +140,7 @@ export default function WorkingReport() {
             );
             onAttendence(_data);
           }}
+          setIsViewTask={setIsViewTask}
           events={data}
         />
       );
