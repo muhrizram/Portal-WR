@@ -32,13 +32,13 @@ const DetailPrivilege = () => {
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [role,setRole] = useState(["Working Report","Job Group"])
+  const [role,setRole] = useState(["working report","master role privilege"])
   const [Cancel, setCancel] = React.useState(false);
   const Role = [
-    "Employee",
+    "Employee", "HRD"
   ];
 
-  const dataBread = [
+  const dataBreadDetailRolePrivilege = [
     {
       href: "/dashboard",
       title: "Dashboard",
@@ -56,7 +56,7 @@ const DetailPrivilege = () => {
     },
   ];
 
-  const dataBread2 = [
+  const dataBreadEditRolePrivilege = [
     {
       href: "/dashboard",
       title: "Dashboard",
@@ -109,7 +109,7 @@ const DetailPrivilege = () => {
       <SideBar>
         {isEdit ? (
           <>
-            <Breadcrumbs breadcrumbs={dataBread2} />
+            <Breadcrumbs breadcrumbs={dataBreadEditRolePrivilege} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
@@ -134,7 +134,7 @@ const DetailPrivilege = () => {
                                   <TextField
                                     {...params}
                                     label="Role"
-                                    placeholder="Select User"
+                                    placeholder="Select Role"
                                   />
                                 )}
                               />
@@ -143,25 +143,23 @@ const DetailPrivilege = () => {
                         <Typography
                               sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
                             >
-                              Role
+                              Privilege
                             </Typography>
                             <Grid container direction="row" sx={{marginLeft:'30px'}}>
                               <Grid item xs={6}>
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="Working Report" />
-                              <FormControlLabel control={<Checkbox  />} label="Employee" />
-                              <FormControlLabel control={<Checkbox />} label="Project" />
-                              <FormControlLabel control={<Checkbox />} label="Holiday" />
-                              <FormControlLabel control={<Checkbox />} label="Role Privilege" />
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="working report" />
+                              <FormControlLabel control={<Checkbox  />} label="task" />
+                              <FormControlLabel control={<Checkbox />} label="master employee" />
+                              <FormControlLabel control={<Checkbox />} label="master user role" />
                             </FormGroup>
                             </Grid>
                             <Grid item xs={6}>
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="Job Group" />
-                              <FormControlLabel control={<Checkbox  />} label="Company" />
-                              <FormControlLabel control={<Checkbox  />} label="Backlog" />
-                              <FormControlLabel control={<Checkbox  />} label="User Role" />
-                              <FormControlLabel control={<Checkbox  />} label="Inaccessible" />
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="master role group" />
+                              <FormControlLabel control={<Checkbox  />} label="master company" />
+                              <FormControlLabel control={<Checkbox  />} label="master project" />
+                              <FormControlLabel control={<Checkbox  />} label="master backlog" />
                             </FormGroup>
                             </Grid>
                             </Grid>
@@ -272,12 +270,12 @@ const DetailPrivilege = () => {
           </>
         ) : (
           <>
-            <Breadcrumbs breadcrumbs={dataBread} />
+            <Breadcrumbs breadcrumbs={dataBreadDetailRolePrivilege} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
                   <Grid item xs={9.9}>
-                    <Header judul="Detail Privilege" />
+                    <Header judul="Detail Role Privilege" />
                   </Grid>
 
                   <Grid item />
