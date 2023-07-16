@@ -38,14 +38,21 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
     { label: "API Factory" },
     { label: "Selection Exam" },
   ];  
-  const StatusBacklog = [
-    { label: "To Do", value: 64 },
-    { label: "Backlog", value: 65 },
-    { label: "In Progress", value: 66 },
-  ];
+  const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
+
+  const getStatusBacklog = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/status?search=',      
+    })
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));   
+
+    setStatusBacklog(data)
+  }
   
   useEffect(() => {
+    getStatusBacklog()
     onUpdate(taskData);
   }, [taskData]);
 
@@ -153,14 +160,14 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
                   disablePortal
                   id="combo-box-demo"
                   name='statusBacklog'
-                  options={StatusBacklog}
-                  value={StatusBacklog.find((option) => option.value === taskData.statusBacklog)}
+                  options={StatusBacklog}                  
+                  value={StatusBacklog.find((option) => option.id === taskData.statusBacklog) || null}
                   onChange={(event, newValue) => setTaskData((prevData) => ({
                     ...prevData,
                     statusBacklog: newValue.value,
                   }))}
                   sx={{ width: "100%" }}
-                  getOptionLabel={(option) => option.label}
+                  getOptionLabel={(option) => option.name}
                   renderInput={(params) => (
                     <TextField
                       {...params}                             
@@ -214,20 +221,14 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
 //edit diaz }
 
 const DetailBacklog = () => {
-  const ProjectName = [
-    { label: "Electronic Health Record" },
-    { label: "API Factory" },
-    { label: "Selection Exam" },
-  ];
   const [isEdit, setIsEdit] = React.useState(false);
   const [addTask, setAddTask] = React.useState(true);  
   const [open, setOpen] = React.useState(false);
   const [dataDetail, setDataDetail] = useState({});
 
   //edit diaz rey {
-  const [opencancel, setOpencancel] = React.useState(false);
-  const [sendIdUpdate, setIdUpdate] = useState()
-  const [isSave, setIsSave] = useState(false)  
+    const [ProjectName, setProjectName] = useState([]);
+  const [opencancel, setOpencancel] = React.useState(false);  
   const [tasks, setTasks] = useState([]);
   const [valueproject, setValueproject] = React.useState("");
   const [dataAlert, setDataAlert] = useState({
@@ -311,7 +312,8 @@ const DetailBacklog = () => {
   //diaz edit }
 
   useEffect(() => {
-    getDataDetail()
+    getProjectName()
+    getDataDetail()    
   }, [])
 
   const getDataDetail = async () => {
@@ -320,14 +322,15 @@ const DetailBacklog = () => {
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
     })
-
+    console.log('res : ', res)
     rebuildDataDetail(res)
   };
 
   const rebuildDataDetail = (resData) => {
-    setIdUpdate(resData.data.id,)
+    const idInt = parseInt(resData.data.id);    
     let tempDetail = {
-        id: resData.data.id,
+        id: idInt,
+        projectId: resData.data.attributes.projectId,
         projectName: resData.data.attributes.projectName,
         taskCode: resData.data.attributes.taskCode,
         taskName: resData.data.attributes.taskName,
@@ -338,12 +341,12 @@ const DetailBacklog = () => {
         estimationTime: resData.data.attributes.estimationTime,
         actualTime: resData.data.attributes.actualTime,
         assignedTo: resData.data.attributes.assignedTo
-      }
-    
-    console.log('tempDetail: ', tempDetail)
+      }        
     setDataDetail(tempDetail)
-    const newTasks = JSON.parse(JSON.stringify(tasks));
-    newTasks.push(tempDetail);
+    // const newTasks = JSON.parse(JSON.stringify(tasks));
+    // newTasks.push(tempDetail);    
+    const newTasks = [tempDetail];
+    console.log('tempDetail: ', tempDetail)
     setTasks(newTasks);
   }
 
@@ -353,8 +356,7 @@ const DetailBacklog = () => {
   };
 
   const SubmitcancelData = () => {
-    setIsEdit(false)
-    setIsSave(false)
+    setIsEdit(false)    
     setOpencancel(false)
   }
 
@@ -390,14 +392,13 @@ const DetailBacklog = () => {
   };
 
   const confirmSave = async () => {
-    console.log("Datanya",tasks)
-    setIsSave(true)
+    console.log("Datanya",tasks)    
     setOpen(true)    
   }  
 
   const handleClickTask = () => {
     setAddTask(true);
-    const newTask = {
+    const newTask = {      
       id: tasks.length + 1,
       projectId : 1,
       statusBacklog: 64,
@@ -421,7 +422,7 @@ const DetailBacklog = () => {
   const methods = useForm({
     // resolver: yupResolver(shemabacklog),
     defaultValues: {      
-      projectId: '',
+      projectId: valueproject,
       userId: '',
       actualTime:'',   
       taskCode:'',
@@ -439,9 +440,10 @@ const DetailBacklog = () => {
     try {      
       for (let i = 0; i < tasks.length; i++) {
         const taskObject = tasks[i];        
+        console.log("taskObject",taskObject)
       const res = await client.requestAPI({
         method: 'PUT',
-        endpoint: `/backlog/${sendIdUpdate}`,
+        endpoint: `/backlog/${taskObject.id}`,
         data: taskObject,
       });
       console.log("INI RES UPDATE ", res)
@@ -461,7 +463,17 @@ const DetailBacklog = () => {
       console.error('Error:', error);
     } 
   }
-  
+
+  const getProjectName = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/project?search=',      
+    })    
+    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));    
+    console.log('data project: ', data) 
+    setProjectName(data)
+    
+  }
   //diaz edit sampe sini
 
   return (
@@ -474,7 +486,7 @@ const DetailBacklog = () => {
           <Grid item xs={12}>
             <Grid container>
               <Grid item xs={9.9}>
-                <Header judul="Create New Backlog" />
+                <Header judul="Edit Backlog" />
               </Grid>
               <Grid item />
             </Grid>
@@ -485,12 +497,13 @@ const DetailBacklog = () => {
                   <Autocomplete                    
                     disablePortal
                     id="combo-box-demo"
-                    name="projectName"
-                    options={ProjectName}
-                    sx={{ width: "100%", marginTop: "8px" }}
-                    getOptionLabel={(option) => option.label}
-                    onChange={(event, newValue) => {
-                      setValueproject(newValue);
+                    name="ProjectName"
+                    options={ProjectName}      
+                    value={ProjectName.find((option) => option.id === dataDetail.projectId) || null}                                       
+                    sx={{ width: "100%", marginTop: "8px" }}                    
+                    getOptionLabel={(option) => option.name}
+                    onChange={(event, newValue) => {                      
+                      setValueproject(parseInt(newValue.id));
                       if (!newValue) {                    
                         setAddTask(false);
                       }
@@ -714,8 +727,7 @@ const DetailBacklog = () => {
                                 id="panel1a-header"
                               >
                                   <Typography variant="backlogDetailText">
-                                    {dataDetail.taskName} :: {dataDetail.taskCode}
-                                  {/* Create Mockup Screen Dashboard :: Task 1 / T-WR-0011 */}
+                                    {dataDetail.taskName} :: {dataDetail.taskCode}                                
                                   </Typography>
                               </AccordionSummary> 
                             </Grid>
@@ -765,7 +777,7 @@ const DetailBacklog = () => {
                                 {dataDetail && dataDetail.priority && (
                                   <Rating
                                       name="rating"
-                                      value={parseFloat(dataDetail.priority)} // Ambil nilai rating dari properti "priority"
+                                      value={parseFloat(dataDetail.priority)}
                                       readOnly
                                       precision={0.5}
                                   />

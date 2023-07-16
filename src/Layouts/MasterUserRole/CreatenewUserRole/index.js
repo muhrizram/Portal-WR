@@ -32,15 +32,9 @@ const CreateUserRole = () => {
   const navigate = useNavigate();
   const UserName = [
     { label: "02/01/03/23 - Fahreja Abdullah", value: 2 }
-  ];
-  const RoleCheck = [
-    { label: "Administrator", value: 56 },
-    { label: "Employee", value: 57 },
-    { label: "HRD", value: 58 },
-    { label: "Finance", value: 59 },
-    { label: "Team Lead of Project", value: 60 },
-    { label: "Talent Off", value: 61 },
-  ];
+  ];  
+
+  const [RoleCheck,setRoleCheck] = useState([])
   const dataBread = [
     {
       href: "/dashboard",
@@ -79,11 +73,11 @@ const CreateUserRole = () => {
     setOpenCancel(false);
   };  
 
-  const handleRolesChange = (value) => {
-    if (selectedRoles.includes(value)) {
-      setSelectedRoles(selectedRoles.filter((role) => role !== value));
+  const handleRolesChange = (id) => {
+    if (selectedRoles.includes(id)) {
+      setSelectedRoles(selectedRoles.filter((role) => role !== id));
     } else {
-      setSelectedRoles([...selectedRoles, value]);
+      setSelectedRoles([...selectedRoles, id]);
     }
   };
 
@@ -91,14 +85,31 @@ const CreateUserRole = () => {
     <FormControlLabel
       control={
         <Checkbox
-          checked={selectedRoles.includes(role.value)}
-          onChange={() => handleRolesChange(role.value)}
+          checked={selectedRoles.includes(role.id)}
+          onChange={() => handleRolesChange(role.id)}
         />
       }
-      label={role.label}
-      key={role.value}
+      label={role.name}
+      key={role.id}
     />
   ));
+
+
+  useEffect(() => {        
+    getRole()
+  }, [selectedRoles])
+
+  const getRole = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/role?search=`
+    })
+    if (res.data) {      
+      const datarole = res.data.map((item) => ({id:item.id, name:item.attributes.name}))
+      setRoleCheck(datarole)
+      console.log("ROLE",res.data)
+    }
+  }
 
   const SubmitSave = async () => {
     const data = {     

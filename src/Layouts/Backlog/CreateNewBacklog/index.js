@@ -40,16 +40,22 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
     { label: "Electronic Health Record" },
     { label: "API Factory" },
     { label: "Selection Exam" },
-  ];  
-  const StatusBacklog = [
-    { label: "To Do", value: 64 },
-    { label: "Backlog", value: 65 },
-    { label: "In Progress", value: 66 },
-    {  },
-  ];
+  ];   
+  const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
+
+  const getStatusBacklog = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/status?search=',      
+    })
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));    
+
+    setStatusBacklog(data)
+  }
   
   useEffect(() => {
+    getStatusBacklog()
     onUpdate(taskData);
   }, [taskData]);
 
@@ -157,12 +163,12 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                   id="combo-box-demo"
                   name='statusBacklog'
                   options={StatusBacklog}
-                  value={taskData.statusBacklog ? StatusBacklog.find((option) => option.value === taskData.statusBacklog) : null}
+                  value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
                   onChange={(event, newValue) => {
                     if (newValue) {
                       setTaskData((prevData) => ({
                         ...prevData,
-                        statusBacklog: newValue.value,
+                        statusBacklog: newValue.id,
                       }))
                     } else {
                       setTaskData((prevData) => ({
@@ -172,7 +178,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                     }
                   }}
                   sx={{ width: "100%" }}
-                  getOptionLabel={(option) => option.label}
+                  getOptionLabel={(option) => option.name}
                   renderInput={(params) => (
                     <TextField
                       {...params}                             
@@ -225,18 +231,13 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
 };
 
 const CreateNewBacklog = () => {
-  const ProjectName = [
-    { label: "Electronic Health Record" },
-    { label: "API Factory" },
-    { label: "Selection Exam" },
-  ];
-  const [sendData, setData] = useState({})
+  const [ProjectName, setProjectName] = useState([]);
   const [isSave, setIsSave] = useState(false)  
   const [addTask, setAddTask] = React.useState(false);
   const [tasks, setTasks] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [opencancel, setOpencancel] = React.useState(false);
-  const [valueproject, setValueproject] = React.useState("");
+  const [valueproject, setValueproject] = React.useState();
   const [dataAlert, setDataAlert] = useState({
     open: false,
     severity: 'success',
@@ -313,19 +314,17 @@ const CreateNewBacklog = () => {
     setTasks(updatedTasks);
   };
 
-
   const confirmSave = async () => {
     console.log("Datanya",tasks)
     setIsSave(true)
-    setOpen(true)
-    setData(tasks)
+    setOpen(true)    
   }
 
   const handleClickTask = () => {
     setAddTask(true);
     const newTask = {
       id: tasks.length + 1,
-      projectId : 1,
+      projectId : valueproject,
       statusBacklog: null,
       userId : 2,
       taskName: '',
@@ -388,6 +387,21 @@ const CreateNewBacklog = () => {
     }
   };
 
+  const getProjectName = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/project?search=',      
+    })
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
+    console.log("DATA PROJECT", data)
+
+    setProjectName(data)
+  }
+
+useEffect(() => {
+  getProjectName()
+},[])
+
   return (
     <>
       <SideBar>
@@ -410,18 +424,21 @@ const CreateNewBacklog = () => {
                     name="projectName"
                     options={ProjectName}
                     sx={{ width: "100%", marginTop: "8px" }}
-                    getOptionLabel={(option) => option.label}
-                    onChange={(event, newValue) => {
-                      setValueproject(newValue);
+                    getOptionLabel={(option) => option.name}
+                    onChange={(event, newValue) => {                                            
                       if (!newValue) {                    
                         setAddTask(false);
-                      }
+                        setTasks([])                        
+                      }else{
+                        setValueproject(parseInt(newValue.id));
+                      }                      
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Project Name" />
                     )}
                   />
-                  {addTask ? (
+                  
+                  {addTask && valueproject ? (
                     <>
                     {tasks.map((task, index) => (
                          <TaskItem
@@ -433,8 +450,8 @@ const CreateNewBacklog = () => {
                        />
                     ))}
                     </>
-                  ) : (
-                    <>
+                  ) : (                  
+                    <>                    
                       <Grid
                         sx={{
                           width: "100%",

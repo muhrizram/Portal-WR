@@ -27,24 +27,19 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { set } from "date-fns";
 
 
 const DetailUserRole = () => {
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [idUserRole, setidUserRole] = React.useState(null);
-  const [role,setRole] = useState(["Team Lead of Project","Employe"])
+  const [detail, setDetail] = useState({});
+  const [Detailid,setDetailid] = useState()
+  const [role,setRole] = useState([])
   const [Cancel, setCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  const RoleCheck = [
-    { label: "Administrator", value: 56 },
-    { label: "Employee", value: 57 },
-    { label: "HRD", value: 58 },
-    { label: "Finance", value: 59 },
-    { label: "Team Lead of Project", value: 60 },
-    { label: "Talent Off", value: 61 },
-  ];
+  const [RoleCheck,setRoleCheck] = useState([])    
   const dataBread = [
     {
       href: "/dashboard",
@@ -83,11 +78,11 @@ const DetailUserRole = () => {
 
   const navigate = useNavigate();  
 
-  const handleRoleChange = (value) => {
-    if (selectedRoles.includes(value)) {
-      setSelectedRoles(selectedRoles.filter((role) => role !== value));
+  const handleRoleChange = (id) => {
+    if (selectedRoles.includes(id)) {
+      setSelectedRoles(selectedRoles.filter((role) => role !== id));
     } else {
-      setSelectedRoles([...selectedRoles, value]);
+      setSelectedRoles([...selectedRoles, id]);
     }
   };
 
@@ -95,12 +90,12 @@ const DetailUserRole = () => {
     <FormControlLabel
       control={
         <Checkbox
-          checked={selectedRoles.includes(role.value)}
-          onChange={() => handleRoleChange(role.value)}
+          checked={selectedRoles.includes(role.id)}
+          onChange={() => handleRoleChange(role.id)}
         />
       }
-      label={role.label}
-      key={role.value}
+      label={role.name}
+      key={role.id}
     />
   ));
 
@@ -128,32 +123,45 @@ const DetailUserRole = () => {
     setCancel(false);
   };
 
-  useEffect(() => {
-    console.log("INI ROLE",selectedRoles)
-    // getDataDetail() 
+  useEffect(() => {    
+    getDataDetail()
+    getRole()
   }, [selectedRoles])
 
+  const getRole = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/role?search=`
+    })
+    if (res.data) {      
+      const datarole = res.data.map((item) => ({id:item.id, name:item.attributes.name}))
+      setRoleCheck(datarole)
+      console.log("ROLE",res.data)
+    }
+  }
+
   const getDataDetail = async () => {
-    const id = localStorage.getItem('id')
-    setidUserRole(id)
+    const id = localStorage.getItem('idBacklog')
+    setDetailid(id)
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/userRole/${id}`
     })
     if (res.data.attributes) {
+      setDetail(res.data.attributes)
+      setRole(res.data.attributes.userRoleDTOs)
       console.log(res.data.attributes)      
     }
   }
 
   const SubmitSave = async () => {
-    const data = {
-      // lastModifiedBy: 4,
+    const data = {      
       roleId: selectedRoles,
     }
     console.log("MISI PAKET ",data)
     const res = await client.requestAPI({
       method: 'PUT',
-      endpoint: `/userRole/update/2`,
+      endpoint: `/userRole/update/${Detailid}`,
       data
     })
     console.log("INI RES",res)
@@ -187,7 +195,7 @@ const DetailUserRole = () => {
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
-                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="User Name" value="02/01/03/23 - Fahreja Abdullah" variant="outlined" />                                                                        
+                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="User Name" value={detail.nip +  " " + detail.firstName + " " + detail.lastName} variant="outlined" />                                                                        
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
@@ -346,8 +354,8 @@ const DetailUserRole = () => {
                             >
                               NIP & User
                             </Typography>
-                            <Typography  sx={{ color: "text.secondary", fontSize: "16px" }} >
-                              02/01/03/23 - Fahreja Abdullah
+                            <Typography  sx={{ color: "text.secondary", fontSize: "16px" }} >                              
+                              {detail.nip +  " " + detail.firstName + " " + detail.lastName}
                             </Typography>
                           </Grid>                                                   
                         </Grid>  

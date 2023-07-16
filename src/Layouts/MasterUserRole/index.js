@@ -17,41 +17,30 @@ import client from "../../global/client";
 const RoleUser = () => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [openAlertCreate, setOpenAlertCreate] = useState(false);
-  // const [openAlertUpdated, setOpenAlertUpdated] = useState(false);
+  const [openAlertCreate, setOpenAlertCreate] = useState(false);  
   const [dataIduser, setDataIduser] = useState();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [data2, setData2] = useState([]);
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'firstName',
-    sortType: 'asc'
+    sortName: 'name',
+    sortType: 'desc'
   })
   const onFilter = (dataFilter) => {
     console.log('on filter: ', dataFilter)
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'first_name',
-      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
     })
   }
   
   useEffect(() => {
-    getData()
-    // CheckAlert()    
-    // fetchData()
+    getData()    
   }, [])
 
-  // const CheckAlert = () => {
-  //   if (localStorage.getItem("isCreate")) {
-  //     setOpenAlertCreate(true);
-  //   } else if (localStorage.getItem("isUpdated")) {
-  //     setOpenAlertUpdated(true);
-  //   }
-  // }
 
   const getData = async () => {
     const res = await client.requestAPI({
@@ -68,50 +57,36 @@ const RoleUser = () => {
     temp = resData.data.map((value, index) => {
       return {
         no: number + (index + 1),
-        id: value.userId,
+        id: value.attributes.userId,        
         firstName: value.attributes.firstName,
         lastName: value.attributes.lastName,
         nip: value.attributes.nip,
-        userRoleDTOs: value.attributes.userRoleDTOs.map((userRole) => ({
-          userRoleId: userRole.userRoleId,
-          roleId: userRole.roleId,
-          role: userRole.role,
-          active: userRole.active,
-        })),      
+        userRoleDTOs: value.attributes.userRoleDTOs.map((userRole) => [
+          userRole.userRoleId,
+          userRole.roleId,
+          userRole.role,
+          userRole.active,
+        ]),      
       }
-    })
-    console.log('temp: ', temp)
+    })    
     setData([...temp])    
   }
+  
 
-  const deleteData = async (id) => {
+  const deleteData = async (userId) => {    
     await client.requestAPI({
       method: 'DELETE',
-      endpoint: `/userRole/delete/${id}`
+      endpoint: `/userRole/delete/${userId}`
     })
-    console.log('id', id)
+    console.log('userId', userId)
     setOpenAlert(true);
     getData()
     handleClose();
   }
 
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/content");
-      const jsonData = await response.json();      
-      const updatedData = jsonData.map((item, index) => ({
-        ...item,
-        no: index + 1,
-      }));
-      setData2(updatedData);
-    } catch (error) {
-      console.log("Error fetching data: ", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    setDataIduser(id);
+  const handleDelete = async (userId) => {    
+    console.log('userId NYA', userId)
+    setDataIduser(userId);
     setOpen(true);
   };  
 
@@ -127,8 +102,8 @@ const RoleUser = () => {
     localStorage.removeItem("isCreate");    
   };
 
-  const handleDetail = async (id) => {
-    localStorage.setItem('idBacklog', id)
+  const handleDetail = async (userId) => {
+    localStorage.setItem('idBacklog', userId)
     navigate("/masteruserrole/detail");
   };
   
@@ -229,13 +204,7 @@ const RoleUser = () => {
           message="Deletion completed: The item has been successfully remove from the database"
           open={openAlert}
           onClose={handleCloseAlert}
-        />
-        {/* <CustomAlert
-          severity="warning"
-          message="Data updated: Your changes have been successfully saved"
-          open={openAlertUpdated}
-          onClose={setOpenAlertUpdated(false)}
-        /> */}
+        />  
 
         <DataTable
           title="User Role"
@@ -244,9 +213,10 @@ const RoleUser = () => {
           placeSearch="User, Role, etc"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
-          onDetail={(id) => handleDetail(id)}
-          onDelete={(id) => handleDelete(id)}
+          onDetail={(userId) => handleDetail(userId)}
+          onDelete={(userId) => handleDelete(userId)}
           onFilter={(dataFilter => onFilter(dataFilter))}
+          // userRole={true}
         />
 
         <Dialog
