@@ -318,7 +318,7 @@ const DetailPrivilege = () => {
                         <Typography
                               sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
                             >
-                              Role
+                              Privilege
                             </Typography>
                             <Timeline>
                               {role.map((item,index) => (
