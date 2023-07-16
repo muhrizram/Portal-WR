@@ -1,48 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Avatar, Button, Card, Grid, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import CheckinTime from "../../Component/CheckinTime";
+import CheckinTime from "./CheckIn";
 import Attendance from "./Attandence";
 import Calendar from "../../Component/CalendarCustom";
 import { useNavigate } from "react-router-dom";
 import client from "../../global/client";
 import moment from "moment/moment";
 import PopupTask from "./PopupTask";
+import { AlertContext } from "../../context";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
-  const [openTask, setOpenTask] = useState(false)
-
+  const [openTask, setOpenTask] = useState(false);
+  const date = new Date(),
+    y = date.getFullYear(),
+    m = date.getMonth();
   const [filter, setFilter] = useState({
-    startDate: "",
-    endDate: "",
+    startDate: new Date(y, m, 1),
+    endDate: new Date(y, m + 1, 0),
   });
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [dataAttandance, setAttandance] = useState({
     isAttandance: false,
-    dataPeriod: null
-  })
+    dataPeriod: null,
+  });
+  const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
     localStorage.removeItem("companyId");
@@ -52,9 +40,19 @@ export default function WorkingReport() {
   const getData = async () => {
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/workingReport/2023-07-01/2023-07-30/2`,
+      endpoint: `/workingReport/${moment(filter.startDate).format(
+        "yyyy-MM-DD"
+      )}/${moment(filter.endDate).format("yyyy-MM-DD")}/2`,
     });
-    rebuildData(res);
+    if (!res.isError) {
+      rebuildData(res);
+    } else {
+      setDataAlert({
+        severity: "error",
+        message: res.error.detail,
+        open: true,
+      });
+    }
   };
 
   const rebuildData = (resData) => {
@@ -64,19 +62,19 @@ export default function WorkingReport() {
       return value.attributes.listDate.holiday
         ? {
             title: "Libur",
-            date: moment(value.attributes.listDate.dateHoliday).format(
-              "yyyy-MM-DD"
-            ),
-            tanggal: moment(value.attributes.listDate.dateHoliday).format(
+            date: moment(value.attributes.listDate.date).format("yyyy-MM-DD"),
+            tanggal: moment(value.attributes.listDate.date).format(
               "yyyy-MM-DD"
             ),
             period: value.attributes.period,
+            workingReportId: value.attributes.listDate.workingReportId,
           }
         : {
             period: value.attributes.period,
-            tanggal: moment(value.attributes.listDate.dateHoliday).format(
+            tanggal: moment(value.attributes.listDate.date).format(
               "yyyy-MM-DD"
             ),
+            workingReportId: value.attributes.listDate.workingReportId,
           };
     });
     console.log(temp);
@@ -84,14 +82,19 @@ export default function WorkingReport() {
   };
 
   const onAttendence = (value) => {
+    console.log("attendance", value);
+    if (value[0].workingReportId !== null) {
+      setIsCheckin(true);
+    }
     setAttandance({
       dataPeriod: value[0],
-      isAttandance: true
-    })
-  }
+      isAttandance: true,
+    });
+    console.log(value[0]);
+  };
 
   const renderCheckin = () => {
-    let dom = null
+    let dom = null;
     if (isCheckin) {
       dom = (
         <CheckinTime
@@ -99,26 +102,36 @@ export default function WorkingReport() {
             setIsCheckin(() => false);
           }}
         />
-      )
+      );
     } else if (dataAttandance.isAttandance) {
-      dom = <Attendance dataPeriod={dataAttandance.dataPeriod} />
+      dom = (
+        <Attendance
+          dataPeriod={dataAttandance.dataPeriod}
+          setIsCheckin={() => {
+            setAttandance({
+              ...dataAttandance,
+              isAttandance: false,
+            });
+            setIsCheckin(false);
+          }}
+        />
+      );
     } else {
       dom = (
         <Calendar
           setOnClick={(param) => {
             const _data = data.filter(
-              (val) =>
-                val.tanggal == moment(param.date).format("yyyy-MM-DD")
+              (val) => val.tanggal == moment(param.date).format("yyyy-MM-DD")
             );
-            onAttendence(_data)
+            onAttendence(_data);
           }}
           events={data}
         />
-      )
+      );
     }
 
-    return dom
-  }
+    return dom;
+  };
 
   return (
     <SideBar>
@@ -187,10 +200,7 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-      <PopupTask 
-        open={openTask}
-        closeTask={() => setOpenTask(false)}
-      />
+      <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
     </SideBar>
   );
 }

@@ -1,30 +1,35 @@
-import { Grid, Typography, Button, MenuItem, TextField, Autocomplete } from '@mui/material'
-import '../../../App.css'
-import React, { useContext, useEffect, useState } from 'react'
-import UploaderFile from '../../../Component/UploaderFile'
-import client from '../../../global/client'
-import { AlertContext } from '../../../context'
-const Attendance = ({
-  dataPeriod
-}) => {
+import {
+  Grid,
+  Typography,
+  Button,
+  MenuItem,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
+import "../../../App.css";
+import React, { useContext, useEffect, useState } from "react";
+import UploaderFile from "../../../Component/UploaderFile";
+import client from "../../../global/client";
+import { AlertContext } from "../../../context";
+const Attendance = ({ dataPeriod, setIsCheckin }) => {
   const listLocation = [
     {
-      label: 'Work From Home',
-      value: 'Work From Home'
+      label: "Work From Home",
+      value: "Work From Home",
     },
     {
-      label: 'Work From Office',
-      value: 'Work From Office'
+      label: "Work From Office",
+      value: "Work From Office",
     },
-  ]
+  ];
   const [presence, setPresence] = useState({
     value: undefined,
-    label: ''
-  })
-  const [location, setLocation] = useState('')
-  const [listPresence, setListPresence] = useState([])
-  const [filePath, setFilePath] = useState('')
-  const {setDataAlert} = useContext(AlertContext)
+    label: "",
+  });
+  const [location, setLocation] = useState("");
+  const [listPresence, setListPresence] = useState([]);
+  const [filePath, setFilePath] = useState("");
+  const { setDataAlert } = useContext(AlertContext);
   const handleChange = (value) => {
     setPresence(value);
   };
@@ -35,48 +40,54 @@ const Attendance = ({
 
   const getDatalist = async () => {
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/ol/presence?search=`
-    })
-    console.log('res: ', res.data)
+      method: "GET",
+      endpoint: `/ol/presence?search=`,
+    });
+    console.log("res: ", res.data);
     const temp = res.data.map((value) => {
       return {
         value: value.id,
-        label: value.attributes.name
-      }
-    })
-    setListPresence(temp)
-  }
-  
+        label: value.attributes.name,
+      };
+    });
+    localStorage.setItem("listPresence", JSON.stringify(temp));
+    setListPresence(temp);
+  };
+
   useEffect(() => {
-    getDatalist()
-  }, [])
+    getDatalist();
+  }, []);
 
   const onContinue = async () => {
-    let body = {}
-    let workingReportId = null
-    if (presence.value === '42') {
+    let body = {};
+    let workingReportId = null;
+    if (presence.value === "42") {
       body = {
-        periodId: dataPeriod.period,
+        periodId: "7",
         presenceId: parseInt(presence.value),
         userId: 2,
         date: dataPeriod.tanggal,
-        workLocation: location
-      }
+        workLocation: location,
+      };
+      localStorage.setItem("presence", presence.value);
       const res = await client.requestAPI({
-        endpoint: '/workingReport/attendance',
-        method: 'POST',
-        data: body
-      })
-      console.log('res: ', res)
+        endpoint: "/workingReport/attendance",
+        method: "POST",
+        data: body,
+      });
+      console.log("res: ", res);
       if (!res.isError) {
-        workingReportId = res.data.attributes.workingReportId
+        localStorage.setItem(
+          "workingReportId",
+          res.data.attributes.workingReportId
+        );
+        setIsCheckin(true);
       } else {
         setDataAlert({
-          severity: 'error',
+          severity: "error",
           message: res.error.detail,
-          open: true
-        })
+          open: true,
+        });
       }
     } else {
       body = {
@@ -84,99 +95,108 @@ const Attendance = ({
         presenceId: parseInt(presence.value),
         userId: 2,
         date: dataPeriod.tanggal,
-        file: filePath
-      }
+        file: filePath,
+      };
       const res = await client.requestAPI({
-        endpoint: '/workingReport/notAttendance',
-        method: 'POST',
-        data: body
-      })
-      console.log('res: ', res)
+        endpoint: "/workingReport/notAttendance",
+        method: "POST",
+        data: body,
+      });
+      console.log("res: ", res);
       if (!res.isError) {
-        workingReportId = res.data.attributes.workingReportId
-      } {
+        workingReportId = res.data.attributes.workingReportId;
+      }
+      {
         setDataAlert({
-          severity: 'error',
+          severity: "error",
           message: res.error.detail,
-          open: true
-        })
+          open: true,
+        });
       }
     }
-  }
+  };
 
   const renderBottom = () => {
-    let dom = null
-    if (presence.value === '42') {
-      dom = 
-      (
+    let dom = null;
+    if (presence.value === "42") {
+      dom = (
         <TextField
           value={location}
           select
-          className='input-field-crud'
-          label='Check In Location'
-          placeholder='Select Location'
+          className="input-field-crud"
+          label="Check In Location"
+          placeholder="Select Location"
           fullWidth
           onChange={handleChangeLocation}
         >
           {listLocation.map((res, index) => (
-            <MenuItem value={res.value} key={`${index+1}-menu-item`}>{res.label}</MenuItem>
+            <MenuItem value={res.value} key={`${index + 1}-menu-item`}>
+              {res.label}
+            </MenuItem>
           ))}
         </TextField>
-      )
-    } else if (presence.value !== '42' && presence.value !== undefined) {
-      dom = <UploaderFile onCompleteUpload={(urlFile) => setFilePath(urlFile)}/>
+      );
+    } else if (presence.value !== "42" && presence.value !== undefined) {
+      dom = (
+        <UploaderFile onCompleteUpload={(urlFile) => setFilePath(urlFile)} />
+      );
     }
-    return dom
-  }
+    return dom;
+  };
 
   return (
-    <div className='card-attendance'>
+    <div className="card-attendance">
       <Grid container rowSpacing={2}>
-        <Grid item xs={12} textAlign='center'>
-          <Typography variant='attendanceHeader'>
+        <Grid item xs={12} textAlign="center">
+          <Typography variant="attendanceHeader">
             Employee Attendance
           </Typography>
         </Grid>
-        <Grid item xs={12} textAlign='center'>
-          <Typography variant='attendanceTrack'>
+        <Grid item xs={12} textAlign="center">
+          <Typography variant="attendanceTrack">
             Track and start your workday
           </Typography>
         </Grid>
-        <Grid item xs={12} textAlign='center'>
-          <Typography variant='attendanceHeader'>
+        <Grid item xs={12} textAlign="center">
+          <Typography variant="attendanceHeader">
             Tuesday, 2 May 2023
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
             disablePortal
-            className='autocomplete-input'
+            className="autocomplete-input"
             options={listPresence}
             sx={{ width: "100%", marginTop: "20px" }}
             onChange={(_event, newValue) => handleChange(newValue)}
             renderInput={(params) => (
               <TextField
                 {...params}
-                className='input-field-crud'
-                label='Presence'
-                placeholder='Select status'
+                className="input-field-crud"
+                label="Presence"
+                placeholder="Select status"
               />
             )}
           />
         </Grid>
         <Grid item xs={12}>
-        {renderBottom()}
+          {renderBottom()}
         </Grid>
-        <Grid item xs={12} textAlign='center' mt={presence.value === '42' ? 21 : 15}>
-          <Button
-            style={{ marginRight: '16px' }} 
-            variant='outlined'
-          >
+        <Grid
+          item
+          xs={12}
+          textAlign="center"
+          mt={presence.value === "42" ? 21 : 15}
+        >
+          <Button style={{ marginRight: "16px" }} variant="outlined">
             Cancel
           </Button>
           <Button
-            disabled={(presence.value === undefined || location === '') && filePath === ''}
-            variant='saveButton'
+            disabled={
+              (presence.value === undefined || location === "") &&
+              filePath === ""
+            }
+            variant="saveButton"
             onClick={() => onContinue()}
           >
             Continue
@@ -184,7 +204,7 @@ const Attendance = ({
         </Grid>
       </Grid>
     </div>
-  )
-}
+  );
+};
 
-export default Attendance
+export default Attendance;

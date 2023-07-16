@@ -50,39 +50,44 @@ export default function Calendar({ setOnClick, events }) {
     setFullWidth(event.target.checked);
   };
 
+  const renderCalendar = (info) => {
+    const data = events.filter(
+      (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
+    );
+    if (data.length > 0) {
+      console.log(data);
+      return (
+        <Grid container spacing={2}>
+          <Grid item xs={12} display="flex" justifyContent="right">
+            <Typography variant="h6">{info.dayNumberText}</Typography>
+          </Grid>
+          <Grid item xs={12} display="flex" justifyContent="center">
+            {info.isToday ? (
+              <Button variant="outlined" onClick={() => setOnClick(info)}>
+                Attendance
+              </Button>
+            ) : (
+              <></>
+            )}
+          </Grid>
+          {data[0].workingReportId !== null ? (
+            <Grid item xs={12} display="flex" justifyContent="center">
+              <Button variant="contained">View Task</Button>
+            </Grid>
+          ) : (
+            <></>
+          )}
+        </Grid>
+      );
+    }
+  };
+
   return (
     <Grid>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
-        dayCellContent={(info, create) => {
-          const data = events.filter(
-            (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-          );
-          console.log("dataFilter", data);
-          console.log(info);
-          if (data.length > 0) {
-            return (
-              <Grid container spacing={2}>
-                <Grid item xs={12} display="flex" justifyContent="right">
-                  <Typography variant="h6">{info.dayNumberText}</Typography>
-                </Grid>
-                <Grid item xs={12} display="flex" justifyContent="center">
-                  {info.isToday ? (
-                    <Button variant="outlined" onClick={() => setOnClick(info)}>
-                      Attendance
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </Grid>
-                <Grid item xs={12} display="flex" justifyContent="center">
-                  <Button variant="contained">View Task</Button>
-                </Grid>
-              </Grid>
-            );
-          }
-        }}
+        dayCellContent={(info, create) => renderCalendar(info)}
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
