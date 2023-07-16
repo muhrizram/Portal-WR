@@ -30,28 +30,34 @@ import Box from "@mui/material/Box";
 
 //assets
 import Allura from "../../../assets/Allura.png";
+import { co } from "@fullcalendar/core/internal-common";
 
 //edit diaz rey {
 const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
-  const ProjectName = [
-    { label: "Electronic Health Record" },
-    { label: "API Factory" },
-    { label: "Selection Exam" },
-  ];  
+  const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
+
+  const getAssignedTo = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/userList?search=',      
+    })
+    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName, groupName: item.attributes.groupName}));    
+    setAssignedTo(data)
+  }
 
   const getStatusBacklog = async () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: '/ol/status?search=',      
     })
-    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));   
-
+    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));       
     setStatusBacklog(data)
   }
   
   useEffect(() => {
+    getAssignedTo()
     getStatusBacklog()
     onUpdate(taskData);
   }, [taskData]);
@@ -156,26 +162,29 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             />                   
           </Grid>
           <Grid item xs={6}>
-            <Autocomplete                                
-                  disablePortal
-                  id="combo-box-demo"
-                  name='statusBacklog'
-                  options={StatusBacklog}                  
-                  value={StatusBacklog.find((option) => option.id === taskData.statusBacklog) || null}
-                  onChange={(event, newValue) => setTaskData((prevData) => ({
-                    ...prevData,
-                    statusBacklog: newValue.value,
-                  }))}
-                  sx={{ width: "100%" }}
-                  getOptionLabel={(option) => option.name}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}                             
-                      label="Backlog Status"
-                      placeholder="Select Status"
-                    />
-                  )}
-                />           
+          <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              name="statusBacklog"
+              options={StatusBacklog}
+              value={StatusBacklog.find((option) => option.id === taskData.statusBacklog) || null}
+              getOptionLabel={(option) => option.name}
+              onChange={(event, newValue) =>
+                setTaskData((prevData) => ({
+                  ...prevData,
+                  statusBacklog: newValue ? newValue.id : null, 
+                }))
+              }
+              sx={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Backlog Status"
+                  placeholder="Select Status"
+                />
+              )}
+            />
+    
           </Grid>
         </Grid>
         <Grid
@@ -196,22 +205,28 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             />
           </Grid>
             <Grid item xs={6}>
-              <Autocomplete                                
-                disablePortal
-                id="combo-box-demo"
-                value={taskData.assignedTo}
-                options={ProjectName}
-                onChange={handleChange}              
-                sx={{ width: "100%" }}
-                getOptionLabel={(option) => option.label || ""}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}                             
-                    label="Assigned To"
-                    placeholder="Select Talent"
-                  />
-                )}
-              />
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              name="statusBacklog"
+              options={AssignedTo}
+              value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
+              getOptionLabel={(option) => option.fullName}
+              onChange={(event, newValue) =>
+                setTaskData((prevData) => ({
+                  ...prevData,
+                  assignedTo: newValue ? newValue.fullName : null, 
+                }))
+              }
+              sx={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Assigned To"
+                  placeholder="Select Talent"
+                />
+              )}
+            />            
             </Grid>
           </Grid>
       </AccordionDetails>
@@ -321,8 +336,7 @@ const DetailBacklog = () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
-    })
-    console.log('res : ', res)
+    })    
     rebuildDataDetail(res)
   };
 
@@ -331,16 +345,21 @@ const DetailBacklog = () => {
     let tempDetail = {
         id: idInt,
         projectId: resData.data.attributes.projectId,
+        statusBacklog: resData.data.attributes.statusBacklog,
+        userId: resData.data.attributes.userId,
         projectName: resData.data.attributes.projectName,
-        taskCode: resData.data.attributes.taskCode,
+        status: resData.data.attributes.status,
+        assignedTo: resData.data.attributes.assignedTo,
         taskName: resData.data.attributes.taskName,
         taskDescription: resData.data.attributes.taskDescription,
-        taskName: resData.data.attributes.taskName,
-        priority: resData.data.attributes.priority,
-        status: resData.data.attributes.status,
         estimationTime: resData.data.attributes.estimationTime,
         actualTime: resData.data.attributes.actualTime,
-        assignedTo: resData.data.attributes.assignedTo
+        createdBy: resData.data.attributes.createdBy,
+        updatedBy: resData.data.attributes.updatedBy,
+        createdOn: resData.data.attributes.createdOn,
+        updatedOn: resData.data.attributes.updatedOn,
+        priority: resData.data.attributes.priority,
+        taskCode: resData.data.attributes.taskCode,        
       }        
     setDataDetail(tempDetail)
     // const newTasks = JSON.parse(JSON.stringify(tasks));
@@ -383,22 +402,21 @@ const DetailBacklog = () => {
     setTasks(updatedTasks);
   };
 
-  const handleUpdateTask = (updatedTask) => {
-    console.log("updatedTask NYA",updatedTask)
+  const handleUpdateTask = (updatedTask) => {    
     const updatedTasks = tasks.map((task) =>
       task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
   };
 
-  const confirmSave = async () => {
-    console.log("Datanya",tasks)    
+  const confirmSave = async () => {    
     setOpen(true)    
   }  
 
   const handleClickTask = () => {
     setAddTask(true);
     const newTask = {      
+      
       id: tasks.length + 1,
       projectId : 1,
       statusBacklog: 64,
@@ -469,8 +487,7 @@ const DetailBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })    
-    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));    
-    console.log('data project: ', data) 
+    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));        
     setProjectName(data)
     
   }
@@ -499,17 +516,17 @@ const DetailBacklog = () => {
                     id="combo-box-demo"
                     name="ProjectName"
                     options={ProjectName}      
-                    value={ProjectName.find((option) => option.id === dataDetail.projectId) || null}                                       
+                    defaultValue={ProjectName.find((option) => option.id === dataDetail.projectId) || null}
                     sx={{ width: "100%", marginTop: "8px" }}                    
                     getOptionLabel={(option) => option.name}
-                    onChange={(event, newValue) => {                      
+                    onChange={(event, newValue) => {             
                       setValueproject(parseInt(newValue.id));
                       if (!newValue) {                    
                         setAddTask(false);
                       }
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Project Name" />
+                      <TextField {...params} label="Project Name" placeholder="Select Backlog" />
                     )}
                   />
                   {addTask ? (
