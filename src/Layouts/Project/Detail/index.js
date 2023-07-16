@@ -419,7 +419,6 @@ const DetailProject = () => {
                 </Grid>
                 {isEdit && (
                   <Grid item container xs={12} justifyContent="end" mt={3.5}>
-                    <Grid item xs={9} />
                     <Grid item xs textAlign="right">
                       <Button
                         style={{ marginRight: "16px" }}

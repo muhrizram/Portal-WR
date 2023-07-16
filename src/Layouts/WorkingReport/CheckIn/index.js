@@ -12,11 +12,13 @@ import {
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import ReplayIcon from "@mui/icons-material/Replay";
-import uploadFile from "./../../global/uploadFile";
+import uploadFile from "./../../../global/uploadFile";
+import client from "../../../global/client";
+import { AlertContext } from "../../../context";
 
 export default function CheckinTime({ setIsCheckin }) {
   const videoConstraints = {
@@ -24,9 +26,15 @@ export default function CheckinTime({ setIsCheckin }) {
     height: 417,
     facingMode: "user",
   };
+  const [lat, setLat] = useState();
+  const [lon, setLon] = useState();
   const [isTakePicture, setIsTakePicture] = useState(false);
   const webcamRef = React.useRef(null);
   const [picture, setPicture] = useState("");
+  const [startTime, setStartTime] = React.useState(null);
+  const [endTime, setEndTime] = React.useState(null);
+  const { setDataAlert } = useContext(AlertContext);
+
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setPicture(imageSrc);
@@ -36,9 +44,43 @@ export default function CheckinTime({ setIsCheckin }) {
     const file = new File([blob], "test_picture.jpg");
     // URL.createObjectURL(blob)
     const result = await uploadFile(file);
-
-    console.log(result);
+    console.log("hasilUpload", result);
+    const body = {
+      workingReportId: localStorage.getItem("workingReportId"),
+      latitude: lat,
+      longitude: lon,
+      startTime: startTime.format("HH:mm:ss"),
+      endTime: endTime.format("HH:mm:ss"),
+      file: result,
+    };
+    const res = await client.requestAPI({
+      endpoint: "/workingReport/attendance/checkIn",
+      method: "POST",
+      data: body,
+    });
+    console.log("res: ", res);
+    if (!res.isError) {
+      setIsCheckin(false);
+      setDataAlert({
+        severity: "success",
+        open: true,
+        message: res.data.meta.message,
+      });
+    } else {
+      setDataAlert({
+        severity: "error",
+        message: res.error.detail,
+        open: true,
+      });
+    }
   };
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setLat(position.coords.latitude);
+      setLon(position.coords.longitude);
+    });
+  }, []);
 
   return (
     <Grid container>
@@ -124,8 +166,8 @@ export default function CheckinTime({ setIsCheckin }) {
                 <Grid item xs={12} display="flex" justifyContent="center">
                   <Typography variant="title">Geolocation</Typography>
                 </Grid>
-                <Typography>Latitude :</Typography>
-                <Typography>Longitude :</Typography>
+                <Typography>Latitude : {lat}</Typography>
+                <Typography>Longitude : {lon}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <Grid container spacing={2}>
@@ -169,8 +211,10 @@ export default function CheckinTime({ setIsCheckin }) {
                       <DemoContainer components={["TimePicker"]}>
                         <TimePicker
                           onChange={(value) => {
-                            console.log(value);
+                            setStartTime(value);
+                            console.log(value.format("HH:mm:ss"));
                           }}
+                          value={startTime}
                           label="Basic time picker"
                         />
                       </DemoContainer>
@@ -180,9 +224,8 @@ export default function CheckinTime({ setIsCheckin }) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["TimePicker"]}>
                         <TimePicker
-                          onChange={(value) => {
-                            console.log(value);
-                          }}
+                          onChange={(value) => setEndTime(value)}
+                          value={endTime}
                           label="Basic time picker"
                         />
                       </DemoContainer>

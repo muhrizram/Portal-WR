@@ -20,7 +20,7 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
 
-export default function Calendar({ setOnClick, events }) {
+export default function Calendar({ setOnClick, setIsViewTask, events }) {
   const [open, setOpen] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
@@ -50,39 +50,55 @@ export default function Calendar({ setOnClick, events }) {
     setFullWidth(event.target.checked);
   };
 
+  const renderCalendar = (info) => {
+    const data = events.filter(
+      (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
+    );
+    if (data.length > 0) {
+      console.log(data);
+      return (
+        <Grid container spacing={2}>
+          <Grid item xs={12} display="flex" justifyContent="right">
+            <Typography variant="h6">{info.dayNumberText}</Typography>
+          </Grid>
+          <Grid item xs={12} display="flex" justifyContent="center">
+            {info.isToday ? (
+              <Button variant="outlined" onClick={() => setOnClick(info)}>
+                Attendance
+              </Button>
+            ) : (
+              <></>
+            )}
+          </Grid>
+          {data[0].workingReportId !== null ? (
+            <Grid item xs={12} display="flex" justifyContent="center">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  localStorage.setItem(
+                    "workingReportId",
+                    data[0].workingReportId
+                  );
+                  setIsViewTask(true);
+                }}
+              >
+                View Task
+              </Button>
+            </Grid>
+          ) : (
+            <></>
+          )}
+        </Grid>
+      );
+    }
+  };
+
   return (
     <Grid>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
-        dayCellContent={(info, create) => {
-          const data = events.filter(
-            (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-          );
-          console.log("dataFilter", data);
-          console.log(info);
-          if (data.length > 0) {
-            return (
-              <Grid container spacing={2}>
-                <Grid item xs={12} display="flex" justifyContent="right">
-                  <Typography variant="h6">{info.dayNumberText}</Typography>
-                </Grid>
-                <Grid item xs={12} display="flex" justifyContent="center">
-                  {info.isToday ? (
-                    <Button variant="outlined" onClick={() => setOnClick(info)}>
-                      Attendance
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </Grid>
-                <Grid item xs={12} display="flex" justifyContent="center">
-                  <Button variant="contained">View Task</Button>
-                </Grid>
-              </Grid>
-            );
-          }
-        }}
+        dayCellContent={(info, create) => renderCalendar(info)}
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
