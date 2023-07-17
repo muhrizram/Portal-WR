@@ -111,12 +111,9 @@ export default function WorkingReport() {
       dom = (
         <Attendance
           dataPeriod={dataAttandance.dataPeriod}
-          setIsCheckin={() => {
-            setAttandance({
-              ...dataAttandance,
-              isAttandance: false,
-            });
-            setIsCheckin(false);
+          setIsCheckin={(param) => {
+            console.log("masuk sini");
+            setIsCheckin(true);
           }}
         />
       );
