@@ -244,7 +244,7 @@ const PopupTask = ({
         </div>
         <div className='right-container'>
           <Button
-            // onClick={() => setOpen(false)}
+            onClick={() => closeTask(false)}
             variant="outlined"
             className="button-text"
           >

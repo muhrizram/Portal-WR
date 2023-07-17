@@ -169,8 +169,7 @@ const DetailUserRole = () => {
         endpoint: `/userRole/update/${Detailid}`,
         data
       })    
-      if(!res.isError){
-        console.log("BEFORE")
+      if(!res.isError){        
         setDataAlert({
           severity: 'success',
           open: true,
@@ -178,8 +177,13 @@ const DetailUserRole = () => {
         })   
         setTimeout(() => {                
           navigate('/masteruserrole')
-        }, 2000)
-        
+        }, 2000)        
+      }else {      
+        setDataAlert({
+          severity: 'error',
+          message: res.error.meta.message,
+          open: true
+        })
       }
       setOpen(false)      
     }

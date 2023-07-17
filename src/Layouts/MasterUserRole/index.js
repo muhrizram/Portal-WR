@@ -46,8 +46,16 @@ const RoleUser = () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
-    })    
-    rebuildData(res)
+    })
+    if(!res.isError){      
+      rebuildData(res)          
+    }else {      
+      setDataAlert({
+        severity: 'error',
+        message: res.error.meta.message,
+        open: true
+      })
+    }    
   }
 
   const rebuildData = (resData) => {
@@ -102,10 +110,6 @@ const RoleUser = () => {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleCloseAlertCreate = () => {    
-    localStorage.removeItem("isCreate");    
   };
 
   const handleDetail = async (userId) => {
