@@ -44,7 +44,15 @@ const DataTable = ({
    * @param {model} object field & sort size saat ini dalam bentuk array.
    */
   const changeSort = (model) => {
-    setSort([{ ...model }]);
+    console.log('model: ', model)
+    if (model.length > 0) {
+      setSort([{ ...model }]);
+    } else {
+      setSort([{
+        field: "",
+        sort: "",
+      }])
+    }
   };
 
   const handleBuildList = (filter) => {
