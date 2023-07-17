@@ -25,7 +25,8 @@ const RoleUser = () => {
     page: 0,
     size: 10,
     sortName: 'name',
-    sortType: 'desc'
+    sortType: 'desc',
+    search: ''
   })
   const onFilter = (dataFilter) => {
     console.log('on filter: ', dataFilter)
@@ -34,6 +35,7 @@ const RoleUser = () => {
       size: dataFilter.pageSize,
       sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
+      search: filter.search
     })
   }
   
@@ -45,7 +47,7 @@ const RoleUser = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+      endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     console.log("INI RES",res)
     rebuildData(res)
@@ -61,7 +63,7 @@ const RoleUser = () => {
         firstName: value.attributes.firstName,
         lastName: value.attributes.lastName,
         nip: value.attributes.nip,
-        userRoleDTOs: value.attributes.userRoleDTOs.map((userRole) => [
+        listRole: value.attributes.listRole.map((userRole) => [
           userRole.userRoleId,
           userRole.roleId,
           userRole.role,
@@ -134,7 +136,7 @@ const RoleUser = () => {
     },   
     
     {
-      field: "userRoleDTOs",
+      field: "listRole",
       headerName: "Role",
       flex: 1,
       renderCell: (data) => (
@@ -147,18 +149,19 @@ const RoleUser = () => {
             fontSize: '12px',
           }}
         >
-           {Array.isArray(data.row.userRoleDTOs) ? (
-        data.row.userRoleDTOs.map((userRoleDTOs) => (
+           {Array.isArray(data.row.listRole) ? (
+        data.row.listRole.slice(0,3).map((listRole,index) => (
           <Box
-            key={userRoleDTOs}
+            key={listRole}
             sx={{
               padding: '5px 10px',
               borderRadius: '4px',
               backgroundColor: statusColor,
-              color: statusFontColors,
+              color: statusFontColors,              
             }}
-          >
-            {userRoleDTOs}
+            className={index >= 2 ? 'ellipsis' : ''}
+          >            
+            {index >= 2 ? '...' : listRole}
           </Box>
         ))
       ) : (
@@ -170,7 +173,7 @@ const RoleUser = () => {
             color: statusFontColors
           }}
         >
-          {data.row.userRoleDTOs}
+          {data.row.listRole}
         </Box>
       )}
         </Box>
@@ -215,8 +218,7 @@ const RoleUser = () => {
           handleChangeSearch={handleChangeSearch}
           onDetail={(userId) => handleDetail(userId)}
           onDelete={(userId) => handleDelete(userId)}
-          onFilter={(dataFilter => onFilter(dataFilter))}
-          // userRole={true}
+          onFilter={(dataFilter => onFilter(dataFilter))}          
         />
 
         <Dialog

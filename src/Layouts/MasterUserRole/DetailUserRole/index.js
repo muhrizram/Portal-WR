@@ -149,9 +149,9 @@ const DetailUserRole = () => {
     })
     if (res.data.attributes) {
       setDetail(res.data.attributes)
-      setRole(res.data.attributes.userRoleDTOs)
-      console.log("INI ROLE",res.data.attributes.userRoleDTOs)    
-      const selectedRoleIds = res.data.attributes.userRoleDTOs.map((userRole) => userRole.roleId);
+      setRole(res.data.attributes.listRole)
+      console.log("INI ROLE",res.data.attributes.listRole)    
+      const selectedRoleIds = res.data.attributes.listRole.map((userRole) => userRole.roleId);
       console.log("HOLLA",selectedRoleIds)
       setSelectedRoles(selectedRoleIds);      
     }
