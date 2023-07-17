@@ -38,8 +38,8 @@ const DetailUserRole = () => {
   const [role,setRole] = useState([])
   const [Cancel, setCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
-
-  const [RoleCheck,setRoleCheck] = useState([])    
+  const [RoleCheck,setRoleCheck] = useState([])
+   
   const dataBread = [
     {
       href: "/dashboard",
@@ -84,18 +84,19 @@ const DetailUserRole = () => {
     } else {
       setSelectedRoles([...selectedRoles, id]);
     }
+    console.log("SELECT ROLE", selectedRoles)
   };
 
   const roleCheckboxes = RoleCheck.map((role) => (
     <FormControlLabel
       control={
         <Checkbox
-          checked={selectedRoles.includes(role.id)}
-          onChange={() => handleRoleChange(role.id)}
+          checked={selectedRoles.includes(parseInt(role.id))}
+          onChange={() => handleRoleChange(parseInt(role.id))}
         />
       }
       label={role.name}
-      key={role.id}
+      key={parseInt(role.id)}
     />
   ));
 
@@ -126,7 +127,7 @@ const DetailUserRole = () => {
   useEffect(() => {    
     getDataDetail()
     getRole()
-  }, [selectedRoles])
+  }, [])
 
   const getRole = async () => {
     const res = await client.requestAPI({
@@ -135,8 +136,7 @@ const DetailUserRole = () => {
     })
     if (res.data) {      
       const datarole = res.data.map((item) => ({id:item.id, name:item.attributes.name}))
-      setRoleCheck(datarole)
-      console.log("ROLE",res.data)
+      setRoleCheck(datarole)      
     }
   }
 
@@ -149,8 +149,11 @@ const DetailUserRole = () => {
     })
     if (res.data.attributes) {
       setDetail(res.data.attributes)
-      setRole(res.data.attributes.userRoleDTOs)
-      console.log(res.data.attributes)      
+      setRole(res.data.attributes.listRole)
+      console.log("INI ROLE",res.data.attributes.listRole)    
+      const selectedRoleIds = res.data.attributes.listRole.map((userRole) => userRole.roleId);
+      console.log("HOLLA",selectedRoleIds)
+      setSelectedRoles(selectedRoleIds);      
     }
   }
 
@@ -366,12 +369,12 @@ const DetailUserRole = () => {
                               Role
                             </Typography>
                             <Timeline>
-                              {role.map((item,index) => (
-                              <Grid key={index} sx={{ display: "flex", alignItems: "center" }}>
-                                <TimelineDot color="primary" />
-                                <TimelineContent>{item}</TimelineContent>
-                              </Grid>
-                              ))}          
+                              {role.map((item, index) => (
+                                <Grid key={index} sx={{ display: "flex", alignItems: "center" }}>
+                                  <TimelineDot color="primary" />
+                                  <TimelineContent>{item.role}</TimelineContent>
+                                </Grid>
+                              ))}
                             </Timeline>
                       </Grid>
                     </Grid>
