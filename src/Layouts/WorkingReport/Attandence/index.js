@@ -77,10 +77,12 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
       });
       console.log("res: ", res);
       if (!res.isError) {
+        console.log("apakah");
         localStorage.setItem(
           "workingReportId",
           res.data.attributes.workingReportId
         );
+        console.log("harusnya");
         setIsCheckin(true);
       } else {
         setDataAlert({
