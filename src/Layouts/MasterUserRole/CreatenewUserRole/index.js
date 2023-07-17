@@ -29,6 +29,7 @@ const CreateUserRole = () => {
   const [openCancel, setOpenCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
+  const [getUsersdata, setgetUsers] = useState([]);
   const navigate = useNavigate();
   const UserName = [
     { label: "02/01/03/23 - Fahreja Abdullah", value: 2 }
@@ -85,19 +86,34 @@ const CreateUserRole = () => {
     <FormControlLabel
       control={
         <Checkbox
-          checked={selectedRoles.includes(role.id)}
-          onChange={() => handleRolesChange(role.id)}
+          checked={selectedRoles.includes(parseInt(role.id))}
+          onChange={() => handleRolesChange(parseInt(role.id))}
         />
       }
       label={role.name}
-      key={role.id}
+      key={parseInt(role.id)}
     />
   ));
 
 
   useEffect(() => {        
     getRole()
+    getUsers()
   }, [selectedRoles])
+
+
+  const getUsers  = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/users?search=`
+    })
+    if (res.data) {
+      console.log("DATA NYA USERS", res.data)
+      const datausers = res.data.map((item) => ({value:parseInt(item.id), label:item.attributes.userName}))
+      setgetUsers(datausers)
+      console.log("INI DATA USER",datausers)     
+    }
+  } 
 
   const getRole = async () => {
     const res = await client.requestAPI({
@@ -106,8 +122,7 @@ const CreateUserRole = () => {
     })
     if (res.data) {      
       const datarole = res.data.map((item) => ({id:item.id, name:item.attributes.name}))
-      setRoleCheck(datarole)
-      console.log("ROLE",res.data)
+      setRoleCheck(datarole)      
     }
   }
 
@@ -128,8 +143,7 @@ const CreateUserRole = () => {
         navigate('/masteruserrole')
       }, 3000)
     }
-    setOpen(false)
-    localStorage.setItem("isCreate", true);
+    setOpen(false)    
   }
 
   return (
@@ -154,7 +168,7 @@ const CreateUserRole = () => {
                         <Autocomplete
                                 disablePortal
                                 id="combo-box-demo"
-                                options={UserName}
+                                options={getUsersdata}
                                 sx={{ width: "100%" }}
                                 value={selectedUser}
                                 onChange={(event, newValue) => setSelectedUser(newValue.value)}
