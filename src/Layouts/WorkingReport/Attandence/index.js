@@ -11,6 +11,7 @@ import React, { useContext, useEffect, useState } from "react";
 import UploaderFile from "../../../Component/UploaderFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
+import moment from "moment";
 const Attendance = ({ dataPeriod, setIsCheckin }) => {
   const listLocation = [
     {
@@ -159,7 +160,7 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
         </Grid>
         <Grid item xs={12} textAlign="center">
           <Typography variant="attendanceHeader">
-            Tuesday, 2 May 2023
+            {moment(dataPeriod.tanggal).format('dddd, DD MMMM YYYY')}
           </Typography>
         </Grid>
         <Grid item xs={12}>
