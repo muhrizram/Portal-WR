@@ -138,7 +138,12 @@ const CreateUserRole = () => {
       data
     })
     console.log("INI RES",res)
-    if (res.data.meta.message) {     
+    if (res.data == undefined) {     
+      setTimeout(() => {
+        navigate('/masteruserrole/create')
+      }, 3000)
+      console.log("ERROR DATA ALREADY EXIST")
+    }else if (res.data.meta.message){
       setTimeout(() => {
         navigate('/masteruserrole')
       }, 3000)
