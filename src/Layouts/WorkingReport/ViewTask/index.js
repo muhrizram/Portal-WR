@@ -1,4 +1,4 @@
-import * as React from "react";
+import React , {useState} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -9,8 +9,10 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Accordion from "@mui/material/Accordion";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
+import PopupTask from "../PopupTask";
 
 export default function ViewTask({ setIsCheckOut }) {
+  const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
 
   const handleChange = (event, newValue) => {
@@ -153,7 +155,11 @@ export default function ViewTask({ setIsCheckOut }) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button startIcon={<CreateIcon />} variant="outlined">
+            <Button
+              startIcon={<CreateIcon />} 
+              variant="outlined"
+              onClick={() => setOpenTask(true)}
+              >              
               Edit Task
             </Button>
           </Grid>
@@ -168,6 +174,7 @@ export default function ViewTask({ setIsCheckOut }) {
           </Grid>
         </Grid>
       </Grid>
+      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)}/>
     </Grid>
   );
 }

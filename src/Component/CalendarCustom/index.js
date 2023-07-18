@@ -19,9 +19,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
+import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 
 export default function Calendar({ setOnClick, setIsViewTask, events }) {
   const [open, setOpen] = useState(false);
+  const [openTask, setOpenTask] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
 
@@ -62,10 +64,10 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
             <Typography variant="h6">{info.dayNumberText}</Typography>
           </Grid>
           <Grid item xs={12} display="flex" justifyContent="center">
-            {info.isToday ? (
+            {info.isToday ? (             
               <Button variant="outlined" onClick={() => setOnClick(info)}>
                 Attendance
-              </Button>
+              </Button>             
             ) : (
               <></>
             )}
@@ -83,11 +85,23 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
                 }}
               >
                 View Task
-              </Button>
+              </Button>              
             </Grid>
           ) : (
             <></>
           )}
+          <Grid item xs={12} display="flex" justifyContent="left">
+            {info.isToday ? (                         
+              <Button
+              variant="outlined"
+              onClick={() => setOpenTask(true)}
+              >
+              task
+            </Button>            
+            ) : (
+              <></>
+            )}
+          </Grid>          
         </Grid>
       );
     }
@@ -154,6 +168,7 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+      <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );
 }
