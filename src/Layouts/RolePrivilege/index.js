@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import DataTable from '../../Component/DataTable';
 import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
 import CustomAlert from '../../Component/Alert';
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import client from "../../global/client";
 import Grid from '@mui/material/Grid';
 import { gridClasses } from '@mui/x-data-grid';
+import { AlertContext } from "../../context";
 
 
 const RolePrivilege = () => {
@@ -73,6 +74,7 @@ const RolePrivilege = () => {
   const [data, setData] = useState([]);
   const [idHapus,setidHapus] = useState()
   const [totalData, setTotalData] = useState()
+  const { setDataAlert } = useContext(AlertContext)
   const [filter, setFilter] = useState({
     page: 0,
     size: 20,
@@ -84,14 +86,15 @@ const RolePrivilege = () => {
   })
 
 
-  const handleClickOpen = () => {
+  const handleClickOpen = async (id) => {
+    setidHapus(id)
     setOpen(true);
   };
 
-  const onDelete = () => {
-    setOpenAlert(true);
-    handleClose();
-  };
+  // const onDelete = () => {
+  //   setOpenAlert(true);
+  //   handleClose();
+  // };
 
   useEffect(() => {
     getData()
@@ -123,6 +126,33 @@ const RolePrivilege = () => {
     setTotalData(resData.meta.page.totalElements)
   }
 
+  const deleteData = async (id) => {
+    const res = await client.requestAPI({
+      method: 'DELETE',
+      endpoint: `/rolePrivilege/delete/${id}`
+    })
+    console.log('response', res)
+    // console.log('id', id)
+    setOpenAlert(true);
+    getData()
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'warning',
+        open: true,
+        message: res.meta.message
+      })
+      handleClose();
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    handleClose();
+  }
+  
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -139,7 +169,9 @@ const RolePrivilege = () => {
     });
   }
   
-  const handleDetail = (id) => {
+  const handleDetail = async (id) => {
+    localStorage.setItem('idRolePrivilege', id)
+    console.log('idDetail', id)
     navigate("/masterroleprivilege/detail");
   }
   const onAdd = (createdBy) => {
@@ -206,7 +238,7 @@ const RolePrivilege = () => {
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button onClick={handleClose} variant='outlined' className="button-text">Cancel</Button>
-            <Button onClick={() => onDelete(idHapus)} className='delete-button button-text'>Delete Data</Button>
+            <Button onClick={() => deleteData(idHapus)} className='delete-button button-text'>Delete Data</Button>
           </DialogActions>
         </Dialog>
       </SideBar>

@@ -15,12 +15,14 @@ import PopupTask from "./PopupTask";
 import { AlertContext } from "../../context";
 import ViewTask from "./ViewTask";
 import CheckOut from "./CheckOut";
+import CreateOvertime from "../Overtime/createOvertime";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
   const [isViewTask, setIsViewTask] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
+  const [openOvertime, setOpenOvertime] = useState(false);
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -210,10 +212,14 @@ export default function WorkingReport() {
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
         <Grid item xs={12}>
+          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
+        </Grid>
+        <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
       <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
+      <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );
 }
