@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import { Autocomplete, Button, TextField, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -10,6 +10,7 @@ import client from "../../../global/client";
 import FormInputText from '../../../Component/FormInputText';
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { AlertContext } from '../../../context';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -30,9 +31,7 @@ import Box from "@mui/material/Box";
 
 //assets
 import Allura from "../../../assets/Allura.png";
-import { co } from "@fullcalendar/core/internal-common";
 
-//edit diaz rey {
 const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
@@ -233,26 +232,19 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
     </Accordion>
   );
 };  
-//edit diaz }
 
 const DetailBacklog = () => {
   const [isEdit, setIsEdit] = React.useState(false);
   const [addTask, setAddTask] = React.useState(true);  
   const [open, setOpen] = React.useState(false);
-  const [dataDetail, setDataDetail] = useState({});
-
-  //edit diaz rey {
-    const [ProjectName, setProjectName] = useState([]);
+  const [dataDetail, setDataDetail] = useState({});  
+  const [ProjectName, setProjectName] = useState([]);
   const [opencancel, setOpencancel] = React.useState(false);  
   const [tasks, setTasks] = useState([]);
   const [valueproject, setValueproject] = React.useState("");
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
+  const [isSave, setIsSave] = useState(false)
+  const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate();  
-  //edit diaz }
 
   const dataBreadDetailBacklog = [
     {
@@ -316,15 +308,9 @@ const DetailBacklog = () => {
     setIsEdit(true);
   };
 
-  const handleClickOpen = () => {
-    setOpencancel(true);
-  };
-
-  //diaz edit {
   const handleClose = () => {    
     setOpen(false);
   };
-  //diaz edit }
 
   useEffect(() => {
     getProjectName()
@@ -362,22 +348,29 @@ const DetailBacklog = () => {
         taskCode: resData.data.attributes.taskCode,        
       }        
     setDataDetail(tempDetail)
-    // const newTasks = JSON.parse(JSON.stringify(tasks));
-    // newTasks.push(tempDetail);    
     const newTasks = [tempDetail];
     console.log('tempDetail: ', tempDetail)
     setTasks(newTasks);
   }
 
-  //ini aku Diaz edit dari sini
-  const handleClosecancel = () => {
-    setOpencancel(false);
+  const handleClickOpenSave = () => {
+    setIsSave(true)
+    setOpen(true);
+    console.log(open);
+  };
+  
+  const handleClickOpenCancel = () => {
+    setIsSave(false)
+    setOpen(true);
   };
 
-  const SubmitcancelData = () => {
-    setIsEdit(false)    
-    setOpencancel(false)
-  }
+  const handleCloseOpenCancelData = () => {
+    if (!isSave){
+      navigate('/masterbacklog')
+    }
+    setOpen(false);
+    setOpencancel(false);
+  }; 
 
   const handleUpdateTasks = (deletedTaskId) => {
     const updatedTasks = tasks.map((task) => {
@@ -454,32 +447,41 @@ const DetailBacklog = () => {
     }
   })
 
-  const onSave = async () => {
-    try {      
-      for (let i = 0; i < tasks.length; i++) {
-        const taskObject = tasks[i];        
-        console.log("taskObject",taskObject)
-      const res = await client.requestAPI({
-        method: 'PUT',
-        endpoint: `/backlog/${taskObject.id}`,
-        data: taskObject,
-      });
-      console.log("INI RES UPDATE ", res)
-      if (res.data.meta.message) {
-        setDataAlert({
-          severity: 'success',
-          open: true,
-          message: res.data.meta.message
-        });
-  
-        setTimeout(() => {
-          navigate('/masterbacklog');
-        }, 3000);
-      }
+  const SubmitSave = async () => {
+    if (!isSave){
       setOpen(false);
-    }} catch (error) {
-      console.error('Error:', error);
-    } 
+    }else{    
+      try {      
+        for (let i = 0; i < tasks.length; i++) {
+          const taskObject = tasks[i];        
+          console.log("taskObject",taskObject)
+        const res = await client.requestAPI({
+          method: 'PUT',
+          endpoint: `/backlog/${taskObject.id}`,
+          data: taskObject,
+        });
+        if(!res.isError){
+          setDataAlert({
+            severity: 'success',
+            open: true,
+            message: res.data.meta.message
+          }) 
+          setTimeout(() => {
+            navigate('/masterbacklog');
+          }, 3000);
+        }
+        else {
+          setDataAlert({
+            severity: 'error',
+            message: res.error.meta.message,
+            open: true
+          })
+        }
+        setOpen(false);
+      }} catch (error) {
+        console.error('Error:', error);
+      }
+    }
   }
 
   const getProjectName = async () => {
@@ -587,73 +589,33 @@ const DetailBacklog = () => {
                         + Add Task
                       </Button>
                     </Grid>
-                    <Grid
-                      item
-                      xs={6}
-                      alignSelf="center"
-                      textAlign="right"
-                      sx={{ marginTop: "20px" }}
+                    <Grid item xs textAlign='right'>
+                    <Button
+                      style={{ marginRight: '16px' }} 
+                      variant='cancelButton'
+                      onClick={() => handleClickOpenCancel()}
                     >
-                      <Button
-                        onClick={handleClickOpen}
-                        variant='cancelButton'
-                        style={{ marginRight: "10px" }}
-                        color="error"
-                      >
-                        Cancel Data
-                      </Button>
-                      <Button
-                        variant="saveButton"
-                        type="submit"
-                        style={{ marginRight: "10px" }}
-                      >
-                        Save Data
-                      </Button>
-                    </Grid>
+                      Cancel Data
+                    </Button>
+                    <Button
+                      variant='saveButton'
+                      type='submit'
+                      onClick={handleClickOpenSave}
+                    >
+                      Save Data
+                    </Button>
+                  </Grid>        
                   </Grid>
                 </form>
               </FormProvider>
 
                 <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  className="dialog-delete"
-                >
-                  <DialogTitle
-                    sx={{
-                      alignSelf: "center",
-                      fontSize: "30px",
-                      fontStyle: "Poppins",
-                    }}
-                    id="alert-dialog-title"
-                  >
-                    {"Save Data"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      Save your progress: Don't forget to save your data before
-                      leaving
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button variant="outlined" onClick={handleClose}>
-                      Back
-                    </Button>
-                    <Button variant="contained" onClick={onSave} autoFocus>
-                      Save Data
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-
-                <Dialog
-                    open={opencancel}
-                    onClose={handleClosecancel}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                      className="dialog-delete"
+                    >
                     <DialogTitle
                       sx={{
                         alignSelf: "center",
@@ -662,30 +624,22 @@ const DetailBacklog = () => {
                       }}
                       id="alert-dialog-title"
                     >
-                      {"Cancel Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Warning: canceling with result in data loss without
-                        saving!
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        variant='cancelButton'
-                        onClick={SubmitcancelData}
-                      >
-                        Cancel Without Saving
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleClosecancel}
-                        autoFocus
-                      >
-                        Back
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                      {isSave ? 'Save Data' : 'Cancel Data'}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions className="dialog-delete-actions">
+                        <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
+                          {isSave ? "Back" : "Cancel without saving"}
+                        </Button>
+                        <Button variant="saveButton" onClick={SubmitSave} autoFocus>
+                          {isSave ? 'Save Data' : 'Back'}
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
               </Grid>
             </Grid>
           </Grid>

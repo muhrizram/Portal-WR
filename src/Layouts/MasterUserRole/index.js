@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {  
   Button,
   Dialog,
@@ -7,7 +7,7 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import CustomAlert from "../../Component/Alert";
+import { AlertContext } from '../../context';
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
@@ -16,8 +16,7 @@ import client from "../../global/client";
 
 const RoleUser = () => {
   const [open, setOpen] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [openAlertCreate, setOpenAlertCreate] = useState(false);  
+  const { setDataAlert } = useContext(AlertContext)
   const [dataIduser, setDataIduser] = useState();
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -28,8 +27,7 @@ const RoleUser = () => {
     sortType: 'desc',
     search: ''
   })
-  const onFilter = (dataFilter) => {
-    console.log('on filter: ', dataFilter)
+  const onFilter = (dataFilter) => {    
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
@@ -41,7 +39,7 @@ const RoleUser = () => {
   
   useEffect(() => {
     getData()    
-  }, [])
+  }, [filter])
 
 
   const getData = async () => {
@@ -49,8 +47,15 @@ const RoleUser = () => {
       method: 'GET',
       endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
-    console.log("INI RES",res)
-    rebuildData(res)
+    if(!res.isError){      
+      rebuildData(res)          
+    }else {      
+      setDataAlert({
+        severity: 'error',
+        message: res.error.meta.message,
+        open: true
+      })
+    }    
   }
 
   const rebuildData = (resData) => {
@@ -63,9 +68,7 @@ const RoleUser = () => {
         firstName: value.attributes.firstName,
         lastName: value.attributes.lastName,
         nip: value.attributes.nip,
-        listRole: value.attributes.listRole.map((userRole) => [
-          userRole.userRoleId,
-          userRole.roleId,
+        listRole: value.attributes.listRole.map((userRole) => [          
           userRole.role,
           userRole.active,
         ]),      
@@ -76,32 +79,37 @@ const RoleUser = () => {
   
 
   const deleteData = async (userId) => {    
-    await client.requestAPI({
+    const res = await client.requestAPI({
       method: 'DELETE',
       endpoint: `/userRole/delete/${userId}`
     })
-    console.log('userId', userId)
-    setOpenAlert(true);
+    if(!res.isError){      
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.meta.message
+      }) 
+      setTimeout(() => {
+        navigate('/masteruserrole')
+      }, 3000)      
+    }else {      
+      setDataAlert({
+        severity: 'error',
+        message: res.error.meta.message,
+        open: true
+      })
+    }    
     getData()
     handleClose();
   }
 
-  const handleDelete = async (userId) => {    
-    console.log('userId NYA', userId)
+  const handleDelete = async (userId) => {        
     setDataIduser(userId);
     setOpen(true);
   };  
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleCloseAlert = () => {
-    setOpenAlert(false);
-  };
-  const handleCloseAlertCreate = () => {
-    setOpenAlertCreate(false);
-    localStorage.removeItem("isCreate");    
   };
 
   const handleDetail = async (userId) => {
@@ -181,8 +189,7 @@ const RoleUser = () => {
     },   
   ];
   
-  const handleChangeSearch = (event) => {
-    console.log('value search: ', event.target.value)
+  const handleChangeSearch = (event) => {    
     setFilter({
       ...filter,
       search: event.target.value
@@ -195,20 +202,7 @@ const RoleUser = () => {
 
   return (
     <div>
-      <SideBar>
-      <CustomAlert
-          severity="success"
-          message="Success: New User Role created successfully!"
-          open={openAlertCreate}
-          onClose={handleCloseAlertCreate}
-        />
-        <CustomAlert
-          severity="warning"
-          message="Deletion completed: The item has been successfully remove from the database"
-          open={openAlert}
-          onClose={handleCloseAlert}
-        />  
-
+      <SideBar>   
         <DataTable
           title="User Role"
           data={data}
