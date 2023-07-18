@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -9,6 +9,10 @@ import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router";
+import client from '../../../global/client';
+import CustomAlert from "../../../Component/Alert";
+import { FormProvider } from "react-hook-form";
+import { AlertContext } from '../../../context';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -32,11 +36,12 @@ const DetailPrivilege = () => {
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [role,setRole] = useState(["working report","master role privilege"])
+  // const [role,setRole] = useState(["working report","master role privilege"])
   const [Cancel, setCancel] = React.useState(false);
-  const Role = [
-    "Employee", "HRD"
-  ];
+  const { setDataAlert } = useContext(AlertContext)
+  // const Role = [
+  //   "Employee", "HRD"
+  // ];
 
   const dataBreadDetailRolePrivilege = [
     {
@@ -74,6 +79,69 @@ const DetailPrivilege = () => {
     },
   ];
 
+  useEffect(() => {
+    getDetailRolePrivilege()
+    getDataPrivilege()
+  }, [])
+
+  const [detail, setDetail] = useState({});
+  const [idDetail,setIdDetail] = useState()
+  const [privilege,setPrivilege] = useState([])
+  const [selectedPrivilege, setSelectedPrivilege] = useState([]);
+  const [privilegeCheck,setPrivilegeCheck] = useState([])
+  const getDetailRolePrivilege = async () => {
+    const idDetail = localStorage.getItem("idRolePrivilege")
+    setIdDetail(idDetail)
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/rolePrivilege/${idDetail}`
+    })
+    if (res.data.attributes) {
+      setDetail(res.data.attributes)
+      console.log("atribut", res.data.attributes)
+      setPrivilege(res.data.attributes.listPrivilege)
+      console.log("data detail :",res.data.attributes.listPrivilege)    
+      const selectedListPrivilege = res.data.attributes.listPrivilege.map((privilege) => privilege.privilegeId);
+      console.log("ini detail",selectedListPrivilege)
+      setSelectedPrivilege(selectedListPrivilege);      
+    }
+  }
+
+  //option privilege
+  const getDataPrivilege = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/privilege?search=`
+    })
+    // rebuildData(res)
+    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));
+    setPrivilegeCheck(data)
+  }
+  //option privilege
+
+  const handleChangeCheckbox = (id) => {
+    if (selectedPrivilege.includes(id)) {
+      setSelectedPrivilege(selectedPrivilege.filter((privilege) => privilege !== id));
+    } else {
+      setSelectedPrivilege([...selectedPrivilege, id]);
+    }
+    console.log("SELECT PRIVILEGE", selectedPrivilege)
+  };
+
+  const privilegeCheckboxes = privilegeCheck.map((privilege) => (
+    console.log("SAYAAAAAAA ", privilege),
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={selectedPrivilege.includes(privilege.id)}
+          onChange={() => handleChangeCheckbox(privilege.id)}
+        />
+      }
+      label={privilege.name}
+      key={parseInt(privilege.id)}
+    />
+  ));
+
   const clickEdit = () => {
     setIsEdit(true);
   };
@@ -98,10 +166,36 @@ const DetailPrivilege = () => {
     setCancel(false);
   };
 
-  const SubmitSave = () => {
-    navigate('/masterroleprivilege')
+  const SubmitSave = async () => {
+    const data = {      
+      privilegeId: selectedPrivilege,
+    }
+    console.log("data edit ",data)
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: `/rolePrivilege/update/${idDetail}`,
+      data
+    })
+    console.log("INI RES",res)
+    if(!res.isError){
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/masterroleprivilege')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    // navigate('/masterroleprivilege')
     setOpen(false);
-    setIsEdit(false);
+    // setIsEdit(false);
   };
 
   return (
@@ -123,8 +217,9 @@ const DetailPrivilege = () => {
                   <>
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
-                        <Grid style={{ padding: "30px" }}>                          
-                        <Autocomplete
+                        <Grid style={{ padding: "30px" }}>    
+                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role" value={detail.roleName} variant="outlined" />
+                        {/* <Autocomplete
                                 disablePortal
                                 id="combo-box-demo"
                                 options={Role}
@@ -137,7 +232,7 @@ const DetailPrivilege = () => {
                                     placeholder="Select Role"
                                   />
                                 )}
-                              />
+                              /> */}
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
@@ -148,18 +243,12 @@ const DetailPrivilege = () => {
                             <Grid container direction="row" sx={{marginLeft:'30px'}}>
                               <Grid item xs={6}>
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="working report" />
-                              <FormControlLabel control={<Checkbox  />} label="task" />
-                              <FormControlLabel control={<Checkbox />} label="master employee" />
-                              <FormControlLabel control={<Checkbox />} label="master user role" />
+                              {privilegeCheckboxes.slice(0,4)}
                             </FormGroup>
                             </Grid>
                             <Grid item xs={6}>
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="master role group" />
-                              <FormControlLabel control={<Checkbox  />} label="master company" />
-                              <FormControlLabel control={<Checkbox  />} label="master project" />
-                              <FormControlLabel control={<Checkbox  />} label="master backlog" />
+                            {privilegeCheckboxes.slice(4)}
                             </FormGroup>
                             </Grid>
                             </Grid>
@@ -308,7 +397,7 @@ const DetailPrivilege = () => {
                               Role
                             </Typography>
                             <Typography  sx={{fontSize: "16px" }} >
-                              Employee
+                              {detail.roleName}
                             </Typography>
                           </Grid>                                                   
                         </Grid>  
@@ -319,10 +408,10 @@ const DetailPrivilege = () => {
                               Privilege
                             </Typography>
                             <Timeline>
-                              {role.map((item,index) => (
+                              {privilege.map((item,index) => (
                               <Grid key={index} sx={{ display: "flex", alignItems: "center",marginLeft:'7px' }}>
                                 <TimelineDot color="primary" />
-                                <TimelineContent>{item}</TimelineContent>
+                                <TimelineContent>{item.privilegeName}</TimelineContent>
                               </Grid>
                               ))}          
                             </Timeline>

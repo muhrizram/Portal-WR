@@ -129,7 +129,7 @@ const RolePrivilege = () => {
   const deleteData = async (id) => {
     const res = await client.requestAPI({
       method: 'DELETE',
-      endpoint: `/rolePrivilege/${id}`
+      endpoint: `/rolePrivilege/delete/${id}`
     })
     console.log('response', res)
     // console.log('id', id)
@@ -169,7 +169,9 @@ const RolePrivilege = () => {
     });
   }
   
-  const handleDetail = (id) => {
+  const handleDetail = async (id) => {
+    localStorage.setItem('idRolePrivilege', id)
+    console.log('idDetail', id)
     navigate("/masterroleprivilege/detail");
   }
   const onAdd = (createdBy) => {
