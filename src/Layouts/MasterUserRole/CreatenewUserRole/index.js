@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState , useEffect, useContext} from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -10,6 +10,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import { FormProvider } from "react-hook-form";
 import client from '../../../global/client';
+import { AlertContext } from '../../../context';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -25,15 +26,13 @@ import Checkbox from '@mui/material/Checkbox';
 
 
 const CreateUserRole = () => {
+  const { setDataAlert } = useContext(AlertContext)
   const [open, setOpen] = React.useState(false);  
-  const [openCancel, setOpenCancel] = React.useState(false);
+  const [isSave, setIsSave] = useState(false)
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
   const [getUsersdata, setgetUsers] = useState([]);
   const navigate = useNavigate();
-  const UserName = [
-    { label: "02/01/03/23 - Fahreja Abdullah", value: 2 }
-  ];  
 
   const [RoleCheck,setRoleCheck] = useState([])
   const dataBread = [
@@ -54,25 +53,24 @@ const CreateUserRole = () => {
     },
   ];
 
-  const handleClickOpen = () => {
-    setOpen(true);
-    console.log(open);
+  const handleClickOpenSave = () => {
+    setIsSave(true)
+    setOpen(true);    
   };
   const handleClickOpenCancel = () => {
-    setOpenCancel(true);
+    setIsSave(false)
+    setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = () => {    
     setOpen(false);
   };
   const handleCloseOpenCancelData = () => {
-    navigate("/masteruserrole");
-    setOpenCancel(false);    
+    if (!isSave){
+      navigate('/masteruserrole')
+    }
+    setOpen(false); 
   };
-
-  const handleCloseCancel = () => {
-    setOpenCancel(false);
-  };  
 
   const handleRolesChange = (id) => {
     if (selectedRoles.includes(id)) {
@@ -107,11 +105,9 @@ const CreateUserRole = () => {
       method: 'GET',
       endpoint: `/ol/users?search=`
     })
-    if (res.data) {
-      console.log("DATA NYA USERS", res.data)
+    if (res.data) {      
       const datausers = res.data.map((item) => ({value:parseInt(item.id), label:item.attributes.userName}))
-      setgetUsers(datausers)
-      console.log("INI DATA USER",datausers)     
+      setgetUsers(datausers)     
     }
   } 
 
@@ -127,28 +123,38 @@ const CreateUserRole = () => {
   }
 
   const SubmitSave = async () => {
-    const data = {     
-      userId: selectedUser, 
-      roleId: selectedRoles,
+    if (!isSave){
+      setOpen(false);
+    }else{
+    
+      const data = {     
+        userId: selectedUser, 
+        roleId: selectedRoles,
+      }    
+      const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: `/userRole/addUserRole/`,
+        data
+      })    
+      if(!res.isError){
+        console.log("BEFORE")
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        }) 
+        setTimeout(() => {
+          navigate('/masteruserrole')
+        }, 3000)      
+      }else {      
+        setDataAlert({
+          severity: 'error',
+          message: res.error.meta.message,
+          open: true
+        })
+      }
+      setOpen(false)
     }
-    console.log("MISI PAKET ",data)
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: `/userRole/addUserRole/`,
-      data
-    })
-    console.log("INI RES",res)
-    if (res.data == undefined) {     
-      setTimeout(() => {
-        navigate('/masteruserrole/create')
-      }, 3000)
-      console.log("ERROR DATA ALREADY EXIST")
-    }else if (res.data.meta.message){
-      setTimeout(() => {
-        navigate('/masteruserrole')
-      }, 3000)
-    }
-    setOpen(false)    
   }
 
   return (
@@ -202,100 +208,54 @@ const CreateUserRole = () => {
                           </Grid>
                       </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      xs={12}
-                      alignSelf="center"
-                      textAlign="right"                  
-                    >
+                    <Grid item xs textAlign='right'>
                       <Button
-                        onClick={handleClickOpenCancel}
+                        style={{ marginRight: '16px' }} 
                         variant='cancelButton'
-                        style={{ marginRight: "10px" }}
-                        color="error"
+                        onClick={() => handleClickOpenCancel()}
                       >
                         Cancel Data
                       </Button>
                       <Button
-                        variant="contained"
-                        onClick={handleClickOpen}
-                        style={{ marginRight: "10px" }}
+                        variant='saveButton'
+                        type='button'
+                        onClick={handleClickOpenSave}
                       >
                         Save Data
                       </Button>
-                    </Grid>
+                    </Grid>                             
                     <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                    >
-                      <DialogTitle
-                        sx={{
-                          alignSelf: "center",
-                          fontSize: "30px",
-                          fontStyle: "Poppins",
-                        }}
-                        id="alert-dialog-title"
-                      >
-                        {"Save Data"}
-                      </DialogTitle>
-                        <DialogContent>
-                          <DialogContentText id="alert-dialog-description">
-                            Save your progress: Don't forget to save your data before
-                            leaving
-                          </DialogContentText>
-                        </DialogContent>
-                      <DialogActions>
-                        <Button variant="outlined" onClick={handleClose}>
-                          Back
-                        </Button>
-                        <Button variant="contained" onClick={SubmitSave} autoFocus>
-                          Save Data
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-
-                    <Dialog
-                      open={openCancel}
-                      onClose={handleCloseCancel}
+                      open={open}
+                      onClose={handleClose}
                       aria-labelledby="alert-dialog-title"
                       aria-describedby="alert-dialog-description"
                       className="dialog-delete"
                     >
-                      <DialogTitle
-                        sx={{
-                          alignSelf: "center",
-                          fontSize: "30px",
-                          fontStyle: "Poppins",
-                        }}
-                        id="alert-dialog-title"
-                      >
-                        {"Cancel Save Data"}
+                    <DialogTitle
+                      sx={{
+                        alignSelf: "center",
+                        fontSize: "30px",
+                        fontStyle: "Poppins",
+                      }}
+                      id="alert-dialog-title"
+                    >
+                      {isSave ? 'Save Data' : 'Cancel Data'}
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                          Warning: canceling with result in data loss without
-                          saving!
+                          {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
                         </DialogContentText>
                       </DialogContent>
-                      <DialogActions>
-                        <Button
-                          variant="outlined"
-                          onClick={handleCloseOpenCancelData}
-                        >
-                          Cancel Without Saving
+                      <DialogActions className="dialog-delete-actions">
+                        <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
+                          {isSave ? "Back" : "Cancel without saving"}
                         </Button>
-                        <Button
-                          variant='cancelButton'
-                          onClick={handleCloseCancel}
-                          autoFocus
-                        >
-                          Back
+                        <Button variant="saveButton" onClick={SubmitSave} autoFocus>
+                          {isSave ? 'Save Data' : 'Back'}
                         </Button>
                       </DialogActions>
-                    </Dialog>  
+                    </Dialog>
+
                    </form>
                   </FormProvider>
                  </Grid>                       

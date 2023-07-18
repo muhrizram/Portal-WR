@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -12,6 +12,7 @@ import FormInputText from '../../../Component/FormInputText';
 import { FormProvider, useForm } from "react-hook-form";
 import client from '../../../global/client';
 import shemabacklog from '../shema';
+import { AlertContext } from '../../../context';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -34,13 +35,21 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-
 const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   const ProjectName = [
     { label: "Electronic Health Record" },
     { label: "API Factory" },
     { label: "Selection Exam" },
   ];   
+  const [AssignedTo, setAssignedTo] = useState([]);
+  const getAssignedTo = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: '/ol/userList?search=',      
+    })
+    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName, groupName: item.attributes.groupName}));    
+    setAssignedTo(data)
+  }
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
 
@@ -55,6 +64,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   }
   
   useEffect(() => {
+    getAssignedTo()
     getStatusBacklog()
     onUpdate(taskData);
   }, [taskData]);
@@ -207,22 +217,28 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
             />
           </Grid>
             <Grid item xs={6}>
-              <Autocomplete                                
-                disablePortal
-                id="combo-box-demo"
-                value={taskData.assignedTo}
-                options={ProjectName}
-                onChange={handleChange}              
-                sx={{ width: "100%" }}
-                getOptionLabel={(option) => option.label || ""}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}                             
-                    label="Assigned To"
-                    placeholder="Select Talent"
-                  />
-                )}
-              />
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              name="statusBacklog"
+              options={AssignedTo}
+              value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
+              getOptionLabel={(option) => option.fullName}
+              onChange={(event, newValue) =>
+                setTaskData((prevData) => ({
+                  ...prevData,
+                  assignedTo: newValue ? newValue.fullName : null, 
+                }))
+              }
+              sx={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Assigned To"
+                  placeholder="Select Talent"
+                />
+              )}
+            />     
             </Grid>
           </Grid>
       </AccordionDetails>
@@ -231,18 +247,14 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
 };
 
 const CreateNewBacklog = () => {
+  const { setDataAlert } = useContext(AlertContext)
   const [ProjectName, setProjectName] = useState([]);
   const [isSave, setIsSave] = useState(false)  
-  const [addTask, setAddTask] = React.useState(false);
+  const [addTask, setAddTask] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const [opencancel, setOpencancel] = React.useState(false);
   const [valueproject, setValueproject] = React.useState();
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: 'success',
-    message: ''
-  })
+
   const navigate = useNavigate();  
 
   const dataBread = [
@@ -263,25 +275,26 @@ const CreateNewBacklog = () => {
     },
   ];
 
-  const handleClickOpen = () => {
-    setOpencancel(true);    
+  const handleClickOpenCancel = () => {
+    setIsSave(false)
+    setOpen(true);
+  };
+
+  const handleClickOpenSave = () => {
+    setIsSave(true)
+    setOpen(true);    
   };
 
   const handleClose = () => {   
     setOpen(false);
   };
 
-  const handleClosecancel = () => {
-    setOpencancel(false);
-  };
-
-  const SubmitcancelData = () => {
-    if (!isSave) {
+  const handleCloseOpenCancelData = () => {
+    if (!isSave){
       navigate('/masterbacklog')
     }
-    setIsSave(false)
-    setOpencancel(false)
-  }
+    setOpen(false);    
+  };
 
   const handleUpdateTasks = (deletedTaskId) => {
     const updatedTasks = tasks.map((task) => {
@@ -306,16 +319,14 @@ const CreateNewBacklog = () => {
     setTasks(updatedTasks);
   };
 
-  const handleUpdateTask = (updatedTask) => {
-    console.log("updatedTask NYA",updatedTask)
+  const handleUpdateTask = (updatedTask) => {    
     const updatedTasks = tasks.map((task) =>
       task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
   };
 
-  const confirmSave = async () => {
-    console.log("Datanya",tasks)
+  const confirmSave = async () => {    
     setIsSave(true)
     setOpen(true)    
   }
@@ -360,30 +371,43 @@ const CreateNewBacklog = () => {
     }
   })
 
-  const onSave = async () => {
-    try {      
-      for (let i = 0; i < tasks.length; i++) {
-        const taskObject = tasks[i];        
-      const res = await client.requestAPI({
-        method: 'POST',
-        endpoint: '/backlog/addBacklog',
-        data: taskObject,
-      });
-  
-      if (res.data.meta.message) {
-        setDataAlert({
-          severity: 'success',
-          open: true,
-          message: res.data.meta.message
-        });
-  
-        setTimeout(() => {
-          navigate('/masterbacklog');
-        }, 3000);
-      }
+  const SubmitSave = async () => {
+    if (!isSave){
       setOpen(false);
-    }} catch (error) {
-      console.error('Error:', error);
+    }
+    else {
+      try {      
+        for (let i = 0; i < tasks.length; i++) {
+          const taskObject = tasks[i];        
+        const res = await client.requestAPI({
+          method: 'POST',
+          endpoint: '/backlog/addBacklog',
+          data: taskObject,
+        });
+    
+        if(!res.isError){
+          setDataAlert({
+            severity: 'success',
+            open: true,
+            message: res.data.meta.message
+          }) 
+    
+          setTimeout(() => {
+            navigate('/masterbacklog');
+          }, 3000);
+        }
+        else {          
+          setDataAlert({
+            severity: 'error',
+            message: res.error.detail,
+            open: true
+          })
+          setOpen(false);
+        }
+        setOpen(false);
+      }} catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
@@ -392,9 +416,7 @@ const CreateNewBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })
-    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
-    console.log("DATA PROJECT", data)
-
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));    
     setProjectName(data)
   }
 
@@ -427,8 +449,9 @@ useEffect(() => {
                     getOptionLabel={(option) => option.name}
                     onChange={(event, newValue) => {                                            
                       if (!newValue) {                    
+                        setTasks([])
                         setAddTask(false);
-                        setTasks([])                        
+                        setValueproject(undefined);
                       }else{
                         setValueproject(parseInt(newValue.id));
                       }                      
@@ -496,73 +519,33 @@ useEffect(() => {
                         + Add Task
                       </Button>
                     </Grid>
-                    <Grid
-                      item
-                      xs={6}
-                      alignSelf="center"
-                      textAlign="right"
-                      sx={{ marginTop: "20px" }}
+                    <Grid item xs textAlign='right'>
+                    <Button
+                      style={{ marginRight: '16px' }} 
+                      variant='cancelButton'
+                      onClick={() => handleClickOpenCancel()}
                     >
-                      <Button
-                        onClick={handleClickOpen}
-                        variant='cancelButton'
-                        style={{ marginRight: "10px" }}
-                        color="error"
-                      >
-                        Cancel Data
-                      </Button>
-                      <Button
-                        variant="saveButton"
-                        type="submit"
-                        style={{ marginRight: "10px" }}
-                      >
-                        Save Data
-                      </Button>
-                    </Grid>
+                      Cancel Data
+                    </Button>
+                    <Button                    
+                      disabled={tasks.length === 0}
+                      variant='saveButton'
+                      type='button'
+                      onClick={handleClickOpenSave}
+                    >
+                      Save Data
+                    </Button>
+                    </Grid>  
                   </Grid>
                 </form>
               </FormProvider>
-
                 <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  className="dialog-delete"
-                >
-                  <DialogTitle
-                    sx={{
-                      alignSelf: "center",
-                      fontSize: "30px",
-                      fontStyle: "Poppins",
-                    }}
-                    id="alert-dialog-title"
-                  >
-                    {"Save Data"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      Save your progress: Don't forget to save your data before
-                      leaving
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button variant="outlined" onClick={handleClose}>
-                      Back
-                    </Button>
-                    <Button variant="contained" onClick={onSave} autoFocus>
-                      Save Data
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-
-                <Dialog
-                    open={opencancel}
-                    onClose={handleClosecancel}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                      className="dialog-delete"
+                    >
                     <DialogTitle
                       sx={{
                         alignSelf: "center",
@@ -571,30 +554,22 @@ useEffect(() => {
                       }}
                       id="alert-dialog-title"
                     >
-                      {"Cancel Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Warning: canceling with result in data loss without
-                        saving!
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        variant='cancelButton'
-                        onClick={SubmitcancelData}
-                      >
-                        Cancel Without Saving
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleClosecancel}
-                        autoFocus
-                      >
-                        Back
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                      {isSave ? 'Save Data' : 'Cancel Data'}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions className="dialog-delete-actions">
+                        <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
+                          {isSave ? "Back" : "Cancel without saving"}
+                        </Button>
+                        <Button variant="saveButton" onClick={SubmitSave} autoFocus>
+                          {isSave ? 'Save Data' : 'Back'}
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
               </Grid>
             </Grid>
           </Grid>
