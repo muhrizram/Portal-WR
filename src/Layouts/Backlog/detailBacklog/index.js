@@ -238,8 +238,7 @@ const DetailBacklog = () => {
   const [addTask, setAddTask] = React.useState(true);  
   const [open, setOpen] = React.useState(false);
   const [dataDetail, setDataDetail] = useState({});  
-  const [ProjectName, setProjectName] = useState([]);
-  const [opencancel, setOpencancel] = React.useState(false);  
+  const [ProjectName, setProjectName] = useState([]); 
   const [tasks, setTasks] = useState([]);
   const [valueproject, setValueproject] = React.useState("");
   const [isSave, setIsSave] = useState(false)
@@ -368,8 +367,7 @@ const DetailBacklog = () => {
     if (!isSave){
       navigate('/masterbacklog')
     }
-    setOpen(false);
-    setOpencancel(false);
+    setOpen(false);    
   }; 
 
   const handleUpdateTasks = (deletedTaskId) => {
