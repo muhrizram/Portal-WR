@@ -1,25 +1,38 @@
-import React , {useState} from "react";
+import React, {useState} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Button, Card, Divider, Grid, Rating, Typography } from "@mui/material";
+import { Button, Card, Divider, Grid, Rating, Typography, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, } from "@mui/material";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Accordion from "@mui/material/Accordion";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
-import PopupTask from "../PopupTask";
+import CreateOvertime from "../createOvertime";
 
-import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut }) {
-  const [openTask, setOpenTask] = useState(false);
+export default function ViewOvertime({open}) {
   const [value, setValue] = React.useState("one");
+  const [openOvertime, setOpenOvertime] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  // const clickEdit = () => {
+  //   setIsEdit(true);
+  // };
+
+  // const handleCloseOpenCancelData = () => {
+  //   setCancel(false);
+  //   setIsEdit(false);
+  // };
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -46,20 +59,20 @@ export default function ViewTask({ setIsCheckOut }) {
   return (
     <Grid container spacing={2}>
       {/* <TabsMenuWR /> */}
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
             <Tab value="one" label="Regular Task" />
             <Tab value="two" label="Overtime Task" />
           </Tabs>
         </Box>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12}>
         <Card>
           <Grid container p={4} spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h4">
-                Project - Electronic Health Record
+                Project - Telkom
               </Typography>
               <Typography variant="body1">Tuesday, 2 May 2023</Typography>
             </Grid>
@@ -158,26 +171,13 @@ export default function ViewTask({ setIsCheckOut }) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button
-              startIcon={<CreateIcon />} 
-              variant="outlined"
-              onClick={() => setOpenTask(true)}
-              >              
+            <Button startIcon={<CreateIcon />} variant="outlined" onClick={() => setOpenOvertime(true)}>
               Edit Task
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              startIcon={<AccessTimeIcon />}
-              className="delete-button button-text"
-              onClick={() => setIsCheckOut()}
-            >
-              Check Out
             </Button>
           </Grid>
         </Grid>
       </Grid>
-      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)}/>
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)}/>
     </Grid>
   );
 }

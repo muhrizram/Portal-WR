@@ -28,7 +28,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 const CreateOvertime = ({
   open,
-  closeTask
+  closeOvertime
 }) => {
 
   const listProject = [
@@ -107,10 +107,20 @@ const CreateOvertime = ({
     setProject(temp)
   }
   
+  const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
+  const [startTime, setStartTime] = useState(null)
+  const [endTime, setEndTime] = useState(null)
+  const handleLocalizationFilled = (isFilled, newValue) => {
+    setStartTime(newValue)
+    setEndTime(newValue)
+    setIsLocalizationFilled(isFilled);
+    console.log('waktu', isFilled)
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={() => closeTask(false)}
+      onClose={() => closeOvertime(false)}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       className="dialog-delete dialog-task"
@@ -127,15 +137,20 @@ const CreateOvertime = ({
           Note: If an employee chooses to perform overtime for a spesific task, a notification will be sent to the Human Resources Department
         </DialogContentText>
 
-        
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['TimePicker']}>
-                <TimePicker label="Start Time" />
-                <TimePicker label="End Time" />
+                <TimePicker label="Start Time"
+                value={startTime} 
+                onChange={(newValue) => handleLocalizationFilled(newValue)}
+                />
+                <TimePicker label="End Time" 
+                value={endTime}
+                onChange={(newValue) => handleLocalizationFilled(newValue)}/>
             </DemoContainer>
         </LocalizationProvider>
+
         
-          {dataProject.map((resProject, idxProject) => (
+          {isLocalizationFilled && dataProject.map((resProject, idxProject) => (
             <div className='card-project' key={`${idxProject+1}-project`}>
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
@@ -263,6 +278,7 @@ const CreateOvertime = ({
             // onClick={() => setOpen(false)}
             variant="outlined"
             className="button-text"
+            onClick={() => closeOvertime(false)}
           >
             Cancel
           </Button>

@@ -21,7 +21,7 @@ import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 
-export default function Calendar({ setOnClick, setIsViewTask, events }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
@@ -85,7 +85,19 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
                 }}
               >
                 View Task
-              </Button>              
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  localStorage.setItem(
+                    "workingReportId",
+                    data[0].workingReportId
+                  );
+                  setIsViewOvertime(true);
+                }}
+              >
+                View Overtime
+              </Button>
             </Grid>
           ) : (
             <></>
