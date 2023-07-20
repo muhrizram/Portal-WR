@@ -47,8 +47,7 @@ const PopupTask = ({
     clearProject
   ])
 
-  useEffect(() => {    
-    console.log("DATA PROJECT :",dataProject)
+  useEffect(() => {
     getlistTaskProject()
     getlistProject()
   },[dataProject])
@@ -130,14 +129,12 @@ const PopupTask = ({
   const SubmitSave = async () => {      
       try {      
         for (let i = 0; i < dataProject.length; i++) {
-          const taskObject = dataProject[i].value;        
-          console.log("taskObject",taskObject)
+          const taskObject = dataProject[i].value;
         // const res = await client.requestAPI({
         //   method: 'POST',
         //   endpoint: `/task/addTask`,
         //   data: taskObject,
         // });
-        // console.log("res",res)
       }} catch (error) {
         console.error('Error:', error);
       }

@@ -213,15 +213,17 @@ let globalTheme = createTheme({
         },
         {
           props: {
-            variant: "outlined",
+            variant: "outlined-warning",
           },
           style: {
             textTransform: "none",
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            color: "#2196F3",
-            borderColor: "#2196F380",
+            borderRadius: "6px",
+            background: "#EECEB0",
+            color: "#734011",
+            borderColor: "#EECEB0",
           },
         },
         {

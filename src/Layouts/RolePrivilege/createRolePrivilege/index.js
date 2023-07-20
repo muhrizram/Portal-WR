@@ -68,7 +68,6 @@ const CreateRolePrivilege = () => {
   }
 
   useEffect(() => {
-    console.log('checkbox', selectPrivilege)
     getDataPrivilege()
     getDataRole()
   }, [])
@@ -81,7 +80,6 @@ const CreateRolePrivilege = () => {
     })
     // rebuildData(res)
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
-    console.log('list ol role', res)
     setOptRole(data)
   }
   //option role
@@ -94,7 +92,6 @@ const CreateRolePrivilege = () => {
     })
     // rebuildData(res)
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
-    console.log('list ol privilege', res)
     setOptPrivilege(data)
   }
   //option privilege
@@ -107,13 +104,11 @@ const CreateRolePrivilege = () => {
       listPrivilege: selectPrivilege,
       createdBy: parseInt(localStorage.getItem('createRolePrivilege'))
     }
-    console.log('data nya', data)
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: '/rolePrivilege/addRolePrivilege',
       data
     })
-    console.log('data res', res)
     if(!res.isError){
       setDataAlert({
         severity: 'success',
@@ -138,7 +133,6 @@ const CreateRolePrivilege = () => {
     setIsSave(true)
     setOpen(true)
     setData(data)
-    // console.log('data', data)
   }
 
   const cancelData = () => {
@@ -154,9 +148,6 @@ const CreateRolePrivilege = () => {
   };
 
   const handleChangeRole = (value) => {
-    console.log('data role: ', value)
-    console.log('nama label ', value.name)
-    console.log('value ', value.id)
     setOptRole(value.name)
     setOptRole(value.id)
   }

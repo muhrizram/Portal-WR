@@ -59,14 +59,14 @@ export default function ViewOvertime({open}) {
   return (
     <Grid container spacing={2}>
       {/* <TabsMenuWR /> */}
-      {/* <Grid item xs={12}>
+      <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
             <Tab value="one" label="Regular Task" />
             <Tab value="two" label="Overtime Task" />
           </Tabs>
         </Box>
-      </Grid> */}
+      </Grid>
       <Grid item xs={12}>
         <Card>
           <Grid container p={4} spacing={2}>

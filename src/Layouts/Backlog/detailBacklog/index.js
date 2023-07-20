@@ -348,14 +348,12 @@ const DetailBacklog = () => {
       }        
     setDataDetail(tempDetail)
     const newTasks = [tempDetail];
-    console.log('tempDetail: ', tempDetail)
     setTasks(newTasks);
   }
 
   const handleClickOpenSave = () => {
     setIsSave(true)
     setOpen(true);
-    console.log(open);
   };
   
   const handleClickOpenCancel = () => {
@@ -451,8 +449,7 @@ const DetailBacklog = () => {
     }else{    
       try {      
         for (let i = 0; i < tasks.length; i++) {
-          const taskObject = tasks[i];        
-          console.log("taskObject",taskObject)
+          const taskObject = tasks[i];
         const res = await client.requestAPI({
           method: 'PUT',
           endpoint: `/backlog/${taskObject.id}`,
