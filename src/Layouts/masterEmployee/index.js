@@ -71,17 +71,7 @@ const Employee = () => {
     }
     handleClose();
   };
-      
-  const handleClickOpen = (id) => {
-    setIdnya(id);
-    setOpen(true);
-  };
-
-  // const onDelete = () => {
-  //   setOpenAlert(true);
-  //   handleClose()
-  // }
-
+       
   const handleClose = () => {
     setOpen(false);
   };
