@@ -98,11 +98,8 @@ const DetailPrivilege = () => {
     })
     if (res.data.attributes) {
       setDetail(res.data.attributes)
-      console.log("atribut", res.data.attributes)
-      setPrivilege(res.data.attributes.listPrivilege)
-      console.log("data detail :",res.data.attributes.listPrivilege)    
+      setPrivilege(res.data.attributes.listPrivilege) 
       const selectedListPrivilege = res.data.attributes.listPrivilege.map((privilege) => privilege.privilegeId);
-      console.log("ini detail",selectedListPrivilege)
       setSelectedPrivilege(selectedListPrivilege);      
     }
   }
@@ -125,11 +122,9 @@ const DetailPrivilege = () => {
     } else {
       setSelectedPrivilege([...selectedPrivilege, id]);
     }
-    console.log("SELECT PRIVILEGE", selectedPrivilege)
   };
 
   const privilegeCheckboxes = privilegeCheck.map((privilege) => (
-    console.log("SAYAAAAAAA ", privilege),
     <FormControlLabel
       control={
         <Checkbox
@@ -148,7 +143,6 @@ const DetailPrivilege = () => {
   
   const handleClickOpen = () => {
     setOpen(true);
-    console.log(open);
   };
   const handleClickCancel = () => {
     setCancel(true);
@@ -170,13 +164,11 @@ const DetailPrivilege = () => {
     const data = {      
       privilegeId: selectedPrivilege,
     }
-    console.log("data edit ",data)
     const res = await client.requestAPI({
       method: 'PUT',
       endpoint: `/rolePrivilege/update/${idDetail}`,
       data
     })
-    console.log("INI RES",res)
     if(!res.isError){
       setDataAlert({
         severity: 'success',

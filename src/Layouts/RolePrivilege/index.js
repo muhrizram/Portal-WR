@@ -106,7 +106,6 @@ const RolePrivilege = () => {
       endpoint: `/rolePrivilege?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortNameType}&sort=${filter.sortPrivilege},${filter.sortPrivilegeType}&search=${filter.search}`
     })
     rebuildData(res)
-    console.log('list role privilege', res)
   }
 
   const rebuildData = (resData) => {
@@ -121,7 +120,6 @@ const RolePrivilege = () => {
         privilege: privileges,
       }
     })
-    console.log('temp: ', temp)
     setData([...temp])
     setTotalData(resData.meta.page.totalElements)
   }
@@ -131,8 +129,6 @@ const RolePrivilege = () => {
       method: 'DELETE',
       endpoint: `/rolePrivilege/delete/${id}`
     })
-    console.log('response', res)
-    // console.log('id', id)
     setOpenAlert(true);
     getData()
     if (!res.isError) {
@@ -162,7 +158,6 @@ const RolePrivilege = () => {
   }
 
   const handleChangeSearch = (event) => {
-    console.log('value search: ', event.target.value)
     setFilter({
       ...filter,
       search: event.target.value
@@ -171,13 +166,11 @@ const RolePrivilege = () => {
   
   const handleDetail = async (id) => {
     localStorage.setItem('idRolePrivilege', id)
-    console.log('idDetail', id)
     navigate("/masterroleprivilege/detail");
   }
   const onAdd = (createdBy) => {
     // localStorage.setItem('createdBy', createdBy)
     navigate("/masterroleprivilege/create");
-    console.log('add')
   }
 
   const onFilter = (dataFilter) => {
@@ -190,8 +183,6 @@ const RolePrivilege = () => {
       sortPrivilegeType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
       search: filter.search
     })
-    
-    console.log('on filter: ', dataFilter)
   }
 
   

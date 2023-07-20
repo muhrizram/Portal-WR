@@ -40,6 +40,10 @@ const DetailPrivilege = lazy(() =>
   import("./Layouts/RolePrivilege/detailRolePrivilege/index")
 );
 
+const ViewOvertime = lazy(() =>
+  import("./Layouts/Overtime/detailEditOvertime/index")
+);
+
 export const routes = [
   {
     path: "/login",
@@ -143,5 +147,9 @@ export const routes = [
   {
     path: "/master-company/detail",
     element: <DetailCompany />,
+  },
+  {
+    path: "/overtime/detail-overtime",
+    element: <ViewOvertime />,
   },
 ];

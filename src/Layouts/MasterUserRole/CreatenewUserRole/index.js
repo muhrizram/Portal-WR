@@ -137,7 +137,6 @@ const CreateUserRole = () => {
         data
       })    
       if(!res.isError){
-        console.log("BEFORE")
         setDataAlert({
           severity: 'success',
           open: true,

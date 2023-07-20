@@ -14,12 +14,14 @@ import moment from "moment/moment";
 import PopupTask from "./PopupTask";
 import { AlertContext } from "../../context";
 import ViewTask from "./ViewTask";
+import ViewOvertime from "../Overtime/detailEditOvertime";
 import CheckOut from "./CheckOut";
 import CreateOvertime from "../Overtime/createOvertime";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
   const [isViewTask, setIsViewTask] = useState(false);
+  const [isViewOvertime, setIsViewOvertime] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -130,7 +132,13 @@ export default function WorkingReport() {
           }}
         />
       );
-    } else {
+    } else if (isViewOvertime) {
+      dom = (
+        <ViewOvertime
+        />
+      )
+    }
+      else {
       dom = (
         <Calendar
           setOnClick={(param) => {
@@ -140,6 +148,7 @@ export default function WorkingReport() {
             onAttendence(_data);
           }}
           setIsViewTask={setIsViewTask}
+          setIsViewOvertime={setIsViewOvertime}
           events={data}
         />
       );

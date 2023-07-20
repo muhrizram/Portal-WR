@@ -85,7 +85,6 @@ const DetailUserRole = () => {
     } else {
       setSelectedRoles([...selectedRoles, id]);
     }
-    console.log("SELECT ROLE", selectedRoles)
   };
 
   const roleCheckboxes = RoleCheck.map((role) => (

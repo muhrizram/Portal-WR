@@ -20,12 +20,14 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
+import { useNavigate } from "react-router";
 
-export default function Calendar({ setOnClick, setIsViewTask, events }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
+  const navigate = useNavigate();
 
   function handleClose() {
     setOpen(false);
@@ -51,6 +53,10 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
   };
+  
+  const handleChangePage = () => {
+    navigate("/overtime/detail-overtime")
+  }
 
   const renderCalendar = (info) => {
     const data = events.filter(
@@ -73,6 +79,7 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
             )}
           </Grid>
           {data[0].workingReportId !== null ? (
+            <>
             <Grid item xs={12} display="flex" justifyContent="center">
               <Button
                 variant="contained"
@@ -85,8 +92,24 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
                 }}
               >
                 View Task
-              </Button>              
+              </Button>
             </Grid>
+            
+            <Grid item xs={12} display="flex" justifyContent="center">
+            <Button
+              variant="outlined-warning"
+              onClick={() => {
+                localStorage.setItem(
+                  "workingReportId",
+                  data[0].workingReportId
+                );
+                setIsViewOvertime(true);
+              }}
+            >
+              View Overtime
+            </Button>
+          </Grid>
+          </>
           ) : (
             <></>
           )}
@@ -97,7 +120,7 @@ export default function Calendar({ setOnClick, setIsViewTask, events }) {
               onClick={() => setOpenTask(true)}
               >
               task
-            </Button>            
+            </Button>          
             ) : (
               <></>
             )}

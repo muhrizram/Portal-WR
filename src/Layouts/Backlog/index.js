@@ -129,7 +129,6 @@ const Backlog = () => {
       endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     rebuildData(res)
-    console.log('integrasi backlog:', res)
   }
 
   const rebuildData = (resData) => {
@@ -156,8 +155,6 @@ const Backlog = () => {
       method: 'DELETE',
       endpoint: `/backlog/${id}`
     })
-    console.log('response', res)
-    // console.log('id', id)
     setOpenAlert(true);
     getData()
     if (!res.isError) {
@@ -192,7 +189,6 @@ const Backlog = () => {
   }
 
   const handleChangeSearch = (event) => {
-    console.log('value search: ', event.target.value)
     setFilter({
       ...filter,
       search: event.target.value
@@ -202,11 +198,9 @@ const Backlog = () => {
   
   const onAdd = () => {
     navigate("/masterbacklog/create");
-    console.log('add')
   }
 
   const onFilter = (dataFilter) => {
-    console.log('on filter: ', dataFilter)
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,

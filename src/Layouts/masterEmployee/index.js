@@ -52,7 +52,6 @@ const Employee = () => {
       }));
       setData(updatedData);
     } catch (error) {
-      console.log("Error fetching data: ", error);
     }
   };
 
@@ -74,14 +73,11 @@ const Employee = () => {
   };
       
   const handleClickOpen = (id) => {
-    console.log("IDNYA", id);
     setIdnya(id);
-    console.log(Idnya);
     setOpen(true);
   };
 
   // const onDelete = () => {
-  //   console.log("Idnya ",Idnya)
   //   setOpenAlert(true);
   //   handleClose()
   // }
@@ -147,7 +143,6 @@ const Employee = () => {
     },
   ];
   const handleChangeSearch = (event) => {
-    console.log("value search: ", event.target.value);
   };
 
   const onAdd = () => {
@@ -163,7 +158,6 @@ const Employee = () => {
   })
 
   const onFilter = (dataFilter) => {
-    console.log('on filter: ', dataFilter)
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
