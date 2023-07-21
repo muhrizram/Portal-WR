@@ -31,16 +31,9 @@ const PopupTask = ({
   const [opentask, setOpentask] = useState(false)
   const selectedTask = listTaskProject.find((item) => item.backlogId === ideffortTask);
   const clearProject = {
-    value: '',
-    dataTask: [
-      {
-        id: '1-task',
-        taskName: '',
-        taskStatus: '',
-        effort: '',
-        detail: ''
-      }
-    ]
+    workingReportId: '',
+    backlogId: '',
+    listTask: []
   }
 
   const [dataProject, setProject] = useState([
@@ -68,7 +61,7 @@ const PopupTask = ({
       endpoint: `/ol/projectTypeList?userId=1&search=`
     })
     if (res.data) {      
-      const datalist = res.data.map((item) => ({id:parseInt(item.id), projectName:item.attributes.projectName}))
+      const datalist = res.data.map((item) => ({id:parseInt(item.id), projectName:item.attributes.projectName}))      
       setlistProject(datalist)
     }
   }
@@ -76,8 +69,9 @@ const PopupTask = ({
   const onAddProject = () => {
     const temp = [...dataProject]
     temp.push({
-      value: '',
-      dataTask: [
+      workingReportId: '',
+      backlogId: '',
+      listTask: [
         {
           id: `1-task`,
           taskName: '',
@@ -92,8 +86,8 @@ const PopupTask = ({
 
   const AddTask = (idxProject) => {
     const temp = [...dataProject]
-    temp[idxProject].dataTask.push({
-      id: `${temp[idxProject].dataTask.length + 1}-task`,
+    temp[idxProject].listTask.push({
+      id: `${temp[idxProject].listTask.length + 1}-task`,
       taskName: '',
       taskStatus: '',
       effort: '',
@@ -108,28 +102,31 @@ const PopupTask = ({
       setideffortTask(value)
     }else{
       const temp = [...dataProject]
-      temp[idxProject].dataTask[index][name]= value
+      temp[idxProject].listTask[index][name]= value
       setProject(temp)
     }    
   }; 
   
-  const handleChangeProject = (value, idxProject) => {
+  const handleChangeProject = (id, idxProject) => {
     const temp = [...dataProject]
-    temp[idxProject].value = value
+    temp[idxProject].backlogId = id     
+    setProject(temp);
+    temp[idxProject].workingReportId = parseInt(localStorage.getItem('workingReportId'))
     setProject(temp);
   };
 
   const deleteTask = (e, idxProject, index) => {
     e.preventDefault()
     const temp = [...dataProject]
-    temp[idxProject].dataTask.splice(index, 1)
+    temp[idxProject].listTask.splice(index, 1)
     setProject(temp)
   }
 
   const SubmitSave = async () => {      
       try {      
         for (let i = 0; i < dataProject.length; i++) {
-          const taskObject = dataProject[i].value;
+          const taskObject = dataProject[i].backlogId;        
+          // console.log("taskObject",taskObject)
         // const res = await client.requestAPI({
         //   method: 'POST',
         //   endpoint: `/task/addTask`,
@@ -167,11 +164,12 @@ const PopupTask = ({
                   <Autocomplete
                     disablePortal
                     className='autocomplete-input autocomplete-on-popup'
-                    options={listProject.map((item) => item.projectName)}
+                    options={listProject}
+                    getOptionLabel={(option) => option.projectName}
                     sx={{ width: "100%", marginTop: "20px" }}
                     onChange={(_event, newValue) => {
                     if (newValue) {
-                      handleChangeProject(newValue, idxProject)                      
+                      handleChangeProject(newValue.id, idxProject)                      
                       setOpentask(true)
                     }else {
                       setOpentask(false)
@@ -191,7 +189,7 @@ const PopupTask = ({
                 </Grid>
                 <Grid item xs={12}>
                   {resProject.value !== '' &&
-                    resProject.dataTask.map((res, index) => (
+                    resProject.listTask.map((res, index) => (
                       <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}
@@ -281,7 +279,7 @@ const PopupTask = ({
                       ))
                     }
                   </Grid>
-                  {dataProject[0].value !== '' &&
+                  {dataProject[0].workingReportId !== '' &&
                     <Grid item xs={12} textAlign='left'>
                       <Button
                         onClick={() => AddTask(idxProject)}
@@ -301,7 +299,7 @@ const PopupTask = ({
       </DialogContent>
       <DialogActions>
         <div className='left-container'>
-          {dataProject[0].value !== '' &&
+          {dataProject[0].workingReportId !== '' &&
             <Button
               // onClick={() => setOpen(false)}
               variant="outlined"
