@@ -99,7 +99,10 @@ const PopupTask = ({
   const handleChange = (event, idxProject, index) => {    
     const { name, value } = event.target;
     if(name === 'effort' ) {
-      setideffortTask(value)
+      if (parseInt(value) > 8) {
+        console.log('Effort should not be greater than 8.');
+        setideffortTask(value)
+      }
     }else{
       const temp = [...dataProject]
       temp[idxProject].listTask[index][name]= value
@@ -334,6 +337,70 @@ const PopupTask = ({
         </div>
       </DialogActions>
     </Dialog>
+    <Dialog
+          // open={dialogCancel}
+          // onClose={() => closeTask(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {'Cancel Data'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {"Warning: Canceling will result in data loss without saving!"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+          <Button variant="outlined" 
+          // onClick={() => closeTask(false)}
+          >
+              {"Cancel without saving"}
+            </Button>
+            <Button variant="contained" 
+            // onClick={handleClose}
+            >
+              {"Back"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+        
+        <Dialog
+              open={false}          
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+            <DialogTitle
+              sx={{
+                alignSelf: "center",
+                fontSize: "30px",
+                fontStyle: "Poppins",
+              }}
+              id="alert-dialog-title"
+              className="dialog-delete-header"
+            >
+              {'Oops! You Work So Hard'}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {"Task exceeds 8-hour duration and cannot be submitted"}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions className="dialog-delete-actions"> 
+                <Button variant="contained">
+                  {"Back To Task"}
+                </Button>
+              </DialogActions>
+            </Dialog>
+
     </>
   )
 }
