@@ -7,6 +7,7 @@ import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import DetailProject from "./Layouts/Project/Detail";
+import CreateProject from "./Layouts/Project/Create";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -90,6 +91,11 @@ export const routes = [
   {
     path: "/master-project/detail",
     element: <DetailProject />,
+    name: "Project",
+  },
+  {
+    path: "/master-project/create",
+    element: <CreateProject />,
     name: "Project",
   },
   {
