@@ -62,8 +62,7 @@ export default function ViewOvertime({open}) {
       <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
-            <Tab value="one" label="Regular Task" />
-            <Tab value="two" label="Overtime Task" />
+            <Tab value="one" label="Overtime Task" />
           </Tabs>
         </Box>
       </Grid>

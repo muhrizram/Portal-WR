@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { 
   Accordion,
   AccordionDetails,
@@ -18,6 +18,9 @@ import AddIcon from '@mui/icons-material/Add';
 import '../../../App.css'
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useNavigate } from "react-router-dom";
+import client from "../../../global/client";
+import { AlertContext } from '../../../context';
 
 //waktu
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -109,14 +112,93 @@ const CreateOvertime = ({
     setProject(temp)
   }
   
+  const navigate = useNavigate()
+  const [dialogCancel, setDialogCancel] = useState(false)
+  const [userId, setUserId] = useState()
+  const { setDataAlert } = useContext(AlertContext)
+  // const [isSave, setIsSave] = useState(false)
   const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
   const [startTime, setStartTime] = useState(null)
+  const [optTask, setOptTask] = useState([])
+  const [optProject, setOptProject] = useState([])
+  const [optStatus, setOptStatus] = useState({})
   const [endTime, setEndTime] = useState(null)
   const handleLocalizationFilled = (isFilled, newValue) => {
     setStartTime(newValue)
     setEndTime(newValue)
     setIsLocalizationFilled(isFilled);
   };
+
+  const handleClose = () => {
+    setDialogCancel(false)
+  }
+
+  useEffect(() => {
+    getDataTask()
+    getDataProject()
+    getDataStatus()
+  }, [])
+
+  //option task
+  const getDataTask = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/taskProject?projectId=1&search`
+    })
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.taskName, actualEffort: item.attributes.actualEffort}));
+    setOptTask(data)
+  }
+  //option task
+
+  //option project
+  const getDataProject = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/projectTypeList?userId=1&search=`
+    })
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.projectName}));
+    setOptProject(data)
+  }
+  //option project
+
+  //option project
+  const getDataStatus = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/status?search=`
+    })
+    const data = res.data.map(item => ({id : item.id, status: item.attributes.name}));
+    setOptStatus(data)
+  }
+  //option project
+
+  const onSave = async () => { 
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: `/overtime/addOvertime`,
+      // data
+    })
+
+    if(!res.isError){
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      }) 
+
+      setTimeout(() => {
+        navigate('/workingReport');
+      }, 3000);
+    }
+    else {          
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    open(false);
+  }
 
   return (
     <>
@@ -131,7 +213,7 @@ const CreateOvertime = ({
       fullWidth
     >
       <DialogTitle id="alert-dialog-title" className="dialog-delete-header">
-        {"Add Overtime"}
+        {"Edit Overtime"}
       </DialogTitle>
       <DialogContent className="dialog-task-content">
         <DialogContentText
@@ -193,26 +275,59 @@ const CreateOvertime = ({
                         <AccordionDetails>
                           <Grid container rowSpacing={2}>
                             <Grid item xs={12}>
-                              <TextField
+                            <Autocomplete
+                              disablePortal
+                              className='autocomplete-input autocomplete-on-popup'
+                              options={listProject}
+                              sx={{ width: "100%" }}
+                              defaultValue="T-WR-0011 :: Create Mockup Screen Dashboard"
+                              onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  className='input-field-crud'
+                                  placeholder='e.g In Progress'
+                                  label='Status Task'
+                                />
+                              )}
+                            />
+                              {/* <TextField
                                 focused
+                                disabled
                                 name='taskName'
-                                value={res.taskName}
+                                // value={res.taskName}
+                                defaultValue="T-WR-0011 :: Create Mockup Screen Dashboard"
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
                                 label='Task Name'
-                              />
+                              /> */}
                             </Grid>
                             <Grid item xs={12}>
-                              <TextField
+                            <Autocomplete
+                              disablePortal
+                              className='autocomplete-input autocomplete-on-popup'
+                              options={listProject}
+                              sx={{ width: "100%" }}
+                              onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  className='input-field-crud'
+                                  placeholder='e.g In Progress'
+                                  label='Status Task'
+                                />
+                              )}
+                            />
+                              {/* <TextField
                                 focused
                                 name='taskStatus'
                                 value={res.taskStatus}
-                                onChange={(e) => handleChange(e, index)}
+                                onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
                                 label='Status Task'
-                              />
+                              /> */}
                             </Grid>
                             <Grid item xs={12}>
                               <TextField
@@ -282,7 +397,7 @@ const CreateOvertime = ({
             // onClick={() => setOpen(false)}
             variant="outlined"
             className="button-text"
-            onClick={() => closeOvertime(false)}
+            onClick={() => setDialogCancel(true)}
           >
             Cancel
           </Button>
@@ -295,6 +410,40 @@ const CreateOvertime = ({
           </Button>
         </div>
       </DialogActions>
+      
+      <Dialog
+          open={dialogCancel}
+          onClose={() => closeOvertime(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          className="dialog-delete"
+        >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {'Cancel Data'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {"Warning: Canceling will result in data loss without saving!"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+          <Button variant="outlined" onClick={() => closeOvertime(false)}>
+              {"Cancel without saving"}
+            </Button>
+            <Button variant="contained" onClick={handleClose}>
+              {"Back"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
     </Dialog>
     </>
     ) : (
@@ -318,6 +467,7 @@ const CreateOvertime = ({
           Note: If an employee chooses to perform overtime for a spesific task, a notification will be sent to the Human Resources Department
         </DialogContentText>
 
+        <Grid item xs={12}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['TimePicker']}>
                 <TimePicker label="Start Time"
@@ -329,7 +479,7 @@ const CreateOvertime = ({
                 onChange={(newValue) => handleLocalizationFilled(newValue)}/>
             </DemoContainer>
         </LocalizationProvider>
-
+        </Grid>
         
           {isLocalizationFilled && dataProject.map((resProject, idxProject) => (
             <div className='card-project' key={`${idxProject+1}-project`}>
@@ -338,7 +488,8 @@ const CreateOvertime = ({
                   <Autocomplete
                     disablePortal
                     className='autocomplete-input autocomplete-on-popup'
-                    options={listProject}
+                    options={optProject}
+                    getOptionLabel={(option) => option.name}
                     sx={{ width: "100%", marginTop: "20px" }}
                     onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
                     renderInput={(params) => (
@@ -370,26 +521,40 @@ const CreateOvertime = ({
                         <AccordionDetails>
                           <Grid container rowSpacing={2}>
                             <Grid item xs={12}>
-                              <TextField
-                                focused
-                                name='taskName'
-                                value={res.taskName}
-                                onChange={(e) => handleChange(e, idxProject, index)}
-                                className='input-field-crud'
-                                placeholder='e.g Create Login Screen"'
-                                label='Task Name'
-                              />
+                            <Autocomplete
+                              disablePortal
+                              className='autocomplete-input autocomplete-on-popup'
+                              options={optTask}
+                              getOptionLabel={(option) => option.name}
+                              sx={{ width: "100%", marginTop: "20px" }}
+                              onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  className='input-field-crud'
+                                  placeholder='e.g Create Login Screen"'
+                                  label='Task Name'
+                                />
+                              )}
+                            />
                             </Grid>
                             <Grid item xs={12}>
-                              <TextField
-                                focused
-                                name='taskStatus'
-                                value={res.taskStatus}
-                                onChange={(e) => handleChange(e, index)}
-                                className='input-field-crud'
-                                placeholder='e.g Create Login Screen"'
-                                label='Status Task'
-                              />
+                            <Autocomplete
+                              disablePortal
+                              className='autocomplete-input autocomplete-on-popup'
+                              options={optStatus}
+                              getOptionLabel={(option) => option.status}
+                              sx={{ width: "100%" }}
+                              onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  className='input-field-crud'
+                                  placeholder='e.g In Progress'
+                                  label='Status Task'
+                                />
+                              )}
+                            />
                             </Grid>
                             <Grid item xs={12}>
                               <TextField
@@ -459,7 +624,7 @@ const CreateOvertime = ({
             // onClick={() => setOpen(false)}
             variant="outlined"
             className="button-text"
-            onClick={() => closeTask(false)}
+            onClick={() => setDialogCancel(true)}
           >
             Cancel
           </Button>
@@ -472,6 +637,39 @@ const CreateOvertime = ({
           </Button>
         </div>
       </DialogActions>
+
+      <Dialog
+          open={dialogCancel}
+          onClose={() => closeTask(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {'Cancel Data'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {"Warning: Canceling will result in data loss without saving!"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions">
+          <Button variant="outlined" onClick={() => closeTask(false)}>
+              {"Cancel without saving"}
+            </Button>
+            <Button variant="contained" onClick={handleClose}>
+              {"Back"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
     </Dialog>
     )}
     </>
