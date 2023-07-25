@@ -29,6 +29,8 @@ const PopupTask = ({
   const [listProject, setlistProject] = useState([])
   const [ideffortTask, setideffortTask] = useState()
   const [opentask, setOpentask] = useState(false)
+  const [statusTask, setstatusTask] = useState([])
+  const [openPopUpMoretask, setPopUpMoretask] = useState(false)
   const selectedTask = listTaskProject.find((item) => item.backlogId === ideffortTask);
   const clearProject = {
     workingReportId: '',
@@ -43,7 +45,20 @@ const PopupTask = ({
   useEffect(() => {
     getlistTaskProject()
     getlistProject()
+    getstatusTask()
+    console.log("HAHAHHADATA",dataProject)
   },[dataProject])
+
+  const getstatusTask = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/status?search=`
+    })
+    if (res.data) {      
+      const datastatusTask = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.name}))
+      setstatusTask(datastatusTask)
+    }
+  }
 
   const getlistTaskProject = async () => {
     const res = await client.requestAPI({
@@ -55,6 +70,7 @@ const PopupTask = ({
       setlistTaskProject(datalisttask)
     }
   }
+
   const getlistProject = async () => {
     const res = await client.requestAPI({
       method: 'GET',
@@ -98,10 +114,14 @@ const PopupTask = ({
 
   const handleChange = (event, idxProject, index) => {    
     const { name, value } = event.target;
-    if(name === 'effort' ) {
-      if (parseInt(value) > 8) {
-        console.log('Effort should not be greater than 8.');
+    if(name === 'effort' ) {      
+      if(value > 8){
+        setPopUpMoretask(true)
+      }else{
         setideffortTask(value)
+        const temp = [...dataProject]
+        temp[idxProject].listTask[index][name]= value
+        setProject(temp)
       }
     }else{
       const temp = [...dataProject]
@@ -166,6 +186,7 @@ const PopupTask = ({
                 <Grid item xs={12}>
                   <Autocomplete
                     disablePortal
+                    name='project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={listProject}
                     getOptionLabel={(option) => option.projectName}
@@ -211,13 +232,18 @@ const PopupTask = ({
                             <Grid item xs={12}>
                               <Autocomplete
                                 disablePortal
+                                name='taskName'
                                 className='autocomplete-input autocomplete-on-popup'
                                 options={listTaskProject}
                                 getOptionLabel={(option) => option.taskName} 
                                 sx={{ width: "100%" }}
                                 onChange={(_event, newValue) => {
                                   if (newValue) {
-                                  handleChangeProject(newValue, idxProject)                                  
+                                  handleChange(
+                                    {target : { name : 'taskName', value: newValue.taskName}},
+                                    idxProject,
+                                    index                                  
+                                    )                                  
                                   setideffortTask(newValue.backlogId)
                                   }else{
                                     setideffortTask('')
@@ -237,10 +263,18 @@ const PopupTask = ({
                             <Grid item xs={12}>
                               <Autocomplete
                                 disablePortal
+                                name='taskStatus'
                                 className='autocomplete-input autocomplete-on-popup'
-                                options={listTaskProject.map((item) => item.taskName)}
+                                options={statusTask}
+                                getOptionLabel={(option) => option.name} 
                                 sx={{ width: "100%" }}
-                                onChange={(_event, newValue) => handleChangeProject(newValue, idxProject)}
+                                onChange={(_event, newValue) =>
+                                   handleChange(
+                                    { target: { name : 'taskStatus', value : newValue.id } },
+                                     idxProject,
+                                     index
+                                     )
+                                  }
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
@@ -255,8 +289,8 @@ const PopupTask = ({
                               <TextField
                                 focused
                                 name='effort'
-                                value={selectedTask ? selectedTask.actualEffort : ''}         
-                                onChange={(e) => handleChange(e, index)}
+                                value={selectedTask ? selectedTask.actualEffort : ideffortTask}         
+                                onChange={(e) => handleChange(e,idxProject, index)}                                
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
                                 label='Actual Effort'
@@ -267,7 +301,7 @@ const PopupTask = ({
                                 focused
                                 name='detail'
                                 value={res.detail}
-                                onChange={(e) => handleChange(e, index)}
+                                onChange={(e) => handleChange(e,idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
                                 label='Task Detail'
@@ -374,7 +408,7 @@ const PopupTask = ({
         </Dialog>
         
         <Dialog
-              open={false}          
+              open={openPopUpMoretask}          
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
             >
@@ -395,7 +429,7 @@ const PopupTask = ({
                 </DialogContentText>
               </DialogContent>
               <DialogActions className="dialog-delete-actions"> 
-                <Button variant="contained">
+                <Button variant="contained" onClick={() => setPopUpMoretask(false)}>
                   {"Back To Task"}
                 </Button>
               </DialogActions>
