@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -15,6 +15,7 @@ import Accordion from "@mui/material/Accordion";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
 import CreateOvertime from "../createOvertime";
+import client from '../../../global/client';
 
 
 export default function ViewOvertime({open}) {
@@ -24,15 +25,6 @@ export default function ViewOvertime({open}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  // const clickEdit = () => {
-  //   setIsEdit(true);
-  // };
-
-  // const handleCloseOpenCancelData = () => {
-  //   setCancel(false);
-  //   setIsEdit(false);
-  // };
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -56,6 +48,24 @@ export default function ViewOvertime({open}) {
     return statusFontColors[status] || "#fff";
   };
 
+  const [detail, setDetail] = useState([]);
+  const [idDetail,setIdDetail] = useState()
+  const getDetailOvertime = async () => {
+    const idDetail = parseInt(localStorage.getItem('workingReportId'))
+    setIdDetail(idDetail)
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/overtime/${idDetail}`
+    })
+      setDetail(res.data.attributes.listProject)
+      console.log("ID WR: ", idDetail)
+      console.log("DETAIL OVERTIME", res)
+  }
+
+  useEffect(() => {
+    getDetailOvertime()
+  }, [])
+
   return (
     <Grid container spacing={2}>
       {/* <TabsMenuWR /> */}
@@ -66,17 +76,22 @@ export default function ViewOvertime({open}) {
           </Tabs>
         </Box>
       </Grid>
-      <Grid item xs={12}>
+
+        {detail.map((item) => (
+      <Grid item xs={12} key={item.id}>
         <Card>
           <Grid container p={4} spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h4">
-                Project - Telkom
+                Project - {item.projectName}
+                {/* Project - Telkom */}
               </Typography>
               <Typography variant="body1">Tuesday, 2 May 2023</Typography>
             </Grid>
             <Divider />
-            <Grid item xs={12}>
+
+            {item.listTask.map((taskItem) => (
+            <Grid item xs={12} key={taskItem.id}>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -84,7 +99,8 @@ export default function ViewOvertime({open}) {
                   id="panel1a-header"
                 >
                   <Typography sx={{ fontSize: "24px" }}>
-                    Create Mockup Screen Dashboard :: T-WR-0011
+                    {taskItem.taskName} :: {taskItem.taskCode}
+                    {/* Create Mockup Screen Dashboard :: T-WR-0011 */}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -97,7 +113,8 @@ export default function ViewOvertime({open}) {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
-                          Create mockup screen dashboard - UI UX
+                          {taskItem.taskDescription}
+                          {/* Create mockup screen dashboard - UI UX */}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -118,7 +135,8 @@ export default function ViewOvertime({open}) {
                             fontSize: "12px",
                           }}
                         >
-                          To Do
+                          {taskItem.statusTaskName}
+                          {/* To Do */}
                         </Box>
                       </Grid>
                     </Grid>
@@ -133,7 +151,8 @@ export default function ViewOvertime({open}) {
                         // className="rating-outline"
                         variant="outlined"
                         name="rating"
-                        value={0} // Ambil nilai rating dari properti "priority"
+                        value={parseFloat(taskItem.priority)}
+                        // value={0} // Ambil nilai rating dari properti "priority"
                         readOnly
                         precision={0.5}
                       />
@@ -145,7 +164,10 @@ export default function ViewOvertime({open}) {
                         </Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <Typography variant="inputDetail">8</Typography>
+                        <Typography variant="inputDetail">
+                          {taskItem.duration}
+                          {/* 8 */}
+                        </Typography>
                       </Grid>
                     </Grid>
                     <Grid item xs={6}>
@@ -156,7 +178,8 @@ export default function ViewOvertime({open}) {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
-                          Create login screen
+                          {taskItem.taskItem}
+                          {/* Create login screen */}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -164,9 +187,11 @@ export default function ViewOvertime({open}) {
                 </AccordionDetails>
               </Accordion>
             </Grid>
+            ))}
           </Grid>
         </Card>
       </Grid>
+      ))}
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>

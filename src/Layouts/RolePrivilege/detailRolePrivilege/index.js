@@ -7,11 +7,8 @@ import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
-import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router";
 import client from '../../../global/client';
-import CustomAlert from "../../../Component/Alert";
-import { FormProvider } from "react-hook-form";
 import { AlertContext } from '../../../context';
 
 //dialog
@@ -211,20 +208,6 @@ const DetailPrivilege = () => {
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>    
                           <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role" value={detail.roleName} variant="outlined" />
-                        {/* <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                options={Role}
-                                fullWidth
-                                getOptionLabel={(option) => option}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Role"
-                                    placeholder="Select Role"
-                                  />
-                                )}
-                              /> */}
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
