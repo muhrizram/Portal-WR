@@ -25,6 +25,7 @@ export default function WorkingReport() {
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
+  const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -41,7 +42,7 @@ export default function WorkingReport() {
   const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
-    localStorage.removeItem("companyId");
+    localStorage.removeItem("companyId");    
     getData();
   }, [filter]);
 
@@ -89,7 +90,7 @@ export default function WorkingReport() {
     setData([...temp]);
   };
 
-  const onAttendence = (value) => {
+  const onAttendence = (value) => {    
     console.log("attendance", value);
     if (value[0].workingReportId !== null) {
       setIsCheckin(true);
@@ -115,8 +116,7 @@ export default function WorkingReport() {
       dom = (
         <Attendance
           dataPeriod={dataAttandance.dataPeriod}
-          setIsCheckin={(param) => {
-            console.log("masuk sini");
+          setIsCheckin={(param) => {            
             setIsCheckin(true);
           }}
         />
@@ -130,6 +130,7 @@ export default function WorkingReport() {
             setIsViewTask(false);
             setIsCheckOut(true);
           }}
+          selectedWorkingReportId={selectedWorkingReportId}
         />
       );
     } else if (isViewOvertime) {
@@ -150,6 +151,7 @@ export default function WorkingReport() {
           setIsViewTask={setIsViewTask}
           setIsViewOvertime={setIsViewOvertime}
           events={data}
+          setSelectedWorkingReportId={setSelectedWorkingReportId}
         />
       );
     }
@@ -227,7 +229,15 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-      <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
+
+      <PopupTask 
+      open={false}
+      closeTask={() => 
+        setOpenTask(false)} 
+      isEdit={false} 
+      selectedWorkingReportId={selectedWorkingReportId}
+      />
+
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );

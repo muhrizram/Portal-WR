@@ -14,15 +14,14 @@ import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut }) {
+export default function ViewTask({ setIsCheckOut, selectedWorkingReportId }) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState(null);
   
-  useEffect(() => (
+  useEffect(() => (    
     getDetailTask()
-  ),[]
-  )
+  ),[])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -50,13 +49,18 @@ export default function ViewTask({ setIsCheckOut }) {
     return statusFontColors[status] || "#fff";
   };
 
-  const getDetailTask = async () => {
-    const res = await client.requestAPI({
-      method: "GET",
-      endpoint: "/task/detail?wrId=70&projectId=1"
-    })
-    console.log("DATA TASK",res.data)
-    setTaskData(res.data.attributes);     
+  const getDetailTask = async () => {    
+    try {         
+      const res = await client.requestAPI({
+        method: "GET",
+        // endpoint: `/task/detail?wrId=${selectedWorkingReportId}`
+        endpoint: `/task/detail?wrId=70`
+      });      
+      setTaskData(res.data.attributes);
+      console.log("RES DETAIL",res)
+    } catch (error) {
+      console.error("Error fetching task details:", error);
+    } 
   }
 
   
