@@ -28,7 +28,7 @@ const DataTable = ({
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
   const [dataColumns, setDataColumns] = useState([]);
-  console.log('data new: ', data)
+
   /**
    * return fungsi model dari pagination.
    *
@@ -44,7 +44,6 @@ const DataTable = ({
    * @param {model} object field & sort size saat ini dalam bentuk array.
    */
   const changeSort = (model) => {
-    console.log('model: ', model)
     if (model.length > 0) {
       setSort([{ ...model }]);
     } else {

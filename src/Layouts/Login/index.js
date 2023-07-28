@@ -13,7 +13,6 @@ const LoginScreen = () => {
 
   const changeStat = (stat) => {
     setStat(stat)
-    console.log('stat: ', stat)
   }
   const renderComponent = (stat) => {
     let dom = null
