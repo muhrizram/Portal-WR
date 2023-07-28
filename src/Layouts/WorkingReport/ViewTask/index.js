@@ -53,8 +53,8 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
     try {         
       const res = await client.requestAPI({
         method: "GET",
-        endpoint: `/task/detail?wrId=${WrIdDetail}`
-        // endpoint: `/task/detail?wrId=70`
+        // endpoint: `/task/detail?wrId=${WrIdDetail}`
+        endpoint: `/task/detail?wrId=70`
       });      
       setTaskData(res.data.attributes);
       console.log("RES DETAIL",res)
@@ -214,7 +214,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
           </Grid>
         </Grid>
       </Grid>
-      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)}/>
+      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)} dataDetail={taskData}/>
       </>) : (<></>)}
     </Grid>
   );

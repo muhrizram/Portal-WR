@@ -21,12 +21,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import client from "../../../global/client";
 import { AlertContext } from '../../../context';
 import { useNavigate } from "react-router-dom";
+import { is } from "date-fns/locale";
 
 const PopupTask = ({
   open,
   closeTask,
   isEdit,
   selectedWrIdanAbsenceId,
+  dataDetail
 }) => {
   const { setDataAlert } = useContext(AlertContext)
   const [listTaskProject, setlistTaskProject] = useState([])
@@ -63,13 +65,15 @@ const PopupTask = ({
   };
 
   useEffect(() => {
-    console.log("INI WR IDDD",selectedWrIdanAbsenceId)
+    console.log("DATA DETAIL",dataDetail)
+    if(isEdit){
+      setOpentask(true)      
+    }
     getlistTaskProject()
     getlistProject()
-    getstatusTask()
-    getAbsenceTask()
+    getstatusTask()    
     console.log("dataproject",dataProject)    
-  },[dataProject])
+  },[dataProject,dataDetail])
 
   const getstatusTask = async () => {
     const res = await client.requestAPI({
@@ -81,7 +85,14 @@ const PopupTask = ({
       setstatusTask(datastatusTask)
     }
   }  
-  const getAbsenceTask = async () => {    
+  const UpdateTask = async () => {
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: `task/update`
+    })
+    if (res.data) {      
+     console.log("update task")
+    }
   }  
 
   const getlistTaskProject = async () => {    
@@ -250,11 +261,12 @@ const PopupTask = ({
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                   <Autocomplete
-                    disablePortal
+                    disabled={isEdit}
+                    disablePortal                    
                     name='project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={listProject}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={isEdit ? "CMS" : (option) => option.name}
                     sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                     onChange={(_event, newValue) => {
                     if (newValue) {
@@ -286,8 +298,7 @@ const PopupTask = ({
                 <Grid item xs={12}>
                   {cekAbsen ? (
                   <>
-                  {resProject.value !== '' &&
-                      resProject.listTask.map((res, index) => (
+                  {resProject.listTask.map((res, index) => (
                     <Grid container rowSpacing={2}>
                       <Grid item xs={12}>
                         <TextField
