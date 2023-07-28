@@ -33,18 +33,19 @@ const CreateOvertime = ({
   open,
   closeTask,
   isEdit,
-  closeOvertime
+  closeOvertime,
+  setSelectedWorkingReportId
 }) => {
 
   const navigate = useNavigate()
-  const [dialogCancel, setDialogCancel] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
-  const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
-  const [startTime, setStartTime] = useState(null)
-  const [optTask, setOptTask] = useState([])
+  const [dialogCancel, setDialogCancel] = useState(false)
+  const [startTime, setStartTime] = useState()
+  const [endTime, setEndTime] = useState()
+  const [isLocalizationFilled, setIsLocalizationFilled] = useState(false)
   const [optProject, setOptProject] = useState([])
+  const [optTask, setOptTask] = useState([])
   const [optStatus, setOptStatus] = useState({})
-  const [endTime, setEndTime] = useState(null)
   const [idEffortTask, setIdEffortTask] = useState()
   const [opentask, setOpentask] = useState(false)
   const selectedTask = optTask.find((item) => item.backlogId === idEffortTask);
@@ -52,7 +53,7 @@ const CreateOvertime = ({
 
   const clearProject = {
     projectId: null,
-    listTask: [clearTask]
+    listTask: []
   }
   const clearTask = {
     backlogId: '',
@@ -80,16 +81,6 @@ const CreateOvertime = ({
         }
       ]
     })
-    // temp.projectId = null;
-    // temp.listTask = [
-    //   {
-    //     backlogId: '',
-    //     taskName: '',
-    //     statusTaskId: '',
-    //     duration: '',
-    //     taskItem: ''
-    //   }
-    // ];
     setDataOvertime(temp)
   }
 
@@ -110,7 +101,7 @@ const CreateOvertime = ({
     if(name === 'duration'){
       setIdEffortTask(parseInt(value))
       const temp = {...dataOvertime}
-      temp.listProject[idxProject].listTask[name]= parseInt(value)
+      temp.listProject[idxProject].listTask[index][name]= parseInt(value)
       setDataOvertime(temp)
       setTaskDurations((prevDurations) =>
         prevDurations.map((durationItem, i) => ({
@@ -120,8 +111,10 @@ const CreateOvertime = ({
       )
     } else{
     const temp = {...dataOvertime}
-    temp.listProject[idxProject].listTask[name]= value
-    temp.listProject[idxProject].listTask.backlogId = backlogId
+    temp.listProject[idxProject].listTask[index][name]= value
+    if(name === 'taskName'){
+      temp.listProject[idxProject].listTask[index].backlogId = backlogId
+    }
     setDataOvertime(temp)
     }
   }; 
@@ -130,13 +123,14 @@ const CreateOvertime = ({
   const handleChangeProject = (value, idxProject) => {
     const temp = {...dataOvertime}
     temp.listProject[idxProject].projectId = value
+    temp.listProject[idxProject].listTask = [clearTask]
     setDataOvertime(temp);
   };
 
   const deleteTask = (e, idxProject, index) => {
     e.preventDefault()
     const temp = {...dataOvertime}
-    temp[idxProject].listTask.splice(index, 1)
+    temp.listProject[idxProject].listTask.splice(index, 1)
     setDataOvertime(temp)
   }
   
@@ -146,7 +140,6 @@ const CreateOvertime = ({
       const dataStartTime = start.format("HH:mm")
       setStartTime(dataStartTime)
     }
-    // setStartTime(start)
     setIsLocalizationFilled(isFilled)
   }
 
@@ -167,6 +160,7 @@ const CreateOvertime = ({
     getDataProject()
     getDataStatus()
     console.log("DATAAAA", dataOvertime.listProject)
+    console.log("WRRRR",setSelectedWorkingReportId)
   }, [dataOvertime])
 
   const getDataTask = async () => {
@@ -231,6 +225,33 @@ const onSave = async () => {
     // open(false);
   }
 
+  const saveEdit = async () => {
+    const data = {
+    }
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: `/overtime`,
+      data
+    })
+    if(!res.isError){
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/workingReport')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    // setOpen(false);
+  };
+
   return (
     <>
     <Dialog
@@ -272,6 +293,7 @@ const onSave = async () => {
                 <Grid item xs={12}>
                   <Autocomplete
                     disablePortal
+                    name= 'project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={optProject}
                     getOptionLabel={(option) => option.name}
@@ -300,7 +322,7 @@ const onSave = async () => {
                 <Grid item xs={12}>
                   {resProject.value !== '' &&
                     resProject.listTask.map((res, index) => (
-                      <Accordion key={res} sx={{ boxShadow: 'none', width: '100%' }}>
+                      <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}
                           className='header-accordion'
@@ -382,6 +404,7 @@ const onSave = async () => {
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
+                                type="number"
                                 label='Actual Effort'
                               />
                             </Grid>
@@ -389,7 +412,7 @@ const onSave = async () => {
                               <TextField
                                 focused
                                 name='taskItem'
-                                value={res}
+                                value={res.detail}
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
@@ -405,7 +428,7 @@ const onSave = async () => {
                       ))
                     }
                   </Grid>
-                  {dataOvertime.projectId !== '' &&
+                  {dataOvertime.clearTask !== '' &&
                     <Grid item xs={12} textAlign='left'>
                       <Button
                         onClick={() => AddTask(idxProject)}
@@ -425,7 +448,7 @@ const onSave = async () => {
       </DialogContent>
       <DialogActions>
         <div className='left-container'>
-          {dataOvertime.projectId !== '' &&
+          {dataOvertime.clearProject !== '' &&
             <Button
               variant="outlined"
               className='green-button button-text'

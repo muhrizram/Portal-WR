@@ -222,14 +222,13 @@ export default function WorkingReport() {
         <Grid item xs={12}>
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
-
       <PopupTask 
       open={false}
       closeTask={() => 
@@ -237,8 +236,7 @@ export default function WorkingReport() {
       isEdit={false} 
       selectedWorkingReportId={selectedWorkingReportId}
       />
-
-      <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} selectedWorkingReportId={selectedWorkingReportId} />
     </SideBar>
   );
 }

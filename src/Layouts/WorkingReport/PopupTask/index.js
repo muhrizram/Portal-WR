@@ -71,7 +71,7 @@ const PopupTask = ({
   const getstatusTask = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `ol/status?search=`
+      endpoint: `/ol/status?search=`
     })
     if (res.data) {      
       const datastatusTask = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.name}))
@@ -82,7 +82,7 @@ const PopupTask = ({
   const getlistTaskProject = async () => {    
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `ol/taskProject?projectId=1&search=`
+      endpoint: `/ol/taskProject?projectId=1&search=`
     })
     if (res.data) {      
       const datalisttask = res.data.map((item) => ({backlogId:parseInt(item.id), taskName:item.attributes.taskName, actualEffort:item.attributes.actualEffort}))      
@@ -93,7 +93,7 @@ const PopupTask = ({
   const getlistProject = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `ol/projectTypeList?userId=1&search=`
+      endpoint: `/ol/projectTypeList?userId=1&search=`
     })
     if (res.data) {      
       const datalist = res.data.map((item) => ({id:parseInt(item.id), projectName:item.attributes.projectName}))      

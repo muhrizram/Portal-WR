@@ -21,13 +21,16 @@ import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
+import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
+  const [openOvertime, setOpenOvertime] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
   const navigate = useNavigate();
+  const [wrId, setId] = useState(null)
 
   function handleClose() {
     setOpen(false);
@@ -54,10 +57,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   };
   
-  const handleChangePage = () => {
-    navigate("/overtime/detail-overtime")
-  }
-
   const renderCalendar = (info) => {
     const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
@@ -82,53 +81,58 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             localStorage.setItem(
               "workingReportId",
               data[0].workingReportId
-            ),
-            <>
-            
-            <Grid item xs={12} display="flex" justifyContent="center">
-            <Button
-              variant="outlined-warning"
-              onClick={() => {
-                localStorage.setItem(
-                  "workingReportId",
-                  data[0].workingReportId
-                  // '71'
-                );
-                setIsViewOvertime(true);
-              }}
-            >
-              View Overtime
-            </Button>
-          </Grid>
-          </>
+            )
           ) : (
             <></>
           )}
           <Grid item xs={12} display="flex" justifyContent="left">
             {info.isToday ? (              
               !localStorage.getItem('istaskadd') ? (
+                <>
                 <Button
                   variant="outlined"
                   onClick={() => {
-                    localStorage.setItem(
-                      "workingReportId",
-                      data[0].workingReportId
-                    );
-                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"));
+                    setId(data[0].workingReportId)
                     console.log("PAS KALENDAR", localStorage.getItem("workingReportId"));
                     setOpenTask(true);
                   }}
                 >
                   task
                 </Button>
+                <Grid item xs={12} display="flex" justifyContent="left">
+            <Button
+              variant="outlined-warning"
+              onClick={() => {
+                setId(data[0].workingReportId)
+                console.log("WORKING ID", localStorage.getItem("workingReportId"))
+                setIsViewOvertime(false)
+                setOpenOvertime(true);
+              }}
+            >
+              Overtime
+            </Button>
+            </Grid>
+                {/* <Grid item xs={12} display="flex" justifyContent="center">
+            <Button
+              variant="outlined-warning"
+              onClick={() => {
+                localStorage.setItem(
+                  "workingReportId",
+                  data[0].workingReportId
+                );
+                setIsViewOvertime(true);
+              }}
+            >
+              View Overtime
+            </Button>
+          </Grid> */}
+          </>
               ) : (
+                <>
                 <Button
                 variant="outlined"
                   onClick={() => {
-                    localStorage.setItem(
-                      "workingReportId",
-                      data[0].workingReportId
-                    );
+                    setId(data[0].workingReportId)
                     setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
                     setIsViewTask(true);
                   }
@@ -136,15 +140,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                 task
               </Button>
+              </>
               )
             ) : data[0].workingReportId != null ? (
+              <>
+              
+            <Grid item xs={12} display="flex" justifyContent="left">
               <Button
               variant="outlined"
                 onClick={() => {
-                  localStorage.setItem(
-                    "workingReportId",
-                    data[0].workingReportId
-                  );
+                  setId(data[0].workingReportId)
                   setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
                   setIsViewTask(true);
                 }
@@ -152,9 +157,29 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               >
               task
             </Button>
-              
-            ) : (<></>)}
-          </Grid>          
+            </Grid>
+            {/* <Grid item xs={12} display="flex" justifyContent="left">
+            <Button
+              variant="outlined-warning"
+              onClick={() => {
+                localStorage.setItem(
+                  "workingReportId",
+                  data[0].workingReportId
+                );
+                localStorage.getItem("workingReportId")
+                console.log("WORKING ID", localStorage.getItem("workingReportId"))
+                setIsViewOvertime(false)
+                setOpenOvertime(true);
+              }}
+            >
+              Overtime
+            </Button>
+            </Grid> */}
+          </>       
+            ) : (
+              <></>
+            )}  
+        </Grid>
         </Grid>
       );
     }
@@ -222,6 +247,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         </DialogActions>
       </Dialog>
       <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
+      <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </Grid>
   );
 }

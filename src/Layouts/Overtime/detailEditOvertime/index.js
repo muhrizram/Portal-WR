@@ -2,23 +2,17 @@ import React, {useState, useEffect} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Button, Card, Divider, Grid, Rating, Typography, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogContentText, 
-  DialogTitle, } from "@mui/material";
+import { Button, Card, Divider, Grid, Rating, Typography } from "@mui/material";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Accordion from "@mui/material/Accordion";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
 import CreateOvertime from "../createOvertime";
 import client from '../../../global/client';
 
 
-export default function ViewOvertime({open}) {
+export default function ViewOvertime({}) {
   const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
 
@@ -28,24 +22,24 @@ export default function ViewOvertime({open}) {
 
   const getStatusColor = (status) => {
     const statusColors = {
-      "To Do": "#FDECEB",
-      Backlog: "#E6F2FB",
-      "In Progress": "#E6F2FB",
-      Completed: "#EBF6EE",
-      Done: "#EBF6EE",
+      'to do': '#FDECEB',
+      'Backlog' : '#E6F2FB',
+      'In Progress': '#E6F2FB',
+      'Completed' : '#EBF6EE', 
+      'Done': '#EBF6EE'
     };
-    return statusColors[status] || "#ccc";
+    return statusColors[status] || '#ccc';
   };
 
   const getStatusFontColor = (status) => {
     const statusFontColors = {
-      "To Do": "#EE695D",
-      Backlog: "#3393DF",
-      "In Progress": "#3393DF",
-      Completed: "#5DB975",
-      Done: "#5DB975",
+      'to do': '#EE695D',
+      'Backlog' : '#3393DF',
+      'In Progress': '#3393DF',
+      'Completed' : '#5DB975',
+      'Done': '#5DB975'
     };
-    return statusFontColors[status] || "#fff";
+    return statusFontColors[status] || '#fff';
   };
 
   const [detail, setDetail] = useState([]);
@@ -68,7 +62,6 @@ export default function ViewOvertime({open}) {
 
   return (
     <Grid container spacing={2}>
-      {/* <TabsMenuWR /> */}
       <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
@@ -84,7 +77,6 @@ export default function ViewOvertime({open}) {
             <Grid item xs={12}>
               <Typography variant="h4">
                 Project - {item.projectName}
-                {/* Project - Telkom */}
               </Typography>
               <Typography variant="body1">Tuesday, 2 May 2023</Typography>
             </Grid>
@@ -100,7 +92,6 @@ export default function ViewOvertime({open}) {
                 >
                   <Typography sx={{ fontSize: "24px" }}>
                     {taskItem.taskName} :: {taskItem.taskCode}
-                    {/* Create Mockup Screen Dashboard :: T-WR-0011 */}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -114,29 +105,27 @@ export default function ViewOvertime({open}) {
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
                           {taskItem.taskDescription}
-                          {/* Create mockup screen dashboard - UI UX */}
                         </Typography>
                       </Grid>
                     </Grid>
                     <Grid item xs={4}>
                       <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
+                        <Typography variant="descBaklog">
                           Status Task
                         </Typography>
                       </Grid>
                       <Grid item xs={2}>
                         <Box
                           sx={{
-                            backgroundColor: getStatusColor("To Do"),
-                            color: getStatusFontColor("To Do"),
-                            padding: "5px 10px",
-                            gap: "10px",
-                            borderRadius: "4px",
-                            fontSize: "12px",
+                            backgroundColor: getStatusColor(taskItem.statusTaskName),
+                            color: getStatusFontColor(taskItem.statusTaskName),
+                            padding: '5px 10px',
+                            gap: '10px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
                           }}
                         >
                           {taskItem.statusTaskName}
-                          {/* To Do */}
                         </Box>
                       </Grid>
                     </Grid>
@@ -148,11 +137,9 @@ export default function ViewOvertime({open}) {
                       </Grid>
 
                       <Rating
-                        // className="rating-outline"
                         variant="outlined"
                         name="rating"
                         value={parseFloat(taskItem.priority)}
-                        // value={0} // Ambil nilai rating dari properti "priority"
                         readOnly
                         precision={0.5}
                       />
@@ -166,7 +153,6 @@ export default function ViewOvertime({open}) {
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
                           {taskItem.duration}
-                          {/* 8 */}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -179,7 +165,6 @@ export default function ViewOvertime({open}) {
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
                           {taskItem.taskItem}
-                          {/* Create login screen */}
                         </Typography>
                       </Grid>
                     </Grid>
