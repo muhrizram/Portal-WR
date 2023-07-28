@@ -76,9 +76,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button variant="outlined" onClick={() => setOnClick(info)}>
                 Attendance
               </Button>             
-            ) : (
-              <></>
-            )}
+            ) : (data[0].workingReportId == null ? (
+              <Button disabled variant="outlined" >
+                task
+              </Button>
+            ) : <></>)}
           </Grid>
           {data[0].workingReportId !== null ? (
             localStorage.setItem(
@@ -102,8 +104,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <></>
           )}
           <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (
-              
+            {info.isToday ? (              
               !localStorage.getItem('istaskadd') ? (
                 <Button
                   variant="outlined"
@@ -210,7 +211,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />      
+      <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );
 }

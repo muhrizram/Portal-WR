@@ -220,12 +220,15 @@ export default function WorkingReport() {
               </Grid>
             </Grid>
           </Card>
-        </Grid>        
+        </Grid>
+        <Grid item xs={12}>
+          <Button onClick={() => setOpenTask(true)}>Open task</Button>
+        </Grid>
         <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
-
+      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );
