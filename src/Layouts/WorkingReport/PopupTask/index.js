@@ -26,7 +26,7 @@ const PopupTask = ({
   open,
   closeTask,
   isEdit,
-  selectedWorkingReportId
+  selectedWrIdanAbsenceId,
 }) => {
   const { setDataAlert } = useContext(AlertContext)
   const [listTaskProject, setlistTaskProject] = useState([])
@@ -61,11 +61,12 @@ const PopupTask = ({
     taskItem: ''
   };
 
-  useEffect(() => {        
+  useEffect(() => {    
     getlistTaskProject()
     getlistProject()
     getstatusTask()
-    console.log("dataproject",dataProject)
+    getAbsenceTask()
+    console.log("dataproject",dataProject)    
   },[dataProject])
 
   const getstatusTask = async () => {
@@ -78,6 +79,11 @@ const PopupTask = ({
       setstatusTask(datastatusTask)
     }
   }
+  
+  const getAbsenceTask = async () => {
+    
+  }
+  
 
   const getlistTaskProject = async () => {    
     const res = await client.requestAPI({
@@ -94,10 +100,17 @@ const PopupTask = ({
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `ol/projectTypeList?userId=1&search=`
+    })            
+    const resabsen = await client.requestAPI({
+      method: 'GET',
+      endpoint: `ol/absenceTask?search=`
     })
-    if (res.data) {      
-      const datalist = res.data.map((item) => ({id:parseInt(item.id), projectName:item.attributes.projectName}))      
-      setlistProject(datalist)
+    const datalist = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.projectName}))
+      const dataabsen = resabsen.data.map((item) => ({ id: parseInt(item.id), name: item.attributes.name }));
+ 
+    if (res.data && resabsen.data) {
+      const mergedList = [...datalist, ...dataabsen];
+      setlistProject(mergedList);
     }
   }
 
@@ -156,7 +169,9 @@ const PopupTask = ({
   
   const handleChangeProject = (id, idxProject) => {   
     const temp = { ...dataProject };    
-    temp.workingReportId = 100;
+    temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;
+    // temp.listProject[idxProject].absenceId = selectedWrIdanAbsenceId.absenceId;
+    temp.listProject[idxProject].absenceId = 75;
     temp.listProject[idxProject].projectId = id;
     temp.listProject[idxProject].listTask = [clearTask];
     setProject(temp);
@@ -181,16 +196,16 @@ const PopupTask = ({
         if (tempEffort > 8 && tempEffort < 1) {
           setPopUpMoretask(true);        
         }else{
-          console.log("INI OBJECT POST", dataProject)
+          const dataPost = dataProject
+          console.log("INI OBJECT POST", dataPost)
           const res = await client.requestAPI({
             method: 'POST',
             endpoint: `/task/addTask`,
             data: dataProject,
           });      
           if(!res.isError){
-            console.log("INI RES",res)
-            localStorage.setItem('istaskadd', true)
-            console.log("INI LOCALSTORAGE",localStorage.getItem('istaskadd'))
+            console.log("INI RES",res.data.attributes)
+            localStorage.setItem('istaskadd', true)            
             setDataAlert({
               severity: 'success',
               open: true,
@@ -249,7 +264,7 @@ const PopupTask = ({
                     name='project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={listProject}
-                    getOptionLabel={(option) => option.projectName}
+                    getOptionLabel={(option) => option.name}
                     sx={{ width: "100%", marginTop: "20px" }}
                     onChange={(_event, newValue) => {
                     if (newValue) {
