@@ -20,8 +20,6 @@ const App = () => {
   //     }
   //   }
   // }, [auth.isLoading])
-
-  // console.log('no token: ', auth)
   const [dataAlert, setDataAlert] = useState({
     severity: 'warning',
     message: '',

@@ -54,7 +54,7 @@ const DetailCompany = () => {
     },
     {
       href: "/master-company",
-      title: "Master Company",
+      title: "Company",
       current: false,
     },
     {
@@ -155,7 +155,6 @@ const DetailCompany = () => {
   const handleChange = async (e) => {
     if (e.target.files) {
       const tempFilePath = await uploadFile(e.target.files[0])
-      console.log('tempFilePath: ', tempFilePath)
       setFilePath(tempFilePath)
       setFile(URL.createObjectURL(e.target.files[0]));
     }
