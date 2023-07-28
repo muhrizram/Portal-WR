@@ -1,4 +1,4 @@
-import React , {useState} from "react";
+import React , {useState,useEffect} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -10,12 +10,18 @@ import Accordion from "@mui/material/Accordion";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
 import PopupTask from "../PopupTask";
+import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut }) {
+export default function ViewTask({ setIsCheckOut, selectedWorkingReportId }) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
+  const [taskData, setTaskData] = useState(null);
+  
+  useEffect(() => (    
+    getDetailTask()
+  ),[])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -43,8 +49,25 @@ export default function ViewTask({ setIsCheckOut }) {
     return statusFontColors[status] || "#fff";
   };
 
+  const getDetailTask = async () => {    
+    try {         
+      const res = await client.requestAPI({
+        method: "GET",
+        // endpoint: `/task/detail?wrId=${selectedWorkingReportId}`
+        endpoint: `/task/detail?wrId=70`
+      });      
+      setTaskData(res.data.attributes);
+      console.log("RES DETAIL",res)
+    } catch (error) {
+      console.error("Error fetching task details:", error);
+    } 
+  }
+
+  
+
   return (
     <Grid container spacing={2}>
+      {taskData ? (<>
       {/* <TabsMenuWR /> */}
       <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
@@ -59,12 +82,18 @@ export default function ViewTask({ setIsCheckOut }) {
           <Grid container p={4} spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h4">
-                Project - Electronic Health Record
+                {/* Project - Electronic Health Record */}
+                {taskData.projectName}
               </Typography>
-              <Typography variant="body1">Tuesday, 2 May 2023</Typography>
+              <Typography variant="body1">
+                {/* Tuesday, 2 May 2023 */}
+                {taskData.listTask[0].createdOn}
+                </Typography>
             </Grid>
             <Divider />
-            <Grid item xs={12}>
+
+            {taskData.listTask.map((task) => (
+            <Grid item xs={12} key={task.taskId}>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -72,7 +101,8 @@ export default function ViewTask({ setIsCheckOut }) {
                   id="panel1a-header"
                 >
                   <Typography sx={{ fontSize: "24px" }}>
-                    Create Mockup Screen Dashboard :: T-WR-0011
+                    {/* Create Mockup Screen Dashboard :: T-WR-0011 */}
+                    {task.taskName} :: {task.taskCode}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -85,7 +115,8 @@ export default function ViewTask({ setIsCheckOut }) {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
-                          Create mockup screen dashboard - UI UX
+                          {/* Create mockup screen dashboard - UI UX */}
+                          {task.taskDescription}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -106,7 +137,8 @@ export default function ViewTask({ setIsCheckOut }) {
                             fontSize: "12px",
                           }}
                         >
-                          To Do
+                          {/* To Do */}
+                          {task.statusTaskName}
                         </Box>
                       </Grid>
                     </Grid>
@@ -133,7 +165,10 @@ export default function ViewTask({ setIsCheckOut }) {
                         </Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <Typography variant="inputDetail">8</Typography>
+                        <Typography variant="inputDetail">
+                          {/* 8 */}
+                          {task.taskDuration}
+                          </Typography>
                       </Grid>
                     </Grid>
                     <Grid item xs={6}>
@@ -144,7 +179,8 @@ export default function ViewTask({ setIsCheckOut }) {
                       </Grid>
                       <Grid item xs={12}>
                         <Typography variant="inputDetail">
-                          Create login screen
+                          {/* Create login screen */}
+                          {task.taskItem}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -152,6 +188,7 @@ export default function ViewTask({ setIsCheckOut }) {
                 </AccordionDetails>
               </Accordion>
             </Grid>
+             ))}
           </Grid>
         </Card>
       </Grid>
@@ -178,6 +215,7 @@ export default function ViewTask({ setIsCheckOut }) {
         </Grid>
       </Grid>
       <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)}/>
+      </>) : (<></>)}
     </Grid>
   );
 }

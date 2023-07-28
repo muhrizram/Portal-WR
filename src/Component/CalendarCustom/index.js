@@ -22,7 +22,7 @@ import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
@@ -79,21 +79,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             )}
           </Grid>
           {data[0].workingReportId !== null ? (
+            localStorage.setItem(
+              "workingReportId",
+              data[0].workingReportId
+            ),
             <>
-            <Grid item xs={12} display="flex" justifyContent="center">
-              <Button
-                variant="contained"
-                onClick={() => {
-                  localStorage.setItem(
-                    "workingReportId",
-                    data[0].workingReportId
-                  );
-                  setIsViewTask(true);
-                }}
-              >
-                View Task
-              </Button>
-            </Grid>
             
             <Grid item xs={12} display="flex" justifyContent="center">
             <Button
@@ -114,16 +104,55 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <></>
           )}
           <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (                         
+            {info.isToday ? (              
+              !localStorage.getItem('istaskadd') ? (
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    localStorage.setItem(
+                      "workingReportId",
+                      data[0].workingReportId
+                    );
+                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"));
+                    console.log("PAS KALENDAR", localStorage.getItem("workingReportId"));
+                    setOpenTask(true);
+                  }}
+                >
+                  task
+                </Button>
+              ) : (
+                <Button
+                variant="outlined"
+                  onClick={() => {
+                    localStorage.setItem(
+                      "workingReportId",
+                      data[0].workingReportId
+                    );
+                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                    setIsViewTask(true);
+                  }
+                }              
+                >
+                task
+              </Button>
+              )
+            ) : data[0].workingReportId != null ? (
               <Button
               variant="outlined"
-              onClick={() => setOpenTask(true)}
+                onClick={() => {
+                  localStorage.setItem(
+                    "workingReportId",
+                    data[0].workingReportId
+                  );
+                  setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                  setIsViewTask(true);
+                }
+              }              
               >
               task
-            </Button>          
-            ) : (
-              <></>
-            )}
+            </Button>
+              
+            ) : (<></>)}
           </Grid>          
         </Grid>
       );
