@@ -98,7 +98,7 @@
   display: flex;
 }
 
-.containerButton > button {
+.containerButton>button {
   margin-right: 10px;
 }
 
@@ -194,13 +194,13 @@
   outline: none !important;
 }
 
-.dialog-delete > .MuiDialog-container > .MuiPaper-root {
+.dialog-delete>.MuiDialog-container>.MuiPaper-root {
   padding: 30px !important;
   border-radius: 6px;
   text-align: center;
 }
 
-.dialog-task > .MuiDialog-container > .MuiPaper-root {
+.dialog-task>.MuiDialog-container>.MuiPaper-root {
   min-height: 25rem;
 }
 
@@ -267,9 +267,9 @@
   letter-spacing: 0.15px !important;
 }
 
-.custom-alert > .MuiAlert-action,
-.custom-alert > .MuiAlert-icon,
-.custom-alert > .MuiAlert-message {
+.custom-alert>.MuiAlert-action,
+.custom-alert>.MuiAlert-icon,
+.custom-alert>.MuiAlert-message {
   padding: 0 !important;
 }
 
@@ -532,7 +532,8 @@
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 150%; /* 24px */
+  line-height: 150%;
+  /* 24px */
 }
 
 .dialogButton {
@@ -542,6 +543,7 @@
   gap: 16px;
   align-self: stretch;
 }
+
 .autocomplete-input input {
   padding: 7.5px 4px 7.5px 5px !important;
 }
