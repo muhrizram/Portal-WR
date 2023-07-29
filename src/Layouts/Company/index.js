@@ -121,7 +121,7 @@ const MasterCompany = () => {
     setLoading(false)
   }
 
-  const rebuildData = (resData) => {    
+  const rebuildData = (resData) => {
     let temp = []
     let number = filter.page * filter.size
     temp = resData.data.map((value, index) => {

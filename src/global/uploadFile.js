@@ -16,7 +16,6 @@ const uploadFile = async (file) => {
     method: "POST",
     data,
   });
-  console.log(res);
   if (res.data.meta.message.includes("Success")) {
     const text = `minio/view?file=${res.data.attributes.filePath}`
     return text

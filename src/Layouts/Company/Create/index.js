@@ -30,7 +30,7 @@ const CreateCompany = () => {
     },
     {
       href: "/master-company",
-      title: "Master Company",
+      title: "Company",
       current: false,
     },
     {
@@ -98,7 +98,7 @@ const CreateCompany = () => {
 
   const handleChange = async (e) => {
     if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0])      
+      const tempFilePath = await uploadFile(e.target.files[0])
       setFilePath(tempFilePath)
       setFile(URL.createObjectURL(e.target.files[0]));
     }

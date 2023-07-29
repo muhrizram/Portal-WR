@@ -143,7 +143,7 @@ export const routes = [
   {
     path: "/master-company",
     element: <Company />,
-    name: "Master Company",
+    name: "Company",
     icon: <BusinessOutlinedIcon />,
   },
   {
