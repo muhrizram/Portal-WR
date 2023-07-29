@@ -34,7 +34,8 @@ const CreateOvertime = ({
   closeTask,
   isEdit,
   closeOvertime,
-  setSelectedWorkingReportId
+  setSelectedWorkingReportId,
+  dataDetail
 }) => {
 
   const navigate = useNavigate()
@@ -134,34 +135,21 @@ const CreateOvertime = ({
     setDataOvertime(temp)
   }
   
-  
-  const handleStartTime = (isFilled, start) => {
-    if(start){
-      const dataStartTime = start.format("HH:mm")
-      setStartTime(dataStartTime)
-    }
-    setIsLocalizationFilled(isFilled)
-  }
-
-  const handleEndTime = (isFilled, end) => {
-    if (end){
-      const dataEndTime = end.format("HH:mm")
-      setEndTime(dataEndTime)
-    }
-    setIsLocalizationFilled(isFilled)
-  }
-
   const handleClose = () => {
     setDialogCancel(false)
   }
 
   useEffect(() => {
+    if(isEdit){
+      setOpentask(true)
+    }
     getDataTask()
     getDataProject()
     getDataStatus()
     console.log("DATAAAA", dataOvertime.listProject)
     console.log("WRRRR",setSelectedWorkingReportId)
-  }, [dataOvertime])
+    console.log("DATA DETAIILLL", dataDetail)
+  }, [dataOvertime, dataDetail])
 
   const getDataTask = async () => {
     const res = await client.requestAPI({
@@ -227,6 +215,8 @@ const onSave = async () => {
 
   const saveEdit = async () => {
     const data = {
+      workingReportId : null,
+      ...dataOvertime
     }
     const res = await client.requestAPI({
       method: 'PUT',
@@ -278,24 +268,27 @@ const onSave = async () => {
             <DemoContainer components={['TimePicker']}>
                 <TimePicker label="Start Time"
                 value={startTime} 
-                onChange={(start) => handleStartTime(false, start)}
+                onChange={(start) => setStartTime(start.format("HH:mm"))}
                 />
                 <TimePicker label="End Time" 
                 value={endTime}
-                onChange={(end) => handleEndTime(true, end)}/>
+                onChange={(end) => {setEndTime(end.format("HH:mm"))
+                setIsLocalizationFilled(true)}}/>
             </DemoContainer>
         </LocalizationProvider>
         </Grid>
         
-          {isLocalizationFilled && dataOvertime.listProject.length > 0 && dataOvertime.listProject.map((resProject, idxProject) => (
+          {isLocalizationFilled ? dataOvertime.listProject.length > 0 && dataOvertime.listProject.map((resProject, idxProject) => (
             <div className={opentask ? 'card-project' : ''} key={`${idxProject+1}-project`}>
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                   <Autocomplete
+                    disable={isEdit}
                     disablePortal
                     name= 'project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={optProject}
+                    value={isEdit ? dataDetail.projectName : ""}
                     getOptionLabel={(option) => option.name}
                     sx={{ width: "100%", marginTop: "20px" }}
                     onChange={(_event, newValue) => {
@@ -322,7 +315,7 @@ const onSave = async () => {
                 <Grid item xs={12}>
                   {resProject.value !== '' &&
                     resProject.listTask.map((res, index) => (
-                      <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                      <Accordion key={`${res.backlogId}-${index}`} sx={{ boxShadow: 'none', width: '100%' }}>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}
                           className='header-accordion'
@@ -343,7 +336,8 @@ const onSave = async () => {
                               name='taskName'
                               className='autocomplete-input autocomplete-on-popup'
                               options={optTask}
-                              value={selectedTask}
+                              // value={selectedTask}
+                              value={isEdit ? dataDetail.taskName : ""}
                               getOptionLabel={(option) => option.taskName}
                               sx={{ width: "100%", marginTop: "20px" }}
                               onChange={(_event, newValue) => {
@@ -377,6 +371,7 @@ const onSave = async () => {
                               // value={selectedTask.taskStatus}
                               sx={{ width: "100%" }}
                               // onChange={(e) => handleChange(e,idxProject, index)}
+                              value={isEdit ? dataDetail.statusTaskName : ""}
                               onChange={(_event, newValue) =>
                                 handleChange(
                                  { target: { name : 'statusTaskId', value : newValue.id } },
@@ -400,7 +395,8 @@ const onSave = async () => {
                               <TextField
                                 focused
                                 name='duration'
-                                // value={selectedTask ? selectedTask.actualEffort : ''}         
+                                // value={selectedTask ? selectedTask.actualEffort : ''}   
+                                value={isEdit ? dataDetail.duration : ""}      
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
@@ -412,7 +408,7 @@ const onSave = async () => {
                               <TextField
                                 focused
                                 name='taskItem'
-                                value={res.detail}
+                                value={isEdit ? dataDetail.taskItem : res.detail}
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
@@ -428,7 +424,7 @@ const onSave = async () => {
                       ))
                     }
                   </Grid>
-                  {dataOvertime.clearTask !== '' &&
+                  {dataOvertime.listProject[idxProject].projectId && (
                     <Grid item xs={12} textAlign='left'>
                       <Button
                         onClick={() => AddTask(idxProject)}
@@ -439,16 +435,16 @@ const onSave = async () => {
                         Add Task
                       </Button>
                     </Grid>
-                  }
+                  )}
                 </Grid>
               </div>
             )
-          )
+          ) : (<></>)
         }
       </DialogContent>
       <DialogActions>
         <div className='left-container'>
-          {dataOvertime.clearProject !== '' &&
+          {isLocalizationFilled && dataOvertime.clearProject !== '' && (
             <Button
               variant="outlined"
               className='green-button button-text'
@@ -457,7 +453,7 @@ const onSave = async () => {
               >
               Add Project
             </Button>
-          }
+          )}
         </div>
         <div className='right-container'>
           <Button

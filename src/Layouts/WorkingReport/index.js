@@ -26,6 +26,7 @@ export default function WorkingReport() {
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
   const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
+  const [WrIdDetail, setWrIdDetail] = useState()
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -44,7 +45,7 @@ export default function WorkingReport() {
   useEffect(() => {
     localStorage.removeItem("companyId");    
     getData();
-  }, [filter]);
+  }, [filter], WrIdDetail);
 
   const getData = async () => {
     const res = await client.requestAPI({
@@ -131,11 +132,13 @@ export default function WorkingReport() {
             setIsCheckOut(true);
           }}
           selectedWorkingReportId={selectedWorkingReportId}
+          WrIdDetail={WrIdDetail}
         />
       );
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
+        WrIdDetail = {WrIdDetail}
         />
       )
     }
@@ -152,6 +155,7 @@ export default function WorkingReport() {
           setIsViewOvertime={setIsViewOvertime}
           events={data}
           setSelectedWorkingReportId={setSelectedWorkingReportId}
+          setWrIdDetail={setWrIdDetail}
         />
       );
     }
@@ -222,9 +226,6 @@ export default function WorkingReport() {
         <Grid item xs={12}>
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
-        {/* <Grid item xs={12}>
-          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
-        </Grid> */}
         <Grid item xs={12}>
           {renderCheckin()}
         </Grid>

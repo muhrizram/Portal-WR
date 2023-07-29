@@ -71,19 +71,22 @@ export default function ViewOvertime({}) {
       </Grid>
 
         {detail.map((item) => (
-      <Grid item xs={12} key={item.id}>
+      <Grid item xs={12} key={`${item.id}`}>
         <Card>
           <Grid container p={4} spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h4">
                 Project - {item.projectName}
               </Typography>
-              <Typography variant="body1">Tuesday, 2 May 2023</Typography>
+              <Typography variant="body1">
+                {item.date}
+                {/* Tuesday, 2 May 2023 */}
+                </Typography>
             </Grid>
             <Divider />
 
-            {item.listTask.map((taskItem) => (
-            <Grid item xs={12} key={taskItem.id}>
+            {item.listTask.map((taskItem,id) => (
+            <Grid item xs={12} key={`${taskItem}-${id}`}>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -186,7 +189,7 @@ export default function ViewOvertime({}) {
           </Grid>
         </Grid>
       </Grid>
-      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)}/>
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail}/>
     </Grid>
   );
 }

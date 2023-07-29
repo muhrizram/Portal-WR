@@ -23,7 +23,7 @@ import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -81,7 +81,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             localStorage.setItem(
               "workingReportId",
               data[0].workingReportId
-            )
+            ),
+            <>
+          </>
           ) : (
             <></>
           )}
@@ -112,20 +114,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               Overtime
             </Button>
             </Grid>
-                {/* <Grid item xs={12} display="flex" justifyContent="center">
-            <Button
-              variant="outlined-warning"
-              onClick={() => {
-                localStorage.setItem(
-                  "workingReportId",
-                  data[0].workingReportId
-                );
-                setIsViewOvertime(true);
-              }}
-            >
-              View Overtime
-            </Button>
-          </Grid> */}
           </>
               ) : (
                 <>
@@ -140,6 +128,19 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                 task
               </Button>
+
+              <Grid item xs={12} display="flex" justifyContent="center">
+            <Button
+              variant="outlined-warning"
+              onClick={() => {
+                setId(data[0].workingReportId)
+                setWrIdDetail(wrId.workingReportId)
+                setIsViewOvertime(true);
+              }}
+            >
+              View Overtime
+            </Button>
+          </Grid>
               </>
               )
             ) : data[0].workingReportId != null ? (
@@ -158,7 +159,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               task
             </Button>
             </Grid>
-            {/* <Grid item xs={12} display="flex" justifyContent="left">
+            <Grid item xs={12} display="flex" justifyContent="left">
             <Button
               variant="outlined-warning"
               onClick={() => {
@@ -166,15 +167,15 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   "workingReportId",
                   data[0].workingReportId
                 );
-                localStorage.getItem("workingReportId")
-                console.log("WORKING ID", localStorage.getItem("workingReportId"))
-                setIsViewOvertime(false)
-                setOpenOvertime(true);
+                setId(data[0].workingReportId)
+                console.log("WORKING ID", data[0].workingReportId)
+                // setWrIdDetail(wrId.workingReportId)
+                setIsViewOvertime(true);
               }}
             >
-              Overtime
+              View Overtime
             </Button>
-            </Grid> */}
+            </Grid>
           </>       
             ) : (
               <></>
