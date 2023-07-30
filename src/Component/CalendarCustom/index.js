@@ -85,19 +85,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               "workingReportId",
               data[0].workingReportId
             ),
-            <>
-            
-            <Grid item xs={12} display="flex" justifyContent="left" style={{ marginTop: 'auto' }}>
-            <Button
-              variant="outlined-warning"
-              onClick={() => {      
-                setIsViewOvertime(true);
-              }}
-            >
-              View Overtime
-            </Button>
-          </Grid>
-          </>
+            <></>
           ) : (
             <></>
           )}

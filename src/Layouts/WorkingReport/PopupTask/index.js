@@ -109,11 +109,11 @@ const PopupTask = ({
   const getlistProject = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `ol/projectTypeList?userId=1&search=`
+      endpoint: `/ol/projectTypeList?userId=1&search=`
     })            
     const resabsen = await client.requestAPI({
       method: 'GET',
-      endpoint: `ol/absenceTask?search=`
+      endpoint: `/ol/absenceTask?search=`
     })
     const datalist = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.projectName}))
       const dataabsen = resabsen.data.map((item) => ({ id: parseInt(item.id), name: item.attributes.name, absen:true }));
