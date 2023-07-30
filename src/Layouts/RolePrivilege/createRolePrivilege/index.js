@@ -9,8 +9,6 @@ import Divider from '@mui/material/Divider';
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
-import { yupResolver } from "@hookform/resolvers/yup";
-import CustomAlert from "../../../Component/Alert";
 import { AlertContext } from '../../../context';
 
 //dialog
@@ -31,14 +29,11 @@ const CreateRolePrivilege = () => {
   const [open, setOpen] = useState(false);
   const [isSave, setIsSave] = useState(false)
   const [sendData, setData] = useState({})
-  const [selectRole, setSelectRole] = useState();
-  const [selectRoleLabel, setSelectRoleLabel] = useState();
   const { setDataAlert } = useContext(AlertContext)
   const [selectPrivilege, setSelectPrivilege] = useState([])
   const navigate = useNavigate();
   const [optPrivilege, setOptPrivilege] = useState([])
   const [optRole, setOptRole] = useState([])
-  const [createdby, setCreatedby] = useState('')
   
   const dataBread = [
     {

@@ -24,8 +24,9 @@ export default function WorkingReport() {
   const [isViewOvertime, setIsViewOvertime] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
-  const [openOvertime, setOpenOvertime] = useState(false);  
-  const [WrIdDetail, setWrIdDetail] = useState();
+  const [openOvertime, setOpenOvertime] = useState(false);
+  const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
+  const [WrIdDetail, setWrIdDetail] = useState()
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -45,7 +46,7 @@ export default function WorkingReport() {
     console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");    
     getData();
-  }, [filter],WrIdDetail);
+  }, [filter], WrIdDetail);
 
   const getData = async () => {
     const res = await client.requestAPI({
@@ -138,6 +139,7 @@ export default function WorkingReport() {
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
+        WrIdDetail = {WrIdDetail}
         />
       )
     }
