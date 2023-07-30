@@ -22,11 +22,13 @@ import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
+  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
+
   const navigate = useNavigate();
 
   function handleClose() {
@@ -74,9 +76,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button variant="outlined" onClick={() => setOnClick(info)}>
                 Attendance
               </Button>             
-            ) : (
-              <></>
-            )}
+            ) : (data[0].workingReportId == null ? (
+              <Button disabled variant="outlined" >
+                task
+              </Button>
+            ) : <></>)}
           </Grid>
           {data[0].workingReportId !== null ? (
             localStorage.setItem(
@@ -85,14 +89,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             ),
             <>
             
-            <Grid item xs={12} display="flex" justifyContent="center">
+            <Grid item xs={12} display="flex" justifyContent="left" style={{ marginTop: 'auto' }}>
             <Button
               variant="outlined-warning"
-              onClick={() => {
-                localStorage.setItem(
-                  "workingReportId",
-                  data[0].workingReportId
-                );
+              onClick={() => {      
                 setIsViewOvertime(true);
               }}
             >
@@ -108,14 +108,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               !localStorage.getItem('istaskadd') ? (
                 <Button
                   variant="outlined"
-                  onClick={() => {
-                    localStorage.setItem(
-                      "workingReportId",
-                      data[0].workingReportId
-                    );
-                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"));
-                    console.log("PAS KALENDAR", localStorage.getItem("workingReportId"));
+                  onClick={() => {                    
                     setOpenTask(true);
+                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
                   }}
                 >
                   task
@@ -124,11 +119,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <Button
                 variant="outlined"
                   onClick={() => {
-                    localStorage.setItem(
-                      "workingReportId",
-                      data[0].workingReportId
-                    );
-                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
+                    console.log("IDIDIDIDID", data[0].workingReportId)
+                    setWrIdDetail(wrId.workingReportId)
                     setIsViewTask(true);
                   }
                 }              
@@ -140,11 +133,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button
               variant="outlined"
                 onClick={() => {
-                  localStorage.setItem(
-                    "workingReportId",
-                    data[0].workingReportId
-                  );
-                  setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                  setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
+                  console.log("IDIDIDIDID", data[0].workingReportId)
+                  setWrIdDetail(wrId.workingReportId)
                   setIsViewTask(true);
                 }
               }              
@@ -220,7 +211,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
+      <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );
 }

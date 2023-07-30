@@ -24,8 +24,8 @@ export default function WorkingReport() {
   const [isViewOvertime, setIsViewOvertime] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
-  const [openOvertime, setOpenOvertime] = useState(false);
-  const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
+  const [openOvertime, setOpenOvertime] = useState(false);  
+  const [WrIdDetail, setWrIdDetail] = useState();
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -42,9 +42,10 @@ export default function WorkingReport() {
   const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
+    console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");    
     getData();
-  }, [filter]);
+  }, [filter],WrIdDetail);
 
   const getData = async () => {
     const res = await client.requestAPI({
@@ -84,6 +85,7 @@ export default function WorkingReport() {
               "yyyy-MM-DD"
             ),
             workingReportId: value.attributes.listDate.workingReportId,
+            absenceId: value.attributes.listDate.presenceId,
           };
     });
     console.log(temp);
@@ -130,7 +132,7 @@ export default function WorkingReport() {
             setIsViewTask(false);
             setIsCheckOut(true);
           }}
-          selectedWorkingReportId={selectedWorkingReportId}
+          WrIdDetail={WrIdDetail}
         />
       );
     } else if (isViewOvertime) {
@@ -151,7 +153,7 @@ export default function WorkingReport() {
           setIsViewTask={setIsViewTask}
           setIsViewOvertime={setIsViewOvertime}
           events={data}
-          setSelectedWorkingReportId={setSelectedWorkingReportId}
+          setWrIdDetail={setWrIdDetail}
         />
       );
     }
@@ -223,21 +225,10 @@ export default function WorkingReport() {
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
-        </Grid>
-        <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
-
-      <PopupTask 
-      open={false}
-      closeTask={() => 
-        setOpenTask(false)} 
-      isEdit={false} 
-      selectedWorkingReportId={selectedWorkingReportId}
-      />
-
+      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );
