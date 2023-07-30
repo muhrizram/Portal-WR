@@ -14,7 +14,7 @@ import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut, selectedWorkingReportId }) {
+export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState(null);
@@ -53,7 +53,7 @@ export default function ViewTask({ setIsCheckOut, selectedWorkingReportId }) {
     try {         
       const res = await client.requestAPI({
         method: "GET",
-        // endpoint: `/task/detail?wrId=${selectedWorkingReportId}`
+        // endpoint: `/task/detail?wrId=${WrIdDetail}`
         endpoint: `/task/detail?wrId=70`
       });      
       setTaskData(res.data.attributes);
@@ -214,7 +214,7 @@ export default function ViewTask({ setIsCheckOut, selectedWorkingReportId }) {
           </Grid>
         </Grid>
       </Grid>
-      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)}/>
+      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)} dataDetail={taskData}/>
       </>) : (<></>)}
     </Grid>
   );

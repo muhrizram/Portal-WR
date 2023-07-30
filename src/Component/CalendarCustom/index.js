@@ -29,8 +29,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [openOvertime, setOpenOvertime] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
+  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
+
   const navigate = useNavigate();
-  const [wrId, setId] = useState(null)
 
   function handleClose() {
     setOpen(false);
@@ -73,9 +74,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button variant="outlined" onClick={() => setOnClick(info)}>
                 Attendance
               </Button>             
-            ) : (
-              <></>
-            )}
+            ) : (data[0].workingReportId == null ? (
+              <Button disabled variant="outlined" >
+                task
+              </Button>
+            ) : <></>)}
           </Grid>
           {data[0].workingReportId !== null ? (
             localStorage.setItem(
@@ -83,6 +86,17 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               data[0].workingReportId
             ),
             <>
+            
+            <Grid item xs={12} display="flex" justifyContent="left" style={{ marginTop: 'auto' }}>
+            <Button
+              variant="outlined-warning"
+              onClick={() => {      
+                setIsViewOvertime(true);
+              }}
+            >
+              View Overtime
+            </Button>
+          </Grid>
           </>
           ) : (
             <></>
@@ -93,10 +107,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <>
                 <Button
                   variant="outlined"
-                  onClick={() => {
-                    setId(data[0].workingReportId)
-                    console.log("PAS KALENDAR", localStorage.getItem("workingReportId"));
+                  onClick={() => {                    
                     setOpenTask(true);
+                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
                   }}
                 >
                   task
@@ -120,8 +133,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <Button
                 variant="outlined"
                   onClick={() => {
-                    setId(data[0].workingReportId)
-                    setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
+                    console.log("IDIDIDIDID", data[0].workingReportId)
+                    setWrIdDetail(wrId.workingReportId)
                     setIsViewTask(true);
                   }
                 }              
@@ -150,8 +164,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button
               variant="outlined"
                 onClick={() => {
-                  setId(data[0].workingReportId)
-                  setSelectedWorkingReportId(localStorage.getItem("workingReportId"))
+                  setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
+                  console.log("IDIDIDIDID", data[0].workingReportId)
+                  setWrIdDetail(wrId.workingReportId)
                   setIsViewTask(true);
                 }
               }              
@@ -247,8 +262,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <PopupTask open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );
 }

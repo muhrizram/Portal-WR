@@ -43,6 +43,7 @@ export default function WorkingReport() {
   const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
+    console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");    
     getData();
   }, [filter], WrIdDetail);
@@ -85,6 +86,7 @@ export default function WorkingReport() {
               "yyyy-MM-DD"
             ),
             workingReportId: value.attributes.listDate.workingReportId,
+            absenceId: value.attributes.listDate.presenceId,
           };
     });
     console.log(temp);
@@ -131,7 +133,6 @@ export default function WorkingReport() {
             setIsViewTask(false);
             setIsCheckOut(true);
           }}
-          selectedWorkingReportId={selectedWorkingReportId}
           WrIdDetail={WrIdDetail}
         />
       );
@@ -154,7 +155,6 @@ export default function WorkingReport() {
           setIsViewTask={setIsViewTask}
           setIsViewOvertime={setIsViewOvertime}
           events={data}
-          setSelectedWorkingReportId={setSelectedWorkingReportId}
           setWrIdDetail={setWrIdDetail}
         />
       );
@@ -230,14 +230,8 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-      <PopupTask 
-      open={false}
-      closeTask={() => 
-        setOpenTask(false)} 
-      isEdit={false} 
-      selectedWorkingReportId={selectedWorkingReportId}
-      />
-      <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} selectedWorkingReportId={selectedWorkingReportId} />
+      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
+      <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );
 }

@@ -216,7 +216,13 @@ const onSave = async () => {
   const saveEdit = async () => {
     const data = {
       workingReportId : null,
-      ...dataOvertime
+      listProjectId : [
+        {
+          taskId : '',
+          projectId : null,
+          ...clearTask
+        }
+      ]
     }
     const res = await client.requestAPI({
       method: 'PUT',
@@ -283,7 +289,7 @@ const onSave = async () => {
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                   <Autocomplete
-                    disable={isEdit}
+                    // disable={isEdit}
                     disablePortal
                     name= 'project'
                     className='autocomplete-input autocomplete-on-popup'
@@ -466,7 +472,7 @@ const onSave = async () => {
           <Button 
             variant='saveButton'
             className="button-text"
-            onClick={onSave}
+            onClick={isEdit? saveEdit : onSave}
             >
             Submit
           </Button>
