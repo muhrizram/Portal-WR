@@ -17,7 +17,7 @@ import TabsMenuWR from "../tabMenu";
 export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
-  const [taskData, setTaskData] = useState(null);
+  const [taskData, setTaskData] = useState([]);
   
   useEffect(() => (    
     getDetailTask()
@@ -53,11 +53,10 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
     try {         
       const res = await client.requestAPI({
         method: "GET",
-        // endpoint: `/task/detail?wrId=${WrIdDetail}`
-        endpoint: `/task/detail?wrId=70`
+        endpoint: `/task/detail?wrId=${WrIdDetail}`        
       });      
-      setTaskData(res.data.attributes);
-      console.log("RES DETAIL",res)
+      setTaskData(res.data);
+      console.log("RES DETAIL",res.data[0].attributes)
     } catch (error) {
       console.error("Error fetching task details:", error);
     } 
@@ -66,156 +65,162 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
   
 
   return (
-    <Grid container spacing={2}>
-      {taskData ? (<>
-      {/* <TabsMenuWR /> */}
-      <Grid item xs={12}>
-        <Box sx={{ width: "100%" }}>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab value="one" label="Regular Task" />
-            <Tab value="two" label="Overtime Task" />
-          </Tabs>
-        </Box>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <Grid container p={4} spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h4">
-                {/* Project - Electronic Health Record */}
-                {taskData.projectName}
-              </Typography>
-              <Typography variant="body1">
-                {/* Tuesday, 2 May 2023 */}
-                {taskData.listTask[0].createdOn}
-                </Typography>
-            </Grid>
-            <Divider />
-
-            {taskData.listTask.map((task) => (
-            <Grid item xs={12} key={task.taskId}>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography sx={{ fontSize: "24px" }}>
-                    {/* Create Mockup Screen Dashboard :: T-WR-0011 */}
-                    {task.taskName} :: {task.taskCode}
+    <>
+     <Grid container spacing={2}>      
+          <Grid item xs={12}>
+            <Box sx={{ width: "100%" }}>
+              <Tabs value={value} onChange={handleChange}>
+                <Tab value="one" label="Regular Task" />
+                <Tab value="two" label="Overtime Task" />
+              </Tabs>
+            </Box>
+          </Grid>
+        {taskData ? (<>      
+          {taskData.map((task) => (
+        <React.Fragment key={task.id}>
+          <Grid item xs={12}>
+            <Card>
+              <Grid container p={4} spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="h4">
+                    {task.attributes.projectName}
                   </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
-                          Task Description
+                  <Typography variant="body1">
+                    {/* {task.listTask[0].createdOn} */}
+                  </Typography>
+                </Grid>
+                <Divider />
+                {task.attributes.listTask.map((taskItem) => (
+                  <Grid item xs={12} key={taskItem.taskId}>
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography sx={{ fontSize: "24px" }}>
+                          {taskItem.taskName} :: {taskItem.taskCode}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant="inputDetail">
-                          {/* Create mockup screen dashboard - UI UX */}
-                          {task.taskDescription}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
-                          Status Task
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Box
-                          sx={{
-                            backgroundColor: getStatusColor("To Do"),
-                            color: getStatusFontColor("To Do"),
-                            padding: "5px 10px",
-                            gap: "10px",
-                            borderRadius: "4px",
-                            fontSize: "12px",
-                          }}
-                        >
-                          {/* To Do */}
-                          {task.statusTaskName}
-                        </Box>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
-                          Priority
-                        </Typography>
-                      </Grid>
-
-                      <Rating
-                        // className="rating-outline"
-                        variant="outlined"
-                        name="rating"
-                        value={0} // Ambil nilai rating dari properti "priority"
-                        readOnly
-                        precision={0.5}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
-                          Actual Effort
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant="inputDetail">
-                          {/* 8 */}
-                          {task.taskDuration}
-                          </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Grid item xs={12}>
-                        <Typography variant="labelHeaderDetail">
-                          Task Detail
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant="inputDetail">
-                          {/* Create login screen */}
-                          {task.taskItem}
-                        </Typography>
-                      </Grid>
-                    </Grid>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <Grid container spacing={2}>
+                          <Grid item xs={4}>
+                            <Grid item xs={12}>
+                              <Typography variant="labelHeaderDetail">
+                                Task Description
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Typography variant="inputDetail">
+                                {taskItem.taskDescription}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Grid item xs={12}>
+                              <Typography variant="labelHeaderDetail">
+                                Status Task
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={2}>
+                              <Box
+                                sx={{
+                                  backgroundColor: getStatusColor(
+                                    taskItem.statusTaskName
+                                  ),
+                                  color: getStatusFontColor(
+                                    taskItem.statusTaskName
+                                  ),
+                                  padding: "5px 10px",
+                                  gap: "10px",
+                                  borderRadius: "4px",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                {taskItem.statusTaskName}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Grid item xs={12}>
+                              <Typography variant="labelHeaderDetail">
+                                Priority
+                              </Typography>
+                            </Grid>
+                            <Rating
+                              // className="rating-outline"
+                              variant="outlined"
+                              name="rating"
+                              value={0} // Ambil nilai rating dari properti "priority"
+                              readOnly
+                              precision={0.5}
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Grid item xs={12}>
+                              <Typography variant="labelHeaderDetail">
+                                Actual Effort
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Typography variant="inputDetail">
+                                {taskItem.taskDuration}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Grid item xs={12}>
+                              <Typography variant="labelHeaderDetail">
+                                Task Detail
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <Typography variant="inputDetail">
+                                {taskItem.taskItem}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </AccordionDetails>
+                    </Accordion>
                   </Grid>
-                </AccordionDetails>
-              </Accordion>
+                ))}
+              </Grid>
+            </Card>
+          </Grid>          
+        </React.Fragment>
+      ))}
+    
+    </>) : (<><h1>No DATA</h1> </>)}
+    <Grid item xs={12}>
+            <Grid container justifyContent="center" spacing={2}>
+              <Grid item>
+                <Button
+                  startIcon={<CreateIcon />}
+                  variant="outlined"
+                  onClick={() => setOpenTask(true)}
+                >
+                  Edit Task
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  startIcon={<AccessTimeIcon />}
+                  className="delete-button button-text"
+                  onClick={() => setIsCheckOut()}
+                >
+                  Check Out
+                </Button>
+              </Grid>
             </Grid>
-             ))}
           </Grid>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container justifyContent="center" spacing={2}>
-          <Grid item>
-            <Button
-              startIcon={<CreateIcon />} 
-              variant="outlined"
-              onClick={() => setOpenTask(true)}
-              >              
-              Edit Task
-            </Button>
+          <PopupTask
+            isEdit={true}
+            open={openTask}
+            closeTask={() => setOpenTask(false)}
+            dataDetail={taskData}
+          />
           </Grid>
-          <Grid item>
-            <Button
-              startIcon={<AccessTimeIcon />}
-              className="delete-button button-text"
-              onClick={() => setIsCheckOut()}
-            >
-              Check Out
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <PopupTask isEdit={true} open={openTask} closeTask={() => setOpenTask(false)} dataDetail={taskData}/>
-      </>) : (<></>)}
-    </Grid>
+    </>
   );
 }

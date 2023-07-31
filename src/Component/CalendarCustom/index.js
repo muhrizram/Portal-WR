@@ -20,6 +20,7 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
+import ViewTask from "../../Layouts/WorkingReport/ViewTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 
@@ -95,7 +96,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <></>
           )}
           <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (              
+            {info.isToday ? (
+              // localStorage.removeItem('istaskadd'),
               !localStorage.getItem('istaskadd') ? (
                 <>
                 <Button
@@ -113,9 +115,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <Button
                 variant="outlined"
                   onClick={() => {
+                    console.log("DOR",data[0].workingReportId)
                     setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
-                    console.log("IDIDIDIDID", data[0].workingReportId)
-                    setWrIdDetail(wrId.workingReportId)
+                    console.log("EAEAEAEA",wrId)
+                    setWrIdDetail(data[0].workingReportId)
                     setIsViewTask(true);
                   }
                 }              
@@ -132,8 +135,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button
               variant="outlined"
                 onClick={() => {
-                  setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
-                  console.log("IDIDIDIDID", data[0].workingReportId)
+                  setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})                  
                   setWrIdDetail(wrId.workingReportId)
                   setIsViewTask(true);
                 }

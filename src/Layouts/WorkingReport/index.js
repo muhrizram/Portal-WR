@@ -132,7 +132,7 @@ export default function WorkingReport() {
           setIsCheckOut={() => {
             setIsViewTask(false);
             setIsCheckOut(true);
-          }}
+          }}          
           WrIdDetail={WrIdDetail}
         />
       );
@@ -233,7 +233,7 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
+      {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );
