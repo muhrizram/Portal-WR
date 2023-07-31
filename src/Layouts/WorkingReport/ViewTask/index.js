@@ -56,7 +56,6 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
         endpoint: `/task/detail?wrId=${WrIdDetail}`        
       });      
       setTaskData(res.data);
-      console.log("RES DETAIL",res.data[0].attributes)
     } catch (error) {
       console.error("Error fetching task details:", error);
     } 
@@ -75,7 +74,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
               </Tabs>
             </Box>
           </Grid>
-        {taskData ? (<>      
+      {taskData ? (<>      
           {taskData.map((task) => (
         <React.Fragment key={task.id}>
           <Grid item xs={12}>
@@ -190,37 +189,37 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
           </Grid>          
         </React.Fragment>
       ))}
-    
-    </>) : (<><h1>No DATA</h1> </>)}
-    <Grid item xs={12}>
-            <Grid container justifyContent="center" spacing={2}>
-              <Grid item>
-                <Button
-                  startIcon={<CreateIcon />}
-                  variant="outlined"
-                  onClick={() => setOpenTask(true)}
-                >
-                  Edit Task
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  startIcon={<AccessTimeIcon />}
-                  className="delete-button button-text"
-                  onClick={() => setIsCheckOut()}
-                >
-                  Check Out
-                </Button>
-              </Grid>
-            </Grid>
+      <Grid item xs={12}>
+        <Grid container justifyContent="center" spacing={2}>
+          <Grid item>
+            <Button
+              startIcon={<CreateIcon />}
+              variant="outlined"
+              onClick={() => setOpenTask(true)}
+            >
+              Edit Task
+            </Button>
           </Grid>
-          <PopupTask
-            isEdit={true}
-            open={openTask}
-            closeTask={() => setOpenTask(false)}
-            dataDetail={taskData}
-          />
+          <Grid item>
+            <Button
+              startIcon={<AccessTimeIcon />}
+              className="delete-button button-text"
+              onClick={() => setIsCheckOut()}
+            >
+              Check Out
+            </Button>
           </Grid>
+        </Grid>
+      </Grid>
+      <PopupTask
+        isEdit={true}
+        open={openTask}
+        closeTask={() => setOpenTask(false)}
+        dataDetail={taskData}
+      />    
+      </>) : (<><h1>No DATA</h1> </>)        
+    }    
+      </Grid>
     </>
   );
 }
