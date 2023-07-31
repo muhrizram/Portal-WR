@@ -125,10 +125,11 @@ const PopupTask = ({
   }
 
   const onAddProject = () => {
-    const temp = { ...dataProject };
-    temp.listProject = [...dataProject.listProject, { absenceId: null, projectId: 1, listTask: [{ ...clearTask }] }];
-    setProject(temp);    
-  }
+    setProject((prevState) => ({
+      ...prevState,
+      listProject: [...prevState.listProject, clearProject]
+    }));
+  };
 
   const AddTask = (idxProject) => {
     const temp = { ...dataProject };
@@ -165,9 +166,11 @@ const PopupTask = ({
     }
   };
   
-  const handleChangeProject = (id, idxProject,absen) => {   
+  const handleChangeProject = (id, idxProject,absen) => {
+    console.log("INI idxProject", idxProject)
     const temp = { ...dataProject };    
     temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;
+    // temp.workingReportId = 2;
     if(absen){
       temp.listProject[idxProject].absenceId = id;
     }else{
@@ -199,38 +202,38 @@ const PopupTask = ({
         }else{
           const dataPost = dataProject
           console.log("INI OBJECT POST", dataPost)
-          // const res = await client.requestAPI({
-          //   method: 'POST',
-          //   endpoint: `/task/addTask`,
-          //   data: dataProject,
-          // });      
-          // if(!res.isError){
-          //   console.log("INI RES",res.data.attributes)
-          //   localStorage.setItem('istaskadd', true)            
-          //   setDataAlert({
-          //     severity: 'success',
-          //     open: true,
-          //     message: res.data.meta.message
-          //   }) 
-          //   setTimeout(() => {
-          //     navigate('/workingReport')
-          //   }, 3000)      
-          // }else{      
-          //   setDataAlert({
-          //     severity: 'error',
-          //     message: res.error.meta.message,
-          //     open: true
-          //   })
-          // }
-          // closeTask(false)
-          // setOpentask(false)
-          // setProject(
-          //   {
-          //     workingReportId: undefined,
-          //     listProject: [clearProject]
-          //   }
-          // )
-          // setideffortTask('')
+          const res = await client.requestAPI({
+            method: 'POST',
+            endpoint: `/task/addTask`,
+            data: dataProject,
+          });      
+          if(!res.isError){
+            console.log("INI RES",res.data.attributes)
+            localStorage.setItem('istaskadd', true)            
+            setDataAlert({
+              severity: 'success',
+              open: true,
+              message: res.data.meta.message
+            }) 
+            setTimeout(() => {
+              navigate('/workingReport')
+            }, 3000)      
+          }else{      
+            setDataAlert({
+              severity: 'error',
+              message: res.error.meta.message,
+              open: true
+            })
+          }
+          closeTask(false)
+          setOpentask(false)
+          setProject(
+            {
+              workingReportId: undefined,
+              listProject: [clearProject]
+            }
+          )
+          setideffortTask('')
         }
       }catch (error) {
         console.error('Error:', error);
@@ -257,7 +260,7 @@ const PopupTask = ({
           Assign and track employee tasks easily
         </DialogContentText>
           {dataProject.listProject.length > 0 && dataProject.listProject.map((resProject, idxProject) => (                   
-            <div className={opentask ? 'card-project' : ''} key={`${idxProject+1}-project`}>
+            <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                   <Autocomplete
@@ -269,7 +272,7 @@ const PopupTask = ({
                     getOptionLabel={isEdit ? "CMS" : (option) => option.name}
                     sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                     onChange={(_event, newValue) => {
-                    if (newValue) {
+                    if (newValue) {                      
                       handleChangeProject(newValue.id, idxProject, newValue.absen) 
                       setCekabsen(newValue.absen)                     
                       setOpentask(true)
@@ -440,7 +443,7 @@ const PopupTask = ({
                     </>)
                   }
                   </Grid>                  
-                      {/* {dataProject.workingReportId !== undefined && */}
+                      {dataProject.workingReportId !== undefined &&
                         <Grid item xs={12} textAlign='left'>
                           <Button
                             onClick={() => AddTask(idxProject)}
@@ -451,7 +454,7 @@ const PopupTask = ({
                             Add Task
                           </Button>
                         </Grid>
-                        {/* } */}                    
+                        }                    
                 </Grid>
               </div>
             )
@@ -459,7 +462,7 @@ const PopupTask = ({
         }
       </DialogContent>
       <DialogActions>
-        {/* {dataProject.workingReportId !== undefined && ( */}
+        {dataProject.workingReportId !== undefined && (
           <>         
               <div className='left-container'>
               <Button              
@@ -490,8 +493,8 @@ const PopupTask = ({
           </Button>
         </div>
         </>
-        {/* )
-      } */}
+        )
+      }
       </DialogActions>
     </Dialog>
     <Dialog
