@@ -86,11 +86,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             </>
             ) : <></>)}
           </Grid>
-          {data[0].workingReportId !== null ? (
-            // localStorage.setItem(
-            //   "workingReportId",
-            //   data[0].workingReportId
-            // ),
+          {data[0].workingReportId !== null ? (         
             <></>
           ) : (
             <></>
@@ -114,10 +110,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <>
                 <Button
                 variant="outlined"
-                  onClick={() => {
-                    console.log("DOR",data[0].workingReportId)
-                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
-                    console.log("EAEAEAEA",wrId)
+                  onClick={() => {                    
+                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})                    
                     setWrIdDetail(data[0].workingReportId)
                     setIsViewTask(true);
                   }

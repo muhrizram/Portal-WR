@@ -21,7 +21,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import client from "../../../global/client";
 import { AlertContext } from '../../../context';
 import { useNavigate } from "react-router-dom";
-import { is } from "date-fns/locale";
+import { da, is } from "date-fns/locale";
 
 const PopupTask = ({
   open,
@@ -39,10 +39,11 @@ const PopupTask = ({
   const [openPopUpMoretask, setPopUpMoretask] = useState(false)
   const selectedTask = listTaskProject.find((item) => item.backlogId === ideffortTask);
   const [taskDurations, setTaskDurations] = useState([listTaskProject.find((item) => item.backlogId === ideffortTask)]);
-  const [cekAbsen, setCekabsen] = useState()
+  const [cekAbsen, setCekabsen] = useState([])
   const [openConfirmCancel,setopenConfirmCancel] = useState(false)
-  const navigate = useNavigate();
-  
+  const [dataDetailnya,setdataDetailnya] = useState([])
+  const navigate = useNavigate();  
+
   const clearProject = {
     absenceId: null,
     projectId: null,
@@ -64,16 +65,52 @@ const PopupTask = ({
     taskItem: ''
   };
 
+  const [firstEditTask,setfirstEditTask] = useState(
+      {    
+        workingReportId: null,
+        listProject: [
+          // {
+          //   absenceId: dataDetailnya.attributes.absenceId,
+          //   projectId: null,
+          //   listTask: [
+          //     {
+          //       backlogId: dataDetailnya.attributes.backlogId ,
+          //       taskName: dataDetailnya.attributes.taskName,
+          //       statusTaskId: dataDetailnya.attributes.statusTaskId,
+          //       duration: dataDetailnya.attributes.duration,
+          //       taskItem: dataDetailnya.attributes.taskItem
+          //     }
+          //   ]
+          // }
+        ]
+      }
+    )
+
+  const refreshdataDetail = () => {
+    let tempProject = []
+      for(let i=0;i<dataDetail.length;i++){
+        tempProject.push(dataDetail[i].attributes)
+        setfirstEditTask((prevfirstEditTask) => ({
+          ...prevfirstEditTask,
+          workingReportId : dataDetail[i].id,
+          listProject : tempProject
+        }));
+      }     
+  }
+
   useEffect(() => {
-    console.log("DATA DETAIL",dataDetail)
+    console.log("BoRIA",dataDetail)
     if(isEdit){
-      setOpentask(true)      
+      setdataDetailnya(dataDetail)
+      refreshdataDetail()
+      console.log("SIAP UPDATE NIH",firstEditTask)      
+      setOpentask(true)
     }
     getlistTaskProject()
     getlistProject()
     getstatusTask()    
     console.log("dataproject",dataProject)    
-  },[dataProject,dataDetail])
+  },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
     const res = await client.requestAPI({
@@ -82,6 +119,7 @@ const PopupTask = ({
     })
     if (res.data) {      
       const datastatusTask = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.name}))
+      console.log("datastatusTask",datastatusTask)
       setstatusTask(datastatusTask)
     }
   }  
@@ -131,7 +169,7 @@ const PopupTask = ({
     }));
   };
 
-  const AddTask = (idxProject) => {
+  const AddTask = (idxProject) => {        
     const temp = { ...dataProject };
     temp.listProject[idxProject].listTask.push({ ...clearTask });
     setProject(temp);
@@ -148,7 +186,7 @@ const PopupTask = ({
         const temp = { ...dataProject };
         temp.listProject[idxProject].listTask[index][name] = parseInt(value);
         setProject(temp);
-
+  
         setTaskDurations((prevDurations) =>
         prevDurations.map((durationItem, i) => ({
           ...durationItem,
@@ -166,11 +204,11 @@ const PopupTask = ({
     }
   };
   
+  
   const handleChangeProject = (id, idxProject,absen) => {
     console.log("INI idxProject", idxProject)
     const temp = { ...dataProject };    
-    temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;
-    // temp.workingReportId = 2;
+    temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;    
     if(absen){
       temp.listProject[idxProject].absenceId = id;
     }else{
@@ -259,191 +297,202 @@ const PopupTask = ({
         >
           Assign and track employee tasks easily
         </DialogContentText>
-          {dataProject.listProject.length > 0 && dataProject.listProject.map((resProject, idxProject) => (                   
-            <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
-              <Grid container rowSpacing={2}>
-                <Grid item xs={12}>
-                  <Autocomplete
-                    disabled={isEdit}
-                    disablePortal                    
-                    name='project'
-                    className='autocomplete-input autocomplete-on-popup'
-                    options={listProject}
-                    getOptionLabel={isEdit ? "CMS" : (option) => option.name}
-                    sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
-                    onChange={(_event, newValue) => {
-                    if (newValue) {                      
-                      handleChangeProject(newValue.id, idxProject, newValue.absen) 
-                      setCekabsen(newValue.absen)                     
-                      setOpentask(true)
-                    }else {
-                      setOpentask(false)
-                      setProject(
-                          {
-                          workingReportId: undefined,
-                          listProject: [clearProject]
-                          }
-                        )
-                      setideffortTask('')
-                      setCekabsen('')
-                    }
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        className='input-field-crud'
-                        label='Project'
-                        placeholder='Select Project'
+        {isEdit ? (
+          <>
+            {firstEditTask.listProject.length > 0 && firstEditTask.listProject.map((resProject, idxProject) => (                   
+              <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
+                <Grid container rowSpacing={2}>
+                   <Grid item xs={12}>
+                     <Autocomplete
+                        disabled
+                        disablePortal                    
+                        name='project'
+                        className='autocomplete-input autocomplete-on-popup'
+                       
+                        sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
+                        onChange={(_event, newValue) => {
+                        if (newValue) {                      
+                          handleChangeProject(newValue.id, idxProject, newValue.absen)                       
+                          setCekabsen((prevCekAbsen) => {
+                            const updatedCekAbsen = [...prevCekAbsen];
+                            updatedCekAbsen[idxProject] = newValue.absen;
+                            return updatedCekAbsen;
+                          });     
+                          setOpentask(true)
+                        }else {
+                          setOpentask(false)
+                          setProject(
+                              {
+                              workingReportId: undefined,
+                              listProject: [clearProject]
+                              }
+                            )
+                          setideffortTask('')                      
+                          setCekabsen((prevCekAbsen) => {
+                            const updatedCekAbsen = [...prevCekAbsen];
+                            updatedCekAbsen[idxProject] = '';
+                            return updatedCekAbsen;
+                          });
+                        }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            className='input-field-crud'
+                            label={resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName}
+                            placeholder='Select Project'
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  {cekAbsen ? (
-                  <>
-                  {resProject.listTask.map((res, index) => (
-                    <Grid container rowSpacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          focused
-                          name='duration'
-                          sx={{ width: "100%" , backgroundColor: 'white' }}
-                          // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
-                          onChange={(e) => handleChange(e,idxProject, index)}                                
-                          className='input-field-crud'
-                          type="number"
-                          placeholder='e.g 0,5 or 3 (hour)'
-                          label='Duration'
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          focused
-                          name='taskItem'
-                          sx={{ width: "100%" , backgroundColor: 'white' }}
-                          // value={res.detail}
-                          onChange={(e) => handleChange(e,idxProject, index)}
-                          className='input-field-crud'
-                          placeholder='e.g Rest for a while'
-                          label='Information Details'
-                          multiline
-                          maxRows={4}
-                        />
-                        </Grid>
-                      </Grid>
-                    ))}
-                    </> ) : (
-                    <>
-                      {resProject.value !== '' &&
-                      resProject.listTask.map((res, index) => (
-                        <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            className='header-accordion'
-                          >
-                            <Typography sx={{ fontSize: "24px" }}>
-                              Task {index + 1}
-                            </Typography>
-                            <DeleteIcon 
-                              className='icon-trash'
-                              onClick={(e) => deleteTask(e, idxProject, index)}
+                    </Grid>
+                    <Grid item xs={12}>
+                      {resProject.absenceId ? (
+                      <>
+                      {resProject.listTask.map((res, index) => (
+                        <Grid container rowSpacing={2}>
+                          <Grid item xs={12}>
+                            <TextField
+                              focused
+                              name='duration'
+                              sx={{ width: "100%" , backgroundColor: 'white' }}
+                              value={res.taskDuration}
+                              onChange={(e) => handleChange(e,idxProject, index)}                                
+                              className='input-field-crud'
+                              type="number"
+                              placeholder='e.g 0,5 or 3 (hour)'
+                              label='Duration'
                             />
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <Grid container rowSpacing={2}>
-                              <Grid item xs={12}>
-                                <Autocomplete
-                                  disablePortal
-                                  name='taskName'
-                                  className='autocomplete-input autocomplete-on-popup'
-                                  options={listTaskProject}
-                                  getOptionLabel={(option) => option.taskName} 
-                                  sx={{ width: "100%" , backgroundColor: 'white' }}
-                                  onChange={(_event, newValue) => {
-                                    if (newValue) {
-                                    handleChange(
-                                      {target : { name : 'taskName', value: newValue.taskName}},                                    
-                                      idxProject,
-                                      index,
-                                      newValue.backlogId
-                                      )                                  
-                                    setideffortTask(newValue.backlogId)
-                                    }else{
-                                      setideffortTask('')
-                                    }
-                                  }
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      className='input-field-crud'
-                                      label='Task Name'
-                                      placeholder='e.g Create Login Screen'
-                                    />
-                                  )}
-                                />
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Autocomplete
-                                  disablePortal
-                                  name='statusTaskId'
-                                  className='autocomplete-input autocomplete-on-popup'
-                                  options={statusTask}
-                                  getOptionLabel={(option) => option.name} 
-                                  sx={{ width: "100%" , backgroundColor: 'white' }}
-                                  onChange={(_event, newValue) =>
-                                    handleChange(
-                                      { target: { name : 'statusTaskId', value : newValue.id } },
-                                      idxProject,
-                                      index
-                                      )
-                                    }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      className='input-field-crud'
-                                      label='Status Task'
-                                      placeholder='e.g Create Login Screen'
-                                    />
-                                  )}
-                                />
-                              </Grid>
-                              <Grid item xs={12}>
-                                <TextField
-                                  focused
-                                  name='duration'
-                                  sx={{ width: "100%" , backgroundColor: 'white' }}
-                                  // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
-                                  onChange={(e) => handleChange(e,idxProject, index)}                                
-                                  className='input-field-crud'
-                                  type="number"
-                                  placeholder='e.g Create Login Screen"'
-                                  label='Actual Effort'
-                                />
-                              </Grid>
-                              <Grid item xs={12}>
-                                <TextField
-                                  focused
-                                  name='taskItem'
-                                  sx={{ width: "100%" , backgroundColor: 'white' }}
-                                  value={res.detail}
-                                  onChange={(e) => handleChange(e,idxProject, index)}
-                                  className='input-field-crud'
-                                  placeholder='e.g Create Login Screen"'
-                                  label='Task Detail'
-                                  multiline
-                                  maxRows={4}
-                                />
-                              </Grid>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <TextField
+                              focused
+                              name='taskItem'
+                              sx={{ width: "100%" , backgroundColor: 'white' }}
+                              value={res.taskItem}
+                              onChange={(e) => handleChange(e,idxProject, index)}
+                              className='input-field-crud'
+                              placeholder='e.g Rest for a while'
+                              label='Information Details'
+                              multiline
+                              maxRows={4}
+                            />
                             </Grid>
-                          </AccordionDetails>
-                        </Accordion>
-                        ))
-                       }
-                    </>)
-                  }
-                  </Grid>                  
-                      {dataProject.workingReportId !== undefined &&
+                          </Grid>
+                        ))}
+                        </> ) : (
+                        <>
+                          {resProject.listTask.map((res, index) => (
+                            <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                className='header-accordion'
+                              >
+                                <Typography sx={{ fontSize: "24px" }}>
+                                  Task {index + 1}
+                                </Typography>
+                                <DeleteIcon 
+                                  className='icon-trash'
+                                  onClick={(e) => deleteTask(e, idxProject, index)}
+                                />
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                <Grid container rowSpacing={2}>
+                                  <Grid item xs={12}>
+                                    <Autocomplete
+                                      disablePortal
+                                      name='taskName'
+                                      defaultValue={listTaskProject.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName) || null}
+                                      // value={res.taskName}
+                                      className='autocomplete-input autocomplete-on-popup'
+                                      options={listTaskProject}
+                                      getOptionLabel={(option) => option.taskName} 
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      onChange={(_event, newValue) => {
+                                        if (newValue) {
+                                        handleChange(
+                                          {target : { name : 'taskName', value: newValue.taskName}},                                    
+                                          idxProject,
+                                          index,
+                                          newValue.backlogId
+                                          )                                  
+                                        setideffortTask(newValue.backlogId)
+                                        }else{
+                                          setideffortTask('')
+                                        }
+                                      }
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className='input-field-crud'
+                                          label='Task Name'
+                                          placeholder='e.g Create Login Screen'
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <Autocomplete
+                                      disablePortal
+                                      name='statusTaskId'
+                                      className='autocomplete-input autocomplete-on-popup'
+                                      value={statusTask.find((option) => option.name === res.statusTaskName)}
+                                      options={statusTask}
+                                      getOptionLabel={(option) => option.name} 
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      onChange={(_event, newValue) =>
+                                        handleChange(
+                                          { target: { name : 'statusTaskId', value : newValue.id } },
+                                          idxProject,
+                                          index
+                                          )
+                                        }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className='input-field-crud'
+                                          label='Status Task'
+                                          placeholder='e.g Create Login Screen'
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <TextField
+                                      focused
+                                      name='duration'
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      value={res.taskDuration}
+                                      // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
+                                      onChange={(e) => handleChange(e,idxProject, index)}                                
+                                      className='input-field-crud'
+                                      type="number"
+                                      placeholder='e.g Create Login Screen"'
+                                      label='Actual Effort'
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <TextField
+                                      focused
+                                      name='taskItem'
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      value={res.taskItem}
+                                      onChange={(e) => handleChange(e,idxProject, index)}
+                                      className='input-field-crud'
+                                      placeholder='e.g Create Login Screen"'
+                                      label='Task Detail'
+                                      multiline
+                                      maxRows={4}
+                                    />
+                                  </Grid>
+                                </Grid>
+                              </AccordionDetails>
+                            </Accordion>
+                            ))
+                          }
+                        </>)
+                      }
+                      </Grid>                                          
                         <Grid item xs={12} textAlign='left'>
                           <Button
                             onClick={() => AddTask(idxProject)}
@@ -453,48 +502,297 @@ const PopupTask = ({
                           >
                             Add Task
                           </Button>
-                        </Grid>
-                        }                    
-                </Grid>
-              </div>
-            )
+                        </Grid>                            
+                     </Grid>
+                  </div>
+                )
+              )
+            }
+          </>
+          ) : (
+          <>
+            {dataProject.listProject.length > 0 && dataProject.listProject.map((resProject, idxProject) => (                   
+              <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
+                <Grid container rowSpacing={2}>
+                   <Grid item xs={12}>
+                     <Autocomplete                        
+                        disablePortal                    
+                        name='project'
+                        className='autocomplete-input autocomplete-on-popup'
+                        options={listProject}
+                        getOptionLabel={(option) => option.name}
+                        sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
+                        onChange={(_event, newValue) => {
+                        if (newValue) {                      
+                          handleChangeProject(newValue.id, idxProject, newValue.absen)                       
+                          setCekabsen((prevCekAbsen) => {
+                            const updatedCekAbsen = [...prevCekAbsen];
+                            updatedCekAbsen[idxProject] = newValue.absen;
+                            return updatedCekAbsen;
+                          });     
+                          setOpentask(true)
+                        }else {
+                          setOpentask(false)
+                          setProject(
+                              {
+                              workingReportId: undefined,
+                              listProject: [clearProject]
+                              }
+                            )
+                          setideffortTask('')                      
+                          setCekabsen((prevCekAbsen) => {
+                            const updatedCekAbsen = [...prevCekAbsen];
+                            updatedCekAbsen[idxProject] = '';
+                            return updatedCekAbsen;
+                          });
+                        }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            className='input-field-crud'
+                            label='Project'
+                            placeholder='Select Project'
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      {cekAbsen[idxProject] ? (
+                      <>
+                      {resProject.listTask.map((res, index) => (
+                        <Grid container rowSpacing={2}>
+                          <Grid item xs={12}>
+                            <TextField
+                              focused
+                              name='duration'
+                              sx={{ width: "100%" , backgroundColor: 'white' }}
+                              // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
+                              onChange={(e) => handleChange(e,idxProject, index)}                                
+                              className='input-field-crud'
+                              type="number"
+                              placeholder='e.g 0,5 or 3 (hour)'
+                              label='Duration'
+                            />
+                          </Grid>
+                          <Grid item xs={12}>
+                            <TextField
+                              focused
+                              name='taskItem'
+                              sx={{ width: "100%" , backgroundColor: 'white' }}
+                              // value={res.detail}
+                              onChange={(e) => handleChange(e,idxProject, index)}
+                              className='input-field-crud'
+                              placeholder='e.g Rest for a while'
+                              label='Information Details'
+                              multiline
+                              maxRows={4}
+                            />
+                            </Grid>
+                          </Grid>
+                        ))}
+                        </> ) : (
+                        <>
+                          {resProject.listTask.map((res, index) => (
+                            <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                className='header-accordion'
+                              >
+                                <Typography sx={{ fontSize: "24px" }}>
+                                  Task {index + 1}
+                                </Typography>
+                                <DeleteIcon 
+                                  className='icon-trash'
+                                  onClick={(e) => deleteTask(e, idxProject, index)}
+                                />
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                <Grid container rowSpacing={2}>
+                                  <Grid item xs={12}>
+                                    <Autocomplete
+                                      disablePortal
+                                      name='taskName'
+                                      className='autocomplete-input autocomplete-on-popup'
+                                      options={listTaskProject}
+                                      getOptionLabel={(option) => option.taskName} 
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      onChange={(_event, newValue) => {
+                                        if (newValue) {
+                                        handleChange(
+                                          {target : { name : 'taskName', value: newValue.taskName}},                                    
+                                          idxProject,
+                                          index,
+                                          newValue.backlogId
+                                          )                                  
+                                        setideffortTask(newValue.backlogId)
+                                        }else{
+                                          setideffortTask('')
+                                        }
+                                      }
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className='input-field-crud'
+                                          label='Task Name'
+                                          placeholder='e.g Create Login Screen'
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <Autocomplete
+                                      disablePortal
+                                      name='statusTaskId'
+                                      className='autocomplete-input autocomplete-on-popup'
+                                      options={statusTask}
+                                      getOptionLabel={(option) => option.name} 
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      onChange={(_event, newValue) =>
+                                        handleChange(
+                                          { target: { name : 'statusTaskId', value : newValue.id } },
+                                          idxProject,
+                                          index
+                                          )
+                                        }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className='input-field-crud'
+                                          label='Status Task'
+                                          placeholder='e.g Create Login Screen'
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <TextField
+                                      focused
+                                      name='duration'
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
+                                      onChange={(e) => handleChange(e,idxProject, index)}                                
+                                      className='input-field-crud'
+                                      type="number"
+                                      placeholder='e.g Create Login Screen"'
+                                      label='Actual Effort'
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12}>
+                                    <TextField
+                                      focused
+                                      name='taskItem'
+                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      value={res.detail}
+                                      onChange={(e) => handleChange(e,idxProject, index)}
+                                      className='input-field-crud'
+                                      placeholder='e.g Create Login Screen"'
+                                      label='Task Detail'
+                                      multiline
+                                      maxRows={4}
+                                    />
+                                  </Grid>
+                                </Grid>
+                              </AccordionDetails>
+                            </Accordion>
+                            ))
+                          }
+                        </>)
+                      }
+                      </Grid>                  
+                          {dataProject.workingReportId !== undefined &&
+                            <Grid item xs={12} textAlign='left'>
+                              <Button
+                                onClick={() => AddTask(idxProject)}
+                                variant="outlined"
+                                className="button-text"
+                                startIcon={<AddIcon />}
+                              >
+                                Add Task
+                              </Button>
+                            </Grid>
+                            }                    
+                    </Grid>
+                  </div>
+                )
+              )
+            }
+          </>
           )
         }
+          
       </DialogContent>
       <DialogActions>
-        {dataProject.workingReportId !== undefined && (
-          <>         
-              <div className='left-container'>
-              <Button              
-                variant="outlined"
-                className='green-button button-text'
-                onClick={() => onAddProject()}
-                startIcon={<AddIcon />}
-                >
-                Add Project
-              </Button>
-            </div>              
-        <div className='right-container'>
-          <Button
-            onClick={() => {
-              setopenConfirmCancel(true)              
-            }}
-            variant="outlined"
-            className="button-text"
-          >
-            Cancel
-          </Button>
-          <Button 
-            variant='saveButton'
-            className="button-text"
-            onClick={() => SubmitSave()}
-            >
-            Submit
-          </Button>
-        </div>
-        </>
-        )
-      }
+        {isEdit ? (
+          <>                  
+                <div className='left-container'>
+                  <Button              
+                    variant="outlined"
+                    className='green-button button-text'
+                    onClick={() => onAddProject()}
+                    startIcon={<AddIcon />}
+                    >
+                    Add Project
+                  </Button>
+                </div>              
+                <div className='right-container'>
+                  <Button
+                    onClick={() => {
+                      setopenConfirmCancel(true)              
+                    }}
+                    variant="outlined"
+                    className="button-text"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant='saveButton'
+                    className="button-text"
+                    onClick={() => SubmitSave()}
+                    >
+                    Submit
+                  </Button>
+                </div>                                        
+          </>
+          ) : (
+          <>
+            {dataProject.workingReportId !== undefined && (
+              <>         
+                <div className='left-container'>
+                  <Button              
+                    variant="outlined"
+                    className='green-button button-text'
+                    onClick={() => onAddProject()}
+                    startIcon={<AddIcon />}
+                    >
+                    Add Project
+                  </Button>
+                </div>              
+                <div className='right-container'>
+                  <Button
+                    onClick={() => {
+                      setopenConfirmCancel(true)              
+                    }}
+                    variant="outlined"
+                    className="button-text"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant='saveButton'
+                    className="button-text"
+                    onClick={() => SubmitSave()}
+                    >
+                    Submit
+                  </Button>
+                </div>
+              </>
+              )
+            }
+          </>
+          )
+        }        
       </DialogActions>
     </Dialog>
     <Dialog
