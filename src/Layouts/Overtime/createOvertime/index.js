@@ -57,7 +57,7 @@ const CreateOvertime = ({
     listTask: []
   }
   const clearTask = {
-    backlogId: '',
+    backlogId: null,
     taskName: '',
     statusTaskId: '',
     duration: '',
@@ -69,19 +69,22 @@ const CreateOvertime = ({
   })
 
   const onAddProject = () => {
-    const temp = [...dataOvertime]
-    temp.push({
-      projectId : null,
-      listTask : [
-        {
-          backlogId: '',
-          taskName: '',
-          statusTaskId: '',
-          duration: '',
-          taskItem: ''
-        }
-      ]
-    })
+    const temp = {...dataOvertime}
+    temp.listProject = [...dataOvertime.listProject, { 
+      projectId: null,
+      listTask: [{...clearTask}]}]
+    // temp.push({
+    //   projectId : null,
+    //   listTask : [
+    //     {
+    //       backlogId: null,
+    //       taskName: '',
+    //       statusTaskId: '',
+    //       duration: '',
+    //       taskItem: ''
+    //     }
+    //   ]
+    // })
     setDataOvertime(temp)
   }
 
@@ -114,7 +117,7 @@ const CreateOvertime = ({
     const temp = {...dataOvertime}
     temp.listProject[idxProject].listTask[index][name]= value
     if(name === 'taskName'){
-      temp.listProject[idxProject].listTask[index].backlogId = backlogId
+      temp.listProject[idxProject].listTask[index].backlogId = 30
     }
     setDataOvertime(temp)
     }
@@ -147,8 +150,7 @@ const CreateOvertime = ({
     getDataProject()
     getDataStatus()
     console.log("DATAAAA", dataOvertime.listProject)
-    console.log("WRRRR",setSelectedWorkingReportId)
-    console.log("DATA DETAIILLL", dataDetail)
+    // console.log("DATA DETAIILLL", dataDetail)
   }, [dataOvertime, dataDetail])
 
   const getDataTask = async () => {
@@ -182,7 +184,9 @@ const onSave = async () => {
     const data = {
       startTime: startTime,
       endTime: endTime,
-      ...dataOvertime
+      ...dataOvertime,
+      createdBy: 2,
+      updatedBy: 2
     }
     const res = await client.requestAPI({
       method: 'POST',
@@ -192,6 +196,7 @@ const onSave = async () => {
     console.log('RES', res)
 
     if(!res.isError){
+      localStorage.setItem('overtimeadd', true)
       setDataAlert({
         severity: 'success',
         open: true,
@@ -210,7 +215,7 @@ const onSave = async () => {
       })
     }
     console.log("DATA", data)
-    // open(false);
+    navigate('/workingReport')
   }
 
   const saveEdit = async () => {
@@ -294,7 +299,7 @@ const onSave = async () => {
                     name= 'project'
                     className='autocomplete-input autocomplete-on-popup'
                     options={optProject}
-                    value={isEdit ? dataDetail.projectName : ""}
+                    // defaultValue={isEdit ? optProject.find((option) => option.name === dataDetail.projectName) : null}
                     getOptionLabel={(option) => option.name}
                     sx={{ width: "100%", marginTop: "20px" }}
                     onChange={(_event, newValue) => {
@@ -343,11 +348,13 @@ const onSave = async () => {
                               className='autocomplete-input autocomplete-on-popup'
                               options={optTask}
                               // value={selectedTask}
-                              value={isEdit ? dataDetail.taskName : ""}
+                              // value={isEdit ? dataDetail.taskName : ""}
                               getOptionLabel={(option) => option.taskName}
+                              // getOptionLabel="TESSS"
                               sx={{ width: "100%", marginTop: "20px" }}
                               onChange={(_event, newValue) => {
                                 if(newValue) {
+                                  console.log("VALUEE", newValue)
                                   handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                   idxProject,
                                   index, newValue.backlogId)
@@ -377,7 +384,7 @@ const onSave = async () => {
                               // value={selectedTask.taskStatus}
                               sx={{ width: "100%" }}
                               // onChange={(e) => handleChange(e,idxProject, index)}
-                              value={isEdit ? dataDetail.statusTaskName : ""}
+                              // value={isEdit ? dataDetail.statusTaskName : ""}
                               onChange={(_event, newValue) =>
                                 handleChange(
                                  { target: { name : 'statusTaskId', value : newValue.id } },
@@ -402,7 +409,7 @@ const onSave = async () => {
                                 focused
                                 name='duration'
                                 // value={selectedTask ? selectedTask.actualEffort : ''}   
-                                value={isEdit ? dataDetail.duration : ""}      
+                                // value={isEdit ? dataDetail.duration : ""}      
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
@@ -414,7 +421,7 @@ const onSave = async () => {
                               <TextField
                                 focused
                                 name='taskItem'
-                                value={isEdit ? dataDetail.taskItem : res.detail}
+                                // value={isEdit ? dataDetail.taskItem : res.detail}
                                 onChange={(e) => handleChange(e, idxProject, index)}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
@@ -430,7 +437,7 @@ const onSave = async () => {
                       ))
                     }
                   </Grid>
-                  {dataOvertime.listProject[idxProject].projectId && (
+                  {/* {dataOvertime.listProject[idxProject].projectId && ( */}
                     <Grid item xs={12} textAlign='left'>
                       <Button
                         onClick={() => AddTask(idxProject)}
@@ -441,7 +448,7 @@ const onSave = async () => {
                         Add Task
                       </Button>
                     </Grid>
-                  )}
+                  {/* )} */}
                 </Grid>
               </div>
             )
@@ -450,7 +457,7 @@ const onSave = async () => {
       </DialogContent>
       <DialogActions>
         <div className='left-container'>
-          {isLocalizationFilled && dataOvertime.clearProject !== '' && (
+          {/* {isLocalizationFilled && dataOvertime.clearProject !== '' && ( */}
             <Button
               variant="outlined"
               className='green-button button-text'
@@ -459,7 +466,7 @@ const onSave = async () => {
               >
               Add Project
             </Button>
-          )}
+          {/* )} */}
         </div>
         <div className='right-container'>
           <Button

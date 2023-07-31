@@ -139,7 +139,7 @@ export default function WorkingReport() {
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
-        WrIdDetail = {WrIdDetail}
+        // WrIdDetail = {WrIdDetail}
         />
       )
     }
@@ -225,6 +225,9 @@ export default function WorkingReport() {
         </Grid>
         <Grid item xs={12}>
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
         </Grid>
         <Grid item xs={12}>
           {renderCheckin()}

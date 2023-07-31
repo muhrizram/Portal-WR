@@ -75,16 +75,21 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 Attendance
               </Button>             
             ) : (data[0].workingReportId == null ? (
+              <>
               <Button disabled variant="outlined" >
                 task
               </Button>
+              <Button disabled variant="outlined" >
+              overtime
+            </Button>
+            </>
             ) : <></>)}
           </Grid>
           {data[0].workingReportId !== null ? (
-            localStorage.setItem(
-              "workingReportId",
-              data[0].workingReportId
-            ),
+            // localStorage.setItem(
+            //   "workingReportId",
+            //   data[0].workingReportId
+            // ),
             <></>
           ) : (
             <></>
@@ -102,20 +107,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                   task
                 </Button>
-                <Grid item xs={12} display="flex" justifyContent="left">
-            <Button
-              variant="outlined-warning"
-              onClick={() => {
-                setId(data[0].workingReportId)
-                console.log("WORKING ID", localStorage.getItem("workingReportId"))
-                setIsViewOvertime(false)
-                setOpenOvertime(true);
-              }}
-            >
-              Overtime
-            </Button>
-            </Grid>
-          </>
+                </>
               ) : (
                 <>
                 <Button
@@ -130,21 +122,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                 task
               </Button>
-
-              <Grid item xs={12} display="flex" justifyContent="center">
-            <Button
-              variant="outlined-warning"
-              onClick={() => {
-                setId(data[0].workingReportId)
-                setWrIdDetail(wrId.workingReportId)
-                setIsViewOvertime(true);
-              }}
-            >
-              View Overtime
-            </Button>
-          </Grid>
               </>
               )
+              
             ) : data[0].workingReportId != null ? (
               <>
               
@@ -162,27 +142,67 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               task
             </Button>
             </Grid>
+          </>       
+            ) : (
+              <></>
+            )}
+             {info.isToday ? (              
+              !localStorage.getItem('overtimeadd') ? (
+                <>
+                <Grid item xs={12} display="flex" justifyContent="left">
+                  <Button
+                    variant="outlined-warning"
+                    onClick={() => {
+                      setId(data[0].workingReportId)
+                      console.log("WORKING ID", localStorage.getItem("workingReportId"))
+                      setIsViewOvertime(false)
+                      setOpenOvertime(true);
+                    }}
+                  >
+                    Overtime
+                  </Button>
+                </Grid>
+                </>
+              ) : (
+                <>
+              <Grid item xs={12} display="flex" justifyContent="center">
+                <Button
+                  variant="outlined-warning"
+                  onClick={() => {
+                    setId(data[0].workingReportId)
+                    setWrIdDetail(wrId.workingReportId)
+                    setIsViewOvertime(true);
+                  }}
+                >
+                  View Overtime
+                </Button>
+              </Grid>
+              </>
+              )
+              
+            ) : data[0].workingReportId != null ? (
+              <>
             <Grid item xs={12} display="flex" justifyContent="left">
-            <Button
-              variant="outlined-warning"
-              onClick={() => {
-                localStorage.setItem(
-                  "workingReportId",
-                  data[0].workingReportId
-                );
-                setId(data[0].workingReportId)
-                console.log("WORKING ID", data[0].workingReportId)
-                // setWrIdDetail(wrId.workingReportId)
-                setIsViewOvertime(true);
-              }}
-            >
-              View Overtime
-            </Button>
+              <Button
+                variant="outlined-warning"
+                onClick={() => {
+                  localStorage.setItem(
+                    "workingReportId",
+                    data[0].workingReportId
+                  );
+                  setId(data[0].workingReportId)
+                  console.log("WORKING ID", data[0].workingReportId)
+                  // setWrIdDetail(wrId.workingReportId)
+                  setIsViewOvertime(true);
+                }}
+              >
+                View Overtime
+              </Button>
             </Grid>
           </>       
             ) : (
               <></>
-            )}  
+            )}    
         </Grid>
         </Grid>
       );
