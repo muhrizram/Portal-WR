@@ -12,7 +12,7 @@ import CreateOvertime from "../createOvertime";
 import client from '../../../global/client';
 
 
-export default function ViewOvertime({}) {
+export default function ViewOvertime({setSelectedWorkingReportId}) {
   const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
 
@@ -44,8 +44,9 @@ export default function ViewOvertime({}) {
 
   const [detail, setDetail] = useState([]);
   const [idDetail,setIdDetail] = useState()
+  const [wrId, setId] = useState(null)
   const getDetailOvertime = async () => {
-    const idDetail = parseInt(localStorage.getItem('workingReportId'))
+    const idDetail = (parseInt(localStorage.getItem('workingReportId')))
     setIdDetail(idDetail)
     const res = await client.requestAPI({
       method: 'GET',
@@ -183,13 +184,18 @@ export default function ViewOvertime({}) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button startIcon={<CreateIcon />} variant="outlined" onClick={() => setOpenOvertime(true)}>
+            <Button startIcon={<CreateIcon />} variant="outlined"
+              onClick={() => {
+                setOpenOvertime(true)
+                setId(detail[0].workingReportId)
+                console.log("HARUSNYA WR ID", detail[0].workingReportId);}
+                }>
               Edit Task
             </Button>
           </Grid>
         </Grid>
       </Grid>
-      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail}/>
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} setSelectedWorkingReportId={wrId}/>
     </Grid>
   );
 }
