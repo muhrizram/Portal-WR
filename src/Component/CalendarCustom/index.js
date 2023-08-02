@@ -151,7 +151,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     onClick={() => {
                       setId(data[0].workingReportId)
                       console.log("WORKING ID", localStorage.getItem("workingReportId"))
-                      setIsViewOvertime(false)
+                      // setIsViewOvertime(false)
                       setOpenOvertime(true);
                     }}
                   >
@@ -176,7 +176,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               </>
               )
               
-            ) : data[0].workingReportId != null ? (
+            ) : data[0].workingReportId !== null ? (
               <>
             <Grid item xs={12} display="flex" justifyContent="left">
               <Button

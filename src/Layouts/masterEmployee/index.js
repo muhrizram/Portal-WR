@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import content from "../fileJson/api/db.json";
+import client from "../../global/client";
 import {
   Avatar,
   Button,
@@ -16,73 +17,19 @@ import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 
 const Employee = () => {
-  // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [Idnya, setIdnya] = useState("");
   const [buttonImport, setButtonImport] = useState(true)
   const navigate = useNavigate();
-  const [data, setData] = useState({
-    nip: "",
-    // phonenumber: '',
-    // address: ''
-  });
-
-  const onField = (nameObj, value) => {
-    const temp = {
-      ...data,
-      [nameObj]: value,
-    };
-    setData(temp);
-    // setDataEdit({
-    //   [nameObj]: value
-    // })
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/content");
-      const jsonData = await response.json();
-      const updatedData = jsonData.map((item, index) => ({
-        ...item,
-        no: index + 1,
-      }));
-      setData(updatedData);
-    } catch (error) {
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:4000/content/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setOpenAlert(true);
-        fetchData(); // Ambil data terbaru setelah berhasil menghapus
-      } else {
-        console.error("Failed to delete data");
-      }
-    } catch (error) {
-      console.error("Error deleting data:", error);
-    }
-    handleClose();
-  };
-       
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleCloseAlert = () => {
-    setOpenAlert(false);
-  };
-
-  const handleDetail = (id) => {
-    navigate("/masteremployee/detail");
-  };
+  const [data, setData] = useState([]);
+  const [totalData, setTotalData] = useState()
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: 'firstName',
+    sortType: 'desc',
+    search: ''
+  })
 
   const columns = [
     {
@@ -96,7 +43,7 @@ const Employee = () => {
       flex: 1,
     },
     {
-      field: "name",
+      field: "fullName",
       headerName: "Name",
       width: 200,
       flex: 1,
@@ -132,6 +79,55 @@ const Employee = () => {
       flex: 1,
     },
   ];
+
+  useEffect(() => {
+    getData()
+  }, [filter])
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    rebuildData(res)
+  }
+
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        nip: value.attributes.nip,
+        fullName: value.attributes.fullName,
+        contract: value.attributes.lastContractStatus,
+        assignment: value.attributes.assingment,
+        contractEnd: value.attributes.lastContractDate
+      }
+    })
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
+  }
+
+
+  const handleDelete = async (id) => {
+    handleClose();
+  };
+       
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  const handleDetail = (id) => {
+    navigate("/masteremployee/detail");
+  };
+
+  
   const handleChangeSearch = (event) => {
   };
 
@@ -140,19 +136,12 @@ const Employee = () => {
   };
 
 
-  const [filter, setFilter] = useState({
-    page: 0,
-    size: 10,
-    sortName: 'companyName',
-    sortType: 'asc'
-  })
-
   const onFilter = (dataFilter) => {
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'companyName',
-      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'firstName',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
     })
   }
 

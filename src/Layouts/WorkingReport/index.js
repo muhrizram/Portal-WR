@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
-import { Avatar, Button, Card, Grid, Typography } from "@mui/material";
+import { Avatar, Button, Card, Grid, Typography, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -17,6 +17,14 @@ import ViewTask from "./ViewTask";
 import ViewOvertime from "../Overtime/detailEditOvertime";
 import CheckOut from "./CheckOut";
 import CreateOvertime from "../Overtime/createOvertime";
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import TaskConfiguration from "./PopupSetting/TaskConfiguration";
+import ColumnConfiguration from "./PopupSetting/CoumnConfiguration";
+import ApprovalConfiguration from "./PopupSetting/ApprovalConfiguration";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -27,6 +35,30 @@ export default function WorkingReport() {
   const [openOvertime, setOpenOvertime] = useState(false);
   const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
   const [WrIdDetail, setWrIdDetail] = useState()
+  const [dropMenu, setDropMenu] = useState(null)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [value, setValue] = useState("one");
+  const open = dropMenu
+  const handleClick = (event) => {
+    setDropMenu(event.currentTarget)
+  }
+  
+  const handleClose = () => {
+    setDropMenu(null);
+  };
+
+  const handleSetting = () => {
+    setOpenDialog(true)
+  };
+
+  const handleCloseSetting = () => {
+    setOpenDialog(false)
+  }
+
+  const handleTab = (event, newValue) => {
+    setValue(newValue);
+  };
+
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
@@ -159,7 +191,6 @@ export default function WorkingReport() {
         />
       );
     }
-
     return dom;
   };
 
@@ -175,20 +206,40 @@ export default function WorkingReport() {
               <Grid item xs={8.4}>
                 <Typography variant="headerCardMenu">{`Working Report`}</Typography>
               </Grid>
-              <Grid item xs={2} display="flex" alignItems="center">
+              <Grid item xs={2} alignItems="right">
                 <Button
+                  id="basic-button"
                   variant="contained"
-                  //   onClick={() => onAdd()}
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
                   startIcon={<DownloadIcon />}
                   endIcon={<ArrowForwardIosIcon />}
                 >
                   Download
                 </Button>
+                <Menu
+                  id="basic-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                  // dropMenu={dropMenu}
+                  open={open}
+                  onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleClose}>
+                      Download as Pdf
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                      Download as Excel
+                    </MenuItem>
+                </Menu>
               </Grid>
               <Grid display="flex" alignItems="center">
                 <Button
                   variant="outlined"
-                  //   onClick={() => onAdd()}
+                  onClick={handleSetting}
                   startIcon={<SettingsIcon />}
                 >
                   Settings
@@ -233,7 +284,43 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-      {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
+
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        className="dialog-configuration"
+      >
+        <DialogTitle id="alert-dialog-title" className='dialog-delete-header'>
+          {"Setting Download Configuration"}
+        </DialogTitle>
+        <DialogContent className="dialog-delete-content">
+          <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
+            Edit setting documents
+          </DialogContentText>
+
+          <Grid>
+            <Box sx={{ width: "100%" }} >
+              <Tabs value={value} onChange={handleTab} className='tab-config'>
+                <Tab value="one" label="TASK CONFIGURATION"></Tab>
+                <Tab value="two" label="COLUMN CONFIGURATION" />
+                <Tab value="three" label="APPROVAL CONFIGURATION" />
+              </Tabs>
+            </Box>
+            {value === "one" && (<TaskConfiguration/>)}
+            {value === "two" && (<ColumnConfiguration/>)}
+            {value === "three" && (<ApprovalConfiguration/>)}
+          </Grid>
+
+        </DialogContent>
+        <DialogActions className="dialog-delete-actions">
+          <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
+          <Button onClick={handleCloseSetting} variant='contained' className='button-text'>Update Configuration</Button>
+        </DialogActions>
+    </Dialog>
+
+      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
     </SideBar>
   );

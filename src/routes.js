@@ -8,6 +8,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
+import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -44,7 +45,6 @@ const DetailPrivilege = lazy(() =>
 const ViewOvertime = lazy(() =>
   import("./Layouts/Overtime/detailEditOvertime/index")
 );
-
 export const routes = [
   {
     path: "/login",
