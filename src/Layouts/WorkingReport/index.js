@@ -70,8 +70,7 @@ export default function WorkingReport() {
     }
   };
 
-  const rebuildData = (resData) => {
-    console.log("data: ", resData);
+  const rebuildData = (resData) => {    
     let temp = [];
     temp = resData.data.map((value, index) => {
       return value.attributes.listDate.holiday
