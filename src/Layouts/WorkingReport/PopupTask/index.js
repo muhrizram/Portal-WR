@@ -42,6 +42,7 @@ const PopupTask = ({
   const [cekAbsen, setCekabsen] = useState([])
   const [openConfirmCancel,setopenConfirmCancel] = useState(false)
   const [dataDetailnya,setdataDetailnya] = useState([])
+  const [addTaskinEdit,setAddtaskinEdit] = useState(false)
   const navigate = useNavigate();  
 
   const clearProject = {
@@ -70,15 +71,15 @@ const PopupTask = ({
         workingReportId: null,
         listProject: [
           // {
-          //   absenceId: dataDetailnya.attributes.absenceId,
+          //   absenceId: null,
           //   projectId: null,
           //   listTask: [
           //     {
-          //       backlogId: dataDetailnya.attributes.backlogId ,
-          //       taskName: dataDetailnya.attributes.taskName,
-          //       statusTaskId: dataDetailnya.attributes.statusTaskId,
-          //       duration: dataDetailnya.attributes.duration,
-          //       taskItem: dataDetailnya.attributes.taskItem
+          //       backlogId: '',
+          //       taskName: '',
+          //       statusTaskId: '',
+          //       duration: '',
+          //       taskItem: ''
           //     }
           //   ]
           // }
@@ -92,18 +93,31 @@ const PopupTask = ({
         tempProject.push(dataDetail[i].attributes)
         setfirstEditTask((prevfirstEditTask) => ({
           ...prevfirstEditTask,
-          workingReportId : dataDetail[i].id,
+          workingReportId : parseInt(dataDetail[i].id),
           listProject : tempProject
-        }));
+            // [{
+            //   absenceId: dataDetail[i].attributes.absenceId,
+            //   projectId: dataDetail[i].attributes.projectId,
+            //   listTask: [
+            //     {
+            //       backlogId: dataDetail[i].attributes.listTask[i].backlogId ,
+            //       taskName: dataDetail[i].attributes.listTask[i].taskName,
+            //       statusTaskId: dataDetail[i].attributes.listTask[i].statusTaskId,
+            //       duration: dataDetail[i].attributes.listTask[i].taskDuration,
+            //       taskItem: dataDetail[i].attributes.listTask[i].taskItem
+            //     }
+            //   ]}
+            // ]
+        }
+        ));
       }     
   }
 
-  useEffect(() => {
-    console.log("BoRIA",dataDetail)
+  useEffect(() => {    
     if(isEdit){
+      console.log("dataDetail",dataDetail)
       setdataDetailnya(dataDetail)
-      refreshdataDetail()
-      console.log("SIAP UPDATE NIH",firstEditTask)      
+      refreshdataDetail()          
       setOpentask(true)
     }
     getlistTaskProject()
@@ -118,18 +132,54 @@ const PopupTask = ({
       endpoint: `/ol/status?search=`
     })
     if (res.data) {      
-      const datastatusTask = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.name}))
-      console.log("datastatusTask",datastatusTask)
+      const datastatusTask = res.data.map((item) => ({id:parseInt(item.id), name:item.attributes.name}))      
       setstatusTask(datastatusTask)
     }
   }  
   const UpdateTask = async () => {
+    const readyUpdate = {
+      workingReportId: null,
+      listProject: []
+    }
+
+    readyUpdate.workingReportId = firstEditTask.workingReportId;
+
+    for (const project of firstEditTask.listProject) {
+      const newProject = {};
+      
+      newProject.projectId = project.projectId;
+      newProject.projectName = project.projectName;
+      newProject.absenceId = project.absenceId;
+      newProject.absenceName = project.absenceName;
+      
+      newProject.listTask = [];
+      for (const task of project.listTask) {
+        const newTask = {};
+        
+        newTask.taskId = task.taskId;
+        newTask.backlogId = task.backlogId;
+        newTask.taskName = task.taskName;
+        newTask.statusTaskId = task.statusTaskId;
+        newTask.duration = task.taskDuration;
+        newTask.taskItem = task.taskItem;   
+        newProject.listTask.push(newTask);
+      } 
+      readyUpdate.listProject.push(newProject);
+    }
+    console.log("INI READY UPDATE",readyUpdate);
+
+
     const res = await client.requestAPI({
       method: 'PUT',
-      endpoint: `task/update`
+      endpoint: `task/update`,
+      data : readyUpdate
     })
     if (res.data) {      
      console.log("update task")
+     closeTask(true)
+    }else{
+      console.log(res)
+      closeTask(true)
     }
   }  
 
@@ -163,66 +213,105 @@ const PopupTask = ({
   }
 
   const onAddProject = () => {
-    setProject((prevState) => ({
-      ...prevState,
-      listProject: [...prevState.listProject, clearProject]
-    }));
+    if(isEdit){
+      setAddtaskinEdit(true)
+      setfirstEditTask((prevState) => ({
+        ...prevState,
+        listProject: [...prevState.listProject, clearProject]
+      }));
+    }else{
+      setProject((prevState) => ({
+        ...prevState,
+        listProject: [...prevState.listProject, clearProject]
+      }));
+    }
   };
 
   const AddTask = (idxProject) => {        
-    const temp = { ...dataProject };
-    temp.listProject[idxProject].listTask.push({ ...clearTask });
-    setProject(temp);
-    setTaskDurations((prevDurations) => [
-      ...prevDurations,
-      { listTask: temp.listProject[idxProject].listTask.backlogId, duration: 0 },
-    ]);
-  };
-
-  const handleChange = (event, idxProject, index, backlogId) => {    
-    const { name, value } = event.target;
-    if (name === 'duration') {      
-        setideffortTask(parseInt(value));
-        const temp = { ...dataProject };
-        temp.listProject[idxProject].listTask[index][name] = parseInt(value);
-        setProject(temp);
-  
-        setTaskDurations((prevDurations) =>
-        prevDurations.map((durationItem, i) => ({
-          ...durationItem,
-          duration: i === index ? parseInt(value) : durationItem.duration,
-        }))
-      );      
-    }  
-    else {
+    if(isEdit){
+      const temp = { ...firstEditTask };
+      temp.listProject[idxProject].listTask.push({ ...clearTask });
+      setfirstEditTask(temp);      
+    }else{
       const temp = { ...dataProject };
-      temp.listProject[idxProject].listTask[index][name] = value;
-      if (name === 'taskName') {
-        temp.listProject[idxProject].listTask[index].backlogId = backlogId;
-      }  
+      temp.listProject[idxProject].listTask.push({ ...clearTask });
       setProject(temp);
+      // setTaskDurations((prevDurations) => [
+      //   ...prevDurations,
+      //   { listTask: temp.listProject[idxProject].listTask.backlogId, duration: 0 },
+      // ]);
     }
   };
-  
-  
-  const handleChangeProject = (id, idxProject,absen) => {
-    console.log("INI idxProject", idxProject)
-    const temp = { ...dataProject };    
-    temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;    
-    if(absen){
-      temp.listProject[idxProject].absenceId = id;
+
+  const handleChange = (event, idxProject, index, backlogId) => {
+    if(isEdit){      
+      const { name, value } = event.target;
+      const updatedFirstEditTask = { ...firstEditTask };
+      updatedFirstEditTask.listProject[idxProject].listTask[index][name] = value;
+      setfirstEditTask(updatedFirstEditTask);
+      console.log("PAS UPDATE",firstEditTask)
     }else{
-      temp.listProject[idxProject].projectId = id;
+      const { name, value } = event.target;
+      if (name === 'duration') {      
+          setideffortTask(parseInt(value));
+          const temp = { ...dataProject };
+          temp.listProject[idxProject].listTask[index][name] = parseInt(value);
+          setProject(temp);
+    
+          setTaskDurations((prevDurations) =>
+          prevDurations.map((durationItem, i) => ({
+            ...durationItem,
+            duration: i === index ? parseInt(value) : durationItem.duration,
+          }))
+        );      
+      }  
+      else {
+        const temp = { ...dataProject };
+        temp.listProject[idxProject].listTask[index][name] = value;
+        if (name === 'taskName') {
+          temp.listProject[idxProject].listTask[index].backlogId = backlogId;
+        }  
+        setProject(temp);
+      }
     }    
-    temp.listProject[idxProject].listTask = [clearTask];
-    setProject(temp);
+  };
+  
+  
+  const handleChangeProject = (id, idxProject,absen) => {    
+    if(isEdit){
+      const temp = { ...firstEditTask };    
+      temp.workingReportId = dataDetail.workingReportId;    
+      if(absen){
+        temp.listProject[idxProject].absenceId = id;
+      }else{
+        temp.listProject[idxProject].projectId = id;
+      }    
+      temp.listProject[idxProject].listTask = [clearTask];
+      setfirstEditTask(temp);
+    }else{
+      const temp = { ...dataProject };    
+      temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;    
+      if(absen){
+        temp.listProject[idxProject].absenceId = id;
+      }else{
+        temp.listProject[idxProject].projectId = id;
+      }    
+      temp.listProject[idxProject].listTask = [clearTask];
+      setProject(temp);
+    }
   };
 
   const deleteTask = (e, idxProject, index) => {
     e.preventDefault();
-    const temp = { ...dataProject };
-    temp.listProject[idxProject].listTask.splice(index, 1);
-    setProject(temp);
+    if(isEdit){
+      const temp = { ...firstEditTask};
+      temp.listProject[idxProject].listTask.splice(index, 1);
+      setfirstEditTask(temp);
+    }else{
+      const temp = { ...dataProject };
+      temp.listProject[idxProject].listTask.splice(index, 1);
+      setProject(temp);
+    }    
   };
 
   const SubmitSave = async () => {      
@@ -232,8 +321,7 @@ const PopupTask = ({
           const project = dataProject.listProject[i];
           for (let j = 0; j < project.listTask.length; j++) {
             tempEffort = tempEffort + project.listTask[j].duration;            
-          }
-          console.log("INI EFFORT",tempEffort)
+          }          
         }
         if (tempEffort > 8 || tempEffort < 1) {
           setPopUpMoretask(true);        
@@ -256,7 +344,8 @@ const PopupTask = ({
             setTimeout(() => {
               navigate('/workingReport')
             }, 3000)      
-          }else{      
+          }else{   
+            console.log("ERROR",res)   
             setDataAlert({
               severity: 'error',
               message: res.error.meta.message,
@@ -298,17 +387,18 @@ const PopupTask = ({
           Assign and track employee tasks easily
         </DialogContentText>
         {isEdit ? (
-          <>
-            {firstEditTask.listProject.length > 0 && firstEditTask.listProject.map((resProject, idxProject) => (                   
+          <>          
+            {firstEditTask.listProject.length > 0 && firstEditTask.listProject.map((resProject, idxProject) => (
               <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
                 <Grid container rowSpacing={2}>
                    <Grid item xs={12}>
                      <Autocomplete
-                        disabled
+                        disabled={addTaskinEdit ? false : true}
                         disablePortal                    
                         name='project'
-                        className='autocomplete-input autocomplete-on-popup'
-                       
+                        options={listProject}
+                        getOptionLabel={(option) => option.name}
+                        className='autocomplete-input autocomplete-on-popup'                       
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {
                         if (newValue) {                      
@@ -339,7 +429,7 @@ const PopupTask = ({
                           <TextField
                             {...params}
                             className='input-field-crud'
-                            label={resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName}
+                            label={addTaskinEdit == true ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName) }
                             placeholder='Select Project'
                           />
                         )}
@@ -349,11 +439,12 @@ const PopupTask = ({
                       {resProject.absenceId ? (
                       <>
                       {resProject.listTask.map((res, index) => (
+                        
                         <Grid container rowSpacing={2}>
                           <Grid item xs={12}>
                             <TextField
                               focused
-                              name='duration'
+                              name='taskDuration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               value={res.taskDuration}
                               onChange={(e) => handleChange(e,idxProject, index)}                                
@@ -377,7 +468,7 @@ const PopupTask = ({
                               maxRows={4}
                             />
                             </Grid>
-                          </Grid>
+                          </Grid>                          
                         ))}
                         </> ) : (
                         <>
@@ -739,7 +830,7 @@ const PopupTask = ({
                 <div className='right-container'>
                   <Button
                     onClick={() => {
-                      setopenConfirmCancel(true)              
+                      setopenConfirmCancel(true)                      
                     }}
                     variant="outlined"
                     className="button-text"
@@ -749,7 +840,9 @@ const PopupTask = ({
                   <Button 
                     variant='saveButton'
                     className="button-text"
-                    onClick={() => SubmitSave()}
+                    onClick={() => 
+                      {isEdit ? UpdateTask() : SubmitSave()}                      
+                    }
                     >
                     Submit
                   </Button>

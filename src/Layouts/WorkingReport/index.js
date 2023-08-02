@@ -25,6 +25,7 @@ import Box from "@mui/material/Box";
 import TaskConfiguration from "./PopupSetting/TaskConfiguration";
 import ColumnConfiguration from "./PopupSetting/CoumnConfiguration";
 import ApprovalConfiguration from "./PopupSetting/ApprovalConfiguration";
+import DownloadConfiguration from "../../Component/DownloadConfig";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -73,6 +74,9 @@ export default function WorkingReport() {
     dataPeriod: null,
   });
   const { setDataAlert } = useContext(AlertContext);
+  const [downloadConfiguration, setDownloadConf] = useState({
+    open: false
+  })
 
   useEffect(() => {
     console.log("WrIdDetail: ", WrIdDetail);
@@ -98,8 +102,7 @@ export default function WorkingReport() {
     }
   };
 
-  const rebuildData = (resData) => {
-    console.log("data: ", resData);
+  const rebuildData = (resData) => {    
     let temp = [];
     temp = resData.data.map((value, index) => {
       return value.attributes.listDate.holiday
@@ -171,7 +174,7 @@ export default function WorkingReport() {
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
-        // WrIdDetail = {WrIdDetail}
+        WrIdDetail = {WrIdDetail}
         />
       )
     }
@@ -193,6 +196,12 @@ export default function WorkingReport() {
     }
     return dom;
   };
+
+  const openDownload = (open) => {
+    setDownloadConf({
+      open
+    })
+  }
 
   return (
     <SideBar>
@@ -239,7 +248,8 @@ export default function WorkingReport() {
               <Grid display="flex" alignItems="center">
                 <Button
                   variant="outlined"
-                  onClick={handleSetting}
+                  // onClick={handleSetting}
+                  onClick={() => openDownload(true)}
                   startIcon={<SettingsIcon />}
                 >
                   Settings
@@ -278,9 +288,6 @@ export default function WorkingReport() {
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
-        </Grid>
-        <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
@@ -303,7 +310,7 @@ export default function WorkingReport() {
           <Grid>
             <Box sx={{ width: "100%" }} >
               <Tabs value={value} onChange={handleTab} className='tab-config'>
-                <Tab value="one" label="TASK CONFIGURATION"></Tab>
+                <Tab value="one" label="TASK CONFIGURATION"/>
                 <Tab value="two" label="COLUMN CONFIGURATION" />
                 <Tab value="three" label="APPROVAL CONFIGURATION" />
               </Tabs>
@@ -322,6 +329,7 @@ export default function WorkingReport() {
 
       <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
     </SideBar>
   );
 }

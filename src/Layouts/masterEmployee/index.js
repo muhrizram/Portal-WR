@@ -81,16 +81,16 @@ const Employee = () => {
   ];
 
   useEffect(() => {
-    getData()
+    // getData()
   }, [filter])
 
-  const getData = async () => {
-    const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
-    })
-    rebuildData(res)
-  }
+  // const getData = async () => {
+  //   const res = await client.requestAPI({
+  //     method: 'GET',
+  //     endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+  //   })
+  //   rebuildData(res)
+  // }
 
   const rebuildData = (resData) => {
     let temp = []

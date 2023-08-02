@@ -61,8 +61,6 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
     } 
   }
 
-  
-
   return (
     <>
      <Grid container spacing={2}>      
@@ -85,7 +83,6 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
                     {task.attributes.projectName}
                   </Typography>
                   <Typography variant="body1">
-                    {/* {task.listTask[0].createdOn} */}
                   </Typography>
                 </Grid>
                 <Divider />

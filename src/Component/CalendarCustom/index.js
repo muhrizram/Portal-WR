@@ -23,6 +23,7 @@ import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import ViewTask from "../../Layouts/WorkingReport/ViewTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
+import client from "../../global/client";
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
@@ -31,6 +32,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
   const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
+  const [goDetail,setgoDetail] = useState(false)
+  const [openDetailOvertime,setopenDetailOvertime] = useState(false)
 
   const navigate = useNavigate();
 
@@ -58,20 +61,54 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
   };
+
+  const cekData = async (cekWr) => {         
+      const res = await client.requestAPI({
+        method: "GET",
+        endpoint: `/task/detail?wrId=${cekWr}`
+      });      
+      if(res.status == "400 BAD_REQUEST"){
+        console.log("data kosong")
+        setgoDetail(false)
+      }else{
+        console.log("data ada")
+        setgoDetail(true)
+      }    
+    }
+
+  const getDataOvertime = async (WrIdnya) => {
+    console.log("WR ID",WrIdnya)
+      const res = await client.requestAPI({
+        method: 'GET',
+        endpoint: `/overtime/${WrIdnya}`
+      })        
+      console.log("INI RES NYA",res )
+      if(res.data){        
+        if(res.data.attributes.listProject.length == 0 ){
+          console.log("GAADA DATA")
+          setopenDetailOvertime(false)
+        }else{
+          console.log("ADA DATA")
+          setopenDetailOvertime(true)
+        }
+      }else{
+        console.log("ERROR",res)
+      }   
+  }
   
   const renderCalendar = (info) => {
     const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-    );
+    );    
     if (data.length > 0) {
-      console.log(data);
       return (
         <Grid container spacing={2}>
           <Grid item xs={12} display="flex" justifyContent="right">
             <Typography variant="h6">{info.dayNumberText}</Typography>
           </Grid>
-          <Grid item xs={12} display="flex" justifyContent="center">
-            {info.isToday ? (             
+          {/* <Grid item xs={12} display="flex" justifyContent="center">
+            {info.isToday ? (     
+              getDataOvertime(data[0].workingReportId),        
               <Button variant="outlined" onClick={() => setOnClick(info)}>
                 Attendance
               </Button>             
@@ -85,63 +122,53 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             </Button>
             </>
             ) : <></>)}
-          </Grid>
-          {data[0].workingReportId !== null ? (         
-            <></>
-          ) : (
-            <></>
-          )}
+          </Grid> */}
           <Grid item xs={12} display="flex" justifyContent="left">
             {info.isToday ? (
-              // localStorage.removeItem('istaskadd'),
-              !localStorage.getItem('istaskadd') ? (
+              cekData(data[0].workingReportId) ,
+                <Button variant="outlined" onClick={() => setOnClick(info)}>
+                  Attendance
+                </Button>             
+              ) : (data[0].workingReportId == null ? (
                 <>
-                <Button
-                  variant="outlined"
-                  onClick={() => {                    
-                    setOpenTask(true);
-                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})
-                  }}
-                >
+                <Button disabled variant="outlined" >
                   task
                 </Button>
-                </>
-              ) : (
-                <>
-                <Button
-                variant="outlined"
-                  onClick={() => {                    
-                    setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})                    
-                    setWrIdDetail(data[0].workingReportId)
-                    setIsViewTask(true);
-                  }
-                }              
-                >
-                task
+                <Button disabled variant="outlined" >
+                overtime
               </Button>
               </>
-              )
-              
-            ) : data[0].workingReportId != null ? (
-              <>
-              
-            <Grid item xs={12} display="flex" justifyContent="left">
-              <Button
+              ) : null )
+              }
+          </Grid>     
+          <Grid item xs={12} display="flex" justifyContent="left">
+          {info.isToday ? (
+            <Button
               variant="outlined"
-                onClick={() => {
-                  setId({"workingReportId" :data[0].workingReportId, "absenceId": data[0].absenceId})                  
-                  setWrIdDetail(wrId.workingReportId)
-                  setIsViewTask(true);
-                }
-              }              
-              >
+              onClick={
+                goDetail
+                  ? () => {                      
+                    setId({
+                      workingReportId: data[0].workingReportId,
+                      absenceId: data[0].absenceId,
+                    });
+                    setWrIdDetail(data[0].workingReportId);
+                    setIsViewTask(true);
+                    }
+                  : () => {
+                    setOpenTask(true);
+                      setId({
+                        workingReportId: data[0].workingReportId,
+                        absenceId: data[0].absenceId,
+                      });
+                    }
+              }
+            >
               task
             </Button>
-            </Grid>
-          </>       
-            ) : (
-              <></>
-            )}
+          ) : null}
+
+
              {info.isToday ? (              
               !localStorage.getItem('overtimeadd') ? (
                 <>
@@ -186,19 +213,18 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     "workingReportId",
                     data[0].workingReportId
                   );
-                  setId(data[0].workingReportId)
-                  console.log("WORKING ID", data[0].workingReportId)
-                  // setWrIdDetail(wrId.workingReportId)
+                  setId(data[0].workingReportId)                  
                   setIsViewOvertime(true);
                 }}
               >
-                View Overtime
-              </Button>
+                {openDetailOvertime ? 'View Overtime' : 'Overtime'}          
+            </Button>
             </Grid>
           </>       
             ) : (
               <></>
-            )}    
+            )
+            }    
         </Grid>
         </Grid>
       );

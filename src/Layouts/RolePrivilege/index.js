@@ -144,7 +144,6 @@ const RolePrivilege = () => {
         open: true
       })
     }
-    console.log("DELETE ", res)
     handleClose();
   }
   
