@@ -174,7 +174,7 @@ export default function WorkingReport() {
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
-        WrIdDetail = {WrIdDetail}
+        // WrIdDetail = {WrIdDetail}
         />
       )
     }
@@ -248,8 +248,8 @@ export default function WorkingReport() {
               <Grid display="flex" alignItems="center">
                 <Button
                   variant="outlined"
-                  // onClick={handleSetting}
-                  onClick={() => openDownload(true)}
+                  onClick={handleSetting}
+                  // onClick={() => openDownload(true)}
                   startIcon={<SettingsIcon />}
                 >
                   Settings
@@ -288,6 +288,9 @@ export default function WorkingReport() {
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
         <Grid item xs={12}>
+          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
+        </Grid>
+        <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
@@ -310,7 +313,7 @@ export default function WorkingReport() {
           <Grid>
             <Box sx={{ width: "100%" }} >
               <Tabs value={value} onChange={handleTab} className='tab-config'>
-                <Tab value="one" label="TASK CONFIGURATION"/>
+                <Tab value="one" label="TASK CONFIGURATION"></Tab>
                 <Tab value="two" label="COLUMN CONFIGURATION" />
                 <Tab value="three" label="APPROVAL CONFIGURATION" />
               </Tabs>
