@@ -17,6 +17,7 @@ import ViewTask from "./ViewTask";
 import ViewOvertime from "../Overtime/detailEditOvertime";
 import CheckOut from "./CheckOut";
 import CreateOvertime from "../Overtime/createOvertime";
+import DownloadConfiguration from "../../Component/DownloadConfig";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -41,6 +42,9 @@ export default function WorkingReport() {
     dataPeriod: null,
   });
   const { setDataAlert } = useContext(AlertContext);
+  const [downloadConfiguration, setDownloadConf] = useState({
+    open: false
+  })
 
   useEffect(() => {
     console.log("WrIdDetail: ", WrIdDetail);
@@ -163,6 +167,12 @@ export default function WorkingReport() {
     return dom;
   };
 
+  const openDownload = (open) => {
+    setDownloadConf({
+      open
+    })
+  }
+
   return (
     <SideBar>
       <Grid container rowSpacing={2}>
@@ -178,7 +188,6 @@ export default function WorkingReport() {
               <Grid item xs={2} display="flex" alignItems="center">
                 <Button
                   variant="contained"
-                  //   onClick={() => onAdd()}
                   startIcon={<DownloadIcon />}
                   endIcon={<ArrowForwardIosIcon />}
                 >
@@ -188,7 +197,7 @@ export default function WorkingReport() {
               <Grid display="flex" alignItems="center">
                 <Button
                   variant="outlined"
-                  //   onClick={() => onAdd()}
+                  onClick={() => openDownload(true)}
                   startIcon={<SettingsIcon />}
                 >
                   Settings
@@ -235,6 +244,7 @@ export default function WorkingReport() {
       </Grid>
       {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
     </SideBar>
   );
 }
