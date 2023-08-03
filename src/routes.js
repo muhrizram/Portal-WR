@@ -6,6 +6,7 @@ import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
 import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
@@ -45,6 +46,9 @@ const DetailPrivilege = lazy(() =>
 const ViewOvertime = lazy(() =>
   import("./Layouts/Overtime/detailEditOvertime/index")
 );
+
+const Holiday = lazy(() => import("./Layouts/Holiday"));
+
 export const routes = [
   {
     path: "/login",
@@ -157,5 +161,11 @@ export const routes = [
   {
     path: "/overtime/detail-overtime",
     element: <ViewOvertime />,
+  },
+  {
+    path: "/master-holiday",
+    element: <Holiday />,
+    name: "Holiday",
+    icon: <AccountBalanceOutlinedIcon />,
   },
 ];
