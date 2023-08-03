@@ -23,7 +23,6 @@ import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import ViewTask from "../../Layouts/WorkingReport/ViewTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
-
 import client from "../../global/client";
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
@@ -34,6 +33,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [maxWidth, setMaxWidth] = React.useState("sm");
   const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
   const [goDetail,setgoDetail] = useState(false)
+  const [openDetailOvertime,setopenDetailOvertime] = useState(false)
 
   const navigate = useNavigate();
 
@@ -74,6 +74,26 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         console.log("data ada")
         setgoDetail(true)
       }    
+    }
+
+  const getDataOvertime = async (WrIdnya) => {
+    console.log("WR ID",WrIdnya)
+      const res = await client.requestAPI({
+        method: 'GET',
+        endpoint: `/overtime/${WrIdnya}`
+      })        
+      console.log("INI RES NYA",res )
+      if(res.data){        
+        if(res.data.attributes.listProject.length == 0 ){
+          console.log("GAADA DATA")
+          setopenDetailOvertime(false)
+        }else{
+          console.log("ADA DATA")
+          setopenDetailOvertime(true)
+        }
+      }else{
+        console.log("ERROR",res)
+      }   
   }
   
   const renderCalendar = (info) => {
@@ -81,13 +101,29 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
     );    
     if (data.length > 0) {
-      console.log(data);
       return (
         <Grid container spacing={2}>
           <Grid item xs={12} display="flex" justifyContent="right">
             <Typography variant="h6">{info.dayNumberText}</Typography>
           </Grid>
-          <Grid item xs={12} display="flex" justifyContent="center">
+          {/* <Grid item xs={12} display="flex" justifyContent="center">
+            {info.isToday ? (     
+              getDataOvertime(data[0].workingReportId),        
+              <Button variant="outlined" onClick={() => setOnClick(info)}>
+                Attendance
+              </Button>             
+            ) : (data[0].workingReportId == null ? (
+              <>
+              <Button disabled variant="outlined" >
+                task
+              </Button>
+              <Button disabled variant="outlined" >
+              overtime
+            </Button>
+            </>
+            ) : <></>)}
+          </Grid> */}
+          <Grid item xs={12} display="flex" justifyContent="left">
             {info.isToday ? (
               cekData(data[0].workingReportId) ,
                 <Button variant="outlined" onClick={() => setOnClick(info)}>
@@ -142,7 +178,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     onClick={() => {
                       setId(data[0].workingReportId)
                       console.log("WORKING ID", localStorage.getItem("workingReportId"))
-                      setIsViewOvertime(false)
+                      // setIsViewOvertime(false)
                       setOpenOvertime(true);
                     }}
                   >
@@ -167,7 +203,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               </>
               )
               
-            ) : data[0].workingReportId != null ? (
+            ) : data[0].workingReportId !== null ? (
               <>
             <Grid item xs={12} display="flex" justifyContent="left">
               <Button
@@ -181,13 +217,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   setIsViewOvertime(true);
                 }}
               >
-                View Overtime
-              </Button>
+                {openDetailOvertime ? 'View Overtime' : 'Overtime'}          
+            </Button>
             </Grid>
           </>       
             ) : (
               <></>
-            )}    
+            )
+            }    
         </Grid>
         </Grid>
       );

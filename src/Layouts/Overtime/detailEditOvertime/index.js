@@ -12,7 +12,7 @@ import CreateOvertime from "../createOvertime";
 import client from '../../../global/client';
 
 
-export default function ViewOvertime({setSelectedWorkingReportId}) {
+export default function ViewOvertime({WrIdDetail}) {
   const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
 
@@ -43,22 +43,19 @@ export default function ViewOvertime({setSelectedWorkingReportId}) {
   };
 
   const [detail, setDetail] = useState([]);
-  const [idDetail,setIdDetail] = useState()
-  const [wrId, setId] = useState(null)
   const getDetailOvertime = async () => {
-    const idDetail = (parseInt(localStorage.getItem('workingReportId')))
-    setIdDetail(idDetail)
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/overtime/${idDetail}`
+      endpoint: `/overtime/${WrIdDetail}`
     })
-      setDetail(res.data.attributes.listProject)
-      console.log("ID WR: ", idDetail)
+      setDetail(res.data)
+      console.log("ID WR: ", WrIdDetail)
       console.log("DETAIL OVERTIME", res)
   }
 
   useEffect(() => {
     getDetailOvertime()
+    console.log("NI DETAIL", detail)
   }, [])
 
   return (
@@ -71,6 +68,7 @@ export default function ViewOvertime({setSelectedWorkingReportId}) {
         </Box>
       </Grid>
 
+{detail ? (<>
         {detail.map((item) => (
       <Grid item xs={12} key={`${item.id}`}>
         <Card>
@@ -187,15 +185,17 @@ export default function ViewOvertime({setSelectedWorkingReportId}) {
             <Button startIcon={<CreateIcon />} variant="outlined"
               onClick={() => {
                 setOpenOvertime(true)
-                setId(detail[0].workingReportId)
-                console.log("HARUSNYA WR ID", detail[0].workingReportId);}
+                // setId(detail[0].workingReportId)
+                // console.log("HARUSNYA WR ID", detail[0].workingReportId);
+              }
                 }>
               Edit Task
             </Button>
           </Grid>
         </Grid>
       </Grid>
-      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} setSelectedWorkingReportId={wrId}/>
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail}/>
+      </>) : <><h1>DATA KOSONG</h1></>}
     </Grid>
   );
 }

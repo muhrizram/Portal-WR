@@ -29,6 +29,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 
+
 const CreateOvertime = ({
   open,
   closeTask,
@@ -53,11 +54,11 @@ const CreateOvertime = ({
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
 
   const clearProject = {
-    projectId: null,
+    projectId: '',
     listTask: []
   }
   const clearTask = {
-    backlogId: null,
+    backlogId: '',
     taskName: '',
     statusTaskId: '',
     duration: '',
@@ -117,7 +118,7 @@ const CreateOvertime = ({
     const temp = {...dataOvertime}
     temp.listProject[idxProject].listTask[index][name]= value
     if(name === 'taskName'){
-      temp.listProject[idxProject].listTask[index].backlogId = 30
+      temp.listProject[idxProject].listTask[index].backlogId = backlogId
     }
     setDataOvertime(temp)
     }
@@ -149,8 +150,6 @@ const CreateOvertime = ({
     getDataTask()
     getDataProject()
     getDataStatus()
-    console.log("DATAAAA", dataOvertime.listProject)
-    // console.log("DATA DETAIILLL", dataDetail)
   }, [dataOvertime, dataDetail])
 
   const getDataTask = async () => {
@@ -193,7 +192,6 @@ const onSave = async () => {
       endpoint: `/overtime/addOvertime`,
       data
     })
-    console.log('RES', res)
 
     if(!res.isError){
       localStorage.setItem('overtimeadd', true)
@@ -214,7 +212,6 @@ const onSave = async () => {
         open: true
       })
     }
-    console.log("DATA", data)
     navigate('/workingReport')
   }
 
@@ -354,7 +351,6 @@ const onSave = async () => {
                               sx={{ width: "100%", marginTop: "20px" }}
                               onChange={(_event, newValue) => {
                                 if(newValue) {
-                                  console.log("VALUEE", newValue)
                                   handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                   idxProject,
                                   index, newValue.backlogId)
