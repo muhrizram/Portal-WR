@@ -4,109 +4,21 @@
       "id": 1,
       "no": "1",
       "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
+      "fullName": "Abdan Hafizul",
+      "position": "Software Developer",
+      "email": "abc@mail.com",
+      "department": "Operasional",
+      "division":"Talent"
     },
-    {
+   {
       "id": 2,
       "no": "2",
       "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 3,
-      "no": "3",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 4,
-      "no": "4",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 5,
-      "no": "5",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 6,
-      "no": "6",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 7,
-      "no": "7",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 8,
-      "no": "8",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 9,
-      "no": "9",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 10,
-      "no": "10",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 11,
-      "no": "11",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    },
-    {
-      "id": 12,
-      "no": "12",
-      "nip": "10101010",
-      "name": "Job Group 1",
-      "contract": "Fulltime",
-      "assignment": "Project",
-      "contractEnd":"01-01-2022"
-    }
+      "fullName": "Gian",
+      "position": "Software Developer",
+      "email": "def@mail.com",
+      "department": "Operasional",
+      "division":"Management"
+    } 
   ]
 } 

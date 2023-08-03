@@ -29,36 +29,36 @@ export const split = [
     displayName: '',
     visible: true,
   },
-  {
-    column: 'TOTAL_HOURS',
-    defaultName: 'Total Hours',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'PRESENCE',
-    defaultName: 'Presence',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'PERIOD',
-    defaultName: 'Period',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'REGULAR_TASKS',
-    defaultName: 'Regular Tasks',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'OVERTIME_TASKS',
-    defaultName: 'Overtime Tasks',
-    displayName: '',
-    visible: true,
-  },
+  // {
+  //   column: 'TOTAL_HOURS',
+  //   defaultName: 'Total Hours',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'PRESENCE',
+  //   defaultName: 'Presence',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'PERIOD',
+  //   defaultName: 'Period',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'REGULAR_TASKS',
+  //   defaultName: 'Regular Tasks',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'OVERTIME_TASKS',
+  //   defaultName: 'Overtime Tasks',
+  //   displayName: '',
+  //   visible: true,
+  // },
 ];
 
 export const merged = [
@@ -92,28 +92,28 @@ export const merged = [
     displayName: '',
     visible: true,
   },
-  {
-    column: 'TOTAL_HOURS',
-    defaultName: 'Total Hours',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'PRESENCE',
-    defaultName: 'Presence',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'PERIOD',
-    defaultName: 'Period',
-    displayName: '',
-    visible: true,
-  },
-  {
-    column: 'TASKS',
-    defaultName: 'Tasks',
-    displayName: '',
-    visible: true,
-  },
+  // {
+  //   column: 'TOTAL_HOURS',
+  //   defaultName: 'Total Hours',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'PRESENCE',
+  //   defaultName: 'Presence',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'PERIOD',
+  //   defaultName: 'Period',
+  //   displayName: '',
+  //   visible: true,
+  // },
+  // {
+  //   column: 'TASKS',
+  //   defaultName: 'Tasks',
+  //   displayName: '',
+  //   visible: true,
+  // },
 ];

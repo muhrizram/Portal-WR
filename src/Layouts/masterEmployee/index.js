@@ -19,14 +19,14 @@ import { useNavigate } from "react-router";
 const Employee = () => {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
-  const [buttonImport, setButtonImport] = useState(true)
+  const [synchronise, setSynchronise] = useState(true)
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'firstName',
+    sortName: 'name',
     sortType: 'desc',
     search: ''
   })
@@ -35,12 +35,11 @@ const Employee = () => {
     {
       field: "no",
       headerName: "No",
-      flex: 1,
     },
     {
       field: "nip",
       headerName: "NIP",
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: "fullName",
@@ -56,7 +55,7 @@ const Employee = () => {
               alt="Profile Image"
             />
             <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
+              <span className="text-name">{params.row.fullName}</span>
               <span className="text-position">{params.row.position}</span>
             </div>
           </div>
@@ -64,33 +63,47 @@ const Employee = () => {
       },
     },
     {
-      field: "contract",
-      headerName: "Contract Status",
+      field: "email",
+      headerName: "Work Email",
       flex: 1,
     },
     {
-      field: "assignment",
-      headerName: "Assignment",
+      field: "department",
+      headerName: "Department",
       flex: 1,
     },
     {
-      field: "contractEnd",
-      headerName: "Contract End Date",
+      field: "division",
+      headerName: "Division Group",
       flex: 1,
     },
   ];
 
   useEffect(() => {
-    // getData()
+    // fetchData()
+    getData()
   }, [filter])
 
-  // const getData = async () => {
-  //   const res = await client.requestAPI({
-  //     method: 'GET',
-  //     endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
-  //   })
-  //   rebuildData(res)
-  // }
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:4000/content");
+  //     const jsonData = await response.json();
+  //     const updatedData = jsonData.map((item, index) => ({
+  //       ...item,
+  //       no: index + 1,
+  //     }));
+  //     setData(updatedData);
+  //   } catch (error) {
+  //   }
+  // };
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    })
+    rebuildData(res)
+  }
 
   const rebuildData = (resData) => {
     let temp = []
@@ -101,9 +114,9 @@ const Employee = () => {
         id: value.id,
         nip: value.attributes.nip,
         fullName: value.attributes.fullName,
-        contract: value.attributes.lastContractStatus,
-        assignment: value.attributes.assingment,
-        contractEnd: value.attributes.lastContractDate
+        email: value.attributes.email,
+        department: value.attributes.department,
+        division: value.attributes.divisionGroup
       }
     })
     setData([...temp])
@@ -140,7 +153,7 @@ const Employee = () => {
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'firstName',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
     })
   }
@@ -162,7 +175,7 @@ const Employee = () => {
           placeSearch="Name, NIP, etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
-          onImport={buttonImport}
+          onEmployee={synchronise}
           onFilter={(dataFilter => onFilter(dataFilter))}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}

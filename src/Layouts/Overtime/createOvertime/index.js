@@ -58,6 +58,7 @@ const CreateOvertime = ({
     listTask: []
   }
   const clearTask = {
+    workingReportId: null,
     backlogId: '',
     taskName: '',
     statusTaskId: '',
@@ -95,10 +96,10 @@ const CreateOvertime = ({
       ...clearTask
     })
     setDataOvertime(temp)
-    setTaskDurations((prevDurations) => [
-      ...prevDurations,
-      { listTask: temp.listProject[idxProject].listTask.backlogId, duration: 0 },
-    ]);
+    // setTaskDurations((prevDurations) => [
+    //   ...prevDurations,
+    //   { listTask: temp.listProject[idxProject].listTask.backlogId, duration: 0 },
+    // ]);
   }
 
   const handleChange = (event, idxProject, index, backlogId) => {    
@@ -150,6 +151,7 @@ const CreateOvertime = ({
     getDataTask()
     getDataProject()
     getDataStatus()
+    console.log("DATA OVERTIME", dataOvertime)
   }, [dataOvertime, dataDetail])
 
   const getDataTask = async () => {
@@ -212,7 +214,7 @@ const onSave = async () => {
         open: true
       })
     }
-    navigate('/workingReport')
+    closeTask(false)
   }
 
   const saveEdit = async () => {

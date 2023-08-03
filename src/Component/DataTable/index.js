@@ -9,6 +9,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import DeleteIcon from '@mui/icons-material/Delete';
 import blanktable from '../../assets/blanktable.png'
 import '../../App.css'
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
 
 const DataTable = ({
   title,
@@ -22,7 +23,7 @@ const DataTable = ({
   onDelete,
   onFilter,
   totalData,
-  onImport,
+  onEmployee,
   loading = false
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
@@ -67,24 +68,26 @@ const DataTable = ({
   }, [sorting, pagination]);
 
   useEffect(() => {
-    const temp = [...columns];
-    temp.push({
-      field: "actions",
-      headerName: "Action",
-      width: 200,
-      renderCell: (data) => {
-        return (
-          <div> 
-            <IconButton onClick={() => onDetail(data.id)}>
-                <PreviewIcon />
-              </IconButton>
-              <IconButton onClick={() => onDelete(data.id)}>
-                <DeleteIcon />
-              </IconButton>                      
-          </div>
-        );
-      },
-    });
+    const temp = [...columns];   
+    if(!onEmployee) {
+      temp.push({
+        field: "actions",
+        headerName: "Action",
+        width: 200,
+        renderCell: (data) => {
+          return (
+            <div> 
+              <IconButton onClick={() => onDetail(data.id)}>
+                  <PreviewIcon />
+                </IconButton>
+                <IconButton onClick={() => onDelete(data.id)}>
+                  <DeleteIcon />
+                </IconButton>                      
+            </div>
+          );
+        },
+      }); 
+    }
     setDataColumns(temp);
   }, [columns]);
 
@@ -115,6 +118,16 @@ const DataTable = ({
           />
         </Grid>
         <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
+          
+          {onEmployee ? (
+            <Button
+            variant="contained"
+            onClick={() => onEmployee()}
+            startIcon={<SyncOutlinedIcon />}
+          >
+            Synchronise
+          </Button>
+          ) : (
           <Button
             variant="contained"
             onClick={() => onAdd()}
@@ -122,15 +135,7 @@ const DataTable = ({
           >
             {`NEW ${title}`}
           </Button>
-          {onImport ? (
-            <Button
-            variant="outlined"
-            onClick={() => onImport()}
-            startIcon={<AddIcon />}
-          >
-            Import
-          </Button>
-          ) : (<></>)}
+          )}
           
         </Grid>
       </Grid>
