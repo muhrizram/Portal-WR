@@ -344,8 +344,7 @@ const PopupTask = ({
             setTimeout(() => {
               navigate('/workingReport')
             }, 3000)      
-          }else{   
-            console.log("ERROR",res)   
+          }else{      
             setDataAlert({
               severity: 'error',
               message: res.error.meta.message,
