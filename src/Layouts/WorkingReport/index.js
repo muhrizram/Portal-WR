@@ -192,7 +192,7 @@ export default function WorkingReport() {
     } else if (isViewOvertime) {
       dom = (
         <ViewOvertime
-        // WrIdDetail = {WrIdDetail}
+        WrIdDetail = {WrIdDetail}
         />
       )
     }
@@ -306,13 +306,14 @@ export default function WorkingReport() {
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={() => setOpenOvertime(true)}>Overtime</Button>
+          <Button onClick={() => setOpenOvertime(true)}>Open Overtime</Button>
         </Grid>
         <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>
 
+<>
       <Dialog
         open={openDialog}
         onClose={handleClose}
@@ -327,26 +328,28 @@ export default function WorkingReport() {
           <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
             Edit setting documents
           </DialogContentText>
+        </DialogContent>
 
-          <Grid>
-            <Box sx={{ width: "100%" }} >
-              <Tabs value={value} onChange={handleTab} className='tab-config'>
+        <Grid>
+            <Box className="tab-config">
+              <Tabs value={value} onChange={handleTab} >
                 <Tab value="one" label="TASK CONFIGURATION"></Tab>
                 <Tab value="two" label="COLUMN CONFIGURATION" />
                 <Tab value="three" label="APPROVAL CONFIGURATION" />
               </Tabs>
             </Box>
             {value === "one" && (<TaskConfiguration/>)}
-            {value === "two" && (<ColumnConfiguration/>)}
+            {value === "two" && (<ColumnConfiguration />)}
             {value === "three" && (<ApprovalConfiguration/>)}
           </Grid>
 
-        </DialogContent>
         <DialogActions className="dialog-delete-actions">
           <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
           <Button onClick={handleCloseSetting} variant='contained' className='button-text'>Update Configuration</Button>
         </DialogActions>
     </Dialog>
+
+    </>
 
       <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />

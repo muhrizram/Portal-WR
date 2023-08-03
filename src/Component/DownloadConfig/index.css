@@ -14,12 +14,12 @@
   background-color: transparent !important;
 }
 
-.Mui-selected {
+/* .Mui-selected {
   background: #00897B !important;
   box-shadow: 0px 2px 4px rgba(165, 163, 174, 0.3) !important;
   border-radius: 6px !important;
   color: #F8F9FA !important;
-}
+} */
 
 .containerAdd {
   padding: 16px;

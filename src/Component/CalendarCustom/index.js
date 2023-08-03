@@ -76,25 +76,25 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       }    
     }
 
-  const getDataOvertime = async (WrIdnya) => {
-    console.log("WR ID",WrIdnya)
-      const res = await client.requestAPI({
-        method: 'GET',
-        endpoint: `/overtime/${WrIdnya}`
-      })        
-      console.log("INI RES NYA",res )
-      if(res.data){        
-        if(res.data.attributes.listProject.length == 0 ){
-          console.log("GAADA DATA")
-          setopenDetailOvertime(false)
-        }else{
-          console.log("ADA DATA")
-          setopenDetailOvertime(true)
-        }
-      }else{
-        console.log("ERROR",res)
-      }   
-  }
+  // const getDataOvertime = async (WrIdnya) => {
+  //   console.log("WR ID",WrIdnya)
+  //     const res = await client.requestAPI({
+  //       method: 'GET',
+  //       endpoint: `/overtime/${WrIdnya}`
+  //     })        
+  //     console.log("INI RES NYA",res )
+  //     if(res.data){        
+  //       if(res.data.attributes.listProject.length == 0 ){
+  //         console.log("GAADA DATA")
+  //         setopenDetailOvertime(false)
+  //       }else{
+  //         console.log("ADA DATA")
+  //         setopenDetailOvertime(true)
+  //       }
+  //     }else{
+  //       console.log("ERROR",res)
+  //     }   
+  // }
   
   const renderCalendar = (info) => {
     const data = events.filter(
@@ -169,15 +169,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           ) : null}
 
 
-             {info.isToday ? (              
-              !localStorage.getItem('overtimeadd') ? (
+             {info.isToday ? (
+              // getDataOvertime(data[0].workingReportId) ,              
+              // !localStorage.getItem('overtimeadd') ? (
                 <>
                 <Grid item xs={12} display="flex" justifyContent="left">
                   <Button
                     variant="outlined-warning"
                     onClick={() => {
                       setId(data[0].workingReportId)
-                      console.log("WORKING ID", localStorage.getItem("workingReportId"))
+                      console.log("WORKING ID", (data[0].workingReportId))
                       // setIsViewOvertime(false)
                       setOpenOvertime(true);
                     }}
@@ -186,22 +187,22 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   </Button>
                 </Grid>
                 </>
-              ) : (
-                <>
-              <Grid item xs={12} display="flex" justifyContent="center">
-                <Button
-                  variant="outlined-warning"
-                  onClick={() => {
-                    setId(data[0].workingReportId)
-                    setWrIdDetail(wrId.workingReportId)
-                    setIsViewOvertime(true);
-                  }}
-                >
-                  View Overtime
-                </Button>
-              </Grid>
-              </>
-              )
+              // ) : (
+              //   <>
+              // <Grid item xs={12} display="flex" justifyContent="center">
+              //   <Button
+              //     variant="outlined-warning"
+              //     onClick={() => {
+              //       setId(data[0].workingReportId)
+              //       setWrIdDetail(wrId.workingReportId)
+              //       setIsViewOvertime(true);
+              //     }}
+              //   >
+              //     View Overtime
+              //   </Button>
+              // </Grid>
+              // </>
+              // )
               
             ) : data[0].workingReportId !== null ? (
               <>
@@ -209,15 +210,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <Button
                 variant="outlined-warning"
                 onClick={() => {
-                  localStorage.setItem(
-                    "workingReportId",
-                    data[0].workingReportId
-                  );
+                  // localStorage.setItem(data[0].workingReportId);
                   setId(data[0].workingReportId)                  
                   setIsViewOvertime(true);
                 }}
               >
-                {openDetailOvertime ? 'View Overtime' : 'Overtime'}          
+                View Overtime
+                {/* {openDetailOvertime ? 'View Overtime' : 'Overtime'}           */}
             </Button>
             </Grid>
           </>       
