@@ -75,7 +75,6 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
   }, [])
 
   const saveConfiguration = () => {
-    console.log('hit')
     const tempApproval = dataApproval.map(res => {
       return {
         headerValue: res.headerValue,
