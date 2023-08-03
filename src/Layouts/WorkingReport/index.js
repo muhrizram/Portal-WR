@@ -26,6 +26,7 @@ import TaskConfiguration from "./PopupSetting/TaskConfiguration";
 import ColumnConfiguration from "./PopupSetting/CoumnConfiguration";
 import ApprovalConfiguration from "./PopupSetting/ApprovalConfiguration";
 import DownloadConfiguration from "../../Component/DownloadConfig";
+import { getWorkingReportExcelUrl, getWorkingReportPdfUrl } from "../../global/donwloadConfig";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -102,7 +103,24 @@ export default function WorkingReport() {
     }
   };
 
-  const rebuildData = (resData) => {    
+  // func for get download file excel or pdf
+  const downloadFormatFile = (employeeId = 0, isExcell, url = '') => {
+    employeeId = this.state.role !== 'talent' ? this.state.selectedEmployee.employeeId : localStorage.getItem('employeeId');
+    const start = this.state.startDate;
+    const end = this.state.endDate;
+    const link = document.createElement('a');
+    link.href = isExcell ? getWorkingReportExcelUrl(employeeId, start, end, url) : getWorkingReportPdfUrl(employeeId, start, end, url);
+    link.download = '';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    console.log(link.href);
+  }
+
+  const rebuildData = (resData) => {
+    console.log("data: ", resData);
     let temp = [];
     temp = resData.data.map((value, index) => {
       return value.attributes.listDate.holiday
