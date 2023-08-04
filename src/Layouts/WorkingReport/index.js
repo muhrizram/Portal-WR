@@ -132,6 +132,7 @@ export default function WorkingReport() {
             ),
             period: value.attributes.period,
             workingReportId: value.attributes.listDate.workingReportId,
+            overtime: value.attributes.listDate.overtime,
           }
         : {
             period: value.attributes.period,
@@ -139,7 +140,8 @@ export default function WorkingReport() {
               "yyyy-MM-DD"
             ),
             workingReportId: value.attributes.listDate.workingReportId,
-            absenceId: value.attributes.listDate.presenceId,
+            task: value.attributes.listDate.task,
+            overtime: value.attributes.listDate.overtime,
           };
     });
     console.log(temp);
@@ -304,9 +306,6 @@ export default function WorkingReport() {
         </Grid>
         <Grid item xs={12}>
           <Button onClick={() => setOpenTask(true)}>Open task</Button>
-        </Grid>
-        <Grid item xs={12}>
-          <Button onClick={() => setOpenOvertime(true)}>Open Overtime</Button>
         </Grid>
         <Grid item xs={12}>
           {renderCheckin()}
