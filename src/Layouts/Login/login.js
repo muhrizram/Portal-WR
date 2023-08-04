@@ -9,42 +9,66 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React from "react";
+import React, {useEffect} from "react";
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import client from "../../global/client";
 import { useNavigate } from 'react-router';
 // import { useAuth } from "react-oidc-context";
 const Login = ({ changeStat }) => {
   // const auth = useAuth();
-
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
+  const [paramsLogin,setparamsLogin] = React.useState({})
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  };
-  // console.log("auth login: ", auth);
-  const handleLogin = () => {
-    navigate('/')
+  };  
+  const handleLogin = async() => {
+    const dataReadyLogin = paramsLogin
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `auth/login`,
+      data: dataReadyLogin
+    })
+    if (res) {
+      localStorage.setItem('token', res.accessToken)
+      console.log("SUCCESS", res)
+    }else{
+      console.log("ERROR", res)
+    }
+    // navigate('/')
+    console.log("login")
     // auth.signinRedirect();
   };
+
+  useEffect(() => {
+    console.log("paramsLogin", paramsLogin)
+  },[paramsLogin])
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    const updateParams = { ...paramsLogin };
+    updateParams[name] = value;
+    setparamsLogin(updateParams)      
+  }
+
   return (
     <Grid container paddingTop={20}>
       <Grid item xs={12}>
         <Typography variant="body2">Welcome to</Typography>
         <Typography variant="body2">Working Report 79 👋</Typography>
       </Grid>
-      {/* <Grid item xs={12} paddingTop={2}>
+      <Grid item xs={12} paddingTop={2}>
         <Typography variant="body4">Please sign in to continue</Typography>
-      </Grid> */}
+      </Grid>
       <Grid item xs={12} paddingBottom={2} paddingTop={4}>
         <TextField 
           label="Email"
+          onChange={(e) => handleChange(e)}
+          name="username"
           fullWidth
           placeholder="Input your email"
           InputProps={{
@@ -61,6 +85,8 @@ const Login = ({ changeStat }) => {
           fullWidth 
           placeholder="Input your password" 
           label="password" 
+          onChange={(e) => handleChange(e)}
+          name="password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             startAdornment: (

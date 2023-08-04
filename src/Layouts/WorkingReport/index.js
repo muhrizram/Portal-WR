@@ -139,7 +139,8 @@ export default function WorkingReport() {
               "yyyy-MM-DD"
             ),
             workingReportId: value.attributes.listDate.workingReportId,
-            absenceId: value.attributes.listDate.presenceId,
+            task: value.attributes.listDate.task,
+            overtime: value.attributes.listDate.overtime,
           };
     });
     console.log(temp);

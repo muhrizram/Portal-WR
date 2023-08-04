@@ -32,6 +32,7 @@ const requestAPI = async ({
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/vnd.api+json",
     Accept: "application/vnd.api+json",
+    Authorization: `Bearer ${localStorage.getItem('token')}`
   };
   // if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
   // const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };

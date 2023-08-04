@@ -60,42 +60,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
 
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
-  };
+  }; 
 
-  const cekData = async (cekWr) => {         
-      const res = await client.requestAPI({
-        method: "GET",
-        endpoint: `/task/detail?wrId=${cekWr}`
-      });      
-      if(res.status == "400 BAD_REQUEST"){
-        console.log("data kosong")
-        setgoDetail(false)
-      }else{
-        console.log("data ada")
-        setgoDetail(true)
-      }    
-    }
-
-  // const getDataOvertime = async (WrIdnya) => {
-  //   console.log("WR ID",WrIdnya)
-  //     const res = await client.requestAPI({
-  //       method: 'GET',
-  //       endpoint: `/overtime/${WrIdnya}`
-  //     })        
-  //     console.log("INI RES NYA",res )
-  //     if(res.data){        
-  //       if(res.data.attributes.listProject.length == 0 ){
-  //         console.log("GAADA DATA")
-  //         setopenDetailOvertime(false)
-  //       }else{
-  //         console.log("ADA DATA")
-  //         setopenDetailOvertime(true)
-  //       }
-  //     }else{
-  //       console.log("ERROR",res)
-  //     }   
-  // }
-  
   const renderCalendar = (info) => {
     const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
@@ -105,27 +71,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         <Grid container spacing={2}>
           <Grid item xs={12} display="flex" justifyContent="right">
             <Typography variant="h6">{info.dayNumberText}</Typography>
-          </Grid>
-          {/* <Grid item xs={12} display="flex" justifyContent="center">
-            {info.isToday ? (     
-              getDataOvertime(data[0].workingReportId),        
-              <Button variant="outlined" onClick={() => setOnClick(info)}>
-                Attendance
-              </Button>             
-            ) : (data[0].workingReportId == null ? (
-              <>
-              <Button disabled variant="outlined" >
-                task
-              </Button>
-              <Button disabled variant="outlined" >
-              overtime
-            </Button>
-            </>
-            ) : <></>)}
-          </Grid> */}
+          </Grid>         
           <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (
-              cekData(data[0].workingReportId) ,
+            {info.isToday ? (              
                 <Button variant="outlined" onClick={() => setOnClick(info)}>
                   Attendance
                 </Button>             
@@ -146,7 +94,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <Button
               variant="outlined"
               onClick={
-                goDetail
+                data[0].task && data[0].overtime
                   ? () => {                      
                     setId({
                       workingReportId: data[0].workingReportId,
@@ -167,7 +115,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               task
             </Button>
           ) : null}
-
 
              {info.isToday ? (
               // getDataOvertime(data[0].workingReportId) ,              
