@@ -29,7 +29,7 @@ const Login = ({ changeStat }) => {
   const handleLogin = async() => {
     const dataReadyLogin = paramsLogin
     const res = await client.requestAPI({
-      method: 'GET',
+      method: 'POST',
       endpoint: `auth/login`,
       data: dataReadyLogin
     })
@@ -68,7 +68,7 @@ const Login = ({ changeStat }) => {
         <TextField 
           label="Email"
           onChange={(e) => handleChange(e)}
-          name="username"
+          name="email"
           fullWidth
           placeholder="Input your email"
           InputProps={{

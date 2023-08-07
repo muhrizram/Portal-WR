@@ -5,6 +5,27 @@ import axios from "axios";
 const instance = axios.create();
 // const auth = useAuth()
 
+const refreshToken = async () => {
+  try {
+    const host = process.env.REACT_APP_BASE_API;
+    const refreshToken = localStorage.getItem("refreshToken");
+    const refreshTokenEndpoint = `${host}/auth/refreshToken`;
+    const response = await axios.post(refreshTokenEndpoint, {
+      refreshToken: refreshToken,
+    });
+
+    if (response.status === 200) {      
+      localStorage.setItem('token', response.data.access_token);
+      return true;
+    } else {
+      throw new Error("Token refresh failed");
+    }
+  } catch (error) {
+    console.error("Token refresh error:", error);
+    return false;
+  }
+};
+
 
 export const clientState = {
   requesting: false,
@@ -65,6 +86,13 @@ const requestAPI = async ({
 
     return result;
   } catch (error) {
+    if (error.response && error.response.status === 401) {      
+      const refreshTokenSuccess = await refreshToken();
+      if (refreshTokenSuccess) {        
+        return requestAPI({ method, endpoint, data, headers });
+      }
+    }
+
     // Remove Fetching State
     clientState.requesting = false;
     result = { status: error.response.status, error: error.response.data, isError: true };

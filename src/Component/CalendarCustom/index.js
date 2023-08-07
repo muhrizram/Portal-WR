@@ -109,7 +109,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 data[0].task
                   ? () => {                      
                     setId({
-                      workingReportId: data[0].workingReportId,
+                      workingRepakuortId: data[0].workingReportId,
                       absenceId: data[0].absenceId,
                     });
                     setWrIdDetail(data[0].workingReportId);
@@ -145,7 +145,20 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             >
               {data[0].workingReportId !== null && data[0].overtime == true ? "View Overtime" : "Overtime"}
             </Button>
-          ) : null}
+          ) : 
+          <Button
+              variant="outlined-warning"
+              onClick={
+                () => {
+                  setId(data[0].workingReportId)
+                  setWrIdDetail(data[0].workingReportId);
+                  setIsViewOvertime(true);
+                }
+              }
+            >
+              {"View Overtime"}
+            </Button>
+          }
         </Grid>
         </Grid>
       );
