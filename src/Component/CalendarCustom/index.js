@@ -62,10 +62,24 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   }; 
 
+  const cekData = async (cekWr) => {         
+      const res = await client.requestAPI({
+        method: "GET",
+        endpoint: `/task/detail?wrId=${cekWr}`
+      });      
+      if(res.status == "400 BAD_REQUEST"){
+        console.log("data kosong")
+        setgoDetail(false)
+      }else{
+        console.log("data ada")
+        setgoDetail(true)
+      }    
+    }
+
   const renderCalendar = (info) => {
     const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-    );    
+    );
     if (data.length > 0) {
       return (
         <Grid container spacing={2}>
@@ -82,9 +96,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <Button disabled variant="outlined" >
                   task
                 </Button>
-                <Button disabled variant="outlined" >
-                overtime
-              </Button>
               </>
               ) : null )
               }
@@ -94,7 +105,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <Button
               variant="outlined"
               onClick={
-                data[0].task && data[0].overtime
+                data[0].task
                   ? () => {                      
                     setId({
                       workingReportId: data[0].workingReportId,
@@ -116,61 +127,24 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             </Button>
           ) : null}
 
-             {info.isToday ? (
-              // getDataOvertime(data[0].workingReportId) ,              
-              // !localStorage.getItem('overtimeadd') ? (
-                <>
-                <Grid item xs={12} display="flex" justifyContent="left">
-                  <Button
-                    variant="outlined-warning"
-                    onClick={() => {
-                      setId(data[0].workingReportId)
-                      console.log("WORKING ID", (data[0].workingReportId))
-                      // setIsViewOvertime(false)
-                      setOpenOvertime(true);
-                    }}
-                  >
-                    Overtime
-                  </Button>
-                </Grid>
-                </>
-              // ) : (
-              //   <>
-              // <Grid item xs={12} display="flex" justifyContent="center">
-              //   <Button
-              //     variant="outlined-warning"
-              //     onClick={() => {
-              //       setId(data[0].workingReportId)
-              //       setWrIdDetail(wrId.workingReportId)
-              //       setIsViewOvertime(true);
-              //     }}
-              //   >
-              //     View Overtime
-              //   </Button>
-              // </Grid>
-              // </>
-              // )
-              
-            ) : data[0].workingReportId !== null ? (
-              <>
-            <Grid item xs={12} display="flex" justifyContent="left">
-              <Button
-                variant="outlined-warning"
-                onClick={() => {
-                  // localStorage.setItem(data[0].workingReportId);
-                  setId(data[0].workingReportId)                  
+          {info.isToday ? (
+            <Button
+              variant="outlined-warning"
+              onClick={
+                data[0].workingReportId !== null && data[0].overtime == true ? () => {
+                  setId(data[0].workingReportId)
+                  setWrIdDetail(data[0].workingReportId);
                   setIsViewOvertime(true);
-                }}
-              >
-                View Overtime
-                {/* {openDetailOvertime ? 'View Overtime' : 'Overtime'}           */}
+                }
+                : () => {
+                  setOpenOvertime(true);
+                  setId(data[0].workingReportId)
+                }
+              }
+            >
+              {data[0].workingReportId !== null && data[0].overtime == true ? "View Overtime" : "Overtime"}
             </Button>
-            </Grid>
-          </>       
-            ) : (
-              <></>
-            )
-            }    
+          ) : null}
         </Grid>
         </Grid>
       );

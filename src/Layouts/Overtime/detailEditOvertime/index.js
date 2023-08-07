@@ -48,14 +48,13 @@ export default function ViewOvertime({WrIdDetail}) {
       method: 'GET',
       endpoint: `/overtime/${WrIdDetail}`
     })
-      setDetail(res.data)
+      setDetail(res.data.attributes.listProject)
       console.log("ID WR: ", WrIdDetail)
       console.log("DETAIL OVERTIME", res)
   }
 
   useEffect(() => {
     getDetailOvertime()
-    console.log("NI DETAIL", detail)
   }, [])
 
   return (
@@ -68,7 +67,7 @@ export default function ViewOvertime({WrIdDetail}) {
         </Box>
       </Grid>
 
-{detail ? (<>
+      {detail ? (<>
         {detail.map((item) => (
       <Grid item xs={12} key={`${item.id}`}>
         <Card>
@@ -185,8 +184,6 @@ export default function ViewOvertime({WrIdDetail}) {
             <Button startIcon={<CreateIcon />} variant="outlined"
               onClick={() => {
                 setOpenOvertime(true)
-                // setId(detail[0].workingReportId)
-                // console.log("HARUSNYA WR ID", detail[0].workingReportId);
               }
                 }>
               Edit Task
