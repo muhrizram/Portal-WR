@@ -103,6 +103,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Grid item xs={12} display="flex" justifyContent="left">
           {info.isToday ? (
             <Button
+              disable={!data[0].workingReportId}
               variant="outlined"
               onClick={
                 data[0].task
