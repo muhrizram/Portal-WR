@@ -60,7 +60,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
 
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
-  };
+  }; 
 
   const cekData = async (cekWr) => {         
       const res = await client.requestAPI({
@@ -85,10 +85,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         <Grid container spacing={2}>
           <Grid item xs={12} display="flex" justifyContent="right">
             <Typography variant="h6">{info.dayNumberText}</Typography>
-          </Grid>
+          </Grid>         
           <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (
-              cekData(data[0].workingReportId) ,
+            {info.isToday ? (              
                 <Button variant="outlined" onClick={() => setOnClick(info)}>
                   Attendance
                 </Button>             
@@ -104,12 +103,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Grid item xs={12} display="flex" justifyContent="left">
           {info.isToday ? (
             <Button
+              disable={!data[0].workingReportId}
               variant="outlined"
               onClick={
-                goDetail
+                data[0].task
                   ? () => {                      
                     setId({
-                      workingReportId: data[0].workingReportId,
+                      workingRepakuortId: data[0].workingReportId,
                       absenceId: data[0].absenceId,
                     });
                     setWrIdDetail(data[0].workingReportId);
@@ -145,7 +145,20 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             >
               {data[0].workingReportId !== null && data[0].overtime == true ? "View Overtime" : "Overtime"}
             </Button>
-          ) : null}
+          ) : 
+          <Button
+              variant="outlined-warning"
+              onClick={
+                () => {
+                  setId(data[0].workingReportId)
+                  setWrIdDetail(data[0].workingReportId);
+                  setIsViewOvertime(true);
+                }
+              }
+            >
+              {"View Overtime"}
+            </Button>
+          }
         </Grid>
         </Grid>
       );

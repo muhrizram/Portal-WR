@@ -69,21 +69,7 @@ const PopupTask = ({
   const [firstEditTask,setfirstEditTask] = useState(
       {    
         workingReportId: null,
-        listProject: [
-          // {
-          //   absenceId: null,
-          //   projectId: null,
-          //   listTask: [
-          //     {
-          //       backlogId: '',
-          //       taskName: '',
-          //       statusTaskId: '',
-          //       duration: '',
-          //       taskItem: ''
-          //     }
-          //   ]
-          // }
-        ]
+        listProject: []
       }
     )
 
@@ -94,20 +80,7 @@ const PopupTask = ({
         setfirstEditTask((prevfirstEditTask) => ({
           ...prevfirstEditTask,
           workingReportId : parseInt(dataDetail[i].id),
-          listProject : tempProject
-            // [{
-            //   absenceId: dataDetail[i].attributes.absenceId,
-            //   projectId: dataDetail[i].attributes.projectId,
-            //   listTask: [
-            //     {
-            //       backlogId: dataDetail[i].attributes.listTask[i].backlogId ,
-            //       taskName: dataDetail[i].attributes.listTask[i].taskName,
-            //       statusTaskId: dataDetail[i].attributes.listTask[i].statusTaskId,
-            //       duration: dataDetail[i].attributes.listTask[i].taskDuration,
-            //       taskItem: dataDetail[i].attributes.listTask[i].taskItem
-            //     }
-            //   ]}
-            // ]
+          listProject : tempProject           
         }
         ));
       }     
@@ -165,20 +138,26 @@ const PopupTask = ({
         newProject.listTask.push(newTask);
       } 
       readyUpdate.listProject.push(newProject);
-    }
-    console.log("INI READY UPDATE",readyUpdate);
-
+    }    
 
     const res = await client.requestAPI({
       method: 'PUT',
       endpoint: `task/update`,
       data : readyUpdate
     })
-    if (res.data) {      
-     console.log("update task")
+    if (res.data) {           
      closeTask(true)
+     setDataAlert({
+      severity: 'success',
+      open: true,
+      message: res.data.meta.message
+    })
     }else{
-      console.log(res)
+      setDataAlert({
+        severity: 'error',
+        open: true,
+        message: res.data.meta.message
+      })
       closeTask(true)
     }
   }  
@@ -236,10 +215,6 @@ const PopupTask = ({
       const temp = { ...dataProject };
       temp.listProject[idxProject].listTask.push({ ...clearTask });
       setProject(temp);
-      // setTaskDurations((prevDurations) => [
-      //   ...prevDurations,
-      //   { listTask: temp.listProject[idxProject].listTask.backlogId, duration: 0 },
-      // ]);
     }
   };
 
@@ -248,8 +223,7 @@ const PopupTask = ({
       const { name, value } = event.target;
       const updatedFirstEditTask = { ...firstEditTask };
       updatedFirstEditTask.listProject[idxProject].listTask[index][name] = value;
-      setfirstEditTask(updatedFirstEditTask);
-      console.log("PAS UPDATE",firstEditTask)
+      setfirstEditTask(updatedFirstEditTask);      
     }else{
       const { name, value } = event.target;
       if (name === 'duration') {      
@@ -325,16 +299,13 @@ const PopupTask = ({
         }
         if (tempEffort > 8 || tempEffort < 1) {
           setPopUpMoretask(true);        
-        }else{
-          const dataPost = dataProject
-          console.log("INI OBJECT POST", dataPost)
+        }else{                
           const res = await client.requestAPI({
             method: 'POST',
             endpoint: `/task/addTask`,
             data: dataProject,
           });      
-          if(!res.isError){
-            console.log("INI RES",res.data.attributes)
+          if(!res.isError){            
             localStorage.setItem('istaskadd', true)            
             setDataAlert({
               severity: 'success',
@@ -344,8 +315,7 @@ const PopupTask = ({
             setTimeout(() => {
               navigate('/workingReport')
             }, 3000)      
-          }else{   
-            console.log("ERROR",res)   
+          }else{      
             setDataAlert({
               severity: 'error',
               message: res.error.meta.message,
