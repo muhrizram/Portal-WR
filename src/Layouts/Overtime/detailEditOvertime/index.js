@@ -48,9 +48,14 @@ export default function ViewOvertime({WrIdDetail}) {
       method: 'GET',
       endpoint: `/overtime/${WrIdDetail}`
     })
-      setDetail(res.data.attributes.listProject)
-      console.log("ID WR: ", WrIdDetail)
-      console.log("DETAIL OVERTIME", res)
+
+    const updatedData = {
+      ...res.data,
+      id: parseInt(res.data.id)
+    };
+
+      setDetail(updatedData)
+      // setDetail(res.data.attributes.listProject)
   }
 
   useEffect(() => {
@@ -67,8 +72,8 @@ export default function ViewOvertime({WrIdDetail}) {
         </Box>
       </Grid>
 
-      {detail ? (<>
-        {detail.map((item) => (
+      {detail.attributes ? (<>
+        {detail.attributes.listProject.map((item) => (
       <Grid item xs={12} key={`${item.id}`}>
         <Card>
           <Grid container p={4} spacing={2}>

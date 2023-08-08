@@ -9,6 +9,7 @@ import { useNavigate } from "react-router";
 
 const Employee = () => {
   const [synchronise, setSynchronise] = useState(true)
+  // const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
@@ -116,6 +117,36 @@ const Employee = () => {
     })
   }
 
+  const onSync = async () => { 
+    
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: `/syncWithOdoo`,
+      data
+    })
+
+    // if(!res.isError){
+    //   setDataAlert({
+    //     severity: 'success',
+    //     open: true,
+    //     message: res.data.meta.message
+    //   }) 
+
+    //   setTimeout(() => {
+    //     navigate('/masteremployee');
+    //   }, 3000);
+    // }
+    // else {          
+    //   setDataAlert({
+    //     severity: 'error',
+    //     message: res.error.detail,
+    //     open: true
+    //   })
+    // }
+    // closeTask(false)
+    // navigate("/masteremployee/create");
+  }
+
   return (
     <div>
       <SideBar>
@@ -125,7 +156,8 @@ const Employee = () => {
           columns={columns}
           placeSearch="Name, NIP, etc"
           searchTitle="Search By"
-          onEmployee={synchronise}
+          // onEmployee={synchronise}
+          onEmployee={() => onSync()}
           onFilter={(dataFilter => onFilter(dataFilter))}
           handleChangeSearch={handleChangeSearch}
           totalData={totalData}
