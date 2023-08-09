@@ -92,6 +92,7 @@ const PopupTask = ({
       setdataDetailnya(dataDetail)
       refreshdataDetail()          
       setOpentask(true)
+      console.log("DATA EDIT TASK", firstEditTask)
     }
     getlistTaskProject()
     getlistProject()

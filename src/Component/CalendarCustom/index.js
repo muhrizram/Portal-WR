@@ -80,6 +80,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
     );
+    
     if (data.length > 0) {
       return (
         <Grid container spacing={2}>
@@ -132,7 +133,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <Button
               variant="outlined-warning"
               onClick={
-                data[0].workingReportId !== null && data[0].overtime == true ? () => {
+                data[0].workingReportId && data[0].overtime == true ?() => {
                   setId(data[0].workingReportId)
                   setWrIdDetail(data[0].workingReportId);
                   setIsViewOvertime(true);
@@ -143,10 +144,12 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 }
               }
             >
-              {data[0].workingReportId !== null && data[0].overtime == true ? "View Overtime" : "Overtime"}
+              {data[0].workingReportId && data[0].overtime == true ? "View Overtime" : "Overtime"}
             </Button>
           ) : 
-          <Button
+          (
+            data[0].overtime == true ? (
+            <Button
               variant="outlined-warning"
               onClick={
                 () => {
@@ -158,7 +161,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             >
               {"View Overtime"}
             </Button>
-          }
+            ) : (<></>)
+          )}
         </Grid>
         </Grid>
       );
