@@ -104,10 +104,12 @@ export default function WorkingReport() {
   };
 
   // func for get download file excel or pdf
-  const downloadFormatFile = (employeeId = 0, isExcell, url = '') => {
-    employeeId = this.state.role !== 'talent' ? this.state.selectedEmployee.employeeId : localStorage.getItem('employeeId');
-    const start = this.state.startDate;
-    const end = this.state.endDate;
+  const downloadFormatFile = (employeeId = 1, isExcell, url = '') => {
+    // employeeId = this.state.role !== 'talent' ? this.state.selectedEmployee.employeeId : localStorage.getItem('employeeId');
+    // const start = this.state.startDate;
+    // const end = this.state.endDate;
+    const start = "2023-07-01";
+    const end = "2023-07-31";
     const link = document.createElement('a');
     link.href = isExcell ? getWorkingReportExcelUrl(employeeId, start, end, url) : getWorkingReportPdfUrl(employeeId, start, end, url);
     link.download = '';
@@ -223,6 +225,14 @@ export default function WorkingReport() {
     })
   }
 
+  const handleDownloadPdf = () => {
+    downloadFormatFile(1, false, "/workingReport/download/pdf?userId=")
+  }
+
+  const handleDownloadExcel = () => {
+    downloadFormatFile(2, true, "/workingReport/download/excel?userId=")
+  }
+
   return (
     <SideBar>
       <Grid container rowSpacing={2}>
@@ -235,42 +245,40 @@ export default function WorkingReport() {
               <Grid item xs={8.4}>
                 <Typography variant="headerCardMenu">{`Working Report`}</Typography>
               </Grid>
-              <Grid item xs={2} alignItems="right">
+              <Grid item xs={2} display="flex" justifyContent="flex-end" alignItems="center">
                 <Button
                   id="basic-button"
                   variant="contained"
-                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-controls={open ? "basic-menu" : undefined}
                   aria-haspopup="true"
-                  aria-expanded={open ? 'true' : undefined}
+                  aria-expanded={open ? "true" : undefined}
                   onClick={handleClick}
-                  startIcon={<DownloadIcon />}
-                  endIcon={<ArrowForwardIosIcon />}
+                  startIcon={<DownloadIcon style={{ fontSize: 16 }} />}
+                  endIcon={<ArrowForwardIosIcon style={{ fontSize: 14 }} />}
                 >
                   Download
                 </Button>
                 <Menu
                   id="basic-menu"
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                  }}
-                  // dropMenu={dropMenu}
+                  sx={{ marginTop: 0.5 }}
+                  anchorEl={open}
                   open={open}
                   onClose={handleClose}
-                  >
-                    <MenuItem onClick={handleClose}>
-                      Download as Pdf
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                      Download as Excel
-                    </MenuItem>
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                >
+                  <MenuItem onClick={handleDownloadPdf}>Download as Pdf</MenuItem>
+                  <MenuItem onClick={handleDownloadExcel}>Download as Excel</MenuItem>
                 </Menu>
               </Grid>
-              <Grid display="flex" alignItems="center">
+              <Grid item display="flex" alignItems="center" justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   onClick={handleSetting}
-                  // onClick={() => openDownload(true)}
                   startIcon={<SettingsIcon />}
+                  sx={{ paddingY: 1 }}
                 >
                   Settings
                 </Button>
@@ -331,10 +339,28 @@ export default function WorkingReport() {
 
         <Grid>
             <Box className="tab-config">
-              <Tabs value={value} onChange={handleTab} >
-                <Tab value="one" label="TASK CONFIGURATION"></Tab>
-                <Tab value="two" label="COLUMN CONFIGURATION" />
-                <Tab value="three" label="APPROVAL CONFIGURATION" />
+            <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{marginBottom: 3}}>
+                <Tab 
+                  value="one" 
+                  label="TASK CONFIGURATION"
+                  style={{
+                    borderBottom: value === "one" ? "2px solid #2196F3" : "none",
+                  }}
+                ></Tab>
+                <Tab 
+                  value="two" 
+                  label="COLUMN CONFIGURATION"
+                  style={{
+                    borderBottom: value === "two" ? "2px solid #2196F3" : "none",
+                  }}
+                />
+                <Tab 
+                  value="three" 
+                  label="APPROVAL CONFIGURATION"
+                  style={{
+                    borderBottom: value === "three" ? "2px solid #2196F3" : "none",
+                  }}
+                />
               </Tabs>
             </Box>
             {value === "one" && (<TaskConfiguration/>)}
@@ -342,7 +368,7 @@ export default function WorkingReport() {
             {value === "three" && (<ApprovalConfiguration/>)}
           </Grid>
 
-        <DialogActions className="dialog-delete-actions">
+        <DialogActions className="dialog-delete-actions" sx={{paddingTop: 3}}>
           <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
           <Button onClick={handleCloseSetting} variant='contained' className='button-text'>Update Configuration</Button>
         </DialogActions>

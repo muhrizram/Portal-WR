@@ -120,16 +120,24 @@ const getDownloadConfig = () =>
   })(JSON.parse(localStorage.getItem('downloadConfiguration')));
 
 
-const getWorkingReportExcelUrl = (userId, startDate, endDate, url) => {
-    return `${process.env.REACT_APP_BASE_API}${url}${userId}&start=${startDate}&end=${endDate}&configuration=${Base64.encode(
-      getDownloadConfig()
-    )}`;
+  const getWorkingReportExcelUrl = (userId, startDate, endDate, url) => {
+    return `${process.env.REACT_APP_BASE_API}${url}${userId}&startDate=${startDate}&endDate=${endDate}&configuration`;
   }
-const getWorkingReportPdfUrl = (userId, startDate, endDate, url) => {
-    return `${process.env.REACT_APP_BASE_API}${url}${userId}&start=${startDate}&end=${endDate}&configuration=${Base64.encode(
-      getDownloadConfig()
-    )}`;
+
+  const getWorkingReportPdfUrl = (userId, startDate, endDate, url) => {
+      return `${process.env.REACT_APP_BASE_API}${url}${userId}&startDate=${startDate}&endDate=${endDate}&configuration&approver`;
   }
+
+// const getWorkingReportExcelUrl = (userId, startDate, endDate, url) => {
+//     return `${process.env.REACT_APP_BASE_API}${url}${userId}&startDate=${startDate}&endDate=${endDate}&configuration=${Base64.encode(
+//       getDownloadConfig()
+//     )}&approver`;
+//   }
+// const getWorkingReportPdfUrl = (userId, startDate, endDate, url) => {
+//     return `${process.env.REACT_APP_BASE_API}${url}${userId}&startDate=${startDate}&endDate=${endDate}&configuration=${Base64.encode(
+//       getDownloadConfig()
+//     )}&approver`;
+//   }
 
   export {
     getWorkingReportExcelUrl,
