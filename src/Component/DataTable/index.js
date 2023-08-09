@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { Typography, Button, IconButton } from '@mui/material';
+import { Typography, Button, IconButton, TextField } from '@mui/material';
 import SearchBar from '../Searchbar';
 import AddIcon from '@mui/icons-material/Add';
 import { DataGrid } from '@mui/x-data-grid';
@@ -10,15 +10,22 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import blanktable from '../../assets/blanktable.png'
 import '../../App.css'
 import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined';
+import { EditOutlined, UploadFileOutlined } from '@mui/icons-material';
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const DataTable = ({
   title,
   data,
   columns,
   handleChangeSearch,
+  handleChangeMonthFilter,
+  handleChangeYearFilter,
   placeSearch,
   searchTitle,
   onAdd,
+  onEdit,
+  onUpload,
   onDetail,
   onDelete,
   onFilter,
@@ -76,13 +83,19 @@ const DataTable = ({
         width: 200,
         renderCell: (data) => {
           return (
-            <div> 
-              <IconButton onClick={() => onDetail(data.id)}>
-                  <PreviewIcon />
+            <div>
+              {onEdit ? (
+                <IconButton onClick={() => onEdit(data.id)}>
+                  <EditOutlined />
                 </IconButton>
-                <IconButton onClick={() => onDelete(data.id)}>
-                  <DeleteIcon />
-                </IconButton>                      
+              ) : (
+                <IconButton onClick={() => onDetail(data.id)}>
+                  <PreviewIcon />
+                </IconButton>                 
+              )} 
+              <IconButton onClick={() => onDelete(data.id)}>
+                <DeleteIcon />
+              </IconButton>  
             </div>
           );
         },
@@ -110,34 +123,84 @@ const DataTable = ({
         xs={12}
         paddingTop={3}
       >
+      {!onUpload ? (
         <Grid item xs={4}>
           <SearchBar
-            placeholder={placeSearch}
-            label={searchTitle}
-            onChange={handleChangeSearch}
+          placeholder={placeSearch}
+          label={searchTitle}
+          onChange={handleChangeSearch}
           />
         </Grid>
-        <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
+        ): (
+        <Grid container direction="row" item xs={4} alignItems="center" justifyContent="flex-start" spacing={2}>
+          <Grid item xs={6}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                views={["month"]}
+                openTo="month"
+                name="month"
+                label="Select Month"
+                inputFormat="MM"
+                onChange={handleChangeMonthFilter}
+                renderInput={(params) => <TextField {...params} name="month" variant="outlined" />}
+              />
+            </LocalizationProvider>
+          </Grid>
+
+          <Grid item xs={6}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                views={["year"]}
+                openTo="year"
+                name="year"
+                label="Select Year"
+                inputFormat="YYYY"
+                onChange={handleChangeYearFilter}
+                renderInput={(params) => <TextField {...params} name="year" variant="outlined" />}
+              />
+            </LocalizationProvider>
+          </Grid>
+        </Grid>
+          )}
           
-          {onEmployee ? (
+          {onEmployee && (
+          <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
             <Button
             variant="contained"
             onClick={() => onEmployee()}
             startIcon={<SyncOutlinedIcon />}
-          >
-            Synchronise
-          </Button>
-          ) : (
-          <Button
-            variant="contained"
-            onClick={() => onAdd()}
-            startIcon={<AddIcon />}
-          >
-            {`NEW ${title}`}
-          </Button>
+            >
+              Synchronise
+            </Button>
+          </Grid>
+          ) }
+
+          {onUpload && (
+          <Grid container direction="row" item xs={4} gap={1} alignItems="center" justifyContent="flex-end">
+            <Button variant="contained" onClick={() => onAdd()} startIcon={<AddIcon />}>
+              {`NEW ${title}`}
+            </Button>
+            <Button variant="outlined" onClick={() => onUpload()} startIcon={<UploadFileOutlined />} sx={{ paddingY: 1 }}>
+              Upload Holiday
+            </Button>
+          </Grid>
           )}
           
-        </Grid>
+          
+          {(!onEmployee && !onUpload) && 
+            (
+              <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
+                <Button
+                variant="contained" 
+                onClick={() => onAdd()}
+                startIcon={<AddIcon />}
+                >
+                {`NEW ${title}`}
+                </Button>
+              </Grid> 
+            )
+          }
+        
       </Grid>
       {data.length > 0 ? (
         <Grid item xs={12}>

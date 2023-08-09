@@ -35,11 +35,11 @@ const MasterHoliday = () => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1 
+      flex: 1
     }
   ];
 
-  
+
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [openDelete, setOpenDelete] = useState(false)
@@ -59,6 +59,7 @@ const MasterHoliday = () => {
   })
 
 
+
   const handleClickOpen = (id) => {
     setOpenDelete(true)
     setIdHoliday(id)
@@ -69,11 +70,14 @@ const MasterHoliday = () => {
   }, [filter])
 
   const getData = async () => {
-    let endpoint = ''
-    if(filter.month != null || filter.year != null){
-      endpoint =  `/holiday?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&month=${filter.month}&year=${filter.year}`
-    } else {
-      endpoint = `/holiday?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`
+    let endpoint = `/holiday?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`;
+
+    if (filter.month !== null) {
+      endpoint += `&month=${filter.month}`;
+    }
+
+    if (filter.year !== null) {
+      endpoint += `&year=${filter.year}`;
     }
 
     setLoading(true)
@@ -142,6 +146,20 @@ const MasterHoliday = () => {
     setOpenEdit(true)
   }
 
+  const handleMonthFilter = (month) => {
+    setFilter({
+      ...filter,
+      month
+    });
+  }
+
+  const handleYearFilter = (year) => {
+    setFilter({
+      ...filter,
+      year
+    });
+  }
+
   const onFilter = (dataFilter) => {
     setFilter({
       page: dataFilter.page,
@@ -178,17 +196,18 @@ const MasterHoliday = () => {
   return (
     <div>
       <SideBar>
-      {/* Untuk ui filter masih belum bisa dikarenakan searchBar saya belum tahu cara menggantinya */}
-      <DataTable
+        <DataTable
           title="Holiday"
           data={data}
           loading={loading}
           totalData={totalData}
           columns={columns}
+          handleChangeMonthFilter={(value) => handleMonthFilter(value.format("MM"))}
+          handleChangeYearFilter={(value) => handleYearFilter(value.format("YYYY"))}
           onFilter={(dataFilter => onFilter(dataFilter))}
           onAdd={() => handleAdd()}
-          onImport={() => handleUpload()}
-          onDetail={(id) => handleEdit(id)}
+          onUpload={() => handleUpload()}
+          onEdit={(id) => handleEdit(id)}
           onDelete={(id) => handleClickOpen(id)}
         />
         <Dialog
@@ -217,7 +236,7 @@ const MasterHoliday = () => {
             >
               Cancel
             </Button>
-            <Button onClick={onDelete}  className="delete-button button-text">
+            <Button onClick={onDelete} className="delete-button button-text">
               Delete Data
             </Button>
           </DialogActions>
