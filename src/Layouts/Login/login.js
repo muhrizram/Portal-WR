@@ -30,8 +30,9 @@ const Login = ({ changeStat }) => {
     const dataReadyLogin = paramsLogin
     const res = await client.requestAPI({
       method: 'POST',
-      endpoint: `auth/login`,
-      data: dataReadyLogin
+      endpoint: `/auth/login`,
+      data: dataReadyLogin,
+      isLogin: true
     })
     if (res) {
       localStorage.setItem('token', res.accessToken)
