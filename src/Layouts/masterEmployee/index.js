@@ -73,12 +73,25 @@ const Employee = () => {
   }, [filter])
 
   const getData = async () => {
+
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/users?page=${filter.page}&size=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}`
     })
     console.log("DATA EMPLOYEE", res)
     rebuildData(res)
+  }
+  
+  const onSync = async () => { 
+    setSynchronise(true)
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: `/syncWithOdoo`,
+    })
+
+    // setSyncData(res.data)
+    rebuildData(res)
+    console.log("DATA SYNC", res)
   }
 
   const rebuildData = (resData) => {
@@ -97,7 +110,11 @@ const Employee = () => {
         division: value.attributes.divisionGroup
       }
     })
-    setData([...temp])
+    if(synchronise){
+      setSyncData([...syncData, ...temp])
+    } else {
+      setData([...temp])
+    }
     setTotalData(resData.meta.page.totalElements)
   }
   
@@ -118,38 +135,6 @@ const Employee = () => {
     })
   }
 
-  const onSync = async () => { 
-    setSynchronise(true)
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: `/syncWithOdoo`,
-    })
-
-    // setSyncData(res.data)
-    listDataSync(res)
-    console.log("DATA SYNC", res)
-  }
-
-  const listDataSync = (resData) => {
-    if (resData.data && Array.isArray(resData.data)) {
-      let temp = []
-      let number = filter.page * filter.size
-      temp = resData.data.map((value, index) => {
-        return {
-          no: number + (index + 1),
-          id: value.id,
-          nip: value.attributes.nip,
-          name: value.attributes.fullName,
-          position: value.attributes.position,
-          image: value.attributes.photoProfile,
-          email: value.attributes.email,
-          department: value.attributes.department,
-          division: value.attributes.divisionGroup
-        }
-      })
-      setSyncData([...temp])
-    }
-  }
 
   return (
     <div>

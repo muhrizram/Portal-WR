@@ -332,12 +332,11 @@ export default function WorkingReport() {
           {"Setting Download Configuration"}
         </DialogTitle>
         <DialogContent className="dialog-delete-content">
-          <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
+          <DialogContentText>
             Edit setting documents
           </DialogContentText>
-        </DialogContent>
 
-        <Grid>
+          <Grid>
             <Box className="tab-config">
             <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{marginBottom: 3}}>
                 <Tab 
@@ -367,6 +366,9 @@ export default function WorkingReport() {
             {value === "two" && (<ColumnConfiguration />)}
             {value === "three" && (<ApprovalConfiguration/>)}
           </Grid>
+        </DialogContent>
+
+        
 
         <DialogActions className="dialog-delete-actions" sx={{paddingTop: 3}}>
           <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
