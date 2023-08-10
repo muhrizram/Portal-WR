@@ -40,6 +40,7 @@ const requestAPI = async ({
   endpoint,
   data,
   headers,
+  isLogin = false,
   // otherConfig,
   // isToken = true,
 }) => {
@@ -47,15 +48,14 @@ const requestAPI = async ({
   const host = process.env.REACT_APP_BASE_API;
   const url = `${host}${endpoint}`;
   const timeout = process.env.REACT_APP_DEFAULT_TIMEOUT;
-  // const token = auth.user.access_token
+  const token = localStorage.getItem('token')
   let optHeaders = {
     ...headers,
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/vnd.api+json",
-    Accept: "application/vnd.api+json",
-    Authorization: `Bearer ${localStorage.getItem('token')}`
+    Accept: "application/vnd.api+json"
   };
-  // if (isToken) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
+  if (!isLogin) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
   // const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };
 
   const reqConfig = { url, method, timeout, headers: optHeaders, data };
