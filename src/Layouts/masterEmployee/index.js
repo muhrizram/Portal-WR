@@ -8,16 +8,16 @@ import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 
 const Employee = () => {
-  const [synchronise, setSynchronise] = useState(true)
-  // const navigate = useNavigate();
+  const [synchronise, setSynchronise] = useState(false)
   const [data, setData] = useState([]);
+  const [syncData, setSyncData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
     sortName: 'name',
     sortType: 'desc',
-    search: ''
+    search: 'a'
   })
 
   const columns = [
@@ -75,8 +75,9 @@ const Employee = () => {
   const getData = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/users?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+      endpoint: `/users?page=${filter.page}&size=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}`
     })
+    console.log("DATA EMPLOYEE", res)
     rebuildData(res)
   }
 
@@ -118,33 +119,36 @@ const Employee = () => {
   }
 
   const onSync = async () => { 
-    
+    setSynchronise(true)
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/syncWithOdoo`,
-      data
     })
 
-    // if(!res.isError){
-    //   setDataAlert({
-    //     severity: 'success',
-    //     open: true,
-    //     message: res.data.meta.message
-    //   }) 
+    // setSyncData(res.data)
+    listDataSync(res)
+    console.log("DATA SYNC", res)
+  }
 
-    //   setTimeout(() => {
-    //     navigate('/masteremployee');
-    //   }, 3000);
-    // }
-    // else {          
-    //   setDataAlert({
-    //     severity: 'error',
-    //     message: res.error.detail,
-    //     open: true
-    //   })
-    // }
-    // closeTask(false)
-    // navigate("/masteremployee/create");
+  const listDataSync = (resData) => {
+    if (resData.data && Array.isArray(resData.data)) {
+      let temp = []
+      let number = filter.page * filter.size
+      temp = resData.data.map((value, index) => {
+        return {
+          no: number + (index + 1),
+          id: value.id,
+          nip: value.attributes.nip,
+          name: value.attributes.fullName,
+          position: value.attributes.position,
+          image: value.attributes.photoProfile,
+          email: value.attributes.email,
+          department: value.attributes.department,
+          division: value.attributes.divisionGroup
+        }
+      })
+      setSyncData([...temp])
+    }
   }
 
   return (
@@ -152,11 +156,10 @@ const Employee = () => {
       <SideBar>
         <DataTable
           title="Employee"
-          data={data}
+          data={synchronise ? syncData : data}
           columns={columns}
           placeSearch="Name, NIP, etc"
           searchTitle="Search By"
-          // onEmployee={synchronise}
           onEmployee={() => onSync()}
           onFilter={(dataFilter => onFilter(dataFilter))}
           handleChangeSearch={handleChangeSearch}
