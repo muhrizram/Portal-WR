@@ -29,24 +29,24 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
 
   const getStatusColor = (status) => {
     const statusColors = {
-      "To Do": "#FDECEB",
-      Backlog: "#E6F2FB",
-      "In Progress": "#E6F2FB",
-      Completed: "#EBF6EE",
-      Done: "#EBF6EE",
+      'to do': '#FDECEB',
+      'Backlog' : '#E6F2FB',
+      'In Progress': '#E6F2FB',
+      'Completed' : '#EBF6EE', 
+      'Done': '#EBF6EE'
     };
-    return statusColors[status] || "#ccc";
+    return statusColors[status] || '#ccc';
   };
 
   const getStatusFontColor = (status) => {
     const statusFontColors = {
-      "To Do": "#EE695D",
-      Backlog: "#3393DF",
-      "In Progress": "#3393DF",
-      Completed: "#5DB975",
-      Done: "#5DB975",
+      'to do': '#EE695D',
+      'Backlog' : '#3393DF',
+      'In Progress': '#3393DF',
+      'Completed' : '#5DB975',
+      'Done': '#5DB975'
     };
-    return statusFontColors[status] || "#fff";
+    return statusFontColors[status] || '#fff';
   };
 
   const getDetailTask = async () => {    
@@ -121,16 +121,12 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
                             <Grid item xs={2}>
                               <Box
                                 sx={{
-                                  backgroundColor: getStatusColor(
-                                    taskItem.statusTaskName
-                                  ),
-                                  color: getStatusFontColor(
-                                    taskItem.statusTaskName
-                                  ),
-                                  padding: "5px 10px",
-                                  gap: "10px",
-                                  borderRadius: "4px",
-                                  fontSize: "12px",
+                                  backgroundColor: getStatusColor(taskItem.statusTaskName),
+                                  color: getStatusFontColor(taskItem.statusTaskName),
+                                  padding: '5px 10px',
+                                  gap: '10px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
                                 }}
                               >
                                 {taskItem.statusTaskName}

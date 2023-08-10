@@ -25,6 +25,7 @@ import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 import client from "../../global/client";
 
+
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
@@ -133,7 +134,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <Button
               variant="outlined-warning"
               onClick={
-                data[0].workingReportId && data[0].overtime == true ?() => {
+                data[0].overtime == true ?() => {
                   setId(data[0].workingReportId)
                   setWrIdDetail(data[0].workingReportId);
                   setIsViewOvertime(true);
@@ -144,7 +145,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 }
               }
             >
-              {data[0].workingReportId && data[0].overtime == true ? "View Overtime" : "Overtime"}
+              {data[0].overtime == true ? "View Overtime" : "Overtime"}
             </Button>
           ) : 
           (

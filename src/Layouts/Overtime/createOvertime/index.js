@@ -74,9 +74,8 @@ const CreateOvertime = ({
   })
 
   const [dataEditOvertime, setDataEditOvertime] = useState({
-    // id: null,
     workingReportId: null,
-    listProject: [clearProject]
+    listProject: [clearProject],
   })
 
   const onAddProject = () => {
@@ -99,14 +98,15 @@ const CreateOvertime = ({
   const onEdit = () => {
     let temp = []
     let data = dataDetail.attributes.listProject.length
+    let time = dataDetail.attributes
     for (let i=0; i<data; i++){
       temp.push(dataDetail.attributes.listProject[i])
       setDataEditOvertime((prevDataEditOvertime) => ({
         ...prevDataEditOvertime,
         workingReportId: dataDetail.id,
         listProject: temp,
-        startTime: dataDetail.attributes.startTime,
-        endTime: dataDetail.attributes.endTime,
+        startTime:time.startTime,
+        endTime: time.endTime,
       }))
     }
   }
@@ -170,7 +170,6 @@ const CreateOvertime = ({
       temp.listProject[idxProject].projectId = value
       temp.listProject[idxProject].listTask = [clearTask]
       setDataEditOvertime(temp); 
-      // setOpenEditTask(!!value)
     } else{
       const temp = {...dataOvertime}
       temp.listProject[idxProject].projectId = value
@@ -201,10 +200,12 @@ const CreateOvertime = ({
       setValueDetail(dataDetail)
       onEdit()
       setOpentask(true)
+      console.log("DATA DETAIL", dataDetail)
     }
     getDataTask()
     getDataProject()
     getDataStatus()
+    console.log("DATA OVERTIME", dataOvertime)
   }, [dataOvertime, dataDetail])
 
   const getDataTask = async () => {
@@ -318,8 +319,19 @@ const onSave = async () => {
         open: true
       })
     }
+    closeOvertime(true)
     // setOpen(false);
   };
+
+  const setTimeTo = (timeString) => {
+    let Ubah = String(timeString)
+    const [hours, minutes, seconds] = Ubah.split(":");
+    const currentDate = new Date();
+    currentDate.setHours(parseInt(hours));
+    currentDate.setMinutes(parseInt(minutes));
+    currentDate.setSeconds(parseInt(seconds));
+    return currentDate;
+  }
 
   return (
     <>
@@ -347,19 +359,14 @@ const onSave = async () => {
         <Grid item xs={12}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['TimePicker']}>
-                <TimePicker label="Start Time"
-                // value={startTime} 
-                value={dataEditOvertime.startTime || null}
-                // value={res.duration}
-                // defaultValue={dataDetail.startTime}
-                onChange={(start) => setStartTime(start.format("HH:mm"))} 
+                <TimePicker label="Start Time"      
+                defaultValue={setTimeTo(dataEditOvertime.startTime) || null}
+                onChange={(start) => setStartTime(start.format("HH:mm:ss"))} 
                 ampm={false}
                 />
-                <TimePicker label="End Time" 
-                // value={endTime}
-                value={dataEditOvertime.endTime || null}
-                // value={res.duration}
-                onChange={(end) => {setEndTime(end.format("HH:mm"))}}
+                <TimePicker label="End Time"
+                defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
+                onChange={(end) => {setEndTime(end.format("HH:mm:ss"))}}
                  ampm={false}
                 />
             </DemoContainer>
@@ -432,9 +439,9 @@ const onSave = async () => {
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                             onChange={(_event, newValue) => {
                               if(newValue) {
-                                handleChange({target : { name : 'taskName', value: newValue.taskName }},
+                                handleChange({target : { name : 'taskName', value: newValue.backlogId }},
                                 idxProject,
-                                index, newValue.backlogId)
+                                index)
                                 setIdEffortTask(newValue.backlogId)
                               } else {
                                 setIdEffortTask('')
@@ -643,7 +650,7 @@ const onSave = async () => {
                             options={optStatus}
                             getOptionLabel={(option) => option.status}
                             // value={selectedTask.taskStatus}
-                            sx={{ width: "100%" }}
+                            sx={{ width: "100%", backgroundColor: "white" }}
                             // onChange={(e) => handleChange(e,idxProject, index)}
                             onChange={(_event, newValue) =>
                               handleChange(
@@ -674,7 +681,7 @@ const onSave = async () => {
                               placeholder='e.g Create Login Screen"'
                               type="number"
                               label='Actual Effort'
-                              sx={{width: "100%"}}
+                              sx={{width: "100%", backgroundColor: "white" }}
                             />
                           </Grid>
                           <Grid item xs={12}>
