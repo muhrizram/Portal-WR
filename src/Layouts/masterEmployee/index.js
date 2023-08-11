@@ -5,7 +5,6 @@ import {
 } from "@mui/material";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
-import { useNavigate } from "react-router";
 
 const Employee = () => {
   const [synchronise, setSynchronise] = useState(false)
@@ -69,7 +68,7 @@ const Employee = () => {
   ];
 
   useEffect(() => {
-    getData()
+    getData();
   }, [filter])
 
   const getData = async () => {
@@ -79,7 +78,7 @@ const Employee = () => {
       endpoint: `/users?page=${filter.page}&size=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}`
     })
     console.log("DATA EMPLOYEE", res)
-    rebuildData(res)
+      rebuildData(res)
   }
   
   const onSync = async () => { 
@@ -88,9 +87,9 @@ const Employee = () => {
       method: 'POST',
       endpoint: `/syncWithOdoo`,
     })
-
-    // setSyncData(res.data)
-    rebuildData(res)
+    listDataSync(res)
+    // getData(syncData)
+    // setData([...res.data])
     console.log("DATA SYNC", res)
   }
 
@@ -110,14 +109,32 @@ const Employee = () => {
         division: value.attributes.divisionGroup
       }
     })
-    if(synchronise){
-      setSyncData([...syncData, ...temp])
-    } else {
       setData([...temp])
-    }
-    setTotalData(resData.meta.page.totalElements)
+      setTotalData(resData.meta.page.totalElements)
   }
   
+  const listDataSync = (resData) => {
+    if (resData.data && Array.isArray(resData.data)) {
+      // setData([...resData.data])
+      let temp = []
+      let number = filter.page * filter.size
+      temp = resData.data.map((value, index) => {
+        return {
+          no: number + (index + 1),
+          id: value.id,
+          nip: value.attributes.nip,
+          name: value.attributes.fullName,
+          position: value.attributes.position,
+          image: value.attributes.photoProfile,
+          email: value.attributes.email,
+          department: value.attributes.department,
+          division: value.attributes.divisionGroup
+        }
+      })
+      setSyncData([...temp])
+    }
+  }
+
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,

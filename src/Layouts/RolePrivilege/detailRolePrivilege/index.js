@@ -245,6 +245,7 @@ const DetailPrivilege = () => {
                   </Button>
                   <Button
                     variant="contained"
+                    className="button-text"
                     onClick={handleClickOpen}
                     style={{ marginRight: "10px" }}
                   >

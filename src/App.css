@@ -675,7 +675,8 @@
 
 .dialog-configuration>.MuiDialog-container>.MuiPaper-root {
   display: flex;
-  width:800%;
+  width:100%;
+  max-width: 47%;
   padding: 16px 30px;
   flex-direction: column;
   justify-content: center;
