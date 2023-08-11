@@ -5,17 +5,17 @@ import axios from "axios";
 const instance = axios.create();
 // const auth = useAuth()
 
-const refreshToken = async () => {
-  try {
+const refreshToken = async (Token) => {
+  try {    
     const host = process.env.REACT_APP_BASE_API;
-    const refreshToken = localStorage.getItem("refreshToken");
-    const refreshTokenEndpoint = `${host}/auth/refreshToken`;
+    const refreshTokenEndpoint = `${host}auth/refreshToken`;
     const response = await axios.post(refreshTokenEndpoint, {
-      refreshToken: refreshToken,
+      refreshToken: Token,
     });
-
+    console.log("REFRESH RESPONSE", response)
     if (response.status === 200) {      
-      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('token', response.data.accessToken);
+      localStorage.setItem('refreshtoken', response.data.refreshToken);
       return true;
     } else {
       throw new Error("Token refresh failed");
@@ -43,7 +43,7 @@ const requestAPI = async ({
   isLogin = false,
   // otherConfig,
   // isToken = true,
-}) => {
+}) => {  
   let result = {};
   const host = process.env.REACT_APP_BASE_API;
   const url = `${host}${endpoint}`;
@@ -86,12 +86,11 @@ const requestAPI = async ({
 
     return result;
   } catch (error) {
-    if (error.response && error.response.status === 401) {      
-      const refreshTokenSuccess = await refreshToken();
+      const refreshTokennya = localStorage.getItem('refreshtoken');
+      const refreshTokenSuccess = await refreshToken(refreshTokennya);
       if (refreshTokenSuccess) {        
         return requestAPI({ method, endpoint, data, headers });
       }
-    }
 
     // Remove Fetching State
     clientState.requesting = false;
