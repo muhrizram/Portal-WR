@@ -45,7 +45,7 @@ const CreateOvertime = ({
   const [dialogCancel, setDialogCancel] = useState(false)
   const [startTime, setStartTime] = useState()
   const [endTime, setEndTime] = useState()
-  const [isLocalizationFilled, setIsLocalizationFilled] = useState(false)
+  const [isLocalizationFilled, setIsLocalizationFilled] = useState(true)
   const [optProject, setOptProject] = useState([])
   const [optTask, setOptTask] = useState([])
   const [optStatus, setOptStatus] = useState([])
@@ -70,7 +70,17 @@ const CreateOvertime = ({
   }
 
   const [dataOvertime, setDataOvertime] = useState({
-    listProject: [clearProject]
+    // listProject: [clearProject]    
+    listProject: [{      
+      projectId: '',
+      listTask: [{
+        backlogId: null,
+        taskName: '',
+        statusTaskId: '',
+        duration: '',
+        taskItem: ''
+      }]
+    }]
   })
 
   const [dataEditOvertime, setDataEditOvertime] = useState({
@@ -140,23 +150,26 @@ const CreateOvertime = ({
       setDataEditOvertime(updateDataEditOvertime)
     } else{
       const { name, value } = event.target;
-      if(name === 'duration'){
-        setIdEffortTask(parseInt(value))
+        if(name === 'duration'){
+          setIdEffortTask(parseInt(value))
+          const temp = {...dataOvertime}
+          temp.listProject[idxProject].listTask[index][name]= parseInt(value)
+          setDataOvertime(temp)
+          setTaskDurations((prevDurations) =>
+            prevDurations.map((durationItem, i) => ({
+              ...durationItem,
+              duration: i === index ? parseInt(value) : durationItem.duration,
+            }))
+          )
+        } else{
         const temp = {...dataOvertime}
-        temp.listProject[idxProject].listTask[index][name]= parseInt(value)
-        setDataOvertime(temp)
-        setTaskDurations((prevDurations) =>
-          prevDurations.map((durationItem, i) => ({
-            ...durationItem,
-            duration: i === index ? parseInt(value) : durationItem.duration,
-          }))
-        )
-      } else{
-      const temp = {...dataOvertime}
-      temp.listProject[idxProject].listTask[index][name]= value
-      if(name === 'taskName'){
-        temp.listProject[idxProject].listTask[index].backlogId = backlogId
-      }
+        temp.listProject[idxProject].listTask[index][name]= value
+        if(name === 'taskName'){
+          temp.listProject[idxProject].listTask[index].backlogId = backlogId
+          console.log("HAHAHAYU BELOM",temp.listProject[0].listTask[0])
+          // temp.listProject[0].listTask[0].backlogId = "35"
+          console.log("HAHAHAYU GAIS",temp.listProject[0].listTask[0])
+        }
       setDataOvertime(temp)
       }
     }
@@ -563,7 +576,7 @@ const onSave = async () => {
         </Grid>
 
         {isLocalizationFilled ? dataOvertime.listProject.length > 0 && dataOvertime.listProject.map((resProject, idxProject) => (
-          <div className={opentask ? 'card-project' : ''} key={`${idxProject+1}-project`}>
+          <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
                 <Autocomplete
@@ -595,9 +608,8 @@ const onSave = async () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                {resProject.value !== '' &&
-                  resProject.listTask.map((res, index) => (
-                    <Accordion key={`${res.backlogId}-${index}`} sx={{ boxShadow: 'none', width: '100%' }}>
+                {resProject.listTask.map((res, index) => (
+                    <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         className='header-accordion'
@@ -617,8 +629,7 @@ const onSave = async () => {
                             disablePortal
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
-                            options={optTask}
-                            // value={selectedTask}
+                            options={optTask}                            
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                             onChange={(_event, newValue) => {

@@ -140,24 +140,25 @@ const PopupTask = ({
       } 
       readyUpdate.listProject.push(newProject);
     }    
-
+    console.log("READY UPDATE",readyUpdate)
     const res = await client.requestAPI({
       method: 'PUT',
       endpoint: `task/update`,
       data : readyUpdate
     })
+    console.log("RES UPDATE",res)
     if (res.data) {           
      closeTask(true)
      setDataAlert({
       severity: 'success',
       open: true,
-      message: res.data.meta.message
+      message: res.detail
     })
     }else{
       setDataAlert({
         severity: 'error',
         open: true,
-        message: res.data.meta.message
+        message: res.detail
       })
       closeTask(true)
     }
