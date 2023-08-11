@@ -9,17 +9,19 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, {useEffect} from "react";
+import React, {useEffect,useContext} from "react";
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import client from "../../global/client";
 import { useNavigate } from 'react-router';
+import { AlertContext } from '../../context';
 // import { useAuth } from "react-oidc-context";
 const Login = ({ changeStat }) => {
   // const auth = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { setDataAlert } = useContext(AlertContext)
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const [paramsLogin,setparamsLogin] = React.useState({})
@@ -34,14 +36,25 @@ const Login = ({ changeStat }) => {
       data: dataReadyLogin,
       isLogin: true
     })
-    if (res) {
+    if (!res.isError) {
       localStorage.setItem('token', res.accessToken)
+      localStorage.setItem('refreshtoken', res.refreshToken)
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.detail
+      }) 
       console.log("SUCCESS", res)
+      console.log("INI TOKEN HAHA",localStorage.getItem('token'))
     }else{
+      setDataAlert({
+        severity: 'error',
+        open: true,
+        message: res.error.detail
+      }) 
       console.log("ERROR", res)
     }
-    // navigate('/')
-    console.log("login")
+    navigate('/workingReport')    
     // auth.signinRedirect();
   };
 
