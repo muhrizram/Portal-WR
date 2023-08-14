@@ -167,6 +167,7 @@ const DataTable = ({
           <Grid container direction='row' item xs={2} alignSelf="center" textAlign="right">
             <Button
             variant="contained"
+            className='button-text'
             onClick={() => onEmployee()}
             startIcon={<SyncOutlinedIcon />}
             >

@@ -5,7 +5,6 @@ import {
 } from "@mui/material";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
-import { useNavigate } from "react-router";
 
 const Employee = () => {
   const [synchronise, setSynchronise] = useState(false)
@@ -69,16 +68,29 @@ const Employee = () => {
   ];
 
   useEffect(() => {
-    getData()
+    getData();
   }, [filter])
 
   const getData = async () => {
+
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/users?page=${filter.page}&size=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}`
     })
     console.log("DATA EMPLOYEE", res)
-    rebuildData(res)
+      rebuildData(res)
+  }
+  
+  const onSync = async () => { 
+    setSynchronise(true)
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: `/syncWithOdoo`,
+    })
+    listDataSync(res)
+    // getData(syncData)
+    // setData([...res.data])
+    console.log("DATA SYNC", res)
   }
 
   const rebuildData = (resData) => {
@@ -97,41 +109,13 @@ const Employee = () => {
         division: value.attributes.divisionGroup
       }
     })
-    setData([...temp])
-    setTotalData(resData.meta.page.totalElements)
+      setData([...temp])
+      setTotalData(resData.meta.page.totalElements)
   }
   
-  const handleChangeSearch = (event) => {
-    setFilter({
-      ...filter,
-      search: event.target.value
-    });
-  };
-
-  const onFilter = (dataFilter) => {
-    setFilter({
-      page: dataFilter.page,
-      size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
-      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
-      search: filter.search
-    })
-  }
-
-  const onSync = async () => { 
-    setSynchronise(true)
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: `/syncWithOdoo`,
-    })
-
-    // setSyncData(res.data)
-    listDataSync(res)
-    console.log("DATA SYNC", res)
-  }
-
   const listDataSync = (resData) => {
     if (resData.data && Array.isArray(resData.data)) {
+      // setData([...resData.data])
       let temp = []
       let number = filter.page * filter.size
       temp = resData.data.map((value, index) => {
@@ -150,6 +134,24 @@ const Employee = () => {
       setSyncData([...temp])
     }
   }
+
+  const handleChangeSearch = (event) => {
+    setFilter({
+      ...filter,
+      search: event.target.value
+    });
+  };
+
+  const onFilter = (dataFilter) => {
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
+      search: filter.search
+    })
+  }
+
 
   return (
     <div>

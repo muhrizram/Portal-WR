@@ -261,6 +261,7 @@ const onSave = async () => {
       endpoint: `/overtime/addOvertime`,
       data
     })
+    console.log("TAMBAH DATA OVERTIME", res)
 
     if(!res.isError){
       setDataAlert({
@@ -268,7 +269,7 @@ const onSave = async () => {
         open: true,
         message: res.data.meta.message
       }) 
-
+      
       setTimeout(() => {
         navigate('/workingReport');
       }, 3000);
@@ -316,6 +317,7 @@ const onSave = async () => {
       endpoint: `/overtime`,
       data: dataUpdate
     })
+    console.log("EDIT DATA OVERTIME", res)
     if(!res.isError){
       setDataAlert({
         severity: 'success',
@@ -608,7 +610,8 @@ const onSave = async () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                {resProject.listTask.map((res, index) => (
+                {resProject.value !== '' &&
+                  resProject.listTask.map((res, index) => (
                     <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}

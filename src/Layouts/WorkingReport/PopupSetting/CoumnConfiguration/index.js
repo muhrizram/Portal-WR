@@ -76,9 +76,9 @@ const ColumnConfiguration = forwardRef(({ defaultItems = split }, ref) => {
     setItems(defaultItems);
   }, [defaultItems]);
 
-//   useEffect(() => {
-//     ref.current = { items };
-//   }, [items]);
+  useEffect(() => {
+    ref.current = { items };
+  }, [items]);
 
   const handleDragStart = (e) => {
     const { active: a } = e;

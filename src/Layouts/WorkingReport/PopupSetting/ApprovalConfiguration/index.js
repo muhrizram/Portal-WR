@@ -15,21 +15,14 @@ import {
   import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
   import uploadFile from "../../../../global/uploadFile";
 
-const TaskConfiguration = () => {
+const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
 
   const [file, setFile] = useState('')
   const [filePath, setFilePath] = useState('')
 
-  const [taskConfig, setTaskConfig] = useState([
-    {
-      approvalName: '',
-      approvalRole: ''
-    }
-  ])
-
   const addApproval = () => {
-    setTaskConfig((prevData) => [
-      ...prevData, {...taskConfig}
+    setApprovalConfig((prevData) => [
+      ...prevData, {...approvalConfig}
     ])
   }
 
@@ -42,16 +35,25 @@ const TaskConfiguration = () => {
   }
 
   const deleteApproval = (index) => {
-    setTaskConfig((prevData) => {
+    setApprovalConfig((prevData) => {
       const temp = [...prevData]
       temp.splice(index, 1)
       return temp
     })  
   }
 
+  const changeField = (props, value, idx) => {
+    const tempApproval = [...approvalConfig]
+    tempApproval[idx] = {
+      ...tempApproval[idx],
+      [props]: value
+    }
+    setApprovalConfig(tempApproval)
+  } 
+
   return (
     <Grid container direction="row"  className={'card-configuration'}>
-      {taskConfig.map((approval, index) => (
+      {approvalConfig.map((approval, index) => (
       <Grid item xs={12} key={index} >
         <Accordion sx={{ boxShadow: 'none', width: '100%' }}>
           <AccordionSummary
@@ -61,10 +63,12 @@ const TaskConfiguration = () => {
             <Typography sx={{ fontSize: "24px" }}>
               Approval {index + 1}
             </Typography>
+            {approvalConfig.length > 1 && (
             <DeleteIcon 
               className='icon-trash'
               onClick={() => deleteApproval(index)}
             />
+            )}
           </AccordionSummary>
           <AccordionDetails>
             <Grid container rowSpacing={2}>
@@ -75,6 +79,8 @@ const TaskConfiguration = () => {
                   className='input-field-crud'
                   label='Approval Name'
                   placeholder='e.g Jhon Doe'
+                  value={approval.approvalName}
+                  onChange={(e) => changeField('approvalName', e.target.value, index)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -84,6 +90,8 @@ const TaskConfiguration = () => {
                   className='input-field-crud'
                   placeholder='e.g Human Resource'
                   label='Approval Role'
+                  value={approval.approvalRole}
+                  onChange={(e) => changeField('approvalRole', e.target.value, index)}
                 />
               </Grid>
             </Grid>
@@ -119,4 +127,4 @@ const TaskConfiguration = () => {
   );
 };
 
-export default TaskConfiguration;
+export default ApprovalConfiguration;

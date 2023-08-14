@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
 import { Avatar, Button, Card, Grid, Typography, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from "@mui/material";
@@ -40,6 +40,14 @@ export default function WorkingReport() {
   const [dropMenu, setDropMenu] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [value, setValue] = useState("one");
+  const [taskConfig, setTaskConfig] = useState([])
+  const [approvalConfig, setApprovalConfig] = useState([
+    {
+      approvalName: '',
+      approvalRole: ''
+    }
+  ])
+  const columnConfig = useRef(null);
   const open = dropMenu
   const handleClick = (event) => {
     setDropMenu(event.currentTarget)
@@ -277,6 +285,7 @@ export default function WorkingReport() {
                 <Button
                   variant="outlined"
                   onClick={handleSetting}
+                  // onClick={openDownload}
                   startIcon={<SettingsIcon />}
                   sx={{ paddingY: 1 }}
                 >
@@ -332,12 +341,13 @@ export default function WorkingReport() {
           {"Setting Download Configuration"}
         </DialogTitle>
         <DialogContent className="dialog-delete-content">
-          <DialogContentText className='dialog-delete-text-content' id="alert-dialog-description">
+          <DialogContentText>
             Edit setting documents
           </DialogContentText>
         </DialogContent>
 
-        <Grid>
+        <DialogContent className="dialog-delete-content"> 
+          <Grid>
             <Box className="tab-config">
             <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{marginBottom: 3}}>
                 <Tab 
@@ -363,10 +373,12 @@ export default function WorkingReport() {
                 />
               </Tabs>
             </Box>
-            {value === "one" && (<TaskConfiguration/>)}
-            {value === "two" && (<ColumnConfiguration />)}
-            {value === "three" && (<ApprovalConfiguration/>)}
+            {value === "one" && (<TaskConfiguration taskConfig={taskConfig} setTaskConfig={setTaskConfig} />)}
+            {value === "two" && (<ColumnConfiguration ref={columnConfig} />)}
+            {value === "three" && (<ApprovalConfiguration approvalConfig={approvalConfig} setApprovalConfig={setApprovalConfig} />)}
           </Grid>
+        </DialogContent>
+                
 
         <DialogActions className="dialog-delete-actions" sx={{paddingTop: 3}}>
           <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
