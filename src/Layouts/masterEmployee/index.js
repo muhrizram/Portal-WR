@@ -87,6 +87,7 @@ const Employee = () => {
       method: 'POST',
       endpoint: `/syncWithOdoo`,
     })
+    // getData(res)
     listDataSync(res)
     // getData(syncData)
     // setData([...res.data])
