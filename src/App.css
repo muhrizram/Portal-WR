@@ -228,7 +228,7 @@
   padding: 0 8px 8px 8px !important;
 }
 
-.dialog-delete-actions {
+.dialog-delete-actions, .dialog-info-actions {
   justify-content: center !important;
   gap: 16px;
 }
