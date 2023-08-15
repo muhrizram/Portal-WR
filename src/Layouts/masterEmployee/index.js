@@ -2,6 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import client from "../../global/client";
 import {
   Avatar,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
@@ -195,6 +201,45 @@ const Employee = () => {
           loading={loading}
         />
       </SideBar>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        className="dialog-delete"
+      >
+        <DialogTitle
+          id="alert-dialog-info"
+          className="dialog-delete-header"
+        >
+          Data Synchronise
+        </DialogTitle>
+        <React.Fragment>
+          <DialogContent
+            className="dialog-delete-content"
+          >
+            <DialogContentText
+              id="alert-dialog-text"
+              className=" dialog-delete-text-content"
+            >
+              Synchronization Successful!
+            </DialogContentText>
+            <DialogContentText>
+              Data synchronization has been completed successfully. 10 items have been synchronized and 15 missing items.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions
+            className="dialog-info-actions"
+          >
+            <Button
+              variant="outlined"
+              className="button-text"
+              onClick={() => setOpen(false)}
+              aria-labelledby="alert-dialog-info"
+            >
+              OK
+            </Button>
+          </DialogActions>
+        </React.Fragment>
+      </Dialog>
     </div >
   );
 };
