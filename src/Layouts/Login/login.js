@@ -32,7 +32,7 @@ const Login = ({ changeStat }) => {
     const dataReadyLogin = paramsLogin
     const res = await client.requestAPI({
       method: 'POST',
-      endpoint: `/auth/login`,
+      endpoint: `auth/login`,
       data: dataReadyLogin,
       isLogin: true
     })
@@ -45,7 +45,8 @@ const Login = ({ changeStat }) => {
         message: res.detail
       }) 
       console.log("SUCCESS", res)
-      console.log("INI TOKEN HAHA",localStorage.getItem('token'))
+      console.log("INI TOKEN ",localStorage.getItem('token'))
+      navigate('/workingReport')
     }else{
       setDataAlert({
         severity: 'error',
@@ -53,8 +54,7 @@ const Login = ({ changeStat }) => {
         message: res.error.detail
       }) 
       console.log("ERROR", res)
-    }
-    navigate('/workingReport')    
+    }        
     // auth.signinRedirect();
   };
 

@@ -322,9 +322,6 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Button onClick={() => setOpenTask(true)}>Open task</Button>
-        </Grid>
-        <Grid item xs={12}>
           {renderCheckin()}
         </Grid>
       </Grid>

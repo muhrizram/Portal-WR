@@ -43,6 +43,7 @@ const PopupTask = ({
   const [openConfirmCancel,setopenConfirmCancel] = useState(false)
   const [dataDetailnya,setdataDetailnya] = useState([])
   const [addTaskinEdit,setAddtaskinEdit] = useState(false)
+  const [CekProjectEdit,setCekProjectEdit] = useState([])
   const navigate = useNavigate();  
 
   const clearProject = {
@@ -87,17 +88,14 @@ const PopupTask = ({
   }
 
   useEffect(() => {    
-    if(isEdit){
-      console.log("dataDetail",dataDetail)
+    if(isEdit){      
       setdataDetailnya(dataDetail)
       refreshdataDetail()          
-      setOpentask(true)
-      console.log("DATA EDIT TASK", firstEditTask)
+      setOpentask(true)      
     }
     getlistTaskProject()
     getlistProject()
-    getstatusTask()    
-    console.log("dataproject",dataProject)    
+    getstatusTask()
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
@@ -114,9 +112,8 @@ const PopupTask = ({
     const readyUpdate = {
       workingReportId: null,
       listProject: []
-    }
-
-    readyUpdate.workingReportId = firstEditTask.workingReportId;
+    }    
+    readyUpdate.workingReportId = firstEditTask.workingReportId;    
 
     for (const project of firstEditTask.listProject) {
       const newProject = {};
@@ -128,13 +125,16 @@ const PopupTask = ({
       
       newProject.listTask = [];
       for (const task of project.listTask) {
+        if(task.taskId === null){
+          task.backlogId = null
+        }
         const newTask = {};
         
         newTask.taskId = task.taskId;
         newTask.backlogId = task.backlogId;
         newTask.taskName = task.taskName;
         newTask.statusTaskId = task.statusTaskId;
-        newTask.duration = task.taskDuration;
+        newTask.duration = parseInt(task.taskDuration);
         newTask.taskItem = task.taskItem;   
         newProject.listTask.push(newTask);
       } 
@@ -145,8 +145,7 @@ const PopupTask = ({
       method: 'PUT',
       endpoint: `task/update`,
       data : readyUpdate
-    })
-    console.log("RES UPDATE",res)
+    })    
     if (res.data) {           
      closeTask(true)
      setDataAlert({
@@ -193,13 +192,14 @@ const PopupTask = ({
     }
   }
 
-  const onAddProject = () => {
+  const onAddProject = (CekProject) => {
     if(isEdit){
-      setAddtaskinEdit(true)
+      setCekProjectEdit(CekProject)
+      setAddtaskinEdit(true)      
       setfirstEditTask((prevState) => ({
         ...prevState,
         listProject: [...prevState.listProject, clearProject]
-      }));
+      }));      
     }else{
       setProject((prevState) => ({
         ...prevState,
@@ -222,7 +222,7 @@ const PopupTask = ({
 
   const handleChange = (event, idxProject, index, backlogId) => {
     if(isEdit){      
-      const { name, value } = event.target;
+      const { name, value } = event.target;      
       const updatedFirstEditTask = { ...firstEditTask };
       updatedFirstEditTask.listProject[idxProject].listTask[index][name] = value;
       setfirstEditTask(updatedFirstEditTask);      
@@ -253,14 +253,14 @@ const PopupTask = ({
   };
   
   
-  const handleChangeProject = (id, idxProject,absen) => {    
+  const handleChangeProject = (newValue, idxProject,absen) => {    
     if(isEdit){
-      const temp = { ...firstEditTask };    
-      temp.workingReportId = dataDetail.workingReportId;    
+      const temp = { ...firstEditTask };              
       if(absen){
-        temp.listProject[idxProject].absenceId = id;
+        temp.listProject[idxProject].absenceId = newValue.id;
       }else{
-        temp.listProject[idxProject].projectId = id;
+        temp.listProject[idxProject].projectId = newValue.id;
+        temp.listProject[idxProject].projectName = newValue.name;
       }    
       temp.listProject[idxProject].listTask = [clearTask];
       setfirstEditTask(temp);
@@ -268,9 +268,9 @@ const PopupTask = ({
       const temp = { ...dataProject };    
       temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;    
       if(absen){
-        temp.listProject[idxProject].absenceId = id;
+        temp.listProject[idxProject].absenceId = newValue.id;
       }else{
-        temp.listProject[idxProject].projectId = id;
+        temp.listProject[idxProject].projectId = newValue.id;
       }    
       temp.listProject[idxProject].listTask = [clearTask];
       setProject(temp);
@@ -333,6 +333,7 @@ const PopupTask = ({
             }
           )
           setideffortTask('')
+          navigate('/workingReport')
         }
       }catch (error) {
         console.error('Error:', error);
@@ -365,7 +366,7 @@ const PopupTask = ({
                 <Grid container rowSpacing={2}>
                    <Grid item xs={12}>
                      <Autocomplete
-                        disabled={addTaskinEdit ? false : true}
+                        disabled={addTaskinEdit && CekProjectEdit[idxProject-1] ? false : true}
                         disablePortal                    
                         name='project'
                         options={listProject}
@@ -374,7 +375,7 @@ const PopupTask = ({
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {
                         if (newValue) {                      
-                          handleChangeProject(newValue.id, idxProject, newValue.absen)                       
+                          handleChangeProject(newValue, idxProject, newValue.absen)                       
                           setCekabsen((prevCekAbsen) => {
                             const updatedCekAbsen = [...prevCekAbsen];
                             updatedCekAbsen[idxProject] = newValue.absen;
@@ -401,7 +402,7 @@ const PopupTask = ({
                           <TextField
                             {...params}
                             className='input-field-crud'
-                            label={addTaskinEdit == true ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName) }
+                            label={addTaskinEdit == true && !CekProjectEdit[idxProject] ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName) }
                             placeholder='Select Project'
                           />
                         )}
@@ -523,7 +524,7 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
-                                      name='duration'
+                                      name='taskDuration'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.taskDuration}
                                       // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
@@ -788,12 +789,26 @@ const PopupTask = ({
       </DialogContent>
       <DialogActions>
         {isEdit ? (
-          <>                  
+          <>
                 <div className='left-container'>
                   <Button              
                     variant="outlined"
                     className='green-button button-text'
-                    onClick={() => onAddProject()}
+                    onClick={() =>                       
+                       {
+                       let CekProject = []
+                       for(let i=0; i<listProject.length; i++){
+                          if(dataDetailnya[i]){
+                            if (dataDetailnya[i].attributes.projectName) {
+                            CekProject[i] =  true
+                          }else{
+                            CekProject[i] = false
+                          }
+                        }                       
+                       }
+                       onAddProject(CekProject)
+                      }                       
+                    }
                     startIcon={<AddIcon />}
                     >
                     Add Project
@@ -833,7 +848,10 @@ const PopupTask = ({
                     >
                     Add Project
                   </Button>
-                </div>              
+                </div>
+                </>
+              )
+            }
                 <div className='right-container'>
                   <Button
                     onClick={() => {
@@ -844,7 +862,8 @@ const PopupTask = ({
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
+                    disabled={dataProject.workingReportId === undefined}
                     variant='saveButton'
                     className="button-text"
                     onClick={() => SubmitSave()}
@@ -852,9 +871,7 @@ const PopupTask = ({
                     Submit
                   </Button>
                 </div>
-              </>
-              )
-            }
+             
           </>
           )
         }        
