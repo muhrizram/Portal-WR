@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -28,6 +28,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import client from "../../../global/client";
+import { options } from "@fullcalendar/core/preact";
 
 const CreateProject = () => {
   const [dataProject, setDataProject] = useState([
@@ -173,21 +175,40 @@ const CreateProject = () => {
       id: '4-user'
     }
   ]
+  // const [dataUser, setDataUser] = useState([])
+  // const getOptDataUser = async () => {
+  //   const res = await client.requestAPI({
+  //     method: 'GET',
+  //     endpoint: `/ol/projectTypeList?userId=1&search=`
+  //   })
+  //   const data = res.data.map(item => ({id : item.id, positionId: item.attributes.positionId, nip: item.attributes.nip, firstName: item.attributes.firstName, lastName: item.attributes.lastName}));
+  //   setDataUser(data)
+  // }
 
-const roles = [
-    {
-      value: 'master',
-      label: 'Master',
-    },
-    {
-      value: 'maintener',
-      label: 'Maintener',
-    },
-    {
-      value: 'dev',
-      label: 'Developer',
-    }
-  ]
+// const roles = [
+//     {
+//       value: 'master',
+//       label: 'Master',
+//     },
+//     {
+//       value: 'maintener',
+//       label: 'Maintener',
+//     },
+//     {
+//       value: 'dev',
+//       label: 'Developer',
+//     }
+//   ]
+  const [roles, setOptRoles] = useState([])
+  const getOptRoles = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/roleProject`
+    })
+    const data = res.data.map(item => ({id : item.id, role: item.attributes.role}));
+    setOptRoles(data)
+  }
+
   const [valueUser, setValueUser] = useState([]);
 
   const cancelData = () => {
@@ -218,8 +239,49 @@ const roles = [
     setOpen(false);
   };
   const onSave = async () => {
+    const res = await client.requestAPI({
+      method: 'POST',
+      endpoint: '/project/add-project'
+    })
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/master-company')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
     setOpen(false);
   };
+
+  const top100Films = [
+    { label: "PT ABC", year: 1994 },
+    { label: "PT WASD", year: 1972 },
+    { label: "PT QWE", year: 1974 },
+  ];
+  
+  const [projectTypes, setOptProjectType] = useState([])
+  const getProjectTypes = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/projectTypeList?userId=1&search=`
+    })
+    const data = res.data.map(item => ({id : item.id, projectTypes: item.attributes.projectTypes, projectTypeName: item.attributes.projectTypeName, projectName: item.attributes.projectName}));
+    setOptProjectType(data)
+  }
+  useEffect(() => {
+    getProjectTypes()
+    getOptRoles()
+    // getOptDataUser()
+  }, [])
 
   return (
     <SideBar>
@@ -319,6 +381,7 @@ const roles = [
                         disablePortal
                         id="combo-box-demo"
                         options={projectTypes}
+                        getOptionLabel={(option) => option.projectTypeName}
                         sx={{ width: "100%" }}
                         renderInput={(params) => (
                           <TextField {...params} label="Project Type" />
@@ -374,6 +437,7 @@ const roles = [
                           <Autocomplete
                             disablePortal
                             options={roles}
+                            getOptionLabel={(option) => option.role}
                             sx={{ width: "100%" }}
                             renderInput={(params) => (
                               <TextField
@@ -455,15 +519,6 @@ const roles = [
   );
 };
 
-const top100Films = [
-  { label: "PT ABC", year: 1994 },
-  { label: "PT WASD", year: 1972 },
-  { label: "PT QWE", year: 1974 },
-];
 
-const projectTypes = [
-  { label: "Outsource", year: 1994 },
-  { label: "Project", year: 1972 },
-];
 
 export default CreateProject;
