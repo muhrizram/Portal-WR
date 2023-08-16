@@ -194,7 +194,8 @@
   outline: none !important;
 }
 
-.dialog-delete>.MuiDialog-container>.MuiPaper-root {
+.dialog-delete>.MuiDialog-container>.MuiPaper-root,
+.dialog-info>.MuiDialog-container>.MuiPaper-root {
   padding: 30px !important;
   border-radius: 6px;
   text-align: center;
@@ -204,7 +205,8 @@
   min-height: 25rem;
 }
 
-.dialog-delete-header {
+.dialog-delete-header,
+.dialog-info-header {
   font-size: 24px !important;
   font-family: "Poppins", sans-serif !important;
   font-weight: 700 !important;
@@ -213,14 +215,16 @@
   padding: 12px 24px !important;
 }
 
-.dialog-delete-text-content {
+.dialog-delete-text-content,
+.dialog-info-text-content {
   font-size: 16px !important;
   font-family: "Poppins", sans-serif;
   line-height: 150% !important;
   color: #4b465c;
 }
 
-.dialog-delete-content {
+.dialog-delete-content,
+.dialog-info-content {
   padding: 0 24px 18px 24px !important;
 }
 
@@ -228,7 +232,8 @@
   padding: 0 8px 8px 8px !important;
 }
 
-.dialog-delete-actions, .dialog-info-actions {
+.dialog-delete-actions,
+.dialog-info-actions {
   justify-content: center !important;
   gap: 16px;
 }
@@ -675,7 +680,7 @@
 
 .dialog-configuration>.MuiDialog-container>.MuiPaper-root {
   display: flex;
-  width:100%;
+  width: 100%;
   max-width: 47%;
   padding: 16px 30px;
   flex-direction: column;
@@ -694,7 +699,7 @@
   align-items: stretch;
   /* width: max-content; */
   align-content: flex-start;
-  
+
 }
 
 .tab-config {
@@ -715,7 +720,7 @@
 
 .customPanelTab {
   min-height: calc(85vh - 300px);
-  max-height: calc(85vh - 300px); 
+  max-height: calc(85vh - 300px);
   overflow-x: visible;
   overflow-y: auto;
 }

@@ -14,11 +14,11 @@ import SideBar from "../../Component/Sidebar";
 import { AlertContext } from "../../context";
 
 const Employee = () => {
-  const [synchronise, setSynchronise] = useState(false);
   const [open, setOpen] = useState(false);
+  const { setDataAlert } = useContext(AlertContext)
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const { setDataAlert } = useContext(AlertContext)
+  const [synchronise, setSynchronise] = useState(false);
   const [syncData, setSyncData] = useState([]);
   const [totalData, setTotalData] = useState();
   const [filter, setFilter] = useState({
@@ -101,29 +101,6 @@ const Employee = () => {
     setLoading(false);
   }
 
-  const onSync = async () => {
-    // const res = await client.requestAPI({
-    //   method: "POST",
-    //   endpoint: "/syncWithOdoo"
-    // })
-    // if (!res.isError) {
-    //   rebuildData(res);
-    // }
-    // else {
-    //   console.error(res)
-    // }
-    setOpen(true);
-    // setSynchronise(true)
-    // const res = await client.requestAPI({
-    //   method: 'POST',
-    //   endpoint: `/syncWithOdoo`,
-    // })
-    // listDataSync(res)
-    // getData(syncData)
-    // setData([...res.data])
-    // console.log("DATA SYNC", res)
-  }
-
   const rebuildData = (resData) => {
     let temp = []
     let number = filter.page * filter.size
@@ -140,31 +117,15 @@ const Employee = () => {
         division: value.attributes.divisionGroup
       }
     })
-    console.log("res", temp);
     setData([...temp]);
     setTotalData(resData.meta.page.totalElements);
   }
 
-  const listDataSync = (resData) => {
-    if (resData.data && Array.isArray(resData.data)) {
-      // setData([...resData.data])
-      let temp = []
-      let number = filter.page * filter.size
-      temp = resData.data.map((value, index) => {
-        return {
-          no: number + (index + 1),
-          id: value.id,
-          nip: value.attributes.nip,
-          name: value.attributes.fullName,
-          position: value.attributes.position,
-          image: value.attributes.photoProfile,
-          email: value.attributes.email,
-          department: value.attributes.department,
-          division: value.attributes.divisionGroup
-        }
-      })
-      setSyncData([...temp])
-    }
+  const handleClickModalButton = () => {
+    setOpen(false);
+
+    // For future integration with synchronize employee API
+    // getData()
   }
 
   const handleChangeSearch = (event) => {
@@ -173,6 +134,23 @@ const Employee = () => {
       search: event.target.value
     });
   };
+
+  const onSync = async () => {
+    // This code below is for future integration with synchronize employee API
+
+    // const res = await client.requestAPI({
+    //   method: "POST",
+    //   endpoint: "/syncWithOdoo"
+    // })
+    // if (!res.isError) {
+    //   setOpen(true);
+    // }
+    // else {
+    //   console.error(res)
+    // }
+
+    setOpen(true);
+  }
 
   const onFilter = (dataFilter) => {
     setFilter({
@@ -204,25 +182,26 @@ const Employee = () => {
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        className="dialog-delete"
+        className="dialog-info"
       >
         <DialogTitle
           id="alert-dialog-info"
-          className="dialog-delete-header"
+          className="dialog-info-header"
         >
           Data Synchronise
         </DialogTitle>
         <React.Fragment>
           <DialogContent
-            className="dialog-delete-content"
+            className="dialog-info-content"
           >
             <DialogContentText
               id="alert-dialog-text"
-              className=" dialog-delete-text-content"
+              className="dialog-info-text-content"
             >
               Synchronization Successful!
             </DialogContentText>
             <DialogContentText>
+              {/* Note: Change below sentence with syncwithodoo API meta response */}
               Data synchronization has been completed successfully. 10 items have been synchronized and 15 missing items.
             </DialogContentText>
           </DialogContent>
@@ -232,7 +211,7 @@ const Employee = () => {
             <Button
               variant="outlined"
               className="button-text"
-              onClick={() => setOpen(false)}
+              onClick={handleClickModalButton}
               aria-labelledby="alert-dialog-info"
             >
               OK
