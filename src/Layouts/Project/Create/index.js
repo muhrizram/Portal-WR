@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -29,24 +29,16 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import client from "../../../global/client";
+import { AlertContext } from "../../../context";
 import { options } from "@fullcalendar/core/preact";
 
 const CreateProject = () => {
-  const [dataProject, setDataProject] = useState([
-    {
-      id: 1,
-      no: 1,
-      nip: "0213819",
-      name: "Iqbal",
-      joinDate: "02/02/2023",
-      role: "",
-    },
-  ]);
+  
   const columnsProject = [
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: "nip",
@@ -56,7 +48,7 @@ const CreateProject = () => {
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 0.8,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -69,7 +61,7 @@ const CreateProject = () => {
               alt="Profile Image"
             />
             <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
+              <span className="text-name">{params.row.firstName}</span>
             </div>
           </div>
         );
@@ -78,7 +70,7 @@ const CreateProject = () => {
     {
       field: "joinDate",
       headerName: "Join-End Date",
-      flex: 4,
+      flex: 3,
       renderCell: (params) => {
         return (
           <Grid container columnSpacing={1} margin={2.5}>
@@ -125,20 +117,37 @@ const CreateProject = () => {
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});
   const [isSave, setIsSave] = useState(false);
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: "success",
-    message: "",
-  });
+  const [dataUser, setDataUser] = useState([])
+  const [roles, setOptRoles] = useState([])
+  const [valueUser, setValueUser] = useState([]);
+  const [company, setOptCompany] = useState([])
+  const [projectTypes, setOptProjectType] = useState([])
+  const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
-  const [dataDetail, setDataDetail] = useState({
-    companyName: "",
-    companyEmail: "",
-    npwp: "",
-    address: "",
+  const [selectedMember, setSelectedMember] = useState([])
+  const [dataProject, setDataProject] = useState([]);
+  const [sendData, setData] = useState({
+    companyId : 4,
+    picProjectName : "River",
+    picProjectPhone : "089111",
+    projectDescription : "ABC",
+    startDate : "2023-06-26",
+    endDate : "2023-09-22",
+    projectType : 62,
+    createdBy : 3,
+    initialProject : "Project-1",
+    projectName : "Open World",
+    listUser: [
+    {
+      userId: 4,
+      roleProjectId : 70,
+      joinDate: "2023-07-01",
+      endDate: "2023-12-31"
+    }
+  ]
   });
+
   const dataBread = [
     {
       href: "/dashboard",
@@ -157,49 +166,28 @@ const CreateProject = () => {
     },
   ];
 
-  const dataUser = [
-    {
-      title: 'Fahreja Abdullah',
-      id: '1-user'
-    },
-    {
-      title: 'Selfi Muji',
-      id: '2-user'
-    },
-    {
-      title: 'Aristo Pacitra Randu Wangi',
-      id: '3-user'
-    },
-    {
-      title: 'Rizza Prata Putra',
-      id: '4-user'
-    }
-  ]
-  // const [dataUser, setDataUser] = useState([])
-  // const getOptDataUser = async () => {
-  //   const res = await client.requestAPI({
-  //     method: 'GET',
-  //     endpoint: `/ol/projectTypeList?userId=1&search=`
-  //   })
-  //   const data = res.data.map(item => ({id : item.id, positionId: item.attributes.positionId, nip: item.attributes.nip, firstName: item.attributes.firstName, lastName: item.attributes.lastName}));
-  //   setDataUser(data)
-  // }
+  const handleInvite = () => {
+    setSelectedMember((prevSelected) => [...prevSelected, ...valueUser])
+    setValueUser([])
+  }
+  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
 
-// const roles = [
-//     {
-//       value: 'master',
-//       label: 'Master',
-//     },
-//     {
-//       value: 'maintener',
-//       label: 'Maintener',
-//     },
-//     {
-//       value: 'dev',
-//       label: 'Developer',
-//     }
-//   ]
-  const [roles, setOptRoles] = useState([])
+  const getOptDataUser = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/users?search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      nip: item.attributes.nip, 
+      firstName: item.attributes.firstName, 
+      lastName: item.attributes.lastName,
+      userName: item.attributes.userName,
+      active: item.attributes.active
+    }));
+    setDataUser(data)
+  }
+
   const getOptRoles = async () => {
     const res = await client.requestAPI({
       method: 'GET',
@@ -209,7 +197,28 @@ const CreateProject = () => {
     setOptRoles(data)
   }
 
-  const [valueUser, setValueUser] = useState([]);
+  const getOptCompany = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/companylistname`
+    })
+    const data = res.data.map(item => ({companyId : item.id, name: item.attributes.name}));
+    setOptCompany(data)
+  }
+  
+  const getProjectTypes = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/projectTypeList?userId=1&search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      projectTypes: item.attributes.projectTypes,
+      projectTypeName: item.attributes.projectTypeName,
+      projectName: item.attributes.projectName
+    }));
+    setOptProjectType(data)
+  }
 
   const cancelData = () => {
     setIsSave(false);
@@ -220,15 +229,18 @@ const CreateProject = () => {
     setIsSave(true);
     setOpen(true);
     setData(data);
+    console.log ("APA YAA",data)
   };
 
-  let methods = useForm({
+  const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
       projectName: "",
       companyName: "",
-      npwp: "",
-      address: "",
+      picProjectName: "",
+      picProjectPhone: "",
+      projectType: "",
+      projectDescription: "",
     },
   });
 
@@ -238,11 +250,20 @@ const CreateProject = () => {
     }
     setOpen(false);
   };
+
   const onSave = async () => {
+
+    const data = {
+      ...sendData,
+    }
+
     const res = await client.requestAPI({
       method: 'POST',
-      endpoint: '/project/add-project'
+      endpoint: '/project/add-project',
+      data
     })
+    console.log("ADD PROJECT", res)
+
     if (!res.isError) {
       setDataAlert({
         severity: 'success',
@@ -258,38 +279,22 @@ const CreateProject = () => {
         message: res.error.detail,
         open: true
       })
+      console.log("ISI NYA", data)
     }
-    setOpen(false);
+    // setOpen(false);
   };
 
-  const top100Films = [
-    { label: "PT ABC", year: 1994 },
-    { label: "PT WASD", year: 1972 },
-    { label: "PT QWE", year: 1974 },
-  ];
   
-  const [projectTypes, setOptProjectType] = useState([])
-  const getProjectTypes = async () => {
-    const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/ol/projectTypeList?userId=1&search=`
-    })
-    const data = res.data.map(item => ({id : item.id, projectTypes: item.attributes.projectTypes, projectTypeName: item.attributes.projectTypeName, projectName: item.attributes.projectName}));
-    setOptProjectType(data)
-  }
   useEffect(() => {
     getProjectTypes()
     getOptRoles()
-    // getOptDataUser()
+    getOptDataUser()
+    getOptCompany()
+    console.log("DATA PROJECT", sendData)
   }, [])
 
   return (
     <SideBar>
-      <CustomAlert
-        open={dataAlert.open}
-        message={dataAlert.message}
-        severity={dataAlert.severity}
-      />
       <Breadcrumbs breadcrumbs={dataBread} />
       <Grid container>
         <Grid item xs={8} pb={2}>
@@ -297,7 +302,7 @@ const CreateProject = () => {
         </Grid>
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(confirmSave)}>
+            {/* <form onSubmit={methods.handleSubmit(confirmSave)}> */}
               <div className="card-container-detail">
                 <Grid
                   item
@@ -319,8 +324,10 @@ const CreateProject = () => {
                     <FormControl fullWidth>
                       <Autocomplete
                         disablePortal
+                        name="companyName"
                         id="combo-box-demo"
-                        options={top100Films}
+                        options={company}
+                        getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
                         renderInput={(params) => (
                           <TextField {...params} label="Company Name" />
@@ -350,6 +357,7 @@ const CreateProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
+                          name="startDate"
                           label="Start Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
                         />
@@ -360,6 +368,7 @@ const CreateProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
+                          name="endDate"
                           label="End Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
                         />
@@ -369,16 +378,17 @@ const CreateProject = () => {
                   <Grid item xs={6}>
                     <FormInputText
                       focused
-                      name="picProject"
+                      name="InitialProject"
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
-                      label="PIC Project Name"
+                      label="Initial Project"
                     />
                   </Grid>
                   <Grid item xs={6}>
                     <FormControl fullWidth>
                       <Autocomplete
                         disablePortal
+                        name="projectType"
                         id="combo-box-demo"
                         options={projectTypes}
                         getOptionLabel={(option) => option.projectTypeName}
@@ -404,7 +414,8 @@ const CreateProject = () => {
                     <Typography variant="inputDetail">Teams Member</Typography>
                   </Grid>
                   <Grid item xs={12} mb={2}>
-                    <div className='card-project'>
+                    {/* {sendData.listUser.map((res, index) => ( */}
+                    <div className='card-project' >
                       <Grid container rowSpacing={2} columnSpacing={1.25}>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
@@ -418,8 +429,8 @@ const CreateProject = () => {
                               setValueUser([...newValue])
                             }}
                             options={dataUser}
+                            getOptionLabel={(option) => option.userName}
                             className='auto-custom'
-                            getOptionLabel={(option) => option.title}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             renderInput={(params) => (
                               <TextField 
@@ -451,15 +462,24 @@ const CreateProject = () => {
                           />
                         </Grid>
                         <Grid item xs={2.5}>
-                          <Button fullWidth style={{ minHeight: '72px'}} variant="saveButton">INVITE</Button>
+                          <Button 
+                            fullWidth
+                            style={{ minHeight: '72px'}}
+                            variant="saveButton"
+                            onClick={handleInvite}
+                          >
+                            INVITE
+                          </Button>
                         </Grid>
                       </Grid>
                     </div>
+                    {/* ))} */}
                   </Grid>
                   <Grid item xs={12}>
                     <TableNative
-                      data={dataProject}
+                      data={updateData}
                       columns={columnsProject}
+                      getRowId={(row) => row.id}
                     />
                   </Grid>
                 </Grid>
@@ -472,13 +492,13 @@ const CreateProject = () => {
                     >
                       Cancel Data
                     </Button>
-                    <Button variant="saveButton" type="submit">
+                    <Button variant="saveButton" type="submit" onClick={onSave}>
                       Save Data
                     </Button>
                   </Grid>
                 </Grid>
               </div>
-            </form>
+            {/* </form> */}
           </FormProvider>
         </Grid>
       </Grid>
