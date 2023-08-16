@@ -143,7 +143,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
                               // className="rating-outline"
                               variant="outlined"
                               name="rating"
-                              value={0} // Ambil nilai rating dari properti "priority"
+                              value={0}
                               readOnly
                               precision={0.5}
                             />

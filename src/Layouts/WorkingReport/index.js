@@ -89,7 +89,7 @@ export default function WorkingReport() {
 
   useEffect(() => {
     console.log("WrIdDetail: ", WrIdDetail);
-    localStorage.removeItem("companyId");    
+    localStorage.removeItem("companyId");
     getData();
   }, [filter], WrIdDetail);
 
@@ -101,6 +101,7 @@ export default function WorkingReport() {
       )}/${moment(filter.endDate).format("yyyy-MM-DD")}/2`,
     });
     if (!res.isError) {
+      console.log("INI RES KALENDAR",res)
       rebuildData(res);
     } else {
       setDataAlert({
@@ -322,6 +323,7 @@ export default function WorkingReport() {
           </Card>
         </Grid>
         <Grid item xs={12}>
+          <Typography></Typography>
           {renderCheckin()}
         </Grid>
       </Grid>
@@ -385,7 +387,7 @@ export default function WorkingReport() {
 
     </>
 
-      <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} />
+      {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
       <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
     </SideBar>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SideBar from "../../Component/Sidebar";
 import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { Search } from "@mui/icons-material";
@@ -6,6 +6,9 @@ import Header from "../../Component/Header";
 import DataTable from "../../Component/DataTable";
 import dataJson from "./initData.json";
 import { useNavigate } from "react-router-dom";
+import client from "../../global/client";
+import { AlertContext } from "../../context";
+import DeleteDialog from "../../Component/DialogDelete";
 
 export default function Project() {
   const columns = [
@@ -31,8 +34,10 @@ export default function Project() {
     },
   ];
   const navigate = useNavigate();
-
-  const data = dataJson.content;
+  const [open, setOpen] = useState(false);
+  const { setDataAlert } = useContext(AlertContext);
+  const [dataId, setDataId] = useState();
+  const [data,setData] = useState([])
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -40,6 +45,7 @@ export default function Project() {
     sortType: "asc",
     search: "",
   });
+
   const onFilter = (dataFilter) => {
     setFilter({
       page: dataFilter.page,
@@ -54,8 +60,61 @@ export default function Project() {
     });
   };
 
+  const handleChangeSearch = (event) => {    
+    setFilter({
+      ...filter,
+      search: event.target.value
+    });
+  }
+
+  useEffect(() => {
+    getData()    
+  }, [filter])
+
+
+  const getData = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/project?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+    })
+    if(!res.isError){      
+      rebuildData(res)          
+    }else {      
+      setDataAlert({
+        severity: 'error',
+        message: res.error.meta.message,
+        open: true
+      })
+    }    
+  }
+
+  const rebuildData = (resData) => {
+    let temp = []
+    let number = filter.page * filter.size
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,        
+        projectName: value.attributes.projectName,
+        projectType: value.attributes.projectType,
+        clientName: value.attributes.clientName,  
+      }
+    })    
+    setData([...temp])    
+  }  
+
   const handleAdd = () => {
     navigate("/master-project/create");
+  };
+
+  const handleDelete = async (id) => {    
+    setDataId(id);
+    setOpen(true);
+    console.log("Deleted Data ?")
+  };
+
+  const handleClose = () => {    
+    setOpen(false);
   };
 
   const redirectDetail = (id) => {
@@ -72,12 +131,13 @@ export default function Project() {
         placeSearch="Project Name"
         searchTitle="Search By"
         onButtonClick={() => console.log("on click")}
-        handleChangeSearch={() => console.log("handle search")}
+        handleChangeSearch={handleChangeSearch}
         onDetail={(id) => redirectDetail(id)}
-        onFilter={(dataFilter) => onFilter(dataFilter)}
+        onFilter={(dataFilter => onFilter(dataFilter))}
         onAdd={() => handleAdd()}
-        onDelete={(id) => {}}
+        onDelete={(id) => handleDelete(id)}
       />
+      <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDelete} id={dataId} />
     </SideBar>
   );
 }

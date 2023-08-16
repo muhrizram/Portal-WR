@@ -733,3 +733,39 @@
   line-height: 22px;
   color: #8692D0;
 }
+
+.Today {
+  background-color: #004881;
+}
+
+.fc-daygrid-day-bg {
+  background-color: black;
+}
+
+.fc-daygrid-day {
+  padding: 200px;
+}
+
+.fc-day.fc-day-wed.fc-day-today {
+  background-color: #E6F2FB;
+}
+
+.fc-scrollgrid.fc-scrollgrid-liquid {
+  border-radius: 10px;
+}
+
+.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
+  flex-direction: column-reverse;
+  /* padding-right: 40px; */
+  padding: 2.3vh 2vh 0vh 5vh;
+  margin-right: 9vh;
+}
+
+/* .MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
+  height: 100px;
+} */
+
+
+.MuiButtonBase-root.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.css-gh9rs1-MuiButtonBase-root-MuiButton-root {
+  margin-bottom: 0.5vh;
+}
