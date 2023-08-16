@@ -32,7 +32,7 @@ const Login = ({ changeStat }) => {
     const dataReadyLogin = paramsLogin
     const res = await client.requestAPI({
       method: 'POST',
-      endpoint: `auth/login`,
+      endpoint: `/auth/login`,
       data: dataReadyLogin,
       isLogin: true
     })
