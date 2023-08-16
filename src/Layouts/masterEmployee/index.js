@@ -46,10 +46,11 @@ const Employee = () => {
       width: 200,
       flex: 1,
       renderCell: (params) => {
+        const urlMinio = params.row.image ? `${process.env.REACT_APP_BASE_API}/${params.row.image}` : "";
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             <Avatar
-              src={params.row.image}
+              src={urlMinio}
               className="img-master-employee"
               alt="Profile Image"
             />
@@ -184,6 +185,7 @@ const Employee = () => {
         onClose={() => setOpen(false)}
         className="dialog-info"
       >
+        {/* Note: on close hit API getListEmployees */}
         <DialogTitle
           id="alert-dialog-info"
           className="dialog-info-header"
