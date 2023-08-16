@@ -97,6 +97,7 @@ const PopupTask = ({
     getlistProject()
     getstatusTask()
     console.log("DATA",dataProject)
+    console.log("WrId",selectedWrIdanAbsenceId)
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {

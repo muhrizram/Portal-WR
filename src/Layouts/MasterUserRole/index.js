@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import {  
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+
 import { AlertContext } from '../../context';
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import Box from "@mui/material/Box";
 import client from "../../global/client";
+import DeleteDialog from "../../Component/DialogDelete";
 
 const RoleUser = () => {
   const [open, setOpen] = useState(false);
@@ -215,39 +209,7 @@ const RoleUser = () => {
           onFilter={(dataFilter => onFilter(dataFilter))}          
         />
 
-        <Dialog
-          open={open}          
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          className="dialog-delete"
-        >
-          <DialogTitle id="alert-dialog-title">{"Delete Data"}</DialogTitle>
-          <DialogContent className="dialog-delete-content">
-            <DialogContentText
-              className="dialog-delete-text-content"
-              id="alert-dialog-description"
-            >
-              Warning: Deleting this data is irreversible. Are you sure you want
-              to proceed?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions className="dialog-delete-actions">
-            <Button
-              onClick={handleClose}
-              variant="outlined"
-              className="button-text"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() =>deleteData(dataIduser)}
-              className="delete-button button-text"
-            >
-              Delete Data
-            </Button>
-          </DialogActions>
-        </Dialog>
-        
+        <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDelete} id={dataIduser} />       
       </SideBar>
     </div>
   );
