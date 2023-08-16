@@ -114,8 +114,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       workingReportId: data[0].workingReportId,
                       absenceId: data[0].absenceId,
                     });
-                    setWrIdDetail(data[0].workingReportId);
-                    console.log("INI DATA WR",data[0].workingReportId)
+                    setWrIdDetail(data[0].workingReportId);                    
                     setIsViewTask(true);
                     setOpenTask(true);
                     }
