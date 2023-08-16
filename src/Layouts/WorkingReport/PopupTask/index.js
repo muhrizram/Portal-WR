@@ -87,8 +87,8 @@ const PopupTask = ({
       }     
   }
 
-  useEffect(() => {    
-    if(isEdit){      
+  useEffect(() => {
+    if(isEdit){
       setdataDetailnya(dataDetail)
       refreshdataDetail()          
       setOpentask(true)      
@@ -96,6 +96,7 @@ const PopupTask = ({
     getlistTaskProject()
     getlistProject()
     getstatusTask()
+    console.log("DATA",dataProject)
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
@@ -308,7 +309,6 @@ const PopupTask = ({
             data: dataProject,
           });      
           if(!res.isError){            
-            localStorage.setItem('istaskadd', true)            
             setDataAlert({
               severity: 'success',
               open: true,
