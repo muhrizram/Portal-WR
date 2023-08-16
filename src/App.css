@@ -194,7 +194,8 @@
   outline: none !important;
 }
 
-.dialog-delete>.MuiDialog-container>.MuiPaper-root {
+.dialog-delete>.MuiDialog-container>.MuiPaper-root,
+.dialog-info>.MuiDialog-container>.MuiPaper-root {
   padding: 30px !important;
   border-radius: 6px;
   text-align: center;
@@ -204,7 +205,8 @@
   min-height: 25rem;
 }
 
-.dialog-delete-header {
+.dialog-delete-header,
+.dialog-info-header {
   font-size: 24px !important;
   font-family: "Poppins", sans-serif !important;
   font-weight: 700 !important;
@@ -213,14 +215,16 @@
   padding: 12px 24px !important;
 }
 
-.dialog-delete-text-content {
+.dialog-delete-text-content,
+.dialog-info-text-content {
   font-size: 16px !important;
   font-family: "Poppins", sans-serif;
   line-height: 150% !important;
   color: #4b465c;
 }
 
-.dialog-delete-content {
+.dialog-delete-content,
+.dialog-info-content {
   padding: 0 24px 18px 24px !important;
 }
 
@@ -228,7 +232,8 @@
   padding: 0 8px 8px 8px !important;
 }
 
-.dialog-delete-actions {
+.dialog-delete-actions,
+.dialog-info-actions {
   justify-content: center !important;
   gap: 16px;
 }
@@ -665,6 +670,10 @@
   padding: 8px 12px
 }
 
+.autocomplete-nya {
+  padding: 18px 12px
+}
+
 .card-configuration {
   border-radius: 8px;
   border: 1px solid #0078d7;
@@ -675,7 +684,7 @@
 
 .dialog-configuration>.MuiDialog-container>.MuiPaper-root {
   display: flex;
-  width:100%;
+  width: 100%;
   max-width: 47%;
   padding: 16px 30px;
   flex-direction: column;
@@ -694,7 +703,7 @@
   align-items: stretch;
   /* width: max-content; */
   align-content: flex-start;
-  
+
 }
 
 .tab-config {
@@ -715,7 +724,7 @@
 
 .customPanelTab {
   min-height: calc(85vh - 300px);
-  max-height: calc(85vh - 300px); 
+  max-height: calc(85vh - 300px);
   overflow-x: visible;
   overflow-y: auto;
 }
@@ -727,4 +736,40 @@
   font-weight: 400;
   line-height: 22px;
   color: #8692D0;
+}
+
+.Today {
+  background-color: #004881;
+}
+
+.fc-daygrid-day-bg {
+  background-color: black;
+}
+
+.fc-daygrid-day {
+  padding: 200px;
+}
+
+.fc-day.fc-day-wed.fc-day-today {
+  background-color: #E6F2FB;
+}
+
+.fc-scrollgrid.fc-scrollgrid-liquid {
+  border-radius: 10px;
+}
+
+.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
+  flex-direction: column-reverse;
+  /* padding-right: 40px; */
+  padding: 2.3vh 2vh 0vh 5vh;
+  margin-right: 9vh;
+}
+
+/* .MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
+  height: 100px;
+} */
+
+
+.MuiButtonBase-root.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.css-gh9rs1-MuiButtonBase-root-MuiButton-root {
+  margin-bottom: 0.5vh;
 }

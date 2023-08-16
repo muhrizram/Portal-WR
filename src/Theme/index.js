@@ -1,3 +1,4 @@
+import { blue } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 let globalTheme = createTheme({
@@ -207,8 +208,9 @@ let globalTheme = createTheme({
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            color: "#2196F3",
-            borderColor: "#2196F380",
+            color: "#2196F3",            
+            // background: "#EECEB0",
+            // borderColor: "#734011"
           },
         },
         {
@@ -223,7 +225,36 @@ let globalTheme = createTheme({
             borderRadius: "6px",
             background: "#EECEB0",
             color: "#734011",
-            borderColor: "#EECEB0",
+            borderColor: "#734011",
+          },          
+        },
+        {
+          props: {
+            variant: "outlined-holiday",
+          },
+          style: {
+            textTransform: "none",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            color: "#CB3A31",            
+            background: "#FFF4F2",
+            borderColor: "black",
+          },          
+        },
+        {
+          props: {
+            variant: "outlined-task",
+          },
+          style: {
+            textTransform: "none",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            borderRadius: "6px",
+            borderColor: "#2196F3",
+            background:'#B1C5F6',
+            color: "#3267E3",            
           },
         },
         {

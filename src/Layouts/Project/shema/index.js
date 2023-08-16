@@ -6,9 +6,10 @@ const schemacompany = yup.object({
   projectName: yup.string().max(30).required(`${textPlease} Project Name`),
   companyName: yup.string().max(30).required(`${textPlease} Company Name`),
   picProjectName: yup.string().max(30).required(`${textPlease} PIC Project Name`),
-  picProjectPhone: yup.string().max(30).required(`${textPlease} PIC Project Phone`),
+  picProjectPhone: yup.number().max(15).required(`${textPlease} PIC Project Phone`),
   projectType: yup.string().max(30).required(`${textPlease} Project Type`),
   projectDescription: yup.string().max(30).required(`${textPlease} Project Description`),
+  initialProject: yup.string().max(50).required(`${textPlease} Initial Project`),
   npwp: yup
     .string()
     .matches(

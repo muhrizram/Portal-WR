@@ -20,10 +20,8 @@ import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
-import ViewTask from "../../Layouts/WorkingReport/ViewTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
-import client from "../../global/client";
 
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
@@ -63,109 +61,130 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   }; 
 
-  const cekData = async (cekWr) => {         
-      const res = await client.requestAPI({
-        method: "GET",
-        endpoint: `/task/detail?wrId=${cekWr}`
-      });      
-      if(res.status == "400 BAD_REQUEST"){
-        console.log("data kosong")
-        setgoDetail(false)
-      }else{
-        console.log("data ada")
-        setgoDetail(true)
-      }    
-    }
+  const renderCalendar = (info) => {       
 
-  const renderCalendar = (info) => {
-    const data = events.filter(
+    const isWeekend = (date) => {
+      const dayOfWeek = moment(date).day();
+      return dayOfWeek === 0 || dayOfWeek === 6;
+    };
+    const datalibur = moment(info.date).format("yyyy-MM-DD") 
+        const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
     );
+    // const data = moment(info.date).format("yyyy-MM-DD");
     
-    if (data.length > 0) {
+    if (datalibur.length > 0) {
       return (
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" justifyContent="right">
-            <Typography variant="h6">{info.dayNumberText}</Typography>
-          </Grid>         
-          <Grid item xs={12} display="flex" justifyContent="left">
-            {info.isToday ? (              
-                <Button variant="outlined" onClick={() => setOnClick(info)}>
-                  Attendance
-                </Button>             
-              ) : (data[0].workingReportId == null ? (
-                <>
-                <Button disabled variant="outlined" >
+          <Grid item xs={12} display="flex" justifyContent="right" >
+            {/* <Typography variant="h6">{info.dayNumberText}</Typography> */}
+            <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
+          </Grid>
+          <Grid item xs={12} display="flex" justifyContent="left" >
+                {info.isToday ? (              
+                    null
+                  ) : (datalibur[0].workingReportId == null ? (
+                    <>
+                      {isWeekend(info.date) ? 
+                      <Button variant="outlined-holiday" >
+                      holiday
+                    </Button> 
+                      : 
+                        <Button disabled variant="outlined" >
+                          task
+                        </Button> 
+                      }                
+                  </>
+                  ) : null )
+                  }
+              </Grid>   
+          {data.length > 0 ? 
+          <> 
+              <Grid item xs={12} display="flex" justifyContent="left" >
+                {info.isToday ? (              
+                    <Button variant="outlined" onClick={() => setOnClick(info)}>
+                      Attendance
+                    </Button>
+                  ) : (data[0].workingReportId == null ? (
+                    <>
+                      {isWeekend(info.date) ? 
+                      <Button variant="outlined-holiday" >
+                      holiday
+                    </Button> 
+                      : 
+                        null
+                      }                
+                  </>
+                  ) : null )
+                  }
+              </Grid>     
+              <Grid item xs={12} display="flex" justifyContent="left">
+              {info.isToday ? (
+                <Button
+                  disable={!data[0].workingReportId}
+                  variant="outlined-task"
+                  onClick={                
+                    data[0].task
+                      ? () => {                    
+                        setId({
+                          workingReportId: data[0].workingReportId,
+                          absenceId: data[0].absenceId,
+                        });
+                        setWrIdDetail(data[0].workingReportId);                    
+                        setIsViewTask(true);
+                        setOpenTask(true);
+                        }
+                      : () => {
+                        setOpenTask(true);
+                        setId({
+                            workingReportId: data[0].workingReportId,
+                            absenceId: data[0].absenceId,
+                          });
+                        }
+                  }
+                >
                   task
                 </Button>
-              </>
-              ) : null )
-              }
-          </Grid>     
-          <Grid item xs={12} display="flex" justifyContent="left">
-          {info.isToday ? (
-            <Button
-              disable={!data[0].workingReportId}
-              variant="outlined"
-              onClick={
-                data[0].task
-                  ? () => {                      
-                    setId({
-                      workingReportId: data[0].workingReportId,
-                      absenceId: data[0].absenceId,
-                    });
-                    setWrIdDetail(data[0].workingReportId);                    
-                    setIsViewTask(true);
-                    setOpenTask(true);
-                    }
-                  : () => {
-                    setOpenTask(true);
-                    setId({
-                        workingReportId: data[0].workingReportId,
-                        absenceId: data[0].absenceId,
-                      });
-                    }
-              }
-            >
-              task
-            </Button>
-          ) : null}
+              ) : null}
 
-          {info.isToday ? (
-            <Button
-              variant="outlined-warning"
-              onClick={
-                data[0].overtime == true ?() => {
-                  setId(data[0].workingReportId)
-                  setWrIdDetail(data[0].workingReportId);
-                  setIsViewOvertime(true);
-                }
-                : () => {
-                  setOpenOvertime(true);
-                  setId(data[0].workingReportId)
-                }
-              }
-            >
-              {data[0].overtime == true ? "View Overtime" : "Overtime"}
-            </Button>
-          ) : 
-          (
-            data[0].overtime == true ? (
-            <Button
-              variant="outlined-warning"
-              onClick={
-                () => {
-                  setId(data[0].workingReportId)
-                  setWrIdDetail(data[0].workingReportId);
-                  setIsViewOvertime(true);
-                }
-              }
-            >
-              {"View Overtime"}
-            </Button>
-            ) : (<></>)
-          )}
-        </Grid>
+              {info.isToday ? (
+                <Button
+                  variant="outlined-warning"
+                  onClick={
+                    data[0].overtime == true ?() => {
+                      setId(data[0].workingReportId)
+                      setWrIdDetail(data[0].workingReportId);
+                      setIsViewOvertime(true);
+                    }
+                    : () => {
+                      setOpenOvertime(true);
+                      setId(data[0].workingReportId)
+                    }
+                  }
+                >
+                  {data[0].overtime == true ? "View Overtime" : "Overtime"}
+                </Button>
+              ) : 
+              (
+                data[0].overtime == true ? (
+                <Button
+                  variant="outlined-warning"
+                  onClick={
+                    () => {
+                      setId(data[0].workingReportId)
+                      setWrIdDetail(data[0].workingReportId);
+                      setIsViewOvertime(true);
+                    }
+                  }
+                >
+                  {"View Overtime"}
+                </Button>
+                ) : (<></>)
+              )}
+            </Grid>
+          </> : null
+        
+          }
         </Grid>
       );
     }
@@ -177,15 +196,25 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
         dayCellContent={(info, create) => renderCalendar(info)}
+        // eventAdd={(info, create) => renderCalendar(info)}
+        height={1100}        
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
           start: "title",
           center: "",
-          end: "",
+          end: "custom1 prevYear,prev,next,nextYear",
+        }}
+        customButtons={{
+          custom1: {
+            text: 'custom 1',
+            click: function() {
+              alert('clicked custom button 1!');
+            }
+          },
         }}
         events={events}
-        height={"90vh"}
+        // height={"90vh"}
       />
       <Dialog
         fullWidth={fullWidth}

@@ -219,6 +219,7 @@ const DataTable = ({
             disableColumnMenu
             rowCount={totalData}
             getRowId={(row) => row.id}
+            sortingMode='server'
             // getRowHeight={() => 'auto'}
           />
         </Grid>

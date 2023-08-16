@@ -80,6 +80,11 @@ const CreateProject = () => {
                   <DatePicker
                     className='date-input-table'
                     placeholder="Join Date"
+                    value={startJoin}
+                    onChange={(startJoinProject) => {
+                      console.log("DATE START", startJoinProject);
+                      setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
                 {/* </DemoContainer> */}
@@ -94,6 +99,11 @@ const CreateProject = () => {
                   <DatePicker
                     className='date-input-table'
                     placeholder="End Date"
+                    value={endJoin}
+                    onChange={(endJoinProject) => {
+                      console.log("DATE START", endJoinProject);
+                      setEndJoin(endJoinProject.format("MM-DD-YYYY"));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
                 {/* </DemoContainer> */}
@@ -107,6 +117,21 @@ const CreateProject = () => {
       field: "role",
       headerName: "Role",
       flex: 1,
+      renderCell: (params) => {
+        return (
+          <Grid container columnSpacing={1} >            
+           {/* <Typography className="autocomplete-nya">HEI</Typography> */}
+           <Autocomplete
+           className="autocomplete-nya"
+  disablePortal
+  id="combo-box-demo"
+  // options={params}
+  sx={{ width: '100%' }}
+  renderInput={() => <TextField {...params} label="Movie" />}
+/>       
+          </Grid>
+        )
+      }
     },
     {
       field: "",
@@ -127,26 +152,18 @@ const CreateProject = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMember, setSelectedMember] = useState([])
   const [dataProject, setDataProject] = useState([]);
-  const [sendData, setData] = useState({
-    companyId : 4,
-    picProjectName : "River",
-    picProjectPhone : "089111",
-    projectDescription : "ABC",
-    startDate : "2023-06-26",
-    endDate : "2023-09-22",
-    projectType : 62,
-    createdBy : 3,
-    initialProject : "Project-1",
-    projectName : "Open World",
-    listUser: [
-    {
-      userId: 4,
-      roleProjectId : 70,
-      joinDate: "2023-07-01",
-      endDate: "2023-12-31"
-    }
-  ]
-  });
+  const [startProject, setStartProject] = useState()
+  const [endProject, setEndProject] = useState()
+  const [startJoin, setStartJoin] = useState()
+  const [endJoin, setEndJoin] = useState()
+  const [sendData, setData] = useState({});
+
+  const userData = {
+    userId: '',
+    roleProjectId : '',
+    joinDate: startJoin,
+    endDate: endJoin
+  }
 
   const dataBread = [
     {
@@ -166,8 +183,30 @@ const CreateProject = () => {
     },
   ];
 
+  useEffect(() => {
+    getProjectTypes()
+    getOptRoles()
+    getOptDataUser()
+    getOptCompany()
+    console.log("DATA PROJECT", sendData)
+  }, [sendData])
+
+
   const handleInvite = () => {
-    setSelectedMember((prevSelected) => [...prevSelected, ...valueUser])
+    const newMembers = [];
+    for (const newUser of valueUser) {
+      let exists = false;
+      for (const existingMember of selectedMember) {
+        if (newUser.id === existingMember.id) {
+          exists = true;
+        }
+      }
+      if (!exists) {
+        newMembers.push(newUser);
+      }
+    }
+    
+    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
     setValueUser([])
   }
   const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
@@ -175,14 +214,18 @@ const CreateProject = () => {
   const getOptDataUser = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/users?search=`
+      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
     })
     const data = res.data.map(item => ({
       id : item.id,
+      positionId: item.attributes.positionId,
       nip: item.attributes.nip, 
       firstName: item.attributes.firstName, 
       lastName: item.attributes.lastName,
       userName: item.attributes.userName,
+      photoProfile: item.attributes.photoProfile,
+      position: item.attributes.position,
+      assignment: item.attributes.assignment,
       active: item.attributes.active
     }));
     setDataUser(data)
@@ -209,13 +252,11 @@ const CreateProject = () => {
   const getProjectTypes = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/projectTypeList?userId=1&search=`
+      endpoint: `/ol/projectType?search=`
     })
     const data = res.data.map(item => ({
       id : item.id,
-      projectTypes: item.attributes.projectTypes,
-      projectTypeName: item.attributes.projectTypeName,
-      projectName: item.attributes.projectName
+      name : item.attributes.name
     }));
     setOptProjectType(data)
   }
@@ -226,21 +267,22 @@ const CreateProject = () => {
   };
 
   const confirmSave = async (data) => {
-    setIsSave(true);
-    setOpen(true);
-    setData(data);
+    // setIsSave(true);
+    // setOpen(true);
+    // setData(data);
     console.log ("APA YAA",data)
   };
 
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      projectName: "",
-      companyName: "",
-      picProjectName: "",
-      picProjectPhone: "",
-      projectType: "",
-      projectDescription: "",
+      projectName: '',
+      companyName: '',
+      picProjectName: '',
+      picProjectPhone: '',
+      projectType: '',
+      projectDescription: '',
+      initialProject: ''
     },
   });
 
@@ -251,48 +293,66 @@ const CreateProject = () => {
     setOpen(false);
   };
 
+  const addDataProject = {
+    companyId : '',
+    picProjectName : methods.watch("picProjectName"),
+    picProjectPhone : methods.watch("picProjectPhone"),
+    projectDescription : methods.watch("projectDescription"),
+    startDate : startProject,
+    endDate : endProject,
+    projectType : '',
+    createdBy : '',
+    initialProject : methods.watch("initialProject"),
+    projectName : methods.watch("projectName"),
+    listUser: [userData]
+  }
+
   const onSave = async () => {
-
+    setIsSave(true);
+    setOpen(true);
+    setData(data);
+    
     const data = {
-      ...sendData,
+      ...addDataProject
     }
 
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: '/project/add-project',
-      data
-    })
-    console.log("ADD PROJECT", res)
+    // const res = await client.requestAPI({
+    //   method: 'POST',
+    //   endpoint: '/project/add-project',
+    //   data
+    // })
+    console.log("ADD PROJECT", data)
 
-    if (!res.isError) {
-      setDataAlert({
-        severity: 'success',
-        open: true,
-        message: res.data.meta.message
-      })
-      setTimeout(() => {
-        navigate('/master-company')
-      }, 3000)
-    } else {
-      setDataAlert({
-        severity: 'error',
-        message: res.error.detail,
-        open: true
-      })
-      console.log("ISI NYA", data)
-    }
+    // if (!res.isError) {
+    //   setDataAlert({
+    //     severity: 'success',
+    //     open: true,
+    //     message: res.data.meta.message
+    //   })
+    //   setTimeout(() => {
+    //     navigate('/masterProject')
+    //   }, 3000)
+    // } else {
+    //   setDataAlert({
+    //     severity: 'error',
+    //     message: res.error.detail,
+    //     open: true
+    //   })
+    //   console.log("ISI NYA", data)
+    // }
     // setOpen(false);
   };
 
+  const handleChange = (event, newValue) => {
+    const {name, value} = event.target
+    const temp = {...addDataProject}
+    if(name === 'companyName'){
+      temp.companyId = newValue
+    } else if(name === 'projectType'){
+      temp.projectType = newValue
+    }
+  }
   
-  useEffect(() => {
-    getProjectTypes()
-    getOptRoles()
-    getOptDataUser()
-    getOptCompany()
-    console.log("DATA PROJECT", sendData)
-  }, [])
-
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -302,7 +362,7 @@ const CreateProject = () => {
         </Grid>
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            {/* <form onSubmit={methods.handleSubmit(confirmSave)}> */}
+            <form onSubmit={methods.handleSubmit()}>
               <div className="card-container-detail">
                 <Grid
                   item
@@ -329,6 +389,11 @@ const CreateProject = () => {
                         options={company}
                         getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
+                        onChange={(_event, newValue) => {
+                          if (newValue) {
+                            handleChange({ target: { name: 'companyName' } }, newValue.companyId);
+                          }
+                        }}                      
                         renderInput={(params) => (
                           <TextField {...params} label="Company Name" />
                         )}
@@ -338,7 +403,7 @@ const CreateProject = () => {
                   <Grid item xs={6}>
                     <FormInputText
                       focused
-                      name="picProject"
+                      name="picProjectName"
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
                       label="PIC Project Name"
@@ -360,17 +425,27 @@ const CreateProject = () => {
                           name="startDate"
                           label="Start Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
+                          value={startProject}
+                          onChange={(startProjectData) => {
+                            console.log("DATE START", startProjectData);
+                            setStartProject(startProjectData.format("MM-DD-YYYY"));
+                          }}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
                   </Grid>
                   <Grid item xs={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
                           name="endDate"
                           label="End Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
+                          value={endProject}
+                          onChange={(endProjectDate) => {
+                            console.log("DATE END", endProjectDate);
+                            setEndProject(endProjectDate.format("MM-DD-YYYY"));
+                          }}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
@@ -378,7 +453,7 @@ const CreateProject = () => {
                   <Grid item xs={6}>
                     <FormInputText
                       focused
-                      name="InitialProject"
+                      name="initialProject"
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
                       label="Initial Project"
@@ -391,8 +466,13 @@ const CreateProject = () => {
                         name="projectType"
                         id="combo-box-demo"
                         options={projectTypes}
-                        getOptionLabel={(option) => option.projectTypeName}
+                        getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
+                        onChange={(_event, newValue) => {
+                          if(newValue){
+                            handleChange({target : { name : 'projectType', value: newValue.id }},newValue.id)
+                          }
+                        }}
                         renderInput={(params) => (
                           <TextField {...params} label="Project Type" />
                         )}
@@ -414,8 +494,8 @@ const CreateProject = () => {
                     <Typography variant="inputDetail">Teams Member</Typography>
                   </Grid>
                   <Grid item xs={12} mb={2}>
-                    {/* {sendData.listUser.map((res, index) => ( */}
-                    <div className='card-project' >
+                    {addDataProject.listUser.map((res, index) => (
+                    <div className='card-project' key={res.id}>
                       <Grid container rowSpacing={2} columnSpacing={1.25}>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
@@ -429,7 +509,7 @@ const CreateProject = () => {
                               setValueUser([...newValue])
                             }}
                             options={dataUser}
-                            getOptionLabel={(option) => option.userName}
+                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                             className='auto-custom'
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             renderInput={(params) => (
@@ -473,7 +553,7 @@ const CreateProject = () => {
                         </Grid>
                       </Grid>
                     </div>
-                    {/* ))} */}
+                    ))}
                   </Grid>
                   <Grid item xs={12}>
                     <TableNative
@@ -492,13 +572,19 @@ const CreateProject = () => {
                     >
                       Cancel Data
                     </Button>
-                    <Button variant="saveButton" type="submit" onClick={onSave}>
+                    <Button 
+                      variant="saveButton"
+                      type="submit"
+                      onClick={
+                        onSave
+                        }
+                      >
                       Save Data
                     </Button>
                   </Grid>
                 </Grid>
               </div>
-            {/* </form> */}
+            </form>
           </FormProvider>
         </Grid>
       </Grid>
