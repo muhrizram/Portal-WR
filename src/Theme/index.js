@@ -208,18 +208,19 @@ let globalTheme = createTheme({
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            color: "#2196F3",            
+            color: "#2196F3",         
+            // justifyContent: "flex-start",
             // background: "#EECEB0",
             // borderColor: "#734011"
           },
-        },
+        },        
         {
           props: {
             variant: "outlined-warning",
           },
           style: {
             textTransform: "none",
-            width: "40%",
+            width: "60%",
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
@@ -227,6 +228,7 @@ let globalTheme = createTheme({
             background: "#EECEB0",
             color: "#734011",
             borderColor: "#734011",
+            marginBottom: "2px",            
           },          
         },
         {
@@ -241,6 +243,11 @@ let globalTheme = createTheme({
             color: "#CB3A31",            
             background: "#FFF4F2",
             borderColor: "black",
+            marginRight: "10vh",
+            marginTop: "9vh",
+            width: "40%", 
+            marginRight: "12vh", 
+            marginTop: "9vh"
           },          
         },
         {
@@ -256,7 +263,8 @@ let globalTheme = createTheme({
             borderRadius: "6px",
             borderColor: "#2196F3",
             background:'#B1C5F6',
-            color: "#3267E3",            
+            color: "#3267E3",
+            borderColor: "black",
           },
         },
         {
