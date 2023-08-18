@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -28,23 +28,17 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import client from "../../../global/client";
+import { AlertContext } from "../../../context";
+import { options } from "@fullcalendar/core/preact";
 
 const CreateProject = () => {
-  const [dataProject, setDataProject] = useState([
-    {
-      id: 1,
-      no: 1,
-      nip: "0213819",
-      name: "Iqbal",
-      joinDate: "02/02/2023",
-      role: "",
-    },
-  ]);
+  
   const columnsProject = [
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.5,
     },
     {
       field: "nip",
@@ -54,7 +48,7 @@ const CreateProject = () => {
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 0.8,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -67,7 +61,7 @@ const CreateProject = () => {
               alt="Profile Image"
             />
             <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
+              <span className="text-name">{params.row.firstName}</span>
             </div>
           </div>
         );
@@ -76,7 +70,7 @@ const CreateProject = () => {
     {
       field: "joinDate",
       headerName: "Join-End Date",
-      flex: 4,
+      flex: 3,
       renderCell: (params) => {
         return (
           <Grid container columnSpacing={1} margin={2.5}>
@@ -86,6 +80,11 @@ const CreateProject = () => {
                   <DatePicker
                     className='date-input-table'
                     placeholder="Join Date"
+                    value={startJoin}
+                    onChange={(startJoinProject) => {
+                      console.log("DATE START", startJoinProject);
+                      setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
                 {/* </DemoContainer> */}
@@ -100,6 +99,11 @@ const CreateProject = () => {
                   <DatePicker
                     className='date-input-table'
                     placeholder="End Date"
+                    value={endJoin}
+                    onChange={(endJoinProject) => {
+                      console.log("DATE START", endJoinProject);
+                      setEndJoin(endJoinProject.format("MM-DD-YYYY"));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
                 {/* </DemoContainer> */}
@@ -113,6 +117,21 @@ const CreateProject = () => {
       field: "role",
       headerName: "Role",
       flex: 1,
+      renderCell: (params) => {
+        return (
+          <Grid container columnSpacing={1} >            
+           {/* <Typography className="autocomplete-nya">HEI</Typography> */}
+           <Autocomplete
+           className="autocomplete-nya"
+  disablePortal
+  id="combo-box-demo"
+  // options={params}
+  sx={{ width: '100%' }}
+  renderInput={() => <TextField {...params} label="Movie" />}
+/>       
+          </Grid>
+        )
+      }
     },
     {
       field: "",
@@ -123,20 +142,29 @@ const CreateProject = () => {
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});
   const [isSave, setIsSave] = useState(false);
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: "success",
-    message: "",
-  });
+  const [dataUser, setDataUser] = useState([])
+  const [roles, setOptRoles] = useState([])
+  const [valueUser, setValueUser] = useState([]);
+  const [company, setOptCompany] = useState([])
+  const [projectTypes, setOptProjectType] = useState([])
+  const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
-  const [dataDetail, setDataDetail] = useState({
-    companyName: "",
-    companyEmail: "",
-    npwp: "",
-    address: "",
-  });
+  const [selectedMember, setSelectedMember] = useState([])
+  const [dataProject, setDataProject] = useState([]);
+  const [startProject, setStartProject] = useState()
+  const [endProject, setEndProject] = useState()
+  const [startJoin, setStartJoin] = useState()
+  const [endJoin, setEndJoin] = useState()
+  const [sendData, setData] = useState({});
+
+  const userData = {
+    userId: '',
+    roleProjectId : '',
+    joinDate: startJoin,
+    endDate: endJoin
+  }
+
   const dataBread = [
     {
       href: "/dashboard",
@@ -155,40 +183,83 @@ const CreateProject = () => {
     },
   ];
 
-  const dataUser = [
-    {
-      title: 'Fahreja Abdullah',
-      id: '1-user'
-    },
-    {
-      title: 'Selfi Muji',
-      id: '2-user'
-    },
-    {
-      title: 'Aristo Pacitra Randu Wangi',
-      id: '3-user'
-    },
-    {
-      title: 'Rizza Prata Putra',
-      id: '4-user'
-    }
-  ]
+  useEffect(() => {
+    getProjectTypes()
+    getOptRoles()
+    getOptDataUser()
+    getOptCompany()
+    console.log("DATA PROJECT", sendData)
+  }, [sendData])
 
-const roles = [
-    {
-      value: 'master',
-      label: 'Master',
-    },
-    {
-      value: 'maintener',
-      label: 'Maintener',
-    },
-    {
-      value: 'dev',
-      label: 'Developer',
+
+  const handleInvite = () => {
+    const newMembers = [];
+    for (const newUser of valueUser) {
+      let exists = false;
+      for (const existingMember of selectedMember) {
+        if (newUser.id === existingMember.id) {
+          exists = true;
+        }
+      }
+      if (!exists) {
+        newMembers.push(newUser);
+      }
     }
-  ]
-  const [valueUser, setValueUser] = useState([]);
+    
+    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
+    setValueUser([])
+  }
+  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
+
+  const getOptDataUser = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      positionId: item.attributes.positionId,
+      nip: item.attributes.nip, 
+      firstName: item.attributes.firstName, 
+      lastName: item.attributes.lastName,
+      userName: item.attributes.userName,
+      photoProfile: item.attributes.photoProfile,
+      position: item.attributes.position,
+      assignment: item.attributes.assignment,
+      active: item.attributes.active
+    }));
+    setDataUser(data)
+  }
+
+  const getOptRoles = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/roleProject`
+    })
+    const data = res.data.map(item => ({id : item.id, role: item.attributes.role}));
+    setOptRoles(data)
+  }
+
+  const getOptCompany = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/companylistname`
+    })
+    const data = res.data.map(item => ({companyId : item.id, name: item.attributes.name}));
+    setOptCompany(data)
+  }
+  
+  const getProjectTypes = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/projectType?search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      name : item.attributes.name
+    }));
+    setOptProjectType(data)
+  }
 
   const cancelData = () => {
     setIsSave(false);
@@ -196,18 +267,22 @@ const roles = [
   };
 
   const confirmSave = async (data) => {
-    setIsSave(true);
-    setOpen(true);
-    setData(data);
+    // setIsSave(true);
+    // setOpen(true);
+    // setData(data);
+    console.log ("APA YAA",data)
   };
 
-  let methods = useForm({
+  const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      projectName: "",
-      companyName: "",
-      npwp: "",
-      address: "",
+      projectName: '',
+      companyName: '',
+      picProjectName: '',
+      picProjectPhone: '',
+      projectType: '',
+      projectDescription: '',
+      initialProject: ''
     },
   });
 
@@ -217,17 +292,69 @@ const roles = [
     }
     setOpen(false);
   };
+
+  const addDataProject = {
+    companyId : '',
+    picProjectName : methods.watch("picProjectName"),
+    picProjectPhone : methods.watch("picProjectPhone"),
+    projectDescription : methods.watch("projectDescription"),
+    startDate : startProject,
+    endDate : endProject,
+    projectType : '',
+    createdBy : '',
+    initialProject : methods.watch("initialProject"),
+    projectName : methods.watch("projectName"),
+    listUser: [userData]
+  }
+
   const onSave = async () => {
-    setOpen(false);
+    setIsSave(true);
+    setOpen(true);
+    setData(data);
+    
+    const data = {
+      ...addDataProject
+    }
+
+    // const res = await client.requestAPI({
+    //   method: 'POST',
+    //   endpoint: '/project/add-project',
+    //   data
+    // })
+    console.log("ADD PROJECT", data)
+
+    // if (!res.isError) {
+    //   setDataAlert({
+    //     severity: 'success',
+    //     open: true,
+    //     message: res.data.meta.message
+    //   })
+    //   setTimeout(() => {
+    //     navigate('/masterProject')
+    //   }, 3000)
+    // } else {
+    //   setDataAlert({
+    //     severity: 'error',
+    //     message: res.error.detail,
+    //     open: true
+    //   })
+    //   console.log("ISI NYA", data)
+    // }
+    // setOpen(false);
   };
 
+  const handleChange = (event, newValue) => {
+    const {name, value} = event.target
+    const temp = {...addDataProject}
+    if(name === 'companyName'){
+      temp.companyId = newValue
+    } else if(name === 'projectType'){
+      temp.projectType = newValue
+    }
+  }
+  
   return (
     <SideBar>
-      <CustomAlert
-        open={dataAlert.open}
-        message={dataAlert.message}
-        severity={dataAlert.severity}
-      />
       <Breadcrumbs breadcrumbs={dataBread} />
       <Grid container>
         <Grid item xs={8} pb={2}>
@@ -235,7 +362,7 @@ const roles = [
         </Grid>
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(confirmSave)}>
+            <form onSubmit={methods.handleSubmit()}>
               <div className="card-container-detail">
                 <Grid
                   item
@@ -257,9 +384,16 @@ const roles = [
                     <FormControl fullWidth>
                       <Autocomplete
                         disablePortal
+                        name="companyName"
                         id="combo-box-demo"
-                        options={top100Films}
+                        options={company}
+                        getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
+                        onChange={(_event, newValue) => {
+                          if (newValue) {
+                            handleChange({ target: { name: 'companyName' } }, newValue.companyId);
+                          }
+                        }}                      
                         renderInput={(params) => (
                           <TextField {...params} label="Company Name" />
                         )}
@@ -269,7 +403,7 @@ const roles = [
                   <Grid item xs={6}>
                     <FormInputText
                       focused
-                      name="picProject"
+                      name="picProjectName"
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
                       label="PIC Project Name"
@@ -288,18 +422,30 @@ const roles = [
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
+                          name="startDate"
                           label="Start Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
+                          value={startProject}
+                          onChange={(startProjectData) => {
+                            console.log("DATE START", startProjectData);
+                            setStartProject(startProjectData.format("MM-DD-YYYY"));
+                          }}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
                   </Grid>
                   <Grid item xs={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
+                          name="endDate"
                           label="End Date Project"
                           sx={{ width: "100%", paddingRight: "20px" }}
+                          value={endProject}
+                          onChange={(endProjectDate) => {
+                            console.log("DATE END", endProjectDate);
+                            setEndProject(endProjectDate.format("MM-DD-YYYY"));
+                          }}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
@@ -307,19 +453,26 @@ const roles = [
                   <Grid item xs={6}>
                     <FormInputText
                       focused
-                      name="picProject"
+                      name="initialProject"
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
-                      label="PIC Project Name"
+                      label="Initial Project"
                     />
                   </Grid>
                   <Grid item xs={6}>
                     <FormControl fullWidth>
                       <Autocomplete
                         disablePortal
+                        name="projectType"
                         id="combo-box-demo"
                         options={projectTypes}
+                        getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
+                        onChange={(_event, newValue) => {
+                          if(newValue){
+                            handleChange({target : { name : 'projectType', value: newValue.id }},newValue.id)
+                          }
+                        }}
                         renderInput={(params) => (
                           <TextField {...params} label="Project Type" />
                         )}
@@ -341,7 +494,8 @@ const roles = [
                     <Typography variant="inputDetail">Teams Member</Typography>
                   </Grid>
                   <Grid item xs={12} mb={2}>
-                    <div className='card-project'>
+                    {addDataProject.listUser.map((res, index) => (
+                    <div className='card-project' key={res.id}>
                       <Grid container rowSpacing={2} columnSpacing={1.25}>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
@@ -355,8 +509,8 @@ const roles = [
                               setValueUser([...newValue])
                             }}
                             options={dataUser}
+                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                             className='auto-custom'
-                            getOptionLabel={(option) => option.title}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
                             renderInput={(params) => (
                               <TextField 
@@ -374,6 +528,7 @@ const roles = [
                           <Autocomplete
                             disablePortal
                             options={roles}
+                            getOptionLabel={(option) => option.role}
                             sx={{ width: "100%" }}
                             renderInput={(params) => (
                               <TextField
@@ -387,15 +542,24 @@ const roles = [
                           />
                         </Grid>
                         <Grid item xs={2.5}>
-                          <Button fullWidth style={{ minHeight: '72px'}} variant="saveButton">INVITE</Button>
+                          <Button 
+                            fullWidth
+                            style={{ minHeight: '72px'}}
+                            variant="saveButton"
+                            onClick={handleInvite}
+                          >
+                            INVITE
+                          </Button>
                         </Grid>
                       </Grid>
                     </div>
+                    ))}
                   </Grid>
                   <Grid item xs={12}>
                     <TableNative
-                      data={dataProject}
+                      data={updateData}
                       columns={columnsProject}
+                      getRowId={(row) => row.id}
                     />
                   </Grid>
                 </Grid>
@@ -408,7 +572,13 @@ const roles = [
                     >
                       Cancel Data
                     </Button>
-                    <Button variant="saveButton" type="submit">
+                    <Button 
+                      variant="saveButton"
+                      type="submit"
+                      onClick={
+                        onSave
+                        }
+                      >
                       Save Data
                     </Button>
                   </Grid>
@@ -455,15 +625,6 @@ const roles = [
   );
 };
 
-const top100Films = [
-  { label: "PT ABC", year: 1994 },
-  { label: "PT WASD", year: 1972 },
-  { label: "PT QWE", year: 1974 },
-];
 
-const projectTypes = [
-  { label: "Outsource", year: 1994 },
-  { label: "Project", year: 1972 },
-];
 
 export default CreateProject;
