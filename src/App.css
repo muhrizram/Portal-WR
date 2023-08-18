@@ -754,18 +754,27 @@
   border-radius: 10px;
 }
 
-.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
+.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-1tiad8z {
   flex-direction: column-reverse;
   /* padding-right: 40px; */
   padding: 2.3vh 2vh 0vh 5vh;
   margin-right: 9vh;
 }
 
-/* .MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
-  height: 100px;
-} */
 
+.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
+  height: 100px;
+}
 
 .MuiButtonBase-root.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.css-gh9rs1-MuiButtonBase-root-MuiButton-root {
   margin-bottom: 0.5vh;
+}
+
+.fc-day.fc-day-fri.fc-day-today.fc-daygrid-day {
+  background-color: #E6F2FB;
+}
+
+.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
+  flex-direction: column-reverse;
+  margin-top: -5px;
 }

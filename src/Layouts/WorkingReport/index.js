@@ -384,7 +384,6 @@ export default function WorkingReport() {
           <Button onClick={handleCloseSetting} variant='contained' className='button-text'>Update Configuration</Button>
         </DialogActions>
     </Dialog>
-
     </>
 
       {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
