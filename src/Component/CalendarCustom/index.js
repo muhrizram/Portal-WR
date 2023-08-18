@@ -70,14 +70,12 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     const datalibur = moment(info.date).format("yyyy-MM-DD") 
         const data = events.filter(
       (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-    );
-    // const data = moment(info.date).format("yyyy-MM-DD");
+    );    
     
     if (datalibur.length > 0) {
       return (
-        <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" justifyContent="right" >
-            {/* <Typography variant="h6">{info.dayNumberText}</Typography> */}
+        <Grid container spacing={2} sx={{height:'10vh'}}>
+          <Grid item xs={12} display="flex" justifyContent="right" >            
             <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
           </Grid>
           <Grid item xs={12} display="flex" justifyContent="left" >
@@ -90,7 +88,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       holiday
                     </Button> 
                       : 
-                        <Button disabled variant="outlined" >
+                        <Button disabled variant="outlined" sx={{width: "40%", marginRight: "8vh", marginTop: "8vh",}} >
                           task
                         </Button> 
                       }                
@@ -101,31 +99,27 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           {data.length > 0 ? 
           <> 
               <Grid item xs={12} display="flex" justifyContent="left" >
-                {info.isToday ? (              
-                    <Button variant="outlined" onClick={() => setOnClick(info)}>
-                      Attendance
-                    </Button>
-                  ) : (data[0].workingReportId == null ? (
-                    <>
-                      {isWeekend(info.date) ? 
+              {isWeekend(info.date) ? 
                       <Button variant="outlined-holiday" >
                       holiday
                     </Button> 
                       : 
                         null
-                      }                
-                  </>
-                  ) : null )
-                  }
+                      }                  
               </Grid>     
-              <Grid item xs={12} display="flex" justifyContent="left">
+              <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "8vh", marginTop: "2vh", flexDirection: "column-reverse" }}>
               {info.isToday ? (
+                console.log("WLEE", data[0].workingReportId),
                 <Button
                   disable={!data[0].workingReportId}
                   variant="outlined-task"
-                  onClick={                
+                  onClick={
+                    data[0].workingReportId == null ? 
+                    () => {
+                      setOnClick(info)}                   
+                    :
                     data[0].task
-                      ? () => {                    
+                      ? () => {
                         setId({
                           workingReportId: data[0].workingReportId,
                           absenceId: data[0].absenceId,
@@ -148,7 +142,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               ) : null}
 
               {info.isToday ? (
-                <Button
+                <Button                  
                   variant="outlined-warning"
                   onClick={
                     data[0].overtime == true ?() => {

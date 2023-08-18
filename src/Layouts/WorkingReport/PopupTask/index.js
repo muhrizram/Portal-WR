@@ -97,7 +97,7 @@ const PopupTask = ({
     getlistProject()
     getstatusTask()
     console.log("DATA",dataProject)
-    console.log("WrId",selectedWrIdanAbsenceId)
+    console.log("MAU EDIT",dataDetailnya)
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
@@ -270,9 +270,9 @@ const PopupTask = ({
       const temp = { ...dataProject };    
       temp.workingReportId = selectedWrIdanAbsenceId.workingReportId;    
       if(absen){
-        temp.listProject[idxProject].absenceId = newValue.id;
-      }else{
-        temp.listProject[idxProject].projectId = newValue.id;
+        temp.listProject[idxProject].absenceId = newValue;
+      }else{        
+        temp.listProject[idxProject].projectId = newValue;
       }    
       temp.listProject[idxProject].listTask = [clearTask];
       setProject(temp);
@@ -303,7 +303,7 @@ const PopupTask = ({
         }
         if (tempEffort > 8 || tempEffort < 1) {
           setPopUpMoretask(true);        
-        }else{                
+        }else{
           const res = await client.requestAPI({
             method: 'POST',
             endpoint: `/task/addTask`,
@@ -316,8 +316,8 @@ const PopupTask = ({
               message: res.data.meta.message
             }) 
             setTimeout(() => {
-              navigate('/workingReport')
-            }, 3000)      
+              window.location.reload();
+            }, 3000)
           }else{      
             setDataAlert({
               severity: 'error',
@@ -403,7 +403,7 @@ const PopupTask = ({
                           <TextField
                             {...params}
                             className='input-field-crud'
-                            label={addTaskinEdit == true && !CekProjectEdit[idxProject] ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceId : dataDetailnya[idxProject].attributes.projectName) }
+                            label={addTaskinEdit == true && !CekProjectEdit[idxProject] ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceName : dataDetailnya[idxProject].attributes.projectName) }
                             placeholder='Select Project'
                           />
                         )}
