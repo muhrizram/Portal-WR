@@ -8,7 +8,7 @@ const instance = axios.create();
 const refreshToken = async (Token) => {
   try {    
     const host = process.env.REACT_APP_BASE_API;
-    const refreshTokenEndpoint = `${host}auth/refreshToken`;
+    const refreshTokenEndpoint = `${host}/auth/refreshToken`;
     const response = await axios.post(refreshTokenEndpoint, {
       refreshToken: Token,
     });

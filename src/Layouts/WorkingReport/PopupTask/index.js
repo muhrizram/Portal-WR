@@ -120,10 +120,8 @@ const PopupTask = ({
     for (const project of firstEditTask.listProject) {
       const newProject = {};
       
-      newProject.projectId = project.projectId;
-      newProject.projectName = project.projectName;
-      newProject.absenceId = project.absenceId;
-      newProject.absenceName = project.absenceName;
+      newProject.projectId = project.projectId;      
+      newProject.absenceId = project.absenceId;      
       
       newProject.listTask = [];
       for (const task of project.listTask) {
