@@ -23,6 +23,8 @@ import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 
+import DateRangeCalendar from "../../Component/DateRangeCalendar";
+
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
@@ -108,8 +110,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       }                  
               </Grid>     
               <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "8vh", marginTop: "2vh", flexDirection: "column-reverse" }}>
-              {info.isToday ? (
-                console.log("WLEE", data[0].workingReportId),
+              {info.isToday ? (                
                 <Button
                   disable={!data[0].workingReportId}
                   variant="outlined-task"
@@ -186,6 +187,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
 
   return (
     <Grid>
+      <DateRangeCalendar/>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
@@ -197,16 +199,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         headerToolbar={{
           start: "title",
           center: "",
-          end: "custom1 prevYear,prev,next,nextYear",
+          end: "",
         }}
-        customButtons={{
-          custom1: {
-            text: 'custom 1',
-            click: function() {
-              alert('clicked custom button 1!');
-            }
-          },
-        }}
+        // customButtons={{
+        //   custom1: {
+        //     text: 'custom 1',
+        //     click: function() {
+        //       alert('clicked custom button 1!');
+        //     }
+        //   },
+        // }}
         events={events}
         // height={"90vh"}
       />

@@ -15,6 +15,7 @@ import {
   Typography
 } from "@mui/material"
 import AddIcon from '@mui/icons-material/Add';
+import MinIcon from '@mui/icons-material/Remove';
 import '../../../App.css'
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -143,7 +144,7 @@ const PopupTask = ({
     console.log("READY UPDATE",readyUpdate)
     const res = await client.requestAPI({
       method: 'PUT',
-      endpoint: `task/update`,
+      endpoint: `/task/update`,
       data : readyUpdate
     })    
     if (res.data) {           
@@ -207,6 +208,18 @@ const PopupTask = ({
       }));
     }
   };
+
+  const onRemoveProject = (idxProject) => {
+  if (isEdit) {
+    const updatedListProject = firstEditTask.listProject.filter(
+      (_project, index) => index !== idxProject
+    );
+    setfirstEditTask((prevState) => ({
+      ...prevState,
+      listProject: updatedListProject,
+    }));
+  }
+};
 
   const AddTask = (idxProject) => {        
     if(isEdit){
@@ -556,7 +569,8 @@ const PopupTask = ({
                         </>)
                       }
                       </Grid>                                          
-                        <Grid item xs={12} textAlign='left'>
+                        <Grid container xs={12}>
+                        <Grid item xs={6} textAlign='left'>
                           <Button
                             onClick={() => AddTask(idxProject)}
                             variant="outlined"
@@ -565,7 +579,20 @@ const PopupTask = ({
                           >
                             Add Task
                           </Button>
-                        </Grid>                            
+                        </Grid>
+                        <Grid item xs={6} textAlign='right'>
+                        {idxProject > 0 && (
+                          <Button
+                            onClick={() => onRemoveProject(idxProject)}
+                            variant="outlined"
+                            color="error"                             
+                            startIcon={<MinIcon />}
+                          >
+                            Remove Project
+                          </Button>
+                        )}
+                        </Grid>    
+                        </Grid>
                      </Grid>
                   </div>
                 )
@@ -764,7 +791,7 @@ const PopupTask = ({
                         </>)
                       }
                       </Grid>                  
-                          {dataProject.workingReportId !== undefined &&
+                          {dataProject.workingReportId !== undefined &&                           
                             <Grid item xs={12} textAlign='left'>
                               <Button
                                 onClick={() => AddTask(idxProject)}
@@ -774,7 +801,7 @@ const PopupTask = ({
                               >
                                 Add Task
                               </Button>
-                            </Grid>
+                            </Grid>                    
                             }                    
                     </Grid>
                   </div>
