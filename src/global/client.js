@@ -11,11 +11,11 @@ const refreshToken = async (Token) => {
     const refreshTokenEndpoint = `${host}/auth/refreshToken`;
     const response = await axios.post(refreshTokenEndpoint, {
       refreshToken: Token,
-    });
-    console.log("REFRESH RESPONSE", response)
-    if (response.status === 200) {      
+    });    
+    if (response.status === 200) {
+      window.location.reload();
       localStorage.setItem('token', response.data.accessToken);
-      localStorage.setItem('refreshtoken', response.data.refreshToken);
+      localStorage.setItem('refreshtoken', response.data.refreshToken);      
       return true;
     } else {
       throw new Error("Token refresh failed");
@@ -29,47 +29,45 @@ const refreshToken = async (Token) => {
 
 export const clientState = {
   requesting: false,
+  refreshingToken: false,
 };
 
 instance.interceptors.response.use(
   (response) => response,
   (error) => Promise.reject(error)
 );
+
 const requestAPI = async ({
   method = "GET",
   endpoint,
   data,
   headers,
   isLogin = false,
-  // otherConfig,
-  // isToken = true,
-}) => {  
+}) => {
   let result = {};
   const host = process.env.REACT_APP_BASE_API;
   const url = `${host}${endpoint}`;
   const timeout = process.env.REACT_APP_DEFAULT_TIMEOUT;
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
   let optHeaders = {
     ...headers,
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/vnd.api+json",
-    Accept: "application/vnd.api+json"
+    Accept: "application/vnd.api+json",
   };
   if (!isLogin) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
-  // const reqConfig = { url, method, timeout, headers: optHeaders, data, ...otherConfig };
 
   const reqConfig = { url, method, timeout, headers: optHeaders, data };
-  if (!endpoint) throw new Error("url parameter is required");
-
-  // Set Fetching State
+  if (!endpoint) throw new Error("Parameter url diperlukan");
+  
   clientState.requesting = true;
 
   try {
     const apiResponse = await new Promise((resolve, reject) => {
       setTimeout(() => {
-        const error = new Error("Request Timeout");
+        const error = new Error("Waktu Permintaan Habis");
         error.code = "E_REQUEST_TIMOUT";
-        error.message = `Request Timout for ${timeout}  ms`;
+        error.message = `Waktu Permintaan Habis selama ${timeout} ms`;
         reject(error);
       }, timeout);
       try {
@@ -79,22 +77,31 @@ const requestAPI = async ({
         reject(error);
       }
     });
-    result = {...apiResponse.data, isError: false};
-
-    // Remove Fetching State
+    result = { ...apiResponse.data, isError: false };
+    
     clientState.requesting = false;
 
     return result;
   } catch (error) {
-      const refreshTokennya = localStorage.getItem('refreshtoken');
-      const refreshTokenSuccess = await refreshToken(refreshTokennya);
-      if (refreshTokenSuccess) {        
-        return requestAPI({ method, endpoint, data, headers });
-      }
+    if (error.response.status === 401) {
+      if (!clientState.refreshingToken) { 
+        clientState.refreshingToken = true;
+        const refreshTokennya = localStorage.getItem("refreshtoken");
+        const refreshTokenSuccess = await refreshToken(refreshTokennya);
+        clientState.refreshingToken = false;
 
-    // Remove Fetching State
+        if (refreshTokenSuccess) {
+          return await requestAPI({ method, endpoint, data, headers }); 
+        }
+      }
+    }
+    
     clientState.requesting = false;
-    result = { status: error.response.status, error: error.response.data, isError: true };
+    result = {
+      status: error.response.status,
+      error: error.response.data,
+      isError: true,
+    };
     return result;
   }
 };

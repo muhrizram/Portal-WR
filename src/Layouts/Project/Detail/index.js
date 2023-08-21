@@ -36,16 +36,16 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 const DetailProject = () => {
-  // const [dataProject, setDataProject] = useState([
-  //   {
-  //     id: 1,
-  //     no: 1,
-  //     nip: "0213819",
-  //     name: "Iqbal",
-  //     joinDate: "02/02/2023",
-  //     assignment: "Project",
-  //   },
-  // ]);
+  const [dataMember, setdataMember] = useState([
+    {
+      id: 1,
+      no: null,
+      nip: "",
+      name: "",
+      joinDate: "",
+      assignment: "",
+    },
+  ]);
   const columnsProject = [
     {
       field: "no",
@@ -93,7 +93,7 @@ const DetailProject = () => {
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});
+  const [sendData, setData] = useState({});  
   const [isSave, setIsSave] = useState(false);
   
   
@@ -115,12 +115,8 @@ const DetailProject = () => {
     message: "",
   });
   const [isEdit, setIsEdit] = useState(false);
-  const [dataDetail, setDataDetail] = useState({
-    companyName: "",
-    companyEmail: "",
-    npwp: "",
-    address: "",
-  });
+  const [dataDetail, setDataDetail] = useState({});
+
   const dataBread = [
     {
       href: "/dashboard",
@@ -265,6 +261,31 @@ const DetailProject = () => {
     setData(temp)
   }
 
+  const getDetailProject = async () => {
+    const id = localStorage.getItem('projectId')    
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/project/detail-project/projectId=${id}?size=5&page=0&sort=name,asc`
+    })
+    const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
+      id: member.userId,
+      no: index + 1,
+      nip: member.nip,
+      name: member.fullName,
+      joinDate: member.joinDate,
+      assignment: member.position,
+    }));
+    
+    setdataMember(formattedData);
+    if (res) {
+      setDataDetail(res.data.attributes)
+    }    
+  }
+
+  useEffect(() => {
+    getDetailProject()    
+  }, []);
+
   return (
     <SideBar>
       <CustomAlert
@@ -318,7 +339,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            Project ABC
+                            {dataDetail.projectName}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -352,7 +373,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            PT. Company
+                            {dataDetail.companyName}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -376,7 +397,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            Selfi Muji Lestari
+                            {dataDetail.picProjectName}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -400,7 +421,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            082141323123
+                            {dataDetail.picProjectPhone}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -425,7 +446,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            01/01/2023
+                            {dataDetail.startDateProject}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -450,7 +471,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            02/01/2023
+                            {dataDetail.endDateProject}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -474,7 +495,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            T-PR-WR-01
+                            {dataDetail.initialProject}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -507,7 +528,7 @@ const DetailProject = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12}>
-                          <Typography variant="inputDetail">Project</Typography>
+                          <Typography variant="inputDetail">{dataDetail.projectType}</Typography>
                         </Grid>
                       </Grid>
                     )}
@@ -530,8 +551,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            To overcome the challenge and create Podcast, our
-                            team implemented the following solutions
+                            {dataDetail.projectDescription}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -565,7 +585,7 @@ const DetailProject = () => {
             </Grid>
             <Grid item xs={12}>
               <TableNative
-                data={dataProject}
+                data={dataMember}
                 columns={columnsProject}
                 checkboxSelection={isEdit}
                 disableRowSelectionOnClick={isEdit}

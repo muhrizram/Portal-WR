@@ -43,17 +43,14 @@ const Login = ({ changeStat }) => {
         severity: 'success',
         open: true,
         message: res.detail
-      }) 
-      console.log("SUCCESS", res)
-      console.log("INI TOKEN ",localStorage.getItem('token'))
+      })       
       navigate('/workingReport')
     }else{
       setDataAlert({
         severity: 'error',
         open: true,
         message: res.error.detail
-      }) 
-      console.log("ERROR", res)
+      })       
     }        
     // auth.signinRedirect();
   };

@@ -208,7 +208,7 @@ let globalTheme = createTheme({
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            color: "#2196F3",         
+            // color: "#2196F3",         
             // justifyContent: "flex-start",
             // background: "#EECEB0",
             // borderColor: "#734011"
