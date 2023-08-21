@@ -36,16 +36,16 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 const DetailProject = () => {
-  const [dataProject, setDataProject] = useState([
-    {
-      id: 1,
-      no: 1,
-      nip: "0213819",
-      name: "Iqbal",
-      joinDate: "02/02/2023",
-      assignment: "Project",
-    },
-  ]);
+  // const [dataProject, setDataProject] = useState([
+  //   {
+  //     id: 1,
+  //     no: 1,
+  //     nip: "0213819",
+  //     name: "Iqbal",
+  //     joinDate: "02/02/2023",
+  //     assignment: "Project",
+  //   },
+  // ]);
   const columnsProject = [
     {
       field: "no",
@@ -95,6 +95,20 @@ const DetailProject = () => {
   const [open, setOpen] = useState(false);
   const [sendData, setData] = useState({});
   const [isSave, setIsSave] = useState(false);
+  
+  
+  const [dataUser, setDataUser] = useState([])
+  const [roles, setOptRoles] = useState([])
+  const [valueUser, setValueUser] = useState([]);
+  const [company, setOptCompany] = useState([])
+  const [projectTypes, setOptProjectType] = useState([])
+  const [selectedMember, setSelectedMember] = useState([])
+  const [dataProject, setDataProject] = useState([]);
+  const [startProject, setStartProject] = useState()
+  const [endProject, setEndProject] = useState()
+  const [startJoin, setStartJoin] = useState()
+  const [endJoin, setEndJoin] = useState()
+
   const [dataAlert, setDataAlert] = useState({
     open: false,
     severity: "success",
@@ -119,11 +133,89 @@ const DetailProject = () => {
       current: false,
     },
     {
-      href: "/master-project/detail",
+      href: "/masterProject/detail",
       title: isEdit ? "Edit Project" : "Detail Project",
       current: true,
     },
   ];
+
+  useEffect(() => {
+    getProjectTypes()
+    getOptRoles()
+    // getOptDataUser()
+    getOptCompany()
+    // console.log("DATA PROJECT", sendData)
+  }, [sendData])
+
+
+  const handleInvite = () => {
+    const newMembers = [];
+    for (const newUser of valueUser) {
+      let exists = false;
+      for (const existingMember of selectedMember) {
+        if (newUser.id === existingMember.id) {
+          exists = true;
+        }
+      }
+      if (!exists) {
+        newMembers.push(newUser);
+      }
+    }
+    
+    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
+    setValueUser([])
+  }
+  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
+
+  // const getOptDataUser = async () => {
+  //   const res = await client.requestAPI({
+  //     method: 'GET',
+  //     endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
+  //   })
+  //   const data = res.data.map(item => ({
+  //     id : item.id,
+  //     positionId: item.attributes.positionId,
+  //     nip: item.attributes.nip, 
+  //     firstName: item.attributes.firstName, 
+  //     lastName: item.attributes.lastName,
+  //     userName: item.attributes.userName,
+  //     photoProfile: item.attributes.photoProfile,
+  //     position: item.attributes.position,
+  //     assignment: item.attributes.assignment,
+  //     active: item.attributes.active
+  //   }));
+  //   setDataUser(data)
+  // }
+
+  const getOptRoles = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/roleProject`
+    })
+    const data = res.data.map(item => ({id : item.id, role: item.attributes.role}));
+    setOptRoles(data)
+  }
+
+  const getOptCompany = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/companylistname`
+    })
+    const data = res.data.map(item => ({companyId : item.id, name: item.attributes.name}));
+    setOptCompany(data)
+  }
+  
+  const getProjectTypes = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/projectType?search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      name : item.attributes.name
+    }));
+    setOptProjectType(data)
+  }
 
   const cancelData = () => {
     setIsSave(false);
@@ -136,13 +228,16 @@ const DetailProject = () => {
     setData(data);
   };
 
-  let methods = useForm({
+  const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      projectName: "",
-      companyName: "",
-      npwp: "",
-      address: "",
+      projectName: '',
+      companyName: '',
+      picProjectName: '',
+      picProjectPhone: '',
+      projectType: '',
+      projectDescription: '',
+      initialProject: ''
     },
   });
 
@@ -155,6 +250,20 @@ const DetailProject = () => {
   const onSave = async () => {
     setOpen(false);
   };
+
+  const handleChange = (event, newValue) => {
+    const {name, value} = event.target
+    const temp = {...sendData}
+    if(name === 'companyName'){
+      temp.companyId = newValue
+    } else if(name === 'projectType'){
+      temp.projectType = newValue
+    } else if(name === 'memberInvite'){
+      temp.listUser.userId = newValue
+    }
+
+    setData(temp)
+  }
 
   return (
     <SideBar>
@@ -221,8 +330,14 @@ const DetailProject = () => {
                         <Autocomplete
                           disablePortal
                           id="combo-box-demo"
-                          options={top100Films}
+                          options={company}
+                          getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
+                          onChange={(_event, newValue) => {
+                            if (newValue) {
+                              handleChange({ target: { name: 'companyName' } }, newValue.companyId);
+                            }
+                          }}
                           renderInput={(params) => (
                             <TextField {...params} label="Company Name" />
                           )}
@@ -372,7 +487,13 @@ const DetailProject = () => {
                           disablePortal
                           id="combo-box-demo"
                           options={projectTypes}
+                          getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
+                          onChange={(_event, newValue) => {
+                            if(newValue){
+                              handleChange({target : { name : 'projectType', value: newValue.id }},newValue.id)
+                            }
+                          }}
                           renderInput={(params) => (
                             <TextField {...params} label="Project Type" />
                           )}

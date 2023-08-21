@@ -34,6 +34,14 @@ import { options } from "@fullcalendar/core/preact";
 
 const CreateProject = () => {
   
+  const userData = {
+    userId: '',
+    roleProjectId : '',
+    joinDate: startJoin,
+    endDate: endJoin
+  }
+  // console.log("userData:", userData);
+
   const columnsProject = [
     {
       field: "no",
@@ -76,18 +84,32 @@ const CreateProject = () => {
           <Grid container columnSpacing={1} margin={2.5}>
             <Grid item xs={5.5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* <DemoContainer components={["DatePicker"]}> */}
+                {sendData.listUser.map((res, index) => (
                   <DatePicker
                     className='date-input-table'
                     placeholder="Join Date"
-                    value={startJoin}
+                    value={res.joinDate}
                     onChange={(startJoinProject) => {
-                      console.log("DATE START", startJoinProject);
-                      setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                      const newJoinDate = startJoinProject.format("MM-DD-YYYY");
+                      const updatedListUser = [...sendData.listUser];
+                      updatedListUser[index] = {
+                        ...updatedListUser[index],
+                        joinDate: newJoinDate
+                      };
+                      setData(prevData => ({
+                        ...prevData,
+                        listUser: updatedListUser
+                      }));
+
+                      // setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                      // setData((prevData) => ({
+                      //   ...prevData,
+                      //   joinDate: startJoinProject.format("MM-DD-YYYY")
+                      // }));
                     }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
-                {/* </DemoContainer> */}
+                ))}
               </LocalizationProvider>
             </Grid>
             <Grid item xs={1} alignSelf="center" textAlign="center">
@@ -95,18 +117,32 @@ const CreateProject = () => {
             </Grid>
             <Grid item xs={5.5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* <DemoContainer components={["DatePicker"]}> */}
+              {sendData.listUser.map((res, index) => (
                   <DatePicker
                     className='date-input-table'
                     placeholder="End Date"
-                    value={endJoin}
+                    value={res.endDate}
                     onChange={(endJoinProject) => {
-                      console.log("DATE START", endJoinProject);
-                      setEndJoin(endJoinProject.format("MM-DD-YYYY"));
+                      const newEndDate = endJoinProject.format("MM-DD-YYYY");
+                      const updatedListUser = [...sendData.listUser];
+                      updatedListUser[index] = {
+                        ...updatedListUser[index],
+                        endDate: newEndDate
+                      };
+                      setData(prevData => ({
+                        ...prevData,
+                        listUser: updatedListUser
+                      }));
+                      // setEndJoin(endJoinProject.format("MM-DD-YYYY"));
+                      // setData((prevData) => ({
+                      //   ...prevData,
+                      //   endDate: endJoinProject.format("MM-DD-YYYY")
+                      // }));
                     }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
-                {/* </DemoContainer> */}
+                
+                ))}
               </LocalizationProvider>
             </Grid>
           </Grid>
@@ -156,15 +192,22 @@ const CreateProject = () => {
   const [endProject, setEndProject] = useState()
   const [startJoin, setStartJoin] = useState()
   const [endJoin, setEndJoin] = useState()
-  const [sendData, setData] = useState({});
+  const [sendData, setData] = useState({
+    companyId : '',
+    picProjectName : '',
+    picProjectPhone : '',
+    projectDescription : '',
+    startDate : startProject,
+    endDate : endProject,
+    projectType : '',
+    createdBy : '',
+    initialProject : '',
+    projectName : '',
+    // listUser: selectedMember
+    listUser: [userData]
+  });
 
-  const userData = {
-    userId: '',
-    roleProjectId : '',
-    joinDate: startJoin,
-    endDate: endJoin
-  }
-
+  
   const dataBread = [
     {
       href: "/dashboard",
@@ -177,7 +220,7 @@ const CreateProject = () => {
       current: false,
     },
     {
-      href: "/master-project/detail",
+      href: "/masterProject/detail",
       title: isEdit ? "Edit Project" : "Detail Project",
       current: true,
     },
@@ -186,9 +229,9 @@ const CreateProject = () => {
   useEffect(() => {
     getProjectTypes()
     getOptRoles()
-    getOptDataUser()
+    // getOptDataUser()
     getOptCompany()
-    console.log("DATA PROJECT", sendData)
+    // console.log("DATA PROJECT", sendData)
   }, [sendData])
 
 
@@ -293,27 +336,13 @@ const CreateProject = () => {
     setOpen(false);
   };
 
-  const addDataProject = {
-    companyId : '',
-    picProjectName : methods.watch("picProjectName"),
-    picProjectPhone : methods.watch("picProjectPhone"),
-    projectDescription : methods.watch("projectDescription"),
-    startDate : startProject,
-    endDate : endProject,
-    projectType : '',
-    createdBy : '',
-    initialProject : methods.watch("initialProject"),
-    projectName : methods.watch("projectName"),
-    listUser: [userData]
-  }
-
   const onSave = async () => {
     setIsSave(true);
     setOpen(true);
     setData(data);
     
     const data = {
-      ...addDataProject
+      ...sendData
     }
 
     // const res = await client.requestAPI({
@@ -345,12 +374,17 @@ const CreateProject = () => {
 
   const handleChange = (event, newValue) => {
     const {name, value} = event.target
-    const temp = {...addDataProject}
+    const temp = {...sendData}
+    temp[name] = value
     if(name === 'companyName'){
       temp.companyId = newValue
     } else if(name === 'projectType'){
       temp.projectType = newValue
+    } else if(name === 'memberInvite'){
+      temp.listUser.userId = newValue
     }
+
+    setData(temp)
   }
   
   return (
@@ -362,7 +396,7 @@ const CreateProject = () => {
         </Grid>
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit()}>
+            <form onSubmit={methods.handleSubmit(onSave)}>
               <div className="card-container-detail">
                 <Grid
                   item
@@ -378,6 +412,13 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                       label="Project Name"
+                      onChange={(e) => handleChange(e)}
+                      // onChange={(event) => {
+                      //   setData((prevData) => ({
+                      //     ...prevData,
+                      //     projectName: event.target.value
+                      //   }));
+                      // }}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -407,6 +448,12 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
                       label="PIC Project Name"
+                      // onChange={(event) => {
+                      //   setData((prevData) => ({
+                      //     ...prevData,
+                      //     picProjectName: event.target.value
+                      //   }));
+                      // }}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -416,6 +463,12 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g PT. Jalan Gatot Subroto no 122"
                       label="PIC Project Phone"
+                      // onChange={(event) => {
+                      //   setData((prevData) => ({
+                      //     ...prevData,
+                      //     picProjectPhone: event.target.value
+                      //   }));
+                      // }}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -427,8 +480,11 @@ const CreateProject = () => {
                           sx={{ width: "100%", paddingRight: "20px" }}
                           value={startProject}
                           onChange={(startProjectData) => {
-                            console.log("DATE START", startProjectData);
                             setStartProject(startProjectData.format("MM-DD-YYYY"));
+                            // setData((prevData) => ({
+                            //   ...prevData,
+                            //   startDate: startProjectData.format("MM-DD-YYYY")
+                            // }));
                           }}
                         />
                       </DemoContainer>
@@ -443,8 +499,11 @@ const CreateProject = () => {
                           sx={{ width: "100%", paddingRight: "20px" }}
                           value={endProject}
                           onChange={(endProjectDate) => {
-                            console.log("DATE END", endProjectDate);
                             setEndProject(endProjectDate.format("MM-DD-YYYY"));
+                            // setData((prevData) => ({
+                            //   ...prevData,
+                            //   endDate: endProjectDate.format("MM-DD-YYYY")
+                            // }));
                           }}
                         />
                       </DemoContainer>
@@ -457,6 +516,12 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g Selfi Muji Lestari"
                       label="Initial Project"
+                      // onChange={(event) => {
+                      //   setData((prevData) => ({
+                      //     ...prevData,
+                      //     initialProject: event.target.value
+                      //   }));
+                      // }}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -494,8 +559,8 @@ const CreateProject = () => {
                     <Typography variant="inputDetail">Teams Member</Typography>
                   </Grid>
                   <Grid item xs={12} mb={2}>
-                    {addDataProject.listUser.map((res, index) => (
-                    <div className='card-project' key={res.id}>
+                    {/* {sendData.listUser.map((res, index) => ( */}
+                    <div className='card-project' >
                       <Grid container rowSpacing={2} columnSpacing={1.25}>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
@@ -503,6 +568,7 @@ const CreateProject = () => {
                         <Grid item xs={7}>
                           <Autocomplete
                             multiple
+                            name="memberInvite"
                             value={valueUser}
                             limitTags={2}
                             onChange={(event, newValue) => {
@@ -527,6 +593,7 @@ const CreateProject = () => {
                         <Grid item xs={2.5}>
                           <Autocomplete
                             disablePortal
+                            name="roleOfMember"
                             options={roles}
                             getOptionLabel={(option) => option.role}
                             sx={{ width: "100%" }}
@@ -553,7 +620,7 @@ const CreateProject = () => {
                         </Grid>
                       </Grid>
                     </div>
-                    ))}
+                    {/* ))} */}
                   </Grid>
                   <Grid item xs={12}>
                     <TableNative
