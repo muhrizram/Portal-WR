@@ -17,7 +17,7 @@ import "../../../App.css";
 import client from "../../../global/client";
 import { UploadFileOutlined } from "@mui/icons-material";
 import { AlertContext } from "../../../context";
-
+const MAX_SIZE_FILE = 1048576; // bytes
 const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const downloadUrl = `${process.env.REACT_APP_BASE_API}/holiday/download?bucketName=workingreport-dev&objectName=template_import_holiday.xlsx`;
   const { setDataAlert } = useContext(AlertContext);
@@ -26,6 +26,14 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
 
   const onSave = async (event) => {
     event.preventDefault()
+    if(uploadedFile.size >= MAX_SIZE_FILE){
+      setDataAlert({
+        severity:"error",
+        open:true,
+        message: "Max file size is 1 MB",
+      });
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", uploadedFile);
@@ -52,7 +60,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
     } else {
       setDataAlert({
         severity: "error",
-        message: res.error.meta.message,
+        message: res.error.detail,
         open: true,
       });
     }
@@ -60,7 +68,6 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
 
   const handleFileChange = useCallback((event) => {
     const file = event.target.files[0];
-    console.log(file.name);
     setUploadedFile(file);
   }, []);
 
