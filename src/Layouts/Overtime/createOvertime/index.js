@@ -444,7 +444,8 @@ const onSave = async () => {
                           <Grid item xs={12}>
                           <Autocomplete
                             disablePortal
-                            disabled
+                            // disabled
+                            disabled={res.taskName ? true : false}
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
                             options={optTask}
