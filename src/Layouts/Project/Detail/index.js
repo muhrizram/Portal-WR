@@ -163,25 +163,25 @@ const DetailProject = () => {
   }
   const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
 
-  // const getOptDataUser = async () => {
-  //   const res = await client.requestAPI({
-  //     method: 'GET',
-  //     endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
-  //   })
-  //   const data = res.data.map(item => ({
-  //     id : item.id,
-  //     positionId: item.attributes.positionId,
-  //     nip: item.attributes.nip, 
-  //     firstName: item.attributes.firstName, 
-  //     lastName: item.attributes.lastName,
-  //     userName: item.attributes.userName,
-  //     photoProfile: item.attributes.photoProfile,
-  //     position: item.attributes.position,
-  //     assignment: item.attributes.assignment,
-  //     active: item.attributes.active
-  //   }));
-  //   setDataUser(data)
-  // }
+  const getOptDataUser = async () => {
+    const res = await client.requestAPI({
+      method: 'GET',
+      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
+    })
+    const data = res.data.map(item => ({
+      id : item.id,
+      positionId: item.attributes.positionId,
+      nip: item.attributes.nip, 
+      firstName: item.attributes.firstName, 
+      lastName: item.attributes.lastName,
+      userName: item.attributes.userName,
+      photoProfile: item.attributes.photoProfile,
+      position: item.attributes.position,
+      assignment: item.attributes.assignment,
+      active: item.attributes.active
+    }));
+    setDataUser(data)
+  }
 
   const getOptRoles = async () => {
     const res = await client.requestAPI({
@@ -244,6 +244,30 @@ const DetailProject = () => {
     setOpen(false);
   };
   const onSave = async () => {
+    const data = {
+      ...sendData,
+    }
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: '/project/update-project/projectId=',
+      data
+    })
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/master-company')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
     setOpen(false);
   };
 
@@ -326,6 +350,8 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="projectName"
+                        value={dataDetail.projectName}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                         label="Project Name"
@@ -352,6 +378,7 @@ const DetailProject = () => {
                           disablePortal
                           id="combo-box-demo"
                           options={company}
+                          defaultValue={company.find((option) => option.name) || null}
                           getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
                           onChange={(_event, newValue) => {
@@ -359,6 +386,8 @@ const DetailProject = () => {
                               handleChange({ target: { name: 'companyName' } }, newValue.companyId);
                             }
                           }}
+                          
+                          isOptionEqualToValue={(option, value) => option.value === value.value}
                           renderInput={(params) => (
                             <TextField {...params} label="Company Name" />
                           )}
@@ -384,6 +413,8 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="picProject"
+                        value={dataDetail.picProjectName}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
@@ -408,6 +439,8 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="picProjectPhone"
+                        value={dataDetail.picProjectPhone}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="PIC Project Phone"
@@ -433,6 +466,10 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="Start Date Project"
+                            value={dataDetail.startDate || null}
+                            onChange={(startProjectData) => {
+                              setStartProject(startProjectData.format("MM-DD-YYYY"));
+                            }}
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
                         </DemoContainer>
@@ -457,6 +494,7 @@ const DetailProject = () => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
+                            value={dataDetail.endDate || null}
                             label="End Date Project"
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
@@ -485,6 +523,8 @@ const DetailProject = () => {
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
+                        value={dataDetail.initialProject}
+                        // onChange={(e) => handleChange(e)}
                       />
                     ) : (
                       <Grid container>
@@ -508,6 +548,7 @@ const DetailProject = () => {
                           disablePortal
                           id="combo-box-demo"
                           options={projectTypes}
+                          defaultValue={projectTypes.find((option) => option.name) || null}
                           getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
                           onChange={(_event, newValue) => {
@@ -515,6 +556,7 @@ const DetailProject = () => {
                               handleChange({target : { name : 'projectType', value: newValue.id }},newValue.id)
                             }
                           }}
+                          isOptionEqualToValue={(option, value) => option.value === value.value}
                           renderInput={(params) => (
                             <TextField {...params} label="Project Type" />
                           )}
@@ -538,6 +580,8 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="projectDescription"
+                        value={dataDetail.projectDescription}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="Project Description"
@@ -630,16 +674,5 @@ const DetailProject = () => {
     </SideBar>
   );
 };
-
-const top100Films = [
-  { label: "PT ABC", year: 1994 },
-  { label: "PT WASD", year: 1972 },
-  { label: "PT QWE", year: 1974 },
-];
-
-const projectTypes = [
-  { label: "Outsource", year: 1994 },
-  { label: "Project", year: 1972 },
-];
 
 export default DetailProject;
