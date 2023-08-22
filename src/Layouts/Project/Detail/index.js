@@ -244,6 +244,30 @@ const DetailProject = () => {
     setOpen(false);
   };
   const onSave = async () => {
+    const data = {
+      ...sendData,
+    }
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: '/project/update-project/projectId=',
+      data
+    })
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/master-company')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
     setOpen(false);
   };
 
@@ -326,7 +350,7 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="projectName"
-                        defaultValue={dataDetail.projectName}
+                        value={dataDetail.projectName}
                         // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -390,7 +414,7 @@ const DetailProject = () => {
                         focused
                         name="picProject"
                         value={dataDetail.picProjectName}
-                        onChange={(e) => handleChange(e)}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
@@ -416,7 +440,7 @@ const DetailProject = () => {
                         focused
                         name="picProjectPhone"
                         value={dataDetail.picProjectPhone}
-                        onChange={(e) => handleChange(e)}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="PIC Project Phone"
@@ -442,7 +466,7 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="Start Date Project"
-                            defaultValue={dataDetail.startDate || null}
+                            value={dataDetail.startDate || null}
                             onChange={(startProjectData) => {
                               setStartProject(startProjectData.format("MM-DD-YYYY"));
                             }}
@@ -470,7 +494,7 @@ const DetailProject = () => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
-                            defaultValue={dataDetail.endDate || null}
+                            value={dataDetail.endDate || null}
                             label="End Date Project"
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
@@ -500,7 +524,7 @@ const DetailProject = () => {
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
                         value={dataDetail.initialProject}
-                        onChange={(e) => handleChange(e)}
+                        // onChange={(e) => handleChange(e)}
                       />
                     ) : (
                       <Grid container>
@@ -557,7 +581,7 @@ const DetailProject = () => {
                         focused
                         name="projectDescription"
                         value={dataDetail.projectDescription}
-                        onChange={(e) => handleChange(e)}
+                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="Project Description"
@@ -607,8 +631,8 @@ const DetailProject = () => {
               <TableNative
                 data={dataMember}
                 columns={columnsProject}
-                // checkboxSelection={isEdit}
-                // disableRowSelectionOnClick={isEdit}
+                checkboxSelection={isEdit}
+                disableRowSelectionOnClick={isEdit}
               />
             </Grid>
           </div>
@@ -650,16 +674,5 @@ const DetailProject = () => {
     </SideBar>
   );
 };
-
-const top100Films = [
-  { label: "PT ABC", year: 1994 },
-  { label: "PT WASD", year: 1972 },
-  { label: "PT QWE", year: 1974 },
-];
-
-const projectTypes = [
-  { label: "Outsource", year: 1994 },
-  { label: "Project", year: 1972 },
-];
 
 export default DetailProject;

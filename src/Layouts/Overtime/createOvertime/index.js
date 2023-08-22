@@ -53,7 +53,7 @@ const CreateOvertime = ({
   const [opentask, setOpentask] = useState(false)
   const [editOvertime, setEditOvertime] = useState(false)
   const [valueDetail, setValueDetail] = useState([])
-  const selectedTask = optTask.find((item) => item.backlogId === idEffortTask);
+  const selectedTask = optTask.find((item) => item.taskId);
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
 
@@ -127,6 +127,7 @@ const CreateOvertime = ({
       temp.listProject[idxProject].listTask.push({
         ...clearTask
       })
+      console.log("CEK DATA EDIT", temp)
     setDataEditOvertime(temp)
     } else{
     const temp = {...dataOvertime}
@@ -137,17 +138,28 @@ const CreateOvertime = ({
     }
   }
 
-  const handleChange = (event, idxProject, index, backlogId) => {   
+  const handleChange = (event, idxProject, index, backlogId, taskId) => {   
     if(isEdit){
+      const { name, value } = event.target;
+      const updateDataEditOvertime = {...dataEditOvertime}
+      updateDataEditOvertime.listProject[idxProject].listTask[index][name] = value
+      console.log("VALUE", value)
+      setDataEditOvertime(updateDataEditOvertime)
+
       if(name === 'duration'){
         const updateDataEditOvertime = {...dataEditOvertime}
         updateDataEditOvertime.listProject[idxProject].listTask[index][name] = parseInt(value)
         setDataEditOvertime(updateDataEditOvertime)
       }
-      const { name, value } = event.target;
-      const updateDataEditOvertime = {...dataEditOvertime}
-      updateDataEditOvertime.listProject[idxProject].listTask[index][name] = value
-      setDataEditOvertime(updateDataEditOvertime)
+      else if(name === 'taskName'){
+        updateDataEditOvertime.listProject[idxProject].listTask[index].backlogId = backlogId
+        // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = taskId
+        updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = 270
+        // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = null
+        console.log("HAHAHAYU BELOM",updateDataEditOvertime.listProject[0].listTask[0])
+        // temp.listProject[0].listTask[0].backlogId = "35"
+      }
+
     } else{
       const { name, value } = event.target;
         if(name === 'duration'){
@@ -191,7 +203,7 @@ const CreateOvertime = ({
     }
   };
 
-  const deleteTask = (e, idxProject, index) => {
+  const deleteTask = async (e, idxProject, index) => {
     e.preventDefault()
     if(isEdit){
       const temp = {...dataEditOvertime}
@@ -289,8 +301,11 @@ const onSave = async () => {
     const dataUpdate = {
       workingReportId : null,
       listProjectId : [],
+      createdBy: 2,
+      updatedBy: 2
     }
 
+    console.log("DATA EDIT", dataUpdate)
     dataUpdate.workingReportId = dataEditOvertime.workingReportId
     for (const project of dataEditOvertime.listProject){
       const updateFilled = {
@@ -298,13 +313,16 @@ const onSave = async () => {
         listTask : []
       }
       for (const task of project.listTask){
+        if(task.taskId === null){
+          task.backlogId = null
+        }
         const updateTask = {
           taskId : task.taskId,
           workingReportId : dataUpdate.workingReportId,
           backlogId : task.backlogId,
           taskName : task.taskName,
           statusTaskId : task.statusTaskId,
-          duration : task.duration,
+          duration : parseInt(task.duration),
           taskItem : task.taskItem,
         }
         updateFilled.listTask.push(updateTask)
@@ -448,16 +466,18 @@ const onSave = async () => {
                             disabled={res.taskName ? true : false}
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
-                            options={optTask}
-                            // value={selectedTask}
+                            // value={selectedTask.taskId}
                             defaultValue={optTask.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName) || null}
+                            options={optTask}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                             onChange={(_event, newValue) => {
                               if(newValue) {
-                                handleChange({target : { name : 'taskName', value: newValue.backlogId }},
+                                handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                 idxProject,
-                                index)
+                                index,
+                                newValue.backlogId,)
+                                // newValue.taskId)
                                 setIdEffortTask(newValue.backlogId)
                               } else {
                                 setIdEffortTask('')
