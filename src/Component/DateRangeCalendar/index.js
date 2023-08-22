@@ -33,36 +33,3 @@ export default function DateRangeCalendar() {
     </LocalizationProvider>
   );
 }
-
-
-// import React, { useState } from 'react';
-// import { Box, TextField } from '@mui/material';
-// import { DateRangePicker } from '@mui/x ';
-// import AdapterDateFns from '@mui/lab/AdapterDateFns';
-// import LocalizationProvider from '@mui/lab/LocalizationProvider';
-
-// const DateRangeCalendar = () => {
-//   const initialDateRange = [null, null];
-//   const [value, setValue] = useState(initialDateRange);
-
-//   return (
-//     <LocalizationProvider dateAdapter={AdapterDateFns}>
-//       <Box>
-//         <DateRangePicker
-//           disablePast
-//           value={value}
-//           onChange={setValue}
-//           renderInput={(startProps, endProps) => (
-//             <>
-//               <TextField {...startProps} />
-//               <Box sx={{ mx: 2 }}> to </Box>
-//               <TextField {...endProps} />
-//             </>
-//           )}
-//         />
-//       </Box>
-//     </LocalizationProvider>
-//   );
-// }
-
-// export default DateRangeCalendar;

@@ -252,23 +252,6 @@ let globalTheme = createTheme({
         },
         {
           props: {
-            variant: "outlined-disable",
-          },
-          style: {
-            textTransform: "none",
-            padding: "6px 16px",
-            fontSize: "14px",
-            lineHeight: "125%",
-            borderColor: "black",
-            marginRight: "10vh",
-            marginTop: "9vh",
-            width: "40%", 
-            marginRight: "12vh", 
-            marginTop: "9vh"
-          },          
-        },
-        {
-          props: {
             variant: "outlined-task",
           },
           style: {

@@ -233,6 +233,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           center: "",
           end: "",
         }}
+        // customButtons={{
+        //   custom1: {
+        //     text: 'custom 1',
+        //     click: function() {
+        //       alert('clicked custom button 1!');
+        //     }
+        //   },
+        // }}
         events={events}
       />
       <Dialog
