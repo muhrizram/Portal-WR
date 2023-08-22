@@ -220,7 +220,7 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            width: "60%",
+            width: "100%",
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
@@ -242,6 +242,23 @@ let globalTheme = createTheme({
             lineHeight: "125%",
             color: "#CB3A31",            
             background: "#FFF4F2",
+            borderColor: "black",
+            marginRight: "10vh",
+            marginTop: "9vh",
+            width: "40%", 
+            marginRight: "12vh", 
+            marginTop: "9vh"
+          },          
+        },
+        {
+          props: {
+            variant: "outlined-disable",
+          },
+          style: {
+            textTransform: "none",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
             borderColor: "black",
             marginRight: "10vh",
             marginTop: "9vh",

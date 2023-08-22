@@ -24,7 +24,7 @@ import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
-
+import { styled } from '@mui/system';
 
 export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
@@ -37,6 +37,27 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [openDetailOvertime,setopenDetailOvertime] = useState(false)
 
   const navigate = useNavigate();
+
+  const CustomButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  padding: '6px 16px',
+  fontSize: '14px',
+  lineHeight: '100%',
+  borderColor: 'black', 
+  marginRight: '10vh',
+  marginTop: '9vh',  
+  borderRadius:6
+  }));
+
+  const CustomButtonDisabledovertime = styled(Button)(({ theme }) => ({
+    textTransform: "none",
+    width: "40%",
+    padding: "6px 16px",
+    fontSize: "14px",
+    lineHeight: "125%",
+    borderRadius: "6px",
+    borderColor: "black",
+  }));
 
   function handleClose() {
     setOpen(false);
@@ -81,22 +102,25 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
           </Grid>
           <Grid item xs={12} display="flex" justifyContent="left" >
-                {info.isToday ? (              
-                    null
-                  ) : (datalibur[0].workingReportId == null ? (
+              {info.isToday ? (
+                  null
+                ) : (
+                  datalibur[0].workingReportId == null ? (
                     <>
-                      {isWeekend(info.date) ? 
-                      <Button variant="outlined-holiday" >
-                      holiday
-                    </Button> 
-                      : 
-                        <Button disabled variant="outlined" sx={{width: "40%", marginRight: "8vh", marginTop: "8vh",}} >
-                          task
-                        </Button> 
-                      }                
-                  </>
-                  ) : null )
-                  }
+                      {isWeekend(info.date) ? (
+                        <Button variant="outlined-holiday">
+                          holiday
+                        </Button>
+                      ) : (
+                        data.length > 0 && data[0].overtime ? (
+                          null
+                        ) : ( <CustomButton disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
+                            task
+                          </CustomButton>)
+                      )}
+                    </>
+                  ) : null
+                )}
               </Grid>   
           {data.length > 0 ? 
           <> 
@@ -109,13 +133,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         null
                       }                  
               </Grid>     
-              <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "8vh", marginTop: "2vh", flexDirection: "column-reverse" }}>
+              <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "8vh", marginTop: "1vh", flexDirection: "column-reverse" }}>
               {info.isToday ? (                
                 <Button
                   disable={!data[0].workingReportId}
                   variant="outlined-task"
                   onClick={
-                    data[0].workingReportId == null ? 
+                    data[0].workingReportId && !data[0].task ? 
                     () => {
                       setOnClick(info)}                   
                     :
@@ -140,7 +164,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                   task
                 </Button>
-              ) : null}
+              ) : (
+                data.length > 0 && data[0].overtime ? (
+                 <CustomButtonDisabledovertime disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
+                    task
+                 </CustomButtonDisabledovertime>
+                ) : null
+              )              
+              }
 
               {info.isToday ? (
                 <Button                  
@@ -163,6 +194,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               (
                 data[0].overtime == true ? (
                 <Button
+                  // sx={{marginTop: "5vh"}}
                   variant="outlined-warning"
                   onClick={
                     () => {
@@ -187,7 +219,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
 
   return (
     <Grid>
-      <DateRangeCalendar/>
+      <DateRangeCalendar/>      
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
@@ -201,16 +233,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           center: "",
           end: "",
         }}
-        // customButtons={{
-        //   custom1: {
-        //     text: 'custom 1',
-        //     click: function() {
-        //       alert('clicked custom button 1!');
-        //     }
-        //   },
-        // }}
         events={events}
-        // height={"90vh"}
       />
       <Dialog
         fullWidth={fullWidth}
