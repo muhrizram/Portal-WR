@@ -161,7 +161,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 </Button>
               ) : 
               (
-                data[0].overtime == true ? (
+                data[0].overtime === true && (
                 <Button
                   variant="outlined-warning"
                   onClick={
@@ -174,7 +174,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 >
                   {"View Overtime"}
                 </Button>
-                ) : (<></>)
+                )
               )}
             </Grid>
           </> : null
