@@ -220,7 +220,7 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            width: "60%",
+            width: "100%",
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
