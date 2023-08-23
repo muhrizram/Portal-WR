@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useState} from 'react';
 import { ThemeProvider } from "@mui/material/styles";
 import { Route, Routes, useNavigate } from 'react-router';
 import globalTheme from './Theme';
-import { routes } from './routes';
+import { finalRoutes } from './routes';
 import { AlertContext } from './context';
 // import { useAuth } from 'react-oidc-context';
 
@@ -40,7 +40,7 @@ const App = () => {
       <AlertContext.Provider value={value}>
         <Suspense fallback={<p>Loading...</p>}>
           <Routes>
-            {routes.map((res, idx) => {
+            {finalRoutes.map((res, idx) => {
               return <Route path={res.path} element={res.element} key={`${idx + 1}-route-path`} />
             })}
           </Routes>

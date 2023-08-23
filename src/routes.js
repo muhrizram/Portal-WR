@@ -9,7 +9,6 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
-import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -49,7 +48,7 @@ const ViewOvertime = lazy(() =>
 
 const Holiday = lazy(() => import("./Layouts/Holiday"));
 
-export const routes = [
+const routes = [
   {
     path: "/login",
     element: <LoginScreen />,
@@ -147,6 +146,7 @@ export const routes = [
   {
     path: "/master-company",
     element: <Company />,
+    key: 'master-company',
     name: "Company",
     icon: <BusinessOutlinedIcon />,
   },
@@ -164,8 +164,33 @@ export const routes = [
   },
   {
     path: "/master-holiday",
+    key: 'master-holiday',
     element: <Holiday />,
     name: "Holiday",
     icon: <AccountBalanceOutlinedIcon />,
   },
 ];
+
+// Comment if route user already exist
+const tempRoute = ['master-holiday', 'master-company']
+
+localStorage.setItem('privilage', JSON.stringify(tempRoute))
+const userRoutes = JSON.parse(localStorage.getItem('privilage'))
+// console.log('user route: ', userRoutes)
+// console.log('app route: ', routes)
+const temp = routes.filter((res) => {
+  let isSame = false
+  isSame = userRoutes.includes(res.key)
+  if (!isSame) {
+    return
+  }
+  return res
+})
+
+console.log('final route: ', temp)
+
+// final routes with controll
+// export const finalRoutes = temp
+
+// default all routes
+export const finalRoutes = routes
