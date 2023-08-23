@@ -83,34 +83,34 @@ const CreateProject = () => {
           <Grid container columnSpacing={1} margin={2.5}>
             <Grid item xs={5.5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* {sendData.listUser.map((res, index) => ( */}
+                {sendData.listUser.map((res, index) => (
                   <DatePicker
                     className='date-input-table'
                     placeholder="Join Date"
                     value={startJoin}
-                          onChange={(startJoinProject) => {
-                            setStartJoin(startJoinProject.format("MM-DD-YYYY"));
-                            setData((prevData) => ({
-                              ...prevData,
-                              joinDate: startJoinProject.format("MM-DD-YYYY")
-                            }));
-                          }}
-                    // value={res.joinDate}
-                    // onChange={(startJoinProject) => {
-                    //   const newJoinDate = startJoinProject.format("MM-DD-YYYY");
-                    //   const updatedListUser = [...sendData.listUser];
-                    //   updatedListUser[index] = {
-                    //     ...updatedListUser[index],
-                    //     joinDate: newJoinDate
-                    //   };
-                    //   setData(prevData => ({
-                    //     ...prevData,
-                    //     listUser: updatedListUser
-                    //   }));
-                    // }}
+                    //       onChange={(startJoinProject) => {
+                    //         setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                    //         setData((prevData) => ({
+                    //           ...prevData,
+                    //           joinDate: startJoinProject.format("MM-DD-YYYY")
+                    //         }));
+                    //       }}
+                    // // value={res.joinDate}
+                    onChange={(startJoinProject) => {
+                      const newJoinDate = startJoinProject.format("MM-DD-YYYY");
+                      const updatedListUser = [...sendData.listUser];
+                      updatedListUser[index] = {
+                        ...updatedListUser[index],
+                        joinDate: newJoinDate
+                      };
+                      setData(prevData => ({
+                        ...prevData,
+                        listUser: updatedListUser
+                      }));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
-                {/* ))} */}
+                ))}
               </LocalizationProvider>
             </Grid>
             <Grid item xs={1} alignSelf="center" textAlign="center">
@@ -118,35 +118,35 @@ const CreateProject = () => {
             </Grid>
             <Grid item xs={5.5}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-              {/* {sendData.listUser.map((res, index) => ( */}
+              {sendData.listUser.map((res, index) => (
                   <DatePicker
                     className='date-input-table'
                     placeholder="End Date"
                     value={endJoin}
-                          onChange={(endJoinProject) => {
-                            setEndJoin(endJoinProject.format("MM-DD-YYYY"));
-                            setData((prevData) => ({
-                              ...prevData,
-                              endDate: endJoinProject.format("MM-DD-YYYY")
-                            }));
-                          }}
+                          // onChange={(endJoinProject) => {
+                          //   setEndJoin(endJoinProject.format("MM-DD-YYYY"));
+                          //   setData((prevData) => ({
+                          //     ...prevData,
+                          //     endDate: endJoinProject.format("MM-DD-YYYY")
+                          //   }));
+                          // }}
                     // value={res.endDate}
-                    // onChange={(endJoinProject) => {
-                    //   const newEndDate = endJoinProject.format("MM-DD-YYYY");
-                    //   const updatedListUser = [...sendData.listUser];
-                    //   updatedListUser[index] = {
-                    //     ...updatedListUser[index],
-                    //     endDate: newEndDate
-                    //   };
-                    //   setData(prevData => ({
-                    //     ...prevData,
-                    //     listUser: updatedListUser
-                    //   }));
-                    // }}
+                    onChange={(endJoinProject) => {
+                      const newEndDate = endJoinProject.format("MM-DD-YYYY");
+                      const updatedListUser = [...sendData.listUser];
+                      updatedListUser[index] = {
+                        ...updatedListUser[index],
+                        endDate: newEndDate
+                      };
+                      setData(prevData => ({
+                        ...prevData,
+                        listUser: updatedListUser
+                      }));
+                    }}
                     // sx={{ width: "100%", paddingRight: "10px" }}
                   />
                 
-                {/* ))} */}
+                ))}
               </LocalizationProvider>
             </Grid>
           </Grid>
@@ -385,17 +385,18 @@ const CreateProject = () => {
   const handleChange = (event, newValue) => {
     const {name, value} = event.target
     const temp = {...sendData}
-    temp[name] = value
+    temp[name] = event.target.value
     if(name === 'companyId'){
       temp.companyId = newValue
     } else if(name === 'projectType'){
       temp.projectType = newValue
-    } else if(name === 'userId'){
-      temp.listUser.userId = newValue
     } 
-    else if(name === 'roleProjectID'){
-      temp.listUser.roleProjectId = newValue
-    } 
+    // else if(name === 'userId'){
+    //   temp.listUser.userId = newValue
+    // } 
+    // else if(name === 'roleProjectID'){
+    //   temp.listUser.roleProjectId = newValue
+    // } 
 
     setData(temp)
   }

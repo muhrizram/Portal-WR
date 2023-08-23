@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -34,8 +34,37 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AlertContext } from '../../../context';
 
 const DetailProject = () => {
+  
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [sendData, setData] = useState({});  
+  const [isSave, setIsSave] = useState(false);
+  const [dataUser, setDataUser] = useState([])
+  const [roles, setOptRoles] = useState([])
+  const [valueUser, setValueUser] = useState([]);
+  const [company, setOptCompany] = useState([])
+  const [projectTypes, setOptProjectType] = useState([])
+  const [selectedMember, setSelectedMember] = useState([])
+  const [dataProject, setDataProject] = useState([]);
+  const [startProject, setStartProject] = useState()
+  const [endProject, setEndProject] = useState()
+  const [startJoin, setStartJoin] = useState()
+  const [endJoin, setEndJoin] = useState()
+  const { setDataAlert } = useContext(AlertContext)
+  const [isEdit, setIsEdit] = useState(false);
+  const [dataDetail, setDataDetail] = useState({});
+  const [editData, setEditData] = useState({});
+
+  useEffect(() => {
+    if (isEdit) {
+      setEditData(dataDetail);
+    }
+    console.log("INI EDEIT",editData)
+  }, [dataDetail, isEdit]);
+
   const [dataMember, setdataMember] = useState([
     {
       id: 1,
@@ -43,9 +72,23 @@ const DetailProject = () => {
       nip: "",
       name: "",
       joinDate: "",
-      assignment: "",
+      endDate: "",
+      roleId: "",
     },
   ]);
+
+  
+  const setDate = (dateString) => {
+    let Ubah = String(dateString)
+    const [month, day, year] = Ubah.split("-");
+    const currentDate = new Date();
+    currentDate.setMonth(parseInt(month) - 1);
+    currentDate.setDate(parseInt(day));
+    currentDate.setFullYear(parseInt(year));
+    return currentDate;
+  }
+
+
   const columnsProject = [
     {
       field: "no",
@@ -81,41 +124,83 @@ const DetailProject = () => {
     },
     {
       field: "joinDate",
-      headerName: "Join Date",
-      flex: 1,
+      headerName: "Join-End Date",
+      flex: 3,
+      renderCell: (params) => {
+        return (
+          <Grid container columnSpacing={1} margin={2.5}>
+            <Grid item xs={5.5}>
+              {isEdit ? (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  {/* <DemoContainer components={["DatePicker"]}> */}
+                    <DatePicker
+                      defaultValue={setDate(dataDetail.teamMember.joinDate) || null}
+                      onChange={(startProjectData) => {
+                        setStartProject(startProjectData.format("MM/DD/YYYY"));
+                      }}
+                      sx={{ width: "100%", paddingRight: "20px" }}
+                    />
+                  {/* </DemoContainer> */}
+                </LocalizationProvider>
+              ) : (
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Typography variant="inputDetail">
+                      {/* {dataDetail.teamMember.joinDate} */}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+            <Grid item xs={1} alignSelf="center" textAlign="center">
+              <span>-</span>
+            </Grid>
+            <Grid item xs={5.5}>
+              {isEdit ? (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  {/* <DemoContainer components={["DatePicker"]}> */}
+                    <DatePicker
+                      value={setDate(dataDetail.teamMember.endDate) || null}
+                      sx={{ width: "100%", paddingRight: "20px" }}
+                    />
+                  {/* </DemoContainer> */}
+                </LocalizationProvider>
+              ) : (
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Typography variant="inputDetail">
+                      {/* {dataDetail.teamMember.endDate} */}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+        )
+      }
     },
     {
-      field: "assignment",
-      headerName: "Assignment",
+      field: "role",
+      headerName: "Role",
       flex: 1,
-    },
+      // renderCell: (params) => {
+      //   return (
+      //     <Grid container columnSpacing={1} >            
+      //      {/* <Typography className="autocomplete-nya">HEI</Typography> */}
+      //      <Autocomplete
+      //      className="autocomplete-nya"
+      //       disablePortal
+      //       id="combo-box-demo"
+      //       // options={params}
+      //       sx={{ width: '100%' }}
+      //       renderInput={() => <TextField {...params} label="Movie" />}
+      //     />       
+      //       </Grid>
+      //     )
+      //   }
+      },
   ];
 
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});  
-  const [isSave, setIsSave] = useState(false);
-  
-  
-  const [dataUser, setDataUser] = useState([])
-  const [roles, setOptRoles] = useState([])
-  const [valueUser, setValueUser] = useState([]);
-  const [company, setOptCompany] = useState([])
-  const [projectTypes, setOptProjectType] = useState([])
-  const [selectedMember, setSelectedMember] = useState([])
-  const [dataProject, setDataProject] = useState([]);
-  const [startProject, setStartProject] = useState()
-  const [endProject, setEndProject] = useState()
-  const [startJoin, setStartJoin] = useState()
-  const [endJoin, setEndJoin] = useState()
-
-  const [dataAlert, setDataAlert] = useState({
-    open: false,
-    severity: "success",
-    message: "",
-  });
-  const [isEdit, setIsEdit] = useState(false);
-  const [dataDetail, setDataDetail] = useState({});
 
   const dataBread = [
     {
@@ -138,30 +223,40 @@ const DetailProject = () => {
   useEffect(() => {
     getProjectTypes()
     getOptRoles()
-    // getOptDataUser()
+    getOptDataUser()
     getOptCompany()
+    getDetailProject()
     // console.log("DATA PROJECT", sendData)
-  }, [sendData])
+  }, [])
 
 
   const handleInvite = () => {
     const newMembers = [];
     for (const newUser of valueUser) {
-      let exists = false;
+      const customAddUser = {        
+          id: newUser.id,
+          positionId: newUser.positionId,
+          nip: newUser.nip,
+          name : newUser.firstName + ' ' +  newUser.lastName,
+          photoProfile: newUser.photoProfile,
+          position: newUser.position,
+          assignment: newUser.assignment,
+          active: newUser.active      
+      }
+      let exists = false;      
       for (const existingMember of selectedMember) {
-        if (newUser.id === existingMember.id) {
+        if (customAddUser.id === existingMember.id) {
           exists = true;
         }
       }
       if (!exists) {
-        newMembers.push(newUser);
+        newMembers.push(customAddUser);
       }
-    }
-    
+    }        
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
-    setValueUser([])
+    setValueUser([])    
   }
-  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
+  const updateData = [...dataMember, ...selectedMember.map((row, index) => ({ ...row, no: dataMember.length + index +1  }))]
 
   const getOptDataUser = async () => {
     const res = await client.requestAPI({
@@ -207,7 +302,7 @@ const DetailProject = () => {
       endpoint: `/ol/projectType?search=`
     })
     const data = res.data.map(item => ({
-      id : item.id,
+      id : parseInt(item.id),
       name : item.attributes.name
     }));
     setOptProjectType(data)
@@ -221,10 +316,11 @@ const DetailProject = () => {
   const confirmSave = async (data) => {
     setIsSave(true);
     setOpen(true);
-    setData(data);
+    setData(editData);
+    setEditData(editData)
   };
 
-  const methods = useForm({
+  let methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
       projectName: '',
@@ -244,14 +340,19 @@ const DetailProject = () => {
     setOpen(false);
   };
   const onSave = async () => {
+    // setData(data)
     const data = {
       ...sendData,
     }
+    console.log("DATA UPDATE", data)
+    
+    const id = localStorage.getItem('projectId')  
     const res = await client.requestAPI({
       method: 'PUT',
-      endpoint: '/project/update-project/projectId=',
-      data
+      endpoint: `/project/update-project/projectId=${id}`,
+      data : data
     })
+    console.log("res update", res)
     if (!res.isError) {
       setDataAlert({
         severity: 'success',
@@ -273,7 +374,7 @@ const DetailProject = () => {
 
   const handleChange = (event, newValue) => {
     const {name, value} = event.target
-    const temp = {...sendData}
+    const temp = {...editData}
     if(name === 'companyName'){
       temp.companyId = newValue
     } else if(name === 'projectType'){
@@ -282,7 +383,7 @@ const DetailProject = () => {
       temp.listUser.userId = newValue
     }
 
-    setData(temp)
+    setEditData(temp)
   }
 
   const getDetailProject = async () => {
@@ -291,6 +392,7 @@ const DetailProject = () => {
       method: 'GET',
       endpoint: `/project/detail-project/projectId=${id}?size=5&page=0&sort=name,asc`
     })
+    console.log("res detail", res)
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
       id: member.userId,
       no: index + 1,
@@ -306,17 +408,19 @@ const DetailProject = () => {
     }    
   }
 
-  useEffect(() => {
-    getDetailProject()    
-  }, []);
+  const handleEditChange = (event, fieldName) => {
+    const updatedEditData = { ...editData };
+    updatedEditData[fieldName] = event.target.value;
+    updatedEditData.teamMember = [...updateData];
+    setEditData(updatedEditData);
+
+    const updatedDataDetail = { ...dataDetail };
+    updatedDataDetail[fieldName] = event.target.value;
+    setDataDetail(updatedDataDetail)
+  };
 
   return (
     <SideBar>
-      <CustomAlert
-        open={dataAlert.open}
-        message={dataAlert.message}
-        severity={dataAlert.severity}
-      />
       <Breadcrumbs breadcrumbs={dataBread} />
       <Grid container>
         <Grid item xs={8} pb={2}>
@@ -336,7 +440,7 @@ const DetailProject = () => {
         )}
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(confirmSave)}>
+            <form onSubmit={methods.handleSubmit()}>
               <div className="card-container-detail">
                 <Grid
                   item
@@ -350,7 +454,9 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="projectName"
-                        value={dataDetail.projectName}
+                        value={editData.projectName || ""}
+                        onChange={(e) => handleEditChange(e, "projectName")}
+                        // value={dataDetail.projectName}
                         // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -378,12 +484,12 @@ const DetailProject = () => {
                           disablePortal
                           id="combo-box-demo"
                           options={company}
-                          defaultValue={company.find((option) => option.name) || null}
+                          defaultValue={company.find((option) => option.name === dataDetail.companyName) || null}
                           getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
                           onChange={(_event, newValue) => {
                             if (newValue) {
-                              handleChange({ target: { name: 'companyName' } }, newValue.companyId);
+                              handleChange({ target: { name: 'companyName', vaue: newValue.companyId} }, newValue.companyId);
                             }
                           }}
                           
@@ -412,8 +518,10 @@ const DetailProject = () => {
                     {isEdit ? (
                       <FormInputText
                         focused
-                        name="picProject"
-                        value={dataDetail.picProjectName}
+                        name="picProjectName"
+                        value={editData.picProjectName || ""}
+                        onChange={(e) => handleEditChange(e, "picProjectName")}
+                        // value={dataDetail.picProjectName}
                         // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
@@ -439,7 +547,9 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="picProjectPhone"
-                        value={dataDetail.picProjectPhone}
+                        value={editData.picProjectPhone || ""}
+                        onChange={(e) => handleEditChange(e, "picProjectPhone")}
+                        // value={dataDetail.picProjectPhone}
                         // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
@@ -466,9 +576,9 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="Start Date Project"
-                            value={dataDetail.startDate || null}
+                            defaultValue={setDate(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
-                              setStartProject(startProjectData.format("MM-DD-YYYY"));
+                              setStartProject(startProjectData.format("MM/DD/YYYY"));
                             }}
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
@@ -494,7 +604,7 @@ const DetailProject = () => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
-                            value={dataDetail.endDate || null}
+                            value={setDate(dataDetail.endDate) || null}
                             label="End Date Project"
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
@@ -519,11 +629,13 @@ const DetailProject = () => {
                     {isEdit ? (
                       <FormInputText
                         focused
-                        name="picProject"
+                        name="initialProject"
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
-                        value={dataDetail.initialProject}
+                        value={editData.initialProject || ""}
+                        onChange={(e) => handleEditChange(e, "initialProject")}
+                        // value={dataDetail.initialProject}
                         // onChange={(e) => handleChange(e)}
                       />
                     ) : (
@@ -548,7 +660,7 @@ const DetailProject = () => {
                           disablePortal
                           id="combo-box-demo"
                           options={projectTypes}
-                          defaultValue={projectTypes.find((option) => option.name) || null}
+                          defaultValue={projectTypes.find((option) => option.name === dataDetail.projectType) || null}
                           getOptionLabel={(option) => option.name}
                           sx={{ width: "100%" }}
                           onChange={(_event, newValue) => {
@@ -556,7 +668,7 @@ const DetailProject = () => {
                               handleChange({target : { name : 'projectType', value: newValue.id }},newValue.id)
                             }
                           }}
-                          isOptionEqualToValue={(option, value) => option.value === value.value}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
                           renderInput={(params) => (
                             <TextField {...params} label="Project Type" />
                           )}
@@ -580,7 +692,8 @@ const DetailProject = () => {
                       <FormInputText
                         focused
                         name="projectDescription"
-                        value={dataDetail.projectDescription}
+                        value={editData.projectDescription}
+                        onChange={(e) => handleEditChange(e, "projectDescription")}
                         // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
@@ -612,7 +725,8 @@ const DetailProject = () => {
                       >
                         Cancel Data
                       </Button>
-                      <Button variant="saveButton" type="submit">
+                      <Button variant="saveButton" type="submit"
+                        onClick={confirmSave}>
                         Save Data
                       </Button>
                     </Grid>
@@ -627,12 +741,87 @@ const DetailProject = () => {
             <Grid item xs={12} mb={3}>
               <Typography variant="inputDetail">Teams Member</Typography>
             </Grid>
+            {isEdit ? (<>
+              <Grid item xs={12} mb={2}>
+                    {/* {sendData.listUser.map((res, index) => ( */}
+                    <div className='card-project' >
+                      <Grid container rowSpacing={2} columnSpacing={1.25}>
+                        <Grid item xs={12}>
+                          <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
+                        </Grid>
+                        <Grid item xs={7}>
+                          <Autocomplete
+                            multiple
+                            name="userId"
+                            value={valueUser}
+                            limitTags={2}
+                            onChange={(_event, newValue) => {
+                              setValueUser([...newValue])
+                              if(newValue){
+                                handleChange({target : { name : 'userId', value: newValue.userId }},newValue.firstName)
+                              }
+                            }}
+                            options={dataUser}
+                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                            className='auto-custom'
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            renderInput={(params) => (
+                              <TextField 
+                                {...params}
+                                focused
+                                label="Invite by name" 
+                                placeholder="Search name"
+                                className='input-field-crud bg-white auto-chips'
+                              />
+                            )}
+                          >
+                          </Autocomplete>
+                        </Grid>
+                        <Grid item xs={2.5}>
+                          <Autocomplete
+                            disablePortal
+                            name="roleProjectId"
+                            options={roles}
+                            getOptionLabel={(option) => option.role}
+                            onChange={(_event, newValue) => {
+                              if(newValue){
+                                handleChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
+                              }
+                            }}
+                            sx={{ width: "100%" }}
+                            renderInput={(params) => (
+                              <TextField
+                                focused
+                                {...params} 
+                                label="Select Role"
+                                placeholder="Search Role" 
+                                className='blue-outline input-field-crud'
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={2.5}>
+                          <Button 
+                            fullWidth
+                            style={{ minHeight: '72px'}}
+                            variant="saveButton"
+                            onClick={handleInvite}
+                          >
+                            INVITE
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </div>
+                    {/* ))} */}
+                  </Grid>
+                  </>) : (<></>)}
             <Grid item xs={12}>
               <TableNative
-                data={dataMember}
+                // data={dataMember}
+                data={updateData}
                 columns={columnsProject}
-                checkboxSelection={isEdit}
-                disableRowSelectionOnClick={isEdit}
+                // checkboxSelection={isEdit}
+                // disableRowSelectionOnClick={isEdit}
               />
             </Grid>
           </div>
