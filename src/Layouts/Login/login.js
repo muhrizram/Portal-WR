@@ -37,6 +37,7 @@ const Login = ({ changeStat }) => {
       isLogin: true
     })
     if (!res.isError) {
+      localStorage.setItem('privilage', JSON.stringify(res.listPrivilege))
       localStorage.setItem('token', res.accessToken)
       localStorage.setItem('refreshtoken', res.refreshToken)
       localStorage.setItem('roles', JSON.stringify(res.listRole))

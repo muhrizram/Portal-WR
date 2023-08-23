@@ -19,7 +19,7 @@ import logoMini from "../../assets/logo-mini.png";
 import { Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import { routes } from "../../routes";
+import { finalRoutes } from "../../routes";
 import CustomAlert from "../Alert";
 
 const drawerWidth = 240;
@@ -85,7 +85,7 @@ export default function SideBar({ children }) {
   const [selectedIndex, setSelectedIndex] = React.useState(
     parseInt(currentMenu ? currentMenu.idx : 0)
   );
-  const dataRoute = routes.filter((res) => res.icon);
+  const dataRoute = finalRoutes.filter((res) => res.icon);
 
   const handleLogout = () => {
     // auth.signoutSilent();
