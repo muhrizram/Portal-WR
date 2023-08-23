@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
-import { Avatar, Button, Card, Grid, Typography, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from "@mui/material";
+import { Autocomplete, Avatar, Button, Card, Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -9,9 +9,9 @@ import CheckinTime from "./CheckIn";
 import Attendance from "./Attandence";
 import Calendar from "../../Component/CalendarCustom";
 import { useNavigate } from "react-router-dom";
+import blanktable from '../../assets/blanktable.png'
 import client from "../../global/client";
 import moment from "moment/moment";
-import PopupTask from "./PopupTask";
 import { AlertContext } from "../../context";
 import ViewTask from "./ViewTask";
 import ViewOvertime from "../Overtime/detailEditOvertime";
@@ -19,14 +19,10 @@ import CheckOut from "./CheckOut";
 import CreateOvertime from "../Overtime/createOvertime";
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import TaskConfiguration from "./PopupSetting/TaskConfiguration";
-import ColumnConfiguration from "./PopupSetting/CoumnConfiguration";
-import ApprovalConfiguration from "./PopupSetting/ApprovalConfiguration";
-import DownloadConfiguration from "../../Component/DownloadConfig";
 import { getWorkingReportExcelUrl, getWorkingReportPdfUrl } from "../../global/donwloadConfig";
+import DownloadConfiguration from "../../Component/DownloadConfig";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -35,19 +31,11 @@ export default function WorkingReport() {
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
+  const [isHr, setIsHr] = useState(false)
   const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
   const [WrIdDetail, setWrIdDetail] = useState()
   const [dropMenu, setDropMenu] = useState(null)
-  const [openDialog, setOpenDialog] = useState(false)
-  const [value, setValue] = useState("one");
-  const [taskConfig, setTaskConfig] = useState([])
-  const [approvalConfig, setApprovalConfig] = useState([
-    {
-      approvalName: '',
-      approvalRole: ''
-    }
-  ])
-  const columnConfig = useRef(null);
+  
   const open = dropMenu
   const handleClick = (event) => {
     setDropMenu(event.currentTarget)
@@ -55,18 +43,6 @@ export default function WorkingReport() {
   
   const handleClose = () => {
     setDropMenu(null);
-  };
-
-  const handleSetting = () => {
-    setOpenDialog(true)
-  };
-
-  const handleCloseSetting = () => {
-    setOpenDialog(false)
-  }
-
-  const handleTab = (event, newValue) => {
-    setValue(newValue);
   };
 
   const date = new Date(),
@@ -87,22 +63,72 @@ export default function WorkingReport() {
     open: false
   })
 
+  const [filteredNames, setFilteredNames] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null); 
+  const [selectedUserDetail, setSelectedUserDetail] = useState(null)
+  const currentUserId = localStorage.getItem("userId");
+
   useEffect(() => {
     console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");
-    getData();
+    let listRoles = localStorage.getItem("roles");
+    let roles = JSON.parse(listRoles)
+    
+    for(let role of roles) {
+      console.log(role.roleName);
+      if(role.roleName == 'HRD') {
+        setIsHr(true)
+      }
+    }
+
+    if(isHr == false) {
+      getData();
+    }
   }, [filter], WrIdDetail);
 
-  const getData = async () => {
+  const getData = async (id = null) => {
+    let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
+    
+    if(id !== null) {
+      console.log('selected user id : ', id);
+      endpoint += `/${id}`
+    }else if(isHr == false) {
+      endpoint += `/${currentUserId}`
+    }
+
+    console.log('this endpoint : ', endpoint);
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/workingReport/${moment(filter.startDate).format(
-        "yyyy-MM-DD"
-      )}/${moment(filter.endDate).format("yyyy-MM-DD")}/2`,
+      endpoint: endpoint,
     });
     if (!res.isError) {
-      console.log("INI RES KALENDAR",res)
+      console.log("INI RES KALENDAR", res)
       rebuildData(res);
+    } else {
+      setDataAlert({
+        severity: "error",
+        message: res.error.detail,
+        open: true,
+      });
+    }
+  };
+
+  const getDetailData = async (id) => {
+    const res = await client.requestAPI({
+      method: "GET",
+      endpoint: `/users/employee/${id}`,
+    });
+    if (!res.isError) {
+      console.log('res detail users : ', res.data);
+      const data = {
+        id: res.data.id,
+        name: res.data.attributes.fullName,
+        role: res.data.attributes.role.join(', '),
+        email: res.data.attributes.email,
+        photoProfile: res.data.attributes.photoProfile,
+      };
+
+      setSelectedUserDetail(data)
     } else {
       setDataAlert({
         severity: "error",
@@ -156,6 +182,9 @@ export default function WorkingReport() {
           };
     });
     console.log(temp);
+    if(selectedUser == null){
+      setData([])
+    }
     setData([...temp]);
   };
 
@@ -210,21 +239,61 @@ export default function WorkingReport() {
       )
     }
       else {
-      dom = (
-        <Calendar
-          setOnClick={(param) => {
-            const _data = data.filter(
-              (val) => val.tanggal == moment(param.date).format("yyyy-MM-DD")
-            );
-            onAttendence(_data);
-          }}
-          setIsViewTask={setIsViewTask}
-          setIsViewOvertime={setIsViewOvertime}
-          events={data}
-          setWrIdDetail={setWrIdDetail}
-        />
-      );
-    }
+        console.log('data cal : ', data);
+        {
+          isHr ? (
+            selectedUser == null ? (
+              dom = (<Grid
+                container
+                item
+                xs={12}
+                minHeight="600px"
+                alignContent="center"
+                alignItems="center"
+                display="flex"
+                justifyContent="center"
+                textAlign="center"
+              >
+                <Grid item xs={12} pb={3.75}>
+                  <img src={blanktable} alt="blank-table" />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="noDataTable">
+                    Sorry, the data you are looking for could not be found.
+                  </Typography>
+                </Grid>
+              </Grid>)
+            ) : (
+              dom = (<Calendar
+                setOnClick={(param) => {
+                  const _data = data.filter(
+                    (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+                  );
+                  onAttendence(_data);
+                }}
+                setIsViewTask={setIsViewTask}
+                setIsViewOvertime={setIsViewOvertime}
+                events={data}
+                setWrIdDetail={setWrIdDetail}
+              />)
+            )
+          ) : (
+            dom = (<Calendar
+              setOnClick={(param) => {
+                const _data = data.filter(
+                  (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+                );
+                onAttendence(_data);
+              }}
+              setIsViewTask={setIsViewTask}
+              setIsViewOvertime={setIsViewOvertime}
+              events={data}
+              setWrIdDetail={setWrIdDetail}
+            />)
+          )
+        }
+        
+      }
     return dom;
   };
 
@@ -235,12 +304,53 @@ export default function WorkingReport() {
   }
 
   const handleDownloadPdf = () => {
-    downloadFormatFile(1, false, "/workingReport/download/pdf?userId=")
+    let id;
+    if(selectedUser == null){
+      id = currentUserId
+    } else {
+      id = selectedUser.id
+    }
+    downloadFormatFile(id, false, "/workingReport/download/pdf?userId=")
   }
 
   const handleDownloadExcel = () => {
-    downloadFormatFile(2, true, "/workingReport/download/excel?userId=")
+    let id;
+    if(selectedUser == null){
+      id = currentUserId
+    } else {
+      id = selectedUser.id
+    }
+    downloadFormatFile(id, true, "/workingReport/download/excel?userId=")
   }
+
+  const handleSearchChange = async (searchValue) => {
+
+    const res = await client.requestAPI({
+      method: "GET",
+      endpoint: `/users/userList?search=${searchValue}`,
+    });
+
+    console.log('response : ', res);
+    
+    const data = res.data.map(user => ({
+      id: user.id,
+      name: `${user.attributes.firstName} ${user.attributes.lastName}`,
+      nip: user.attributes.nip
+    }));
+    
+    console.log('data user search : ', data);
+    setFilteredNames(data);
+  };
+
+  const handleOptionSelectUser = (event, value) => {
+    const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === value));
+    console.log('value user :', value);
+    if (user) {
+      setSelectedUser(user)
+      getDetailData(user.id)
+      getData(user.id);
+    }
+  };
 
   return (
     <SideBar>
@@ -285,38 +395,98 @@ export default function WorkingReport() {
               <Grid item display="flex" alignItems="center" justifyContent="flex-end">
                 <Button
                   variant="outlined"
-                  onClick={handleSetting}
-                  // onClick={openDownload}
+                  onClick={openDownload}
                   startIcon={<SettingsIcon />}
                   sx={{ paddingY: 1 }}
                 >
                   Settings
                 </Button>
               </Grid>
+              {isHr && (
+              <> 
+              <Grid item xs={4}>
+                <Autocomplete
+                  freeSolo
+                  options={filteredNames.map(option => (`${option.name} - ${option.nip}`))}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Name, NIP, etc"
+                      label="Search By"
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchOutlinedIcon />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box
+                      onClick={(event) => handleOptionSelectUser(event, option)}
+                    >
+                      <Typography variant="body1" {...props} style={{ padding: '8px', marginLeft: '8px' }}>
+                        {option}
+                      </Typography>
+                    </Box>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={8}></Grid>
+              </>
+              )}
               <Grid item xs={1}>
-                <Avatar variant="square" className="full-avatar" />
+                <Avatar variant="square" className="full-avatar" src={selectedUserDetail != null ? selectedUserDetail.photoProfile : ''} />
               </Grid>
               <Grid item xs={11}>
                 <Grid container>
                   <Grid item xs={12}>
                     <Typography variant="body2">Employee Details</Typography>
                   </Grid>
-                  <Grid item xs={4}>
-                    <Typography>Name</Typography>
-                    <Typography variant="drawerNameUser">
-                      ikiwprikitiw
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography>Role</Typography>
-                    <Typography variant="drawerNameUser">Dev Ops</Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography>Email</Typography>
-                    <Typography variant="drawerNameUser">
-                      ikiwprikitiw@gmail.com
-                    </Typography>
-                  </Grid>
+                  {isHr ? (
+                    <>
+                    <Grid item xs={4}>
+                      <Typography>Name</Typography>
+                      <Typography variant="drawerNameUser">
+                        {selectedUserDetail == null ? "-" : selectedUserDetail.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography>Role</Typography>
+                      <Typography variant="drawerNameUser">{selectedUserDetail == null ? "-" : selectedUserDetail.role}</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography>Email</Typography>
+                      <Typography variant="drawerNameUser">
+                        {selectedUserDetail == null ? "-" : selectedUserDetail.email}
+                      </Typography>
+                    </Grid>
+                  </>
+                  ) : (
+                    <>
+                    <Grid container>
+                      <Grid item xs={4}>
+                        <Typography>Name</Typography>
+                        <Typography variant="drawerNameUser">
+                          ikiwprikitiw
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Role</Typography>
+                        <Typography variant="drawerNameUser">Dev Ops</Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Email</Typography>
+                        <Typography variant="drawerNameUser">
+                          ikiwprikitiw@gmail.com
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    </>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
@@ -327,64 +497,6 @@ export default function WorkingReport() {
           {renderCheckin()}
         </Grid>
       </Grid>
-
-<>
-      <Dialog
-        open={openDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        className="dialog-configuration"
-      >
-        <DialogTitle id="alert-dialog-title" className='dialog-delete-header'>
-          {"Setting Download Configuration"}
-        </DialogTitle>
-        <DialogContent className="dialog-delete-content">
-          <DialogContentText>
-            Edit setting documents
-          </DialogContentText>
-        </DialogContent>
-
-        <DialogContent className="dialog-delete-content"> 
-          <Grid>
-            <Box className="tab-config">
-            <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{marginBottom: 3}}>
-                <Tab 
-                  value="one" 
-                  label="TASK CONFIGURATION"
-                  style={{
-                    borderBottom: value === "one" ? "2px solid #2196F3" : "none",
-                  }}
-                ></Tab>
-                <Tab 
-                  value="two" 
-                  label="COLUMN CONFIGURATION"
-                  style={{
-                    borderBottom: value === "two" ? "2px solid #2196F3" : "none",
-                  }}
-                />
-                <Tab 
-                  value="three" 
-                  label="APPROVAL CONFIGURATION"
-                  style={{
-                    borderBottom: value === "three" ? "2px solid #2196F3" : "none",
-                  }}
-                />
-              </Tabs>
-            </Box>
-            {value === "one" && (<TaskConfiguration taskConfig={taskConfig} setTaskConfig={setTaskConfig} />)}
-            {value === "two" && (<ColumnConfiguration ref={columnConfig} />)}
-            {value === "three" && (<ApprovalConfiguration approvalConfig={approvalConfig} setApprovalConfig={setApprovalConfig} />)}
-          </Grid>
-        </DialogContent>
-                
-
-        <DialogActions className="dialog-delete-actions" sx={{paddingTop: 3}}>
-          <Button onClick={handleCloseSetting} variant='outlined' className="button-text">Cancel</Button>
-          <Button onClick={handleCloseSetting} variant='contained' className='button-text'>Update Configuration</Button>
-        </DialogActions>
-    </Dialog>
-    </>
 
       {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
