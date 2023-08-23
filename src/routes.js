@@ -6,7 +6,7 @@ import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
+import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
 
@@ -48,149 +48,169 @@ const ViewOvertime = lazy(() =>
 
 const Holiday = lazy(() => import("./Layouts/Holiday"));
 
-const routes = [
-  {
-    path: "/login",
-    element: <LoginScreen />,
-  },
+const closedRoutes = [
   {
     path: "/",
     element: <Dashboard />,
   },
   {
-    path: "/masterbacklog/detail",
-    element: <DetailBacklog />,
-  },
-  {
-    path: "/masterbacklog/create",
-    element: <CreateNewBacklog />,
-  },
-  {
-    path: "/masteruserrole/detail",
-    element: <DetailUserRole />,
-  },
-  {
-    path: "/masteruserrole/create",
-    element: <CreateUserRole />,
-  },
-  {
     path: "/masteremployee",
     element: <Employee />,
     name: "Employee",
+    key: "master employee",
     icon: <PersonPinOutlinedIcon />,
+  },
+  {
+    path: "/masteremployee/detail",
+    element: <DetailEmployee />,
+    key: "master employee",
+  },
+  {
+    path: "/masteremployee/create",
+    element: <CreateMasterEmployee />,
+    key: "master employee",
   },
   {
     path: "/workingReport",
     element: <WorkingReport />,
     name: "Working Report",
+    key: "working report",
     icon: <WorkOutlineIcon />,
+  },
+  {
+    path: "/overtime/detail-overtime",
+    element: <ViewOvertime />,
+    key: "working report",
   },
   {
     path: "/masterProject",
     element: <Project />,
     name: "Project",
+    key: "master project",
     icon: <AccountTreeIcon />,
   },
   {
     path: "/master-project/detail",
     element: <DetailProject />,
     name: "Project",
+    key: "master project",
   },
   {
     path: "/master-project/create",
     element: <CreateProject />,
     name: "Project",
+    key: "master project",
   },
   {
     path: "/masteruserrole",
     element: <MasterRoleUser />,
     name: "Master User Role",
+    key: "master user role",
     icon: <EmojiPeople />,
   },
   {
-    path: "/masteremployee/detail",
-    element: <DetailEmployee />,
-  },
-  {
-    path: "/masteremployee/create",
-    element: <CreateMasterEmployee />,
+    path: "/masteruserrole/create",
+    element: <CreateUserRole />,
+    key: "master user role",
   },
   {
     path: "/masterbacklog",
     element: <Backlog />,
     name: "Backlog",
+    key: "master backlog",
     icon: <BookmarkBorderIcon />,
   },
   {
+    path: "/masterbacklog/detail",
+    element: <DetailBacklog />,
+    key: "master backlog",
+  },
+  {
+    path: "/masterbacklog/create",
+    element: <CreateNewBacklog />,
+    key: "master backlog",
+  },
+  {
+    path: "/masteruserrole/detail",
+    element: <DetailUserRole />,
+    key: "master backlog",
+  },
+
+  {
     path: "masterbacklog/create",
     element: <CreateNewBacklog />,
+    key: "master backlog",
   },
   {
     path: "masterbacklog/detail",
     element: <DetailBacklog />,
+    key: "master backlog",
   },
   {
     path: "/masterroleprivilege",
     element: <RolePrivilege />,
     name: "Role Privilege",
+    key: "master role privilege",
     icon: <SettingsAccessibilityIcon />,
   },
   {
     path: "masterroleprivilege/create",
     element: <CreateRolePrivilege />,
+    key: "master role privilege",
   },
   {
     path: "masterroleprivilege/detail",
     element: <DetailPrivilege />,
+    key: "master role privilege",
   },
   {
     path: "/master-company",
     element: <Company />,
-    key: 'master-company',
     name: "Company",
+    key: "master company",
     icon: <BusinessOutlinedIcon />,
   },
   {
     path: "/master-company/create",
     element: <CreateCompany />,
+    key: "master company",
   },
   {
     path: "/master-company/detail",
     element: <DetailCompany />,
-  },
-  {
-    path: "/overtime/detail-overtime",
-    element: <ViewOvertime />,
+    key: "master company",
   },
   {
     path: "/master-holiday",
-    key: 'master-holiday',
     element: <Holiday />,
     name: "Holiday",
+    key: "master holiday",
     icon: <AccountBalanceOutlinedIcon />,
-  },
+  }, 
 ];
 
+const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
 // Comment if route user already exist
-const tempRoute = ['master-holiday', 'master-company']
+// const tempRoute = ['master-holiday', 'master-company']
 
-localStorage.setItem('privilage', JSON.stringify(tempRoute))
-const userRoutes = JSON.parse(localStorage.getItem('privilage'))
-// console.log('user route: ', userRoutes)
+// localStorage.setItem('privilage', JSON.stringify(tempRoute))
+const userRoutes = JSON.parse(localStorage.getItem("privilage"));
+// console.log("user route: ", userRoutes);
 // console.log('app route: ', routes)
-const temp = routes.filter((res) => {
-  let isSame = false
-  isSame = userRoutes.includes(res.key)
-  if (!isSame) {
-    return
-  }
-  return res
-})
+let temp = closedRoutes.filter((res) => {
+  let isSame = false;
 
-console.log('final route: ', temp)
+  isSame = userRoutes.some((privilege) => privilege.privilegeName === res.key);
+  if (!isSame) {
+    return;
+  }
+  return res;
+});
+
+temp = [...temp, ...openRoutes];
 
 // final routes with controll
 // export const finalRoutes = temp
 
 // default all routes
-export const finalRoutes = routes
+export const finalRoutes = temp;
