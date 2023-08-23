@@ -1,47 +1,43 @@
-import React, { useEffect, useState, useContext } from "react";
-import Grid from "@mui/material/Grid";
-
-//form
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Grid } from '@mui/material';
 
-const TaskConfiguration = ({taskConfig, setTaskConfig}) => {
-  const listTask =[
-    {label : "Include Absence Type", id : 1},
-    {label : "Include Duration", id : 2},
-    {label : "Include Project Name", id : 3}
-  ]
+function TaskConfiguration({ taskConfig, setTaskConfig }) {
 
-  const handleChangeCheckbox = (value) => {
-    if (taskConfig.includes(value)) {
-      setTaskConfig(taskConfig.filter((task) => task !== value))
-    }
-    else {
-      setTaskConfig([...taskConfig, value])
-    }
-  }
+  const handleCheckboxChange = (name) => (event) => {
+    const { checked } = event.target;
+    setTaskConfig((prevTaskConfig) => ({
+      ...prevTaskConfig,
+      [name]: checked,
+    }));
+  };
+
+  const checkboxes = [
+    { name: 'includeAbsenceType', label: 'Include Absence Type' },
+    { name: 'includeDuration', label: 'Include Duration' },
+    { name: 'includeProjectName', label: 'Include Project Name' },
+  ];
 
   return (
     <Grid container direction="row">
-        <Grid item xs={6}>
-          <FormGroup>
-            {listTask.map((task) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={taskConfig.includes(task.id)}
-                    onChange={() => handleChangeCheckbox(task.id)}
-                  />
-                }
-                label={task.label}
-                key={task.id}
+      <Grid xs={6}>
+        {checkboxes.map((checkbox) => (
+          <FormControlLabel
+            key={checkbox.name}
+            control={
+              <Checkbox
+                checked={taskConfig[checkbox.name]}
+                onChange={handleCheckboxChange(checkbox.name)}
+                name={checkbox.name}
               />
-            ))}
-          </FormGroup>
-        </Grid>
+            }
+            label={checkbox.label}
+          />
+        ))}
+      </Grid>
     </Grid>
   );
-};
+}
 
 export default TaskConfiguration;

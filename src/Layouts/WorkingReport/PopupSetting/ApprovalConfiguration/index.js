@@ -94,24 +94,25 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                   onChange={(e) => changeField('approvalRole', e.target.value, index)}
                 />
               </Grid>
+              <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
+              <Button className="button-text" variant="contained">
+                <label>Upload Signature</label>
+                <input
+                  type="file"
+                  accept=".png, .jpg"
+                  className="custom-file-input"
+                  onChange={handleChangeUpload}
+                />
+              </Button>
+              <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
+            </Grid>
             </Grid>
           </AccordionDetails>
         </Accordion>
         </Grid>
         ))}
       
-      <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
-            <Button className="button-text" variant="contained">
-              <label>Upload Signature</label>
-              <input
-                type="file"
-                accept=".png, .jpg"
-                className="custom-file-input"
-                onChange={handleChangeUpload}
-              />
-              </Button>
-              <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
-            </Grid>
+            
             <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
               <Button
                   onClick={() => addApproval()}
