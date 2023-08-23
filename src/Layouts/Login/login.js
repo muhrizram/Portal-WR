@@ -39,6 +39,8 @@ const Login = ({ changeStat }) => {
     if (!res.isError) {
       localStorage.setItem('token', res.accessToken)
       localStorage.setItem('refreshtoken', res.refreshToken)
+      localStorage.setItem('roles', JSON.stringify(res.listRole))
+      localStorage.setItem("userId", res.userId)
       setDataAlert({
         severity: 'success',
         open: true,
