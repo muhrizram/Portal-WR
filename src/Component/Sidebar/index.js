@@ -89,7 +89,7 @@ export default function SideBar({ children }) {
 
   const handleLogout = () => {
     // auth.signoutSilent();
-    navigate("login");
+    navigate("/login");
   };
 
   const handleDirectPath = (path, idx) => {

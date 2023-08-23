@@ -1,7 +1,4 @@
 import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   IconButton,
   Button,
   InputAdornment,
@@ -17,6 +14,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import client from "../../global/client";
 import { useNavigate } from 'react-router';
 import { AlertContext } from '../../context';
+import { finalRoutes } from "../../routes";
 // import { useAuth } from "react-oidc-context";
 const Login = ({ changeStat }) => {
   // const auth = useAuth();
@@ -44,8 +42,8 @@ const Login = ({ changeStat }) => {
         severity: 'success',
         open: true,
         message: res.detail
-      })       
-      navigate('/workingReport')
+      })
+      navigate(finalRoutes[0].path)
     }else{
       setDataAlert({
         severity: 'error',
