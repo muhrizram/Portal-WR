@@ -50,7 +50,7 @@ const CreateProject = () => {
     {
       field: "nip",
       headerName: "NIP",
-      flex: 1,
+      flex: 0.7,
     },
     {
       field: "name",
@@ -159,7 +159,7 @@ const CreateProject = () => {
       flex: 1,
       renderCell: (params) => {
         return (
-          <Grid item xs={2.5}>
+          <Grid>
             <Autocomplete
               disablePortal
               name="roleProjectId"
@@ -177,27 +177,16 @@ const CreateProject = () => {
                   {...params} 
                   label="Select Role"
                   placeholder="Search Role" 
-                  className='blue-outline input-field-crud'
+                  className='input-field-crud'
                 />
               )}
             />
           </Grid>
-//           <Grid container columnSpacing={1} >            
-//            {/* <Typography className="autocomplete-nya">HEI</Typography> */}
-//            <Autocomplete
-//            className="autocomplete-nya"
-//   disablePortal
-//   id="combo-box-demo"
-//   // options={params}
-//   sx={{ width: '100%' }}
-//   renderInput={() => <TextField {...params} label="Movie" />}
-// />       
-//           </Grid>
         )
       }
     },
     {
-      field: "",
+      field: "action",
       headerName: "Action",
       flex: 1,
     },

@@ -183,21 +183,11 @@ const DetailProject = () => {
       field: "role",
       headerName: "Role",
       flex: 1,
-      // renderCell: (params) => {
-      //   return (
-      //     <Grid container columnSpacing={1} >            
-      //      {/* <Typography className="autocomplete-nya">HEI</Typography> */}
-      //      <Autocomplete
-      //      className="autocomplete-nya"
-      //       disablePortal
-      //       id="combo-box-demo"
-      //       // options={params}
-      //       sx={{ width: '100%' }}
-      //       renderInput={() => <TextField {...params} label="Movie" />}
-      //     />       
-      //       </Grid>
-      //     )
-      //   }
+      },
+      {
+        field: "action",
+        headerName: "Action",
+        flex: 1,
       },
   ];
 
