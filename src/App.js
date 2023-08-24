@@ -1,14 +1,19 @@
 import './App.css';
-import React, { Suspense, useEffect, useState} from 'react';
+import React, { Suspense, useState} from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { Route, Routes, useNavigate } from 'react-router';
+import { Route, Routes } from 'react-router';
 import globalTheme from './Theme';
 import { finalRoutes } from './routes';
 import { AlertContext } from './context';
 // import { useAuth } from 'react-oidc-context';
 
 const App = () => {
-  const navigate = useNavigate()
+  // const [valRoute, setRoute] = useState([])
+  // useEffect(() => {
+  //   console.log('final routes: ', finalRoutes())
+  //   setRoute(finalRoutes())
+  // }, [])
+  // const navigate = useNavigate()
   // const auth = useAuth();
   // useEffect(() => {
   //   console.log('no token: ', auth)
@@ -40,7 +45,7 @@ const App = () => {
       <AlertContext.Provider value={value}>
         <Suspense fallback={<p>Loading...</p>}>
           <Routes>
-            {finalRoutes.map((res, idx) => {
+            {finalRoutes().map((res, idx) => {
               return <Route path={res.path} element={res.element} key={`${idx + 1}-route-path`} />
             })}
           </Routes>

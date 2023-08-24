@@ -85,10 +85,11 @@ export default function SideBar({ children }) {
   const [selectedIndex, setSelectedIndex] = React.useState(
     parseInt(currentMenu ? currentMenu.idx : 0)
   );
-  const dataRoute = finalRoutes.filter((res) => res.icon);
+  const dataRoute = finalRoutes().filter((res) => res.icon);
 
   const handleLogout = () => {
     // auth.signoutSilent();
+    localStorage.clear()
     navigate("/login");
   };
 
