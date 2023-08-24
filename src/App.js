@@ -1,7 +1,7 @@
 import './App.css';
-import React, { Suspense, useState} from 'react';
+import React, { Suspense, useEffect, useState} from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { Route, Routes } from 'react-router';
+import { Route, Routes, useNavigate } from 'react-router';
 import globalTheme from './Theme';
 import { finalRoutes } from './routes';
 import { AlertContext } from './context';
@@ -13,18 +13,16 @@ const App = () => {
   //   console.log('final routes: ', finalRoutes())
   //   setRoute(finalRoutes())
   // }, [])
-  // const navigate = useNavigate()
-  // const auth = useAuth();
-  // useEffect(() => {
-  //   console.log('no token: ', auth)
-  //   if (!auth.isLoading) {
-  //     if (auth.isAuthenticated) {
-  //       navigate('/')
-  //     } else {
-  //       navigate('login')
-  //     }
-  //   }
-  // }, [auth.isLoading])
+  const navigate = useNavigate()
+  const userId = localStorage.getItem("userId") || null
+  useEffect(() => {
+    if (userId) {
+      navigate('/')
+    } else {
+      navigate('login')
+    }
+  }, [userId])
+
   const [dataAlert, setDataAlert] = useState({
     severity: 'warning',
     message: '',
