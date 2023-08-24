@@ -181,7 +181,12 @@ const DetailProject = () => {
     },
     {
       field: "role",
-      headerName: "Role",
+      headerName: "role",
+      flex: 1,
+    },
+    {
+      field: "action",
+      headerName: "action",
       flex: 1,
       },
       {

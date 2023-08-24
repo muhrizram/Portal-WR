@@ -269,6 +269,25 @@ let globalTheme = createTheme({
         },
         {
           props: {
+            variant: "outlined-attedance",
+          },
+          style: {
+            marginTop:'-53px',
+            position: "absolute",
+            textTransform: "none",
+            width: "75%",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            borderRadius: "6px",
+            borderColor: "#2196F3",
+            background:'#B1C5F6',
+            color: "#3267E3",
+            borderColor: "black",
+          },
+        },
+        {
+          props: {
             variant: "saveButton",
           },
           style: {

@@ -66,10 +66,10 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
       body = {
         periodId: "7",
         presenceId: parseInt(presence.value),
-        userId: 2,
+        userId: parseInt(localStorage.getItem("userId")),
         date: dataPeriod.tanggal,
         workLocation: location,
-      };
+      };      
       localStorage.setItem("presence", presence.value);
       const res = await client.requestAPI({
         endpoint: "/workingReport/attendance",
@@ -96,10 +96,10 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
       body = {
         periodId: dataPeriod.period,
         presenceId: parseInt(presence.value),
-        userId: 2,
+        userId: parseInt(localStorage.getItem("userId")),
         date: dataPeriod.tanggal,
         file: filePath,
-      };
+      };      
       const res = await client.requestAPI({
         endpoint: "/workingReport/notAttendance",
         method: "POST",

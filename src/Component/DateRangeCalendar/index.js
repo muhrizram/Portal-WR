@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import dayjs from 'dayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,7 +7,59 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { Button, Grid, Typography } from '@mui/material';
 import FilterList from '@mui/icons-material/FilterList';
 
-export default function DateRangeCalendar() {
+export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus}) {
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
+  const [count, setCount] = React.useState(0);
+
+  useEffect(() => {
+    if(startDate || endDate){
+    console.log("START",startDate)
+    console.log("END",endDate)
+  }
+  // console.log("count",count)
+  },[startDate,endDate,count])
+
+  const handleDateChange = (date, isStart) => {
+    const formattedDate = dayjs(date).format("YYYY-MM-DD");
+    if (isStart) {
+      setStartDate(formattedDate);
+    } else {
+      setEndDate(formattedDate);
+    }
+  };
+
+  const handleApplyFilter = () => {
+    if (startDate && endDate) {
+      const daysDifference = dayjs(endDate).diff(startDate, 'day');
+      if (daysDifference >= 28 && daysDifference <= 30) {
+        console.log('Selected range is 30 days');
+      } else {
+        console.log('Selectedlebih');
+      }
+    }
+    const hasil = []
+    const startDatenew = new Date(startDate);
+    const endDatenew = new Date(endDate);
+
+  while (startDatenew <= endDatenew) {
+    hasil.push(startDatenew.toISOString().split('T')[0]);
+    startDatenew.setDate(startDatenew.getDate() + 1);
+  }  
+    if(count >= 1){      
+      setfilterRangeData(['2023-08-25'])
+      // setfilterRangeData(hasil)
+      setfilternowStatus(true)
+      setfilternowStatus(false)
+      setCount(count + 1);
+    }else{
+      setfilterRangeData(['2023-08-24'])
+      setCount(count + 1);
+      setfilternowStatus(true)
+    }
+    // console.log("INI COUNT",count)
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid marginTop='4vh'/>
@@ -16,17 +68,17 @@ export default function DateRangeCalendar() {
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
-              <MobileDatePicker/>
+              <MobileDatePicker value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
             </DemoItem>
           </Grid>
           <Grid item padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker/>
+              <MobileDatePicker value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
           <Grid item sx={{marginTop:'4vh'}}>
-            <Button  startIcon={<FilterList style={{ fontSize: 32 }} />} >Filters</Button>
+            <Button startIcon={<FilterList style={{ fontSize: 32 }} />} onClick={handleApplyFilter}>Filters</Button>
           </Grid>                  
         </Grid>
       </div>      

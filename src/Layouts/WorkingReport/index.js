@@ -29,10 +29,8 @@ export default function WorkingReport() {
   const [isViewTask, setIsViewTask] = useState(false);
   const [isViewOvertime, setIsViewOvertime] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
-  const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
-  const [isHr, setIsHr] = useState(false)
-  const [selectedWorkingReportId, setSelectedWorkingReportId] = useState()
+  const [isHr, setIsHr] = useState(false)  
   const [WrIdDetail, setWrIdDetail] = useState()
   const [dropMenu, setDropMenu] = useState(null)
   
@@ -101,8 +99,7 @@ export default function WorkingReport() {
       method: "GET",
       endpoint: endpoint,
     });
-    if (!res.isError) {
-      console.log("INI RES KALENDAR", res)
+    if (!res.isError) {      
       rebuildData(res);
     } else {
       setDataAlert({

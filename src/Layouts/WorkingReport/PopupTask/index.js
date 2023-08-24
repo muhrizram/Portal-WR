@@ -466,10 +466,12 @@ const PopupTask = ({
                                 <Typography sx={{ fontSize: "24px" }}>
                                   Task {index + 1}
                                 </Typography>
-                                <DeleteIcon 
-                                  className='icon-trash'
-                                  onClick={(e) => deleteTask(e, idxProject, index)}
-                                />
+                                {index > 0 && (
+                                  <DeleteIcon 
+                                    className='icon-trash'
+                                    onClick={(e) => deleteTask(e, idxProject, index)}
+                                  />
+                                )}
                               </AccordionSummary>
                               <AccordionDetails>
                                 <Grid container rowSpacing={2}>
@@ -570,28 +572,28 @@ const PopupTask = ({
                       }
                       </Grid>                                          
                         <Grid container xs={12}>
-                        <Grid item xs={6} textAlign='left'>
-                          <Button
-                            onClick={() => AddTask(idxProject)}
-                            variant="outlined"
-                            className="button-text"
-                            startIcon={<AddIcon />}
-                          >
-                            Add Task
-                          </Button>
-                        </Grid>
-                        <Grid item xs={6} textAlign='right'>
-                        {idxProject > 0 && (
-                          <Button
-                            onClick={() => onRemoveProject(idxProject)}
-                            variant="outlined"
-                            color="error"                             
-                            startIcon={<MinIcon />}
-                          >
-                            Remove Project
-                          </Button>
-                        )}
-                        </Grid>    
+                          <Grid item xs={6} textAlign='left'>
+                            <Button
+                              onClick={() => AddTask(idxProject)}
+                              variant="outlined"
+                              className="button-text"
+                              startIcon={<AddIcon />}
+                            >
+                              Add Task
+                            </Button>
+                          </Grid>
+                          <Grid item xs={6} textAlign='right'>
+                          {idxProject > 0 && (
+                            <Button
+                              onClick={() => onRemoveProject(idxProject)}
+                              variant="outlined"
+                              color="error"                             
+                              startIcon={<MinIcon />}
+                            >
+                              Remove Project
+                            </Button>
+                          )}
+                          </Grid>    
                         </Grid>
                      </Grid>
                   </div>
@@ -656,8 +658,7 @@ const PopupTask = ({
                             <TextField
                               focused
                               name='duration'
-                              sx={{ width: "100%" , backgroundColor: 'white' }}
-                              // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
+                              sx={{ width: "100%" , backgroundColor: 'white' }}                              
                               onChange={(e) => handleChange(e,idxProject, index)}                                
                               className='input-field-crud'
                               type="number"
@@ -669,8 +670,7 @@ const PopupTask = ({
                             <TextField
                               focused
                               name='taskItem'
-                              sx={{ width: "100%" , backgroundColor: 'white' }}
-                              // value={res.detail}
+                              sx={{ width: "100%" , backgroundColor: 'white' }}                              
                               onChange={(e) => handleChange(e,idxProject, index)}
                               className='input-field-crud'
                               placeholder='e.g Rest for a while'
@@ -692,10 +692,12 @@ const PopupTask = ({
                                 <Typography sx={{ fontSize: "24px" }}>
                                   Task {index + 1}
                                 </Typography>
-                                <DeleteIcon 
-                                  className='icon-trash'
-                                  onClick={(e) => deleteTask(e, idxProject, index)}
-                                />
+                                {index > 0 && (
+                                  <DeleteIcon 
+                                    className='icon-trash'
+                                    onClick={(e) => deleteTask(e, idxProject, index)}
+                                  />
+                                )}
                               </AccordionSummary>
                               <AccordionDetails>
                                 <Grid container rowSpacing={2}>
@@ -792,7 +794,8 @@ const PopupTask = ({
                       }
                       </Grid>                  
                           {dataProject.workingReportId !== undefined &&                           
-                            <Grid item xs={12} textAlign='left'>
+                          <Grid container xs={12}>
+                            <Grid item xs={6} textAlign='left'>
                               <Button
                                 onClick={() => AddTask(idxProject)}
                                 variant="outlined"
@@ -801,7 +804,20 @@ const PopupTask = ({
                               >
                                 Add Task
                               </Button>
-                            </Grid>                    
+                            </Grid>
+                            <Grid item xs={6} textAlign='right'>
+                            {idxProject > 0 && (
+                              <Button
+                                onClick={() => onRemoveProject(idxProject)}
+                                variant="outlined"
+                                color="error"                             
+                                startIcon={<MinIcon />}
+                              >
+                                Remove Project
+                              </Button>
+                            )}
+                            </Grid>    
+                          </Grid>                   
                             }                    
                     </Grid>
                   </div>
