@@ -194,7 +194,7 @@ const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
 // const tempRoute = ['master-holiday', 'master-company']
 
 // localStorage.setItem('privilage', JSON.stringify(tempRoute))
-const userRoutes = JSON.parse(localStorage.getItem("privilage"));
+const userRoutes = JSON.parse(localStorage.getItem("privilage") || '[]');
 // console.log("user route: ", userRoutes);
 // console.log('app route: ', routes)
 let temp = closedRoutes.filter((res) => {
