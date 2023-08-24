@@ -189,28 +189,32 @@ const closedRoutes = [
   }, 
 ];
 
-const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
-// Comment if route user already exist
-// const tempRoute = ['master-holiday', 'master-company']
-
-// localStorage.setItem('privilage', JSON.stringify(tempRoute))
-const userRoutes = JSON.parse(localStorage.getItem("privilage") || '[]');
-// console.log("user route: ", userRoutes);
-// console.log('app route: ', routes)
-let temp = closedRoutes.filter((res) => {
-  let isSame = false;
-
-  isSame = userRoutes.some((privilege) => privilege.privilegeName === res.key);
-  if (!isSame) {
-    return;
-  }
-  return res;
-});
-
-temp = [...temp, ...openRoutes];
-
-// final routes with controll
-// export const finalRoutes = temp
 
 // default all routes
-export const finalRoutes = temp;
+// export const finalRoutes = temp
+
+// final routes with controll
+export const finalRoutes = () => {
+  
+  const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
+  const userId = localStorage.getItem("userId") || null
+  // Comment if route user already exist
+  // const tempRoute = ['master-holiday', 'master-company']
+
+  // localStorage.setItem('privilage', JSON.stringify(tempRoute))
+  const userRoutes = JSON.parse(localStorage.getItem("privilage") || '[]');
+  // console.log('app route: ', routes)
+  let temp = closedRoutes.filter((res) => {
+    let isSame = false;
+
+    isSame = userRoutes.some((privilege) => privilege.privilegeName === res.key);
+    if (!isSame) {
+      return;
+    }
+    return res;
+  });
+
+  temp = [...temp, ...openRoutes];
+  temp = userId ? [...temp, { path: "/", element: <Dashboard />,}] : openRoutes
+  return temp
+};
