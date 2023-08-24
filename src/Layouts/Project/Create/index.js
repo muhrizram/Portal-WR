@@ -159,17 +159,40 @@ const CreateProject = () => {
       flex: 1,
       renderCell: (params) => {
         return (
-          <Grid container columnSpacing={1} >            
-           {/* <Typography className="autocomplete-nya">HEI</Typography> */}
-           <Autocomplete
-           className="autocomplete-nya"
-  disablePortal
-  id="combo-box-demo"
-  // options={params}
-  sx={{ width: '100%' }}
-  renderInput={() => <TextField {...params} label="Movie" />}
-/>       
+          <Grid item xs={2.5}>
+            <Autocomplete
+              disablePortal
+              name="roleProjectId"
+              options={roles}
+              getOptionLabel={(option) => option.role}
+              onChange={(_event, newValue) => {
+                if(newValue){
+                  handleChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
+                }
+              }}
+              sx={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                  focused
+                  {...params} 
+                  label="Select Role"
+                  placeholder="Search Role" 
+                  className='blue-outline input-field-crud'
+                />
+              )}
+            />
           </Grid>
+//           <Grid container columnSpacing={1} >            
+//            {/* <Typography className="autocomplete-nya">HEI</Typography> */}
+//            <Autocomplete
+//            className="autocomplete-nya"
+//   disablePortal
+//   id="combo-box-demo"
+//   // options={params}
+//   sx={{ width: '100%' }}
+//   renderInput={() => <TextField {...params} label="Movie" />}
+// />       
+//           </Grid>
         )
       }
     },
