@@ -22,15 +22,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInputText from "../../../Component/FormInputText";
 import schemacompany from "../shema";
-import CustomAlert from "../../../Component/Alert";
+// import CustomAlert from "../../../Component/Alert";
 import TableNative from "../../../Component/DataTable/Native";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
-import { options } from "@fullcalendar/core/preact";
+// import { options } from "@fullcalendar/core/preact";
 import { DeleteForeverOutlined } from "@mui/icons-material";
 
 const CreateProject = () => {
@@ -41,7 +41,7 @@ const CreateProject = () => {
   const [valueUser, setValueUser] = useState([]);
   const [company, setOptCompany] = useState([])
   const [projectTypes, setOptProjectType] = useState([])
-  const { setDataAlert } = useContext(AlertContext)
+  // const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMember, setSelectedMember] = useState([])
   const [dataProject, setDataProject] = useState([]);
@@ -107,58 +107,56 @@ const CreateProject = () => {
         return (
           <Grid container columnSpacing={1}>
             <Grid item xs={5.5}>
-              {/* {console.log('send data : ', sendData)} */}
-                {sendData.listUser.map((res, index) => (
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    key={index}
-                    className='date-input-table'
-                    placeholder="Join Date"
-                    value={startJoin}
-                    onChange={(startJoinProject) => {
-                      const newJoinDate = startJoinProject.format("YYYY-MM-DD");
-                      const updatedListUser = [...sendData.listUser];
-                      updatedListUser[index] = {
-                        ...updatedListUser[index],
-                        joinDate: newJoinDate
-                      };
-                      setData(prevData => ({
-                        ...prevData,
-                        listUser: updatedListUser
-                      }));
-                    }}
-                  />
-              </LocalizationProvider>
-                ))}
+              {sendData.listUser.map((res, index) => 
+                <LocalizationProvider key={`date-join${index + 1}`} dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      key={index}
+                      className='date-input-table'
+                      placeholder="Join Date"
+                      value={startJoin}
+                      onChange={(startJoinProject) => {
+                        const newJoinDate = startJoinProject.format("YYYY-MM-DD");
+                        const updatedListUser = [...sendData.listUser];
+                        updatedListUser[index] = {
+                          ...updatedListUser[index],
+                          joinDate: newJoinDate
+                        };
+                        setData(prevData => ({
+                          ...prevData,
+                          listUser: updatedListUser
+                        }));
+                      }}
+                    />
+                </LocalizationProvider>
+              )}
             </Grid>
             <Grid item xs={1} alignSelf="center" textAlign="center">
               <span>-</span>
             </Grid>
             <Grid item xs={5.5}>
-              {sendData.listUser.map((res, index) => (
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    key={index}
-                    className='date-input-table'
-                    placeholder="End Date"
-                    value={endJoin}
-                    onChange={(endJoinProject) => {
-                      const newEndDate = endJoinProject.format("YYYY-MM-DD");
-                      const updatedListUser = [...sendData.listUser];
-                      updatedListUser[index] = {
-                        ...updatedListUser[index],
-                        endDate: newEndDate
-                      };
-                      setData(prevData => ({
-                        ...prevData,
-                        listUser: updatedListUser
-                      }));
-                    }}
-                    // sx={{ width: "100%", paddingRight: "10px" }}
-                  />
-                
-              </LocalizationProvider>
-                ))}
+              {sendData.listUser.map((res, index) => 
+                <LocalizationProvider key={`date-end${index + 1}`} dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      key={index}
+                      className='date-input-table'
+                      placeholder="End Date"
+                      value={endJoin}
+                      onChange={(endJoinProject) => {
+                        const newEndDate = endJoinProject.format("YYYY-MM-DD");
+                        const updatedListUser = [...sendData.listUser];
+                        updatedListUser[index] = {
+                          ...updatedListUser[index],
+                          endDate: newEndDate
+                        };
+                        setData(prevData => ({
+                          ...prevData,
+                          listUser: updatedListUser
+                        }));
+                      }}
+                    />
+                  
+                </LocalizationProvider>
+              )}
             </Grid>
           </Grid>
         )
@@ -169,50 +167,54 @@ const CreateProject = () => {
       headerName: "Role",
       flex: 1,
       renderCell: (params) => {
+        console.log("params: ", params)
         return (
           <Grid item xs={12}>
-                {sendData.listUser.map((user, index) => (
-                  <Autocomplete
-                  key={index}
-                  name="roleProjectId"
-                  freeSolo
-                  options={roles}
-                  getOptionLabel={(option) => option.role}
-                  onChange={(_event, newValue) => {
-                    if(newValue){
-                      const updatedListUser = [...sendData.listUser];
-                      updatedListUser[index] = {
-                        ...updatedListUser[index],
-                        roleProjectId: newValue.id,
-                        userId: valueUser[index].id
-                      };
-                      setData(prevData => ({
-                        ...prevData,
-                        listUser: updatedListUser
-                      }));
-                    }
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name="roleProjectId"
-                      label="Select Role"
-                      inputProps={{
-                        ...params.inputProps,
-                        style: { 
-                          height: '8px',
-                        } 
-                      }}
-                      InputLabelProps={{
-                        ...params.InputLabelProps,
-                        style: {
-                          marginTop: '-8px', // Menggeser label ke atas
-                        },
-                      }}
-                      />
-                      )}
+            {sendData.listUser.map((user, index) => (
+              <Autocomplete
+                key={index}
+                name="roleProjectId"
+                freeSolo
+                defaultValue={params.row.roleSelect}
+                options={roles}
+                getOptionLabel={(option) => option.role}
+                onChange={(_event, newValue) => {
+                  if(newValue){
+                    const updatedListUser = [...sendData.listUser];
+                    updatedListUser[index] = {
+                      ...updatedListUser[index],
+                      roleProjectId: newValue.id,
+                      userId: valueUser[index].id
+                    };
+                    setData(prevData => ({
+                      ...prevData,
+                      listUser: updatedListUser
+                    }));
+                  }
+                }}
+                renderInput={(paramsInput) => (
+                  <TextField
+                    {...paramsInput}
+                    name="roleProjectId"
+                    label="Select Role"
+                    inputProps={{
+                      ...paramsInput.inputProps,
+                      style: { 
+                        height: '8px',
+                      } 
+                    }}
+                    InputLabelProps={{
+                      ...paramsInput.InputLabelProps,
+                      style: {
+                        marginTop: '-8px', // Menggeser label ke atas
+                      },
+                    }}
                     />
-                  ))}
+                    )}
+                  />
+                )
+              )
+            }
           </Grid>
         )
       }
@@ -272,7 +274,7 @@ const CreateProject = () => {
         newMembers.push(newUser);
       }
     }
-    
+    console.log('new member: ', newMembers)
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
     // setValueUser([])
   }
@@ -285,6 +287,7 @@ const CreateProject = () => {
     })
     const data = res.data.map(item => ({
       id : parseInt(item.id),
+      userId: parseInt(item.id),
       positionId: item.attributes.positionId,
       nip: item.attributes.nip, 
       firstName: item.attributes.firstName, 
@@ -360,8 +363,6 @@ const CreateProject = () => {
   };
 
   const handleChange = (event, newValue) => {
-    console.log(event);
-    console.log(newValue);
     const {name, value} = event.target
     const temp = {...sendData}
     temp[name] = event.target.value
@@ -370,9 +371,12 @@ const CreateProject = () => {
     } else if(name === 'projectType'){
       temp.projectType = newValue.id
     } 
-
-    console.log('temp : ', temp);
     setData(temp)
+  }
+
+  const changeUser = (event, newValue) => {
+    console.log('event: ', event)
+    console.log(newValue)
   }
 
   const onSave = async () => {
@@ -400,9 +404,19 @@ const CreateProject = () => {
     setOpen(false);
   };
 
-
- 
-  
+  const onChangeRole = (value) => {
+    let temp = []
+    if (valueUser.length > 0) {
+      temp = valueUser.map((res) => {
+        return {
+          ...res,
+          roleProjectId: value.id,
+          roleSelect: value
+        }
+      })
+    }
+    setValueUser(temp)
+  }
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -566,9 +580,6 @@ const CreateProject = () => {
                             limitTags={2}
                             onChange={(_event, newValue) => {
                               setValueUser([...newValue])
-                              if(newValue){
-                                handleChange({target : { name : 'userId', value: newValue.userId }}, newValue.userId)
-                              }
                             }}
                             options={dataUser}
                             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
@@ -593,9 +604,7 @@ const CreateProject = () => {
                             options={roles}
                             getOptionLabel={(option) => option.role}
                             onChange={(_event, newValue) => {
-                              if(newValue){
-                                handleChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
-                              }
+                              onChangeRole(newValue)
                             }}
                             sx={{ width: "100%" }}
                             renderInput={(params) => (
