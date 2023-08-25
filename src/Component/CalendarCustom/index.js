@@ -36,7 +36,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [openOvertime, setOpenOvertime] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
-  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})  
+  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
+  const [goDetail,setgoDetail] = useState(false)
+  const [openDetailOvertime,setopenDetailOvertime] = useState(false)
   const [filternowStatus,setfilternowStatus] = useState(false)
   const [filterRangeData,setfilterRangeData] = useState(['2023-08-23'])
   const [currentMonthYear, setCurrentMonthYear] = useState("");
@@ -239,6 +241,42 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   ) : null
                 )              
                 }
+
+                {info.isToday ? (
+                  <Button                  
+                    variant="outlined-warning"
+                    onClick={
+                      data[0].overtime == true ?() => {
+                        setId(data[0].workingReportId)
+                        setWrIdDetail(data[0].workingReportId);
+                        setIsViewOvertime(true);
+                      }
+                      : () => {
+                        setOpenOvertime(true);
+                        setId(data[0].workingReportId)
+                      }
+                    }
+                  >
+                    {data[0].overtime == true ? "View Overtime" : "Overtime"}
+                  </Button>
+                ) : 
+                (
+                  data[0].overtime === true && (
+                  <Button
+                    // sx={{marginTop: "5vh"}}
+                    variant="outlined-warning"
+                    onClick={
+                      () => {
+                        setId(data[0].workingReportId)
+                        setWrIdDetail(data[0].workingReportId);
+                        setIsViewOvertime(true);
+                      }
+                    }
+                  >
+                    {"View Overtime"}
+                  </Button>
+                  )
+                )}
               </Grid>
             </> : null
           
