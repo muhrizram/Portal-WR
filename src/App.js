@@ -16,10 +16,8 @@ const App = () => {
   const navigate = useNavigate()
   const userId = localStorage.getItem("userId") || null
   useEffect(() => {
-    if (userId) {
-      navigate('/')
-    } else {
-      navigate('login')
+    if (!userId) {
+      navigate('/login')
     }
   }, [userId])
 
