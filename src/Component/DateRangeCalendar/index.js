@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,use } from 'react';
 import dayjs from 'dayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,10 +7,11 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { Button, Grid, Typography } from '@mui/material';
 import FilterList from '@mui/icons-material/FilterList';
 
-export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus}) {
+export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus, setchangeCurrentMonth}) {
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
   const [count, setCount] = React.useState(0);
+  const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
 
   useEffect(() => {
     if(startDate || endDate){
@@ -30,6 +31,17 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
   };
 
   const handleApplyFilter = () => {
+    const startMonth = dayjs(startDate).format('MMMM');
+    const endMonth = dayjs(endDate).format('MMMM');
+    const startYear = dayjs(startDate).format('YYYY');
+    const endYear = dayjs(endDate).format('YYYY');
+
+    const formattedRange = startMonth === endMonth && startYear === endYear
+      ? `${startMonth} ${startYear}`
+      : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+
+    setSelectedMonthRange(formattedRange);
+    
     if (startDate && endDate) {
       const daysDifference = dayjs(endDate).diff(startDate, 'day');
       if (daysDifference >= 28 && daysDifference <= 30) {
@@ -45,18 +57,21 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
   while (startDatenew <= endDatenew) {
     hasil.push(startDatenew.toISOString().split('T')[0]);
     startDatenew.setDate(startDatenew.getDate() + 1);
-  }  
-    if(count >= 1){      
-      setfilterRangeData(['2023-08-25'])
-      // setfilterRangeData(hasil)
-      setfilternowStatus(true)
-      setfilternowStatus(false)
-      setCount(count + 1);
-    }else{
-      setfilterRangeData(['2023-08-24'])
-      setCount(count + 1);
-      setfilternowStatus(true)
-    }
+  }
+  setfilterRangeData(hasil)
+  setfilternowStatus(true)
+  setchangeCurrentMonth(true)
+    // if(count >= 1){      
+    //   setfilterRangeData(['2023-08-25'])
+    //   setfilterRangeData(hasil)
+    //   setfilternowStatus(true)
+    //   setfilternowStatus(false)
+    //   setCount(count + 1);
+    // }else{
+    //   setfilterRangeData(['2023-08-24'])
+    //   setCount(count + 1);
+    //   setfilternowStatus(true)
+    // }
     // console.log("INI COUNT",count)
   };
 
@@ -64,7 +79,11 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid marginTop='4vh'/>
       <div style={{ position: 'relative' }}>
-        <Grid container position="absolute" justifyContent="flex-end" marginTop="-5vh">
+        <Grid position='absolute' margin={4}>
+          <Typography variant='TextBulankalender'>{selectedMonthRange}</Typography>
+        </Grid>
+      </div>       
+        <Grid container justifyContent="flex-end" marginTop="-5vh">          
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
@@ -81,7 +100,7 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
             <Button startIcon={<FilterList style={{ fontSize: 32 }} />} onClick={handleApplyFilter}>Filters</Button>
           </Grid>                  
         </Grid>
-      </div>      
+      {/* </div>       */}
     </LocalizationProvider>
   );
 }

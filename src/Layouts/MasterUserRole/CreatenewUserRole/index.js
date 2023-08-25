@@ -130,7 +130,9 @@ const CreateUserRole = () => {
       const data = {     
         userId: selectedUser, 
         roleId: selectedRoles,
-      }    
+        createdBy: parseInt(localStorage.getItem("userId"))
+      }
+      console.log("INI DATA",data)
       const res = await client.requestAPI({
         method: 'POST',
         endpoint: `/userRole/addUserRole/`,

@@ -164,8 +164,12 @@ let globalTheme = createTheme({
       fontStyle: ["normal"],
       fontWeight: ["600"],
       lineHeight: ["150%"],
-
-    }
+    },
+    TextBulankalender: {
+      color: ['black'],
+      fontSize: ["30px"],
+      fontWeight: ["bold"],
+    },    
   },
   // textfield: {
   //   textFieldEmployee: {
@@ -336,7 +340,7 @@ let globalTheme = createTheme({
               color: "#FFFFFF",
             },
           },
-        },
+        },        
       ],
     },
     MuiFormControlLabel: {
