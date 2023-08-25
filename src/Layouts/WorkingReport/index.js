@@ -138,10 +138,8 @@ export default function WorkingReport() {
   // func for get download file excel or pdf
   const downloadFormatFile = (employeeId = 1, isExcell, url = '') => {
     // employeeId = this.state.role !== 'talent' ? this.state.selectedEmployee.employeeId : localStorage.getItem('employeeId');
-    // const start = this.state.startDate;
-    // const end = this.state.endDate;
-    const start = "2023-07-01";
-    const end = "2023-07-31";
+    const start = moment(filter.startDate).format('yyyy-MM-DD')
+    const end = moment(filter.endDate).format('yyyy-MM-DD');
     const link = document.createElement('a');
     link.href = isExcell ? getWorkingReportExcelUrl(employeeId, start, end, url) : getWorkingReportPdfUrl(employeeId, start, end, url);
     link.download = '';
@@ -317,7 +315,7 @@ export default function WorkingReport() {
     } else {
       id = selectedUser.id
     }
-    downloadFormatFile(id, true, "/workingReport/download/excel?userId=")
+    downloadFormatFile(id, true, "/workingReport/download/toExcel?userId=")
   }
 
   const handleSearchChange = async (searchValue) => {
