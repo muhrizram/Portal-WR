@@ -230,7 +230,7 @@ const CreateProject = () => {
   ];
 
   const navigate = useNavigate();
-  
+  const { setDataAlert } = useContext(AlertContext);
 
   
   const dataBread = [
@@ -261,10 +261,10 @@ const CreateProject = () => {
 
   const handleInvite = () => {
     const newMembers = [];
-    console.log("VALUE USER", valueUser)
+    // console.log("VALUE USER", valueUser)
     for (const newUser of valueUser) {
       let exists = false;
-      console.log("SELECTED MEMBER", selectedMember)
+      // console.log("SELECTED MEMBER", selectedMember)
       for (const existingMember of selectedMember) {
         if (newUser.id === existingMember.id) {
           exists = true;
@@ -383,9 +383,7 @@ const CreateProject = () => {
     const dataForm = methods.getValues()
     delete dataForm.userId
 
-    console.log(dataForm);
-
-    console.log('send data in onSave : ', sendData);
+    // console.log('send data in onSave : ', sendData);
     
     const data = {
       ...sendData,
@@ -399,8 +397,28 @@ const CreateProject = () => {
       endpoint: '/project/add-project',
       data
     })
+
+    console.log('response : => ', res);
     
-    console.log("RES", res)
+    if(!res.isError){
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      }) 
+
+      setTimeout(() => {
+        navigate('/masterProject');
+      }, 1000);
+    }
+    else {          
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+      setOpen(false);
+    }
     setOpen(false);
   };
 
