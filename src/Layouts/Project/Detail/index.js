@@ -18,6 +18,7 @@ import {
   MenuItem,
   Autocomplete,
   TextField,
+  IconButton,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -35,6 +36,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AlertContext } from '../../../context';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const DetailProject = () => {
   
@@ -67,7 +69,7 @@ const DetailProject = () => {
 
   const [dataMember, setdataMember] = useState([
     {
-      id: 1,
+      id: '',
       no: null,
       nip: "",
       name: "",
@@ -82,10 +84,17 @@ const DetailProject = () => {
     let Ubah = String(dateString)
     const [month, day, year] = Ubah.split("-");
     const currentDate = new Date();
-    currentDate.setMonth(parseInt(month) - 1);
     currentDate.setDate(parseInt(day));
+    currentDate.setMonth(parseInt(month) - 1);
     currentDate.setFullYear(parseInt(year));
     return currentDate;
+  }
+
+  const deleteMember = async (e, index) => {
+    e.preventDefault()
+    const temp = {...editData}
+    temp.teamMember.splice(index, 1)
+    setEditData(temp)
   }
 
 
@@ -93,17 +102,17 @@ const DetailProject = () => {
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.3,
     },
     {
       field: "nip",
       headerName: "NIP",
-      flex: 1,
+      flex: 0.7,
     },
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 1.3,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -132,15 +141,23 @@ const DetailProject = () => {
             <Grid item xs={5.5}>
               {isEdit ? (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  {/* <DemoContainer components={["DatePicker"]}> */}
                     <DatePicker
                       defaultValue={setDate(dataDetail.teamMember.joinDate) || null}
-                      onChange={(startProjectData) => {
-                        setStartProject(startProjectData.format("MM/DD/YYYY"));
+                      onChange={(startJoinProject) => {
+                        setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+
+                        setEditData({
+                          ...editData,
+                          teamMember: editData.teamMember.map((member) =>
+                            member.id === selectedMember.id
+                              ? { ...member, joinDate: startJoinProject.format("MM-DD-YYYY") }
+                              : member
+                          )
+                        });
+
                       }}
                       sx={{ width: "100%", paddingRight: "20px" }}
                     />
-                  {/* </DemoContainer> */}
                 </LocalizationProvider>
               ) : (
                 <Grid container>
@@ -158,12 +175,23 @@ const DetailProject = () => {
             <Grid item xs={5.5}>
               {isEdit ? (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  {/* <DemoContainer components={["DatePicker"]}> */}
                     <DatePicker
-                      value={setDate(dataDetail.teamMember.endDate) || null}
+                      defaultValue={setDate(dataDetail.teamMember.endDate) || null}
+                      onChange={(endJoinProject) => {
+                        setEndProject(endJoinProject.format("MM-DD-YYYY"));
+
+                        setEditData({
+                          ...editData,
+                          teamMember: editData.teamMember.map((member) =>
+                            member.id === selectedMember.id
+                              ? { ...member, endDate: endJoinProject.format("MM-DD-YYYY") }
+                              : member
+                          )
+                        });
+
+                      }}
                       sx={{ width: "100%", paddingRight: "20px" }}
                     />
-                  {/* </DemoContainer> */}
                 </LocalizationProvider>
               ) : (
                 <Grid container>
@@ -181,18 +209,65 @@ const DetailProject = () => {
     },
     {
       field: "role",
-      headerName: "role",
+      headerName: "Role",
       flex: 1,
-    },
-    {
-      field: "action",
-      headerName: "action",
-      flex: 1,
+      renderCell: (params) => {
+        return(
+          <Grid>
+            {isEdit ? (
+            <Autocomplete
+              disablePortal
+              name="roleProjectId"
+              options={roles}
+              defaultValue={roles.find((option) => option.role === dataDetail.teamMember.roleId) || null}
+              // defaultValue={70}
+              getOptionLabel={(option) => option.role}
+              onChange={(_event, newValue) => {
+                if(newValue){
+                  handleEditChange({target : { name : 'roleProjectId', value: newValue.roleId }},newValue.roleId)
+                }
+              }}
+              sx={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField
+                // defaultValue='tes'
+                  focused
+                  {...params}
+                  placeholder="Search Role" 
+                  className='input-field-crud'
+                />
+              )}
+            />
+            ) : (
+              <Grid item xs={12}>
+                <Typography variant="inputDetail">
+                  {/* {dataDetail.teamMember.roleId} */}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+        )
+      }
       },
       {
         field: "action",
         headerName: "Action",
         flex: 1,
+        renderCell: (params) => {
+          return(
+            <>
+            {isEdit ? (
+            <IconButton
+              onClick={(e) => deleteMember(e)}
+            >
+              <DeleteIcon 
+                className='icon-trash'
+              />
+            </IconButton>
+            ) : (<></>)}
+            </>
+          )
+        }
       },
   ];
 
@@ -229,8 +304,9 @@ const DetailProject = () => {
     const newMembers = [];
     for (const newUser of valueUser) {
       const customAddUser = {        
-          id: newUser.id,
+          id: parseInt(newUser.id),
           positionId: newUser.positionId,
+          // roleId: newUser.roleId,
           nip: newUser.nip,
           name : newUser.firstName + ' ' +  newUser.lastName,
           photoProfile: newUser.photoProfile,
@@ -251,7 +327,10 @@ const DetailProject = () => {
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
     setValueUser([])    
   }
-  const updateData = [...dataMember, ...selectedMember.map((row, index) => ({ ...row, no: dataMember.length + index +1  }))]
+  const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
+    ...row,
+    no: dataMember.length + index +1,
+  }))]
 
   const getOptDataUser = async () => {
     const res = await client.requestAPI({
@@ -337,7 +416,24 @@ const DetailProject = () => {
   const onSave = async () => {
     // setData(data)
     const data = {
-      ...sendData,
+      companyId: editData.companyId,
+      picProjectName: editData.picProjectName,
+      picProjectPhone: editData.picProjectPhone,
+      projectDescription : editData.projectDescription,
+      startDate : editData.startDateProject,
+      endDate : editData.endDateProject,
+      projectType : editData.projectTypeId,
+      initialProject : editData.initialProject,
+      projectName: editData.projectName,
+      
+      listUser: updateData.map(member => {
+        return {
+          userId: member.id,
+          roleProjectId: member.roleId,
+          joinDate: member.joinDate,
+          endDate: member.endDate
+        };
+      })
     }
     console.log("DATA UPDATE", data)
     
@@ -376,6 +472,8 @@ const DetailProject = () => {
       temp.projectType = newValue
     } else if(name === 'memberInvite'){
       temp.listUser.userId = newValue
+    } else if(name === 'roleProjectId'){
+      temp.teamMember.roleId = newValue
     }
 
     setEditData(temp)
@@ -394,6 +492,8 @@ const DetailProject = () => {
       nip: member.nip,
       name: member.fullName,
       joinDate: member.joinDate,
+      endDate: member.endDate,
+      roleId: member.roleId,
       assignment: member.position,
     }));
     
@@ -405,13 +505,21 @@ const DetailProject = () => {
 
   const handleEditChange = (event, fieldName) => {
     const updatedEditData = { ...editData };
-    updatedEditData[fieldName] = event.target.value;
+    if (fieldName === 'companyName') {
+      updatedEditData.companyName = event.target.value;
+      updatedEditData.companyId = event.target.value;
+    } else if (fieldName === 'projectType') {
+      updatedEditData.projectType = event.target.value;
+      updatedEditData.projectTypeId = event.target.value;
+    } else if (fieldName === 'roleProjectId') {
+      updatedEditData.teamMember.role = event.target.value;
+      updatedEditData.teamMember.roleId = event.target.value;
+    } else {
+      updatedEditData[fieldName] = event.target.value;
+    }
     updatedEditData.teamMember = [...updateData];
     setEditData(updatedEditData);
 
-    const updatedDataDetail = { ...dataDetail };
-    updatedDataDetail[fieldName] = event.target.value;
-    setDataDetail(updatedDataDetail)
   };
 
   return (
@@ -451,8 +559,6 @@ const DetailProject = () => {
                         name="projectName"
                         value={editData.projectName || ""}
                         onChange={(e) => handleEditChange(e, "projectName")}
-                        // value={dataDetail.projectName}
-                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                         label="Project Name"
@@ -516,8 +622,6 @@ const DetailProject = () => {
                         name="picProjectName"
                         value={editData.picProjectName || ""}
                         onChange={(e) => handleEditChange(e, "picProjectName")}
-                        // value={dataDetail.picProjectName}
-                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g Selfi Muji Lestari"
                         label="PIC Project Name"
@@ -544,8 +648,6 @@ const DetailProject = () => {
                         name="picProjectPhone"
                         value={editData.picProjectPhone || ""}
                         onChange={(e) => handleEditChange(e, "picProjectPhone")}
-                        // value={dataDetail.picProjectPhone}
-                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="PIC Project Phone"
@@ -573,7 +675,11 @@ const DetailProject = () => {
                             label="Start Date Project"
                             defaultValue={setDate(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
-                              setStartProject(startProjectData.format("MM/DD/YYYY"));
+                              setStartProject(startProjectData.format("YYYY-MM-DD"));
+                              setEditData({
+                                ...editData,
+                                startDateProject: startProjectData.format("YYYY-MM-DD")
+                              });
                             }}
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
@@ -599,8 +705,15 @@ const DetailProject = () => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
-                            value={setDate(dataDetail.endDate) || null}
                             label="End Date Project"
+                            defaultValue={setDate(dataDetail.endDateProject) || null}
+                            onChange={(endProjectDate) => {
+                              setEndProject(endProjectDate.format("YYYY-MM-DD"));
+                              setEditData({
+                                ...editData,
+                                endDateProject: endProjectDate.format("YYYY-MM-DD")
+                              });
+                            }}
                             sx={{ width: "100%", paddingRight: "20px" }}
                           />
                         </DemoContainer>
@@ -630,8 +743,6 @@ const DetailProject = () => {
                         label="PIC Project Name"
                         value={editData.initialProject || ""}
                         onChange={(e) => handleEditChange(e, "initialProject")}
-                        // value={dataDetail.initialProject}
-                        // onChange={(e) => handleChange(e)}
                       />
                     ) : (
                       <Grid container>
@@ -689,7 +800,6 @@ const DetailProject = () => {
                         name="projectDescription"
                         value={editData.projectDescription}
                         onChange={(e) => handleEditChange(e, "projectDescription")}
-                        // onChange={(e) => handleChange(e)}
                         className="input-field-crud"
                         placeholder="e.g PT. Jalan Gatot Subroto no 122"
                         label="Project Description"
@@ -812,11 +922,8 @@ const DetailProject = () => {
                   </>) : (<></>)}
             <Grid item xs={12}>
               <TableNative
-                // data={dataMember}
                 data={updateData}
                 columns={columnsProject}
-                // checkboxSelection={isEdit}
-                // disableRowSelectionOnClick={isEdit}
               />
             </Grid>
           </div>

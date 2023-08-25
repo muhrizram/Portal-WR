@@ -301,8 +301,8 @@ const onSave = async () => {
     const dataUpdate = {
       workingReportId : null,
       listProjectId : [],
-      createdBy: 2,
-      updatedBy: 2
+      createdBy: '',
+      updatedBy: ''
     }
 
     console.log("DATA EDIT", dataUpdate)
