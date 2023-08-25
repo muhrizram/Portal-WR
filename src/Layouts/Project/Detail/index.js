@@ -18,6 +18,7 @@ import {
   MenuItem,
   Autocomplete,
   TextField,
+  IconButton,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -91,11 +92,9 @@ const DetailProject = () => {
 
   const deleteMember = async (e, index) => {
     e.preventDefault()
-    if(isEdit){
-      const temp = {...editData}
-      temp.teamMember[index].splice(index, 1)
-      setEditData(temp)
-    }
+    const temp = {...editData}
+    temp.teamMember.splice(index, 1)
+    setEditData(temp)
   }
 
 
@@ -103,17 +102,17 @@ const DetailProject = () => {
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.3,
     },
     {
       field: "nip",
       headerName: "NIP",
-      flex: 1,
+      flex: 0.7,
     },
     {
       field: "name",
       headerName: "Name",
-      flex: 1,
+      flex: 1.3,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -210,12 +209,7 @@ const DetailProject = () => {
     },
     {
       field: "role",
-      headerName: "role",
-      flex: 1,
-    },
-    {
-      field: "action",
-      headerName: "action",
+      headerName: "Role",
       flex: 1,
       renderCell: (params) => {
         return(
@@ -225,16 +219,18 @@ const DetailProject = () => {
               disablePortal
               name="roleProjectId"
               options={roles}
-              defaultValue={roles.find((option) => option.role === params.row.roleId) || null}
+              defaultValue={roles.find((option) => option.role === dataDetail.teamMember.roleId) || null}
+              // defaultValue={70}
               getOptionLabel={(option) => option.role}
               onChange={(_event, newValue) => {
                 if(newValue){
-                  handleChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
+                  handleEditChange({target : { name : 'roleProjectId', value: newValue.roleId }},newValue.roleId)
                 }
               }}
               sx={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField
+                // defaultValue='tes'
                   focused
                   {...params}
                   placeholder="Search Role" 
@@ -259,10 +255,17 @@ const DetailProject = () => {
         flex: 1,
         renderCell: (params) => {
           return(
-            <DeleteIcon 
-              className='icon-trash'
-              onClick={(e) => deleteMember(e, params.rowIndex)}
-            />
+            <>
+            {isEdit ? (
+            <IconButton
+              onClick={(e) => deleteMember(e)}
+            >
+              <DeleteIcon 
+                className='icon-trash'
+              />
+            </IconButton>
+            ) : (<></>)}
+            </>
           )
         }
       },
@@ -303,6 +306,7 @@ const DetailProject = () => {
       const customAddUser = {        
           id: parseInt(newUser.id),
           positionId: newUser.positionId,
+          // roleId: newUser.roleId,
           nip: newUser.nip,
           name : newUser.firstName + ' ' +  newUser.lastName,
           photoProfile: newUser.photoProfile,
@@ -323,7 +327,10 @@ const DetailProject = () => {
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
     setValueUser([])    
   }
-  const updateData = [...dataMember, ...selectedMember.map((row, index) => ({ ...row, no: dataMember.length + index +1  }))]
+  const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
+    ...row,
+    no: dataMember.length + index +1,
+  }))]
 
   const getOptDataUser = async () => {
     const res = await client.requestAPI({
@@ -504,6 +511,9 @@ const DetailProject = () => {
     } else if (fieldName === 'projectType') {
       updatedEditData.projectType = event.target.value;
       updatedEditData.projectTypeId = event.target.value;
+    } else if (fieldName === 'roleProjectId') {
+      updatedEditData.teamMember.role = event.target.value;
+      updatedEditData.teamMember.roleId = event.target.value;
     } else {
       updatedEditData[fieldName] = event.target.value;
     }
