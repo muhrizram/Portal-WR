@@ -11,17 +11,16 @@ const refreshToken = async (Token) => {
     const refreshTokenEndpoint = `${host}/auth/refreshToken`;
     const response = await axios.post(refreshTokenEndpoint, {
       refreshToken: Token,
-    });    
+    }); 
     if (response.status === 200) {
       window.location.reload();
       localStorage.setItem('token', response.data.accessToken);
       localStorage.setItem('refreshtoken', response.data.refreshToken);      
       return true;
-    } else {
-      throw new Error("Token refresh failed");
     }
   } catch (error) {
-    console.error("Token refresh error:", error);
+    console.error("Token Refresh Error: ", error.message);
+    localStorage.clear();
     return false;
   }
 };
@@ -89,7 +88,7 @@ const requestAPI = async ({
         const refreshTokennya = localStorage.getItem("refreshtoken");
         const refreshTokenSuccess = await refreshToken(refreshTokennya);
         clientState.refreshingToken = false;
-
+        console.log(refreshTokenSuccess)
         if (refreshTokenSuccess) {
           return await requestAPI({ method, endpoint, data, headers }); 
         }
