@@ -144,13 +144,13 @@ const DetailProject = () => {
                     <DatePicker
                       defaultValue={setDate(dataDetail.teamMember.joinDate) || null}
                       onChange={(startJoinProject) => {
-                        setStartJoin(startJoinProject.format("MM-DD-YYYY"));
+                        setStartJoin(startJoinProject.format("YYYY-MM-DD"));
 
                         setEditData({
                           ...editData,
                           teamMember: editData.teamMember.map((member) =>
                             member.id === selectedMember.id
-                              ? { ...member, joinDate: startJoinProject.format("MM-DD-YYYY") }
+                              ? { ...member, joinDate: startJoinProject.format("YYYY-MM-DD") }
                               : member
                           )
                         });
@@ -178,13 +178,13 @@ const DetailProject = () => {
                     <DatePicker
                       defaultValue={setDate(dataDetail.teamMember.endDate) || null}
                       onChange={(endJoinProject) => {
-                        setEndProject(endJoinProject.format("MM-DD-YYYY"));
+                        setEndProject(endJoinProject.format("YYYY-MM-DD"));
 
                         setEditData({
                           ...editData,
                           teamMember: editData.teamMember.map((member) =>
                             member.id === selectedMember.id
-                              ? { ...member, endDate: endJoinProject.format("MM-DD-YYYY") }
+                              ? { ...member, endDate: endJoinProject.format("YYYY-MM-DD") }
                               : member
                           )
                         });
@@ -224,7 +224,15 @@ const DetailProject = () => {
               getOptionLabel={(option) => option.role}
               onChange={(_event, newValue) => {
                 if(newValue){
-                  handleEditChange({target : { name : 'roleProjectId', value: newValue.roleId }},newValue.roleId)
+                  setEditData({
+                    ...editData,
+                    teamMember: editData.teamMember.map((member) =>
+                      member.id === selectedMember.id
+                        ? { ...member, roleId: newValue.id }
+                        : member
+                    )
+                  });
+                  // handleEditChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
                 }
               }}
               sx={{ width: "100%" }}
@@ -296,7 +304,6 @@ const DetailProject = () => {
     getOptDataUser()
     getOptCompany()
     getDetailProject()
-    // console.log("DATA PROJECT", sendData)
   }, [])
 
 
@@ -305,15 +312,19 @@ const DetailProject = () => {
     for (const newUser of valueUser) {
       const customAddUser = {        
           id: parseInt(newUser.id),
+          userId: parseInt(newUser.id),
           positionId: newUser.positionId,
-          // roleId: newUser.roleId,
+          roleProjectId: newUser.roleId,
           nip: newUser.nip,
           name : newUser.firstName + ' ' +  newUser.lastName,
           photoProfile: newUser.photoProfile,
           position: newUser.position,
+          joinDate: newUser.startJoin,
+          endDate: newUser.endDate,
           assignment: newUser.assignment,
           active: newUser.active      
       }
+      console.log("member", customAddUser)
       let exists = false;      
       for (const existingMember of selectedMember) {
         if (customAddUser.id === existingMember.id) {
@@ -321,7 +332,9 @@ const DetailProject = () => {
         }
       }
       if (!exists) {
-        newMembers.push(customAddUser);
+        newMembers.push(customAddUser)
+        editData.teamMember.push(customAddUser);
+        console.log("NEW", editData.teamMember)
       }
     }        
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
@@ -423,12 +436,13 @@ const DetailProject = () => {
       startDate : editData.startDateProject,
       endDate : editData.endDateProject,
       projectType : editData.projectTypeId,
+      lastModifiedBy: parseInt(localStorage.getItem("userId")),
       initialProject : editData.initialProject,
       projectName: editData.projectName,
       
-      listUser: updateData.map(member => {
+      listUser: editData.teamMember.map(member => {
         return {
-          userId: member.id,
+          userId: member.userId,
           roleProjectId: member.roleId,
           joinDate: member.joinDate,
           endDate: member.endDate
@@ -451,7 +465,7 @@ const DetailProject = () => {
         message: res.data.meta.message
       })
       setTimeout(() => {
-        navigate('/master-company')
+        navigate('/masterProject')
       }, 3000)
     } else {
       setDataAlert({
