@@ -63,8 +63,7 @@ const DetailProject = () => {
   useEffect(() => {
     if (isEdit) {
       setEditData(dataDetail);
-    }
-    console.log("INI EDEIT",editData)
+    }    
   }, [dataDetail, isEdit]);
 
   const [dataMember, setdataMember] = useState([
@@ -108,7 +107,7 @@ const DetailProject = () => {
       field: "nip",
       headerName: "NIP",
       flex: 0.7,
-    },
+    },   
     {
       field: "name",
       headerName: "Name",
@@ -131,7 +130,12 @@ const DetailProject = () => {
         );
       },
     },
-    {
+    !isEdit && {
+      field: "joinandEndDate",
+      headerName: "Join-End Date",
+      flex: 3,
+    },
+    isEdit && {
       field: "joinDate",
       headerName: "Join-End Date",
       flex: 3,
@@ -161,15 +165,17 @@ const DetailProject = () => {
                 </LocalizationProvider>
               ) : (
                 <Grid container>
-                  <Grid item xs={12}>
-                    <Typography variant="inputDetail">
-                      {/* {dataDetail.teamMember.joinDate} */}
-                    </Typography>
-                  </Grid>
+                  {/* {dataMember.map((member, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Typography variant="inputDetail">
+                        {member.joinDate}
+                      </Typography>
+                    </Grid>
+                  ))} */}
                 </Grid>
               )}
             </Grid>
-            <Grid item xs={1} alignSelf="center" textAlign="center">
+            <Grid item xs={1}>
               <span>-</span>
             </Grid>
             <Grid item xs={5.5}>
@@ -195,11 +201,13 @@ const DetailProject = () => {
                 </LocalizationProvider>
               ) : (
                 <Grid container>
-                  <Grid item xs={12}>
-                    <Typography variant="inputDetail">
-                      {/* {dataDetail.teamMember.endDate} */}
-                    </Typography>
-                  </Grid>
+                  {/* {dataMember.map((member, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Typography variant="inputDetail">
+                        {member.endDate}
+                      </Typography>
+                    </Grid>
+                  ))} */}
                 </Grid>
               )}
             </Grid>
@@ -207,7 +215,12 @@ const DetailProject = () => {
         )
       }
     },
-    {
+    !isEdit && {
+      field: "role",
+      headerName: "Role",
+      flex: 1,
+    },
+    isEdit &&{
       field: "role",
       headerName: "Role",
       flex: 1,
@@ -219,7 +232,7 @@ const DetailProject = () => {
               disablePortal
               name="roleProjectId"
               options={roles}
-              defaultValue={roles.find((option) => option.role === dataDetail.teamMember.roleId) || null}
+              defaultValue={roles.find((option) => parseInt(option.id) === dataDetail.teamMember.roleId) || null}
               // defaultValue={70}
               getOptionLabel={(option) => option.role}
               onChange={(_event, newValue) => {
@@ -247,11 +260,18 @@ const DetailProject = () => {
               )}
             />
             ) : (
-              <Grid item xs={12}>
-                <Typography variant="inputDetail">
-                  {/* {dataDetail.teamMember.roleId} */}
-                </Typography>
-              </Grid>
+              <>
+              {/* {dataMember.map((member, index) => {                
+                const matchedRole = roles.find(role => parseInt(role.id) === member.roleId);                
+                return (
+                  <Grid item xs={12} key={index}>
+                    <Typography variant="inputDetail">
+                      {matchedRole ? matchedRole.role : ''}
+                    </Typography>
+                  </Grid>
+                );
+              })} */}
+              </>
             )}
           </Grid>
         )
@@ -279,6 +299,11 @@ const DetailProject = () => {
       },
   ];
 
+  if (!isEdit) {
+    // Remove the "Action" column if isEdit is false
+    columnsProject.splice(columnsProject.findIndex(column => column.field === 'action'), 1);
+  }
+
 
   const dataBread = [
     {
@@ -303,7 +328,7 @@ const DetailProject = () => {
     getOptRoles()
     getOptDataUser()
     getOptCompany()
-    getDetailProject()
+    getDetailProject()    
   }, [])
 
 
@@ -343,6 +368,15 @@ const DetailProject = () => {
   const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
     ...row,
     no: dataMember.length + index +1,
+  }))]
+  const DetailMemberData = [...dataMember.map((row, index) => ({
+    // ...row,
+    id : row.id,
+    name: row.name,
+    nip: row.nip,
+    no: index +1,
+    role: row.assignment,
+    joinandEndDate: row.joinDate + '   -   ' + row.endDate,
   }))]
 
   const getOptDataUser = async () => {
@@ -936,7 +970,7 @@ const DetailProject = () => {
                   </>) : (<></>)}
             <Grid item xs={12}>
               <TableNative
-                data={updateData}
+                data={isEdit ? updateData : DetailMemberData}
                 columns={columnsProject}
               />
             </Grid>

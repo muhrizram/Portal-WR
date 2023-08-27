@@ -22,6 +22,10 @@ import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
+import IconButton from '@mui/material/IconButton';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+
 
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
@@ -32,17 +36,25 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [openOvertime, setOpenOvertime] = useState(false);
   const [fullWidth, setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
-  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})  
+  const [wrId, setId] = useState({"workingReportId": null , "AbsenId": null})
+  const [goDetail,setgoDetail] = useState(false)
+  const [openDetailOvertime,setopenDetailOvertime] = useState(false)
   const [filternowStatus,setfilternowStatus] = useState(false)
   const [filterRangeData,setfilterRangeData] = useState(['2023-08-23'])
+  const [currentMonthYear, setCurrentMonthYear] = useState("");
+  const [changeCurrentMonth, setchangeCurrentMonth] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
    console.log("INI FILTER READY",filterRangeData)
    console.log("INI FILTER READY",filternowStatus)
-   
-  },[filterRangeData,filternowStatus])
+   const currentDate = new Date();
+   const formattedMonthYear = moment(currentDate).format("MMMM YYYY");
+   setCurrentMonthYear(formattedMonthYear);
+  },[filterRangeData,filternowStatus])  
+  
+
 
   const CustomButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
@@ -93,8 +105,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const renderCalendar = (info) => {    
     
     const FilterTanggal = () => {
-      if(filternowStatus){
-        console.log("HEA",filterRangeData)
+      if(filternowStatus){        
         let tanggalRender = moment(info.date).format("YYYY-MM-DD");
         return filterRangeData.includes(tanggalRender);
       }else{
@@ -230,6 +241,42 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   ) : null
                 )              
                 }
+
+                {info.isToday ? (
+                  <Button                  
+                    variant="outlined-warning"
+                    onClick={
+                      data[0].overtime == true ?() => {
+                        setId(data[0].workingReportId)
+                        setWrIdDetail(data[0].workingReportId);
+                        setIsViewOvertime(true);
+                      }
+                      : () => {
+                        setOpenOvertime(true);
+                        setId(data[0].workingReportId)
+                      }
+                    }
+                  >
+                    {data[0].overtime == true ? "View Overtime" : "Overtime"}
+                  </Button>
+                ) : 
+                (
+                  data[0].overtime === true && (
+                  <Button
+                    // sx={{marginTop: "5vh"}}
+                    variant="outlined-warning"
+                    onClick={
+                      () => {
+                        setId(data[0].workingReportId)
+                        setWrIdDetail(data[0].workingReportId);
+                        setIsViewOvertime(true);
+                      }
+                    }
+                  >
+                    {"View Overtime"}
+                  </Button>
+                  )
+                )}
               </Grid>
             </> : null
           
@@ -244,8 +291,30 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   };
 
   return (
-    <Grid>
-      <DateRangeCalendar setfilterRangeData={setfilterRangeData} setfilternowStatus={setfilternowStatus}/>      
+    <Grid>      
+      {!changeCurrentMonth &&
+      <div style={{ position: 'relative' }}>
+          <Grid position='absolute' margin={4}>
+            <Typography variant='TextBulankalender'>{currentMonthYear}</Typography>                    
+          </Grid>
+      </div>
+      }
+      <Grid marginLeft={63} marginTop={4} position='absolute' container alignItems="flex-start" justifyContent="flex-start" >
+            `<Grid item>
+              <IconButton>
+                <ArrowLeftIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">Today</Typography>
+            </Grid>
+            <Grid item>
+              <IconButton>
+                <ArrowRightIcon />
+              </IconButton>
+            </Grid>             
+      </Grid>
+      <DateRangeCalendar setchangeCurrentMonth={setchangeCurrentMonth} setfilterRangeData={setfilterRangeData} setfilternowStatus={setfilternowStatus}/> 
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
@@ -255,7 +324,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
-          start: "title",
+          start: "",
           center: "",
           end: "",
         }}
@@ -277,7 +346,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       >
         <DialogTitle>Employee Attendance</DialogTitle>
         <DialogContent>
-          <DialogContentText>Track and start your workday</DialogContentText>
+          <DialogContentText className="TextBulankalender">Track and start your workday</DialogContentText>
           <Box
             noValidate
             component="form"

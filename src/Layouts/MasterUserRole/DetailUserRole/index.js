@@ -162,6 +162,7 @@ const DetailUserRole = () => {
     }else{    
       const data = {      
         roleId: selectedRoles,
+        lastModifiedBy: parseInt(localStorage.getItem("userId"))
       }    
       const res = await client.requestAPI({
         method: 'PUT',
