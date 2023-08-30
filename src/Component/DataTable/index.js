@@ -80,6 +80,7 @@ const DataTable = ({
       temp.push({
         field: "actions",
         headerName: "Action",
+        sortable: false,
         width: 200,
         renderCell: (data) => {
           return (
@@ -209,7 +210,7 @@ const DataTable = ({
             rows={data}
             columns={dataColumns}
             disableRowSelectionOnClick
-            pageSizeOptions={[10, 20, 50]}
+            pageSizeOptions={[10, 25, 50, 100]}
             paginationMode='server'
             paginationModel={{ ...pagination }}
             onPaginationModelChange={(model) => changePagination(model)}

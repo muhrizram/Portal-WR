@@ -265,8 +265,8 @@ const onSave = async () => {
       startTime: startTime,
       endTime: endTime,
       ...dataOvertime,
-      createdBy: 2,
-      updatedBy: 2
+      createdBy: parseInt(localStorage.getItem("userId")),
+      updatedBy: parseInt(localStorage.getItem("userId"))
     }
     const res = await client.requestAPI({
       method: 'POST',

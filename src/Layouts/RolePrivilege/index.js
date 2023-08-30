@@ -32,7 +32,8 @@ const RolePrivilege = () => {
       field: 'no',
       headerName: 'No',
       width: 60,
-      flex: 0.2
+      flex: 0.2,
+      sortable: false
     },
     {
       field: 'roleName',
@@ -66,7 +67,6 @@ const RolePrivilege = () => {
     }
   ];
 
-  // const data = rolePrevilege.rolePrevilege
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -89,11 +89,6 @@ const RolePrivilege = () => {
     setidHapus(id)
     setOpen(true);
   };
-
-  // const onDelete = () => {
-  //   setOpenAlert(true);
-  //   handleClose();
-  // };
 
   useEffect(() => {
     getData()
@@ -167,8 +162,7 @@ const RolePrivilege = () => {
     localStorage.setItem('idRolePrivilege', id)
     navigate("/masterroleprivilege/detail");
   }
-  const onAdd = (createdBy) => {
-    // localStorage.setItem('createdBy', createdBy)
+  const onAdd = () => {
     navigate("/masterroleprivilege/create");
   }
 
@@ -208,7 +202,6 @@ const RolePrivilege = () => {
           onDelete={(id) => handleClickOpen(id)}
           totalData={totalData}
           getRowHeight={() => 'auto'}
-          // slots={{ toolbar: GridToolbar }}
         />
         </Grid>
         <Dialog

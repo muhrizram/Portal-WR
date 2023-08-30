@@ -130,9 +130,8 @@ const CreateUserRole = () => {
       const data = {     
         userId: selectedUser, 
         roleId: selectedRoles,
-        createdBy: parseInt(localStorage.getItem("userId"))
-      }
-      console.log("INI DATA",data)
+        createdBy: parseInt(localStorage.getItem('userId'))
+      }    
       const res = await client.requestAPI({
         method: 'POST',
         endpoint: `/userRole/addUserRole/`,
@@ -183,7 +182,7 @@ const CreateUserRole = () => {
                                 options={getUsersdata}
                                 sx={{ width: "100%" }}
                                 value={selectedUser}
-                                onChange={(event, newValue) => setSelectedUser(newValue.value)}
+                                onChange={(event, newValue) => setSelectedUser(newValue)}
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
