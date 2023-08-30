@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useContext } from 'react';
 import dayjs from 'dayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -6,12 +6,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { Button, Grid, Typography } from '@mui/material';
 import FilterList from '@mui/icons-material/FilterList';
+import { AlertContext } from '../../context';
 
 export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus, setchangeCurrentMonth}) {
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
   const [count, setCount] = React.useState(0);
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
+  const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
     if(startDate || endDate){
@@ -31,49 +33,58 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
   };
 
   const handleApplyFilter = () => {
-    const startMonth = dayjs(startDate).format('MMMM');
-    const endMonth = dayjs(endDate).format('MMMM');
-    const startYear = dayjs(startDate).format('YYYY');
-    const endYear = dayjs(endDate).format('YYYY');
-
-    const formattedRange = startMonth === endMonth && startYear === endYear
-      ? `${startMonth} ${startYear}`
-      : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
-
-    setSelectedMonthRange(formattedRange);
-    
-    if (startDate && endDate) {
-      const daysDifference = dayjs(endDate).diff(startDate, 'day');
-      if (daysDifference >= 28 && daysDifference <= 30) {
-        console.log('Selected range is 30 days');
-      } else {
-        console.log('Selectedlebih');
+    if (!startDate || !endDate) {
+      console.log("Incorrect date format")
+      setDataAlert({
+        severity: "error",
+        message: "Incorrect date format",
+        open: true,
+      });
+    }else{
+      const startMonth = dayjs(startDate).format('MMMM');
+      const endMonth = dayjs(endDate).format('MMMM');
+      const startYear = dayjs(startDate).format('YYYY');
+      const endYear = dayjs(endDate).format('YYYY');
+  
+      const formattedRange = startMonth === endMonth && startYear === endYear
+        ? `${startMonth} ${startYear}`
+        : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+  
+      setSelectedMonthRange(formattedRange);
+      
+      if (startDate && endDate) {
+        const daysDifference = dayjs(endDate).diff(startDate, 'day');
+        if (daysDifference >= 28 && daysDifference <= 30) {
+          console.log('Selected range is 30 days');
+        } else {
+          console.log('Selectedlebih');
+        }
       }
+      const hasil = []
+      const startDatenew = new Date(startDate);
+      const endDatenew = new Date(endDate);
+  
+    while (startDatenew <= endDatenew) {
+      hasil.push(startDatenew.toISOString().split('T')[0]);
+      startDatenew.setDate(startDatenew.getDate() + 1);
     }
-    const hasil = []
-    const startDatenew = new Date(startDate);
-    const endDatenew = new Date(endDate);
-
-  while (startDatenew <= endDatenew) {
-    hasil.push(startDatenew.toISOString().split('T')[0]);
-    startDatenew.setDate(startDatenew.getDate() + 1);
-  }
-  setfilterRangeData(hasil)
-  setfilternowStatus(true)
-  setchangeCurrentMonth(true)
-    // if(count >= 1){      
-    //   setfilterRangeData(['2023-08-25'])
-    //   setfilterRangeData(hasil)
-    //   setfilternowStatus(true)
-    //   setfilternowStatus(false)
-    //   setCount(count + 1);
-    // }else{
-    //   setfilterRangeData(['2023-08-24'])
-    //   setCount(count + 1);
-    //   setfilternowStatus(true)
-    // }
-    // console.log("INI COUNT",count)
-  };
+    setfilterRangeData(hasil)
+    setfilternowStatus(true)
+    setchangeCurrentMonth(true)
+      // if(count >= 1){      
+      //   setfilterRangeData(['2023-08-25'])
+      //   setfilterRangeData(hasil)
+      //   setfilternowStatus(true)
+      //   setfilternowStatus(false)
+      //   setCount(count + 1);
+      // }else{
+      //   setfilterRangeData(['2023-08-24'])
+      //   setCount(count + 1);
+      //   setfilternowStatus(true)
+      // }
+      // console.log("INI COUNT",count)
+    };
+    }    
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -96,8 +107,8 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
               <MobileDatePicker value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
-          <Grid item sx={{marginTop:'4vh'}}>
-            <Button startIcon={<FilterList style={{ fontSize: 32 }} />} onClick={handleApplyFilter}>Filters</Button>
+          <Grid item sx={{marginTop:'2%'}}>
+            <Button onClick={handleApplyFilter}>Filters</Button>
           </Grid>                  
         </Grid>
       {/* </div>       */}

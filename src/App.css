@@ -782,3 +782,7 @@
   flex-direction: column-reverse;
   margin-top: -5px;
 } */
+
+.fc-day.fc-day-sat.fc-day-past.fc-daygrid-day {
+  background-color: 'red';
+}
