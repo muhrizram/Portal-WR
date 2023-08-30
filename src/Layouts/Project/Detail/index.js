@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -13,38 +13,28 @@ import {
   Typography,
   Avatar,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Autocomplete,
   TextField,
   IconButton,
 } from "@mui/material";
 import "../../../App.css";
-import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInputText from "../../../Component/FormInputText";
 import schemacompany from "../shema";
 import client from "../../../global/client";
-import uploadFile from "../../../global/uploadFile";
-import CustomAlert from "../../../Component/Alert";
 import TableNative from "../../../Component/DataTable/Native";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AlertContext } from '../../../context';
-import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from "dayjs";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
 
 const DetailProject = () => {
   
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});  
   const [isSave, setIsSave] = useState(false);
   const [dataUser, setDataUser] = useState([])
   const [roles, setOptRoles] = useState([])
@@ -52,19 +42,10 @@ const DetailProject = () => {
   const [company, setOptCompany] = useState([])
   const [projectTypes, setOptProjectType] = useState([])
   const [selectedMember, setSelectedMember] = useState([])
-  const [dataProject, setDataProject] = useState([]);
-  const [startProject, setStartProject] = useState()
-  const [endProject, setEndProject] = useState()
-  const [startJoin, setStartJoin] = useState()
-  const [endJoin, setEndJoin] = useState()
-  const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [editData, setEditData] = useState({});
-
-  console.log('data edit state : ', editData);
-  console.log('data detail state : ', dataDetail);
-  console.log('data value user : ', valueUser);
+  const [columnsProject, setColumns] = useState([])
   
   useEffect(() => {
     if (isEdit) {
@@ -81,9 +62,9 @@ const DetailProject = () => {
       joinDate: "",
       endDate: "",
       roleId: "",
+      role: ""
     },
   ]);
-  console.log('data data member : ', dataMember);
   
   const deleteMember = async (e, index) => {
     e.preventDefault()
@@ -92,8 +73,8 @@ const DetailProject = () => {
     setEditData(temp)
   }
 
-
-  const columnsProject = [
+  useEffect(() => {
+    setColumns([
     {
       field: "no",
       headerName: "No",
@@ -120,10 +101,10 @@ const DetailProject = () => {
               alt="Profile Image"
             />
             <Grid container>
-              <Grid style={{ marginLeft: "0.5rem" }} xs={6}>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
                 <span className="text-name">{params.row.name}</span>
               </Grid>
-              <Grid style={{ marginLeft: "0.5rem" }} xs={6}>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
                 <span className="text-name">{params.row.position}</span>
               </Grid>
             </Grid>
@@ -199,18 +180,14 @@ const DetailProject = () => {
             headerName: "Role",
             flex: 1.5,
             renderCell: (params) => {
-              console.log("params: ", params)
+              console.log('params: ', params)
               return (
                 <Grid item xs={12}>
                   <Autocomplete
                     freeSolo
                     name="roleProjectId"
                     options={roles}
-                    defaultValue={
-                      dataDetail.teamMember.roleId
-                        ? roles.find((option) => parseInt(option.id) === dataDetail.teamMember.roleId)
-                        : null
-                    }
+                    defaultValue={params.row.dataSelect}
                     getOptionLabel={(option) => option.role}
                     onChange={(_event, newValue) => {
                       if (newValue) {
@@ -265,9 +242,6 @@ const DetailProject = () => {
             }
           },
         ]
-      : []),
-    ...(isEdit
-      ? []
       : [
           {
             field: "joinandEndDate",
@@ -279,18 +253,12 @@ const DetailProject = () => {
             headerName: "Role",
             flex: 1.5,
           },
-          {
-            field: "action",
-            headerName: "Action",
-            flex: 1,
-          },
-        ]),
-  ];
-
-
-  if (!isEdit) {
-    columnsProject.splice(columnsProject.findIndex(column => column.field === 'action'), 1);
-  }
+        ]
+      ),
+      ]
+    )
+    console.log('isEdit: ', isEdit)
+  }, [isEdit])
 
 
   const dataBread = [
@@ -323,7 +291,6 @@ const DetailProject = () => {
   const handleInvite = () => {
     const newMembers = [];
     for (const newUser of valueUser) {
-      console.log("new user invite : ", newUser);
       const customAddUser = {        
           id: parseInt(newUser.id),
           userId: parseInt(newUser.id),
@@ -333,7 +300,6 @@ const DetailProject = () => {
           joinDate: newUser.startJoin,
           endDate: newUser.endDate,   
       }
-      console.log("member", customAddUser)
       let exists = false;      
       for (const existingMember of selectedMember) {
         if (customAddUser.id === existingMember.id) {
@@ -344,8 +310,7 @@ const DetailProject = () => {
         newMembers.push(customAddUser)
         // editData.teamMember.push(customAddUser);
       }
-    }        
-    console.log('newMembers : ', newMembers);
+    }
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
     // setValueUser([])    
 
@@ -378,7 +343,11 @@ const DetailProject = () => {
     name: row.name,
     nip: row.nip,
     no: index +1,
-    role: row.assignment,
+    role: row.role,
+    dataSelect: {
+      id: row.roleId.toString(),
+      role: row.role
+    },
     joinandEndDate: (dayjs(row.joinDate).format('YYYY-MM-DD')) + '   -   ' + (dayjs(row.endDate).format('YYYY-MM-DD')),
   }))]
 
@@ -440,7 +409,6 @@ const DetailProject = () => {
   const confirmSave = async (data) => {
     setIsSave(true);
     setOpen(true);
-    setData(editData);
     setEditData(editData)
   };
 
@@ -459,6 +427,7 @@ const DetailProject = () => {
 
   const handleClose = () => {
     if (!isSave) {
+      setColumns([])
       setIsEdit(false);
     }
     setOpen(false);
@@ -486,7 +455,6 @@ const DetailProject = () => {
         };
       })
     }
-    console.log("DATA UPDATE", data)
     
     // const id = localStorage.getItem('projectId')  
     // const res = await client.requestAPI({
@@ -527,7 +495,6 @@ const DetailProject = () => {
     } else if(name === 'roleProjectId'){
       temp.teamMember.roleId = newValue
     }
-    console.log('temp hasil : ', temp);
     setEditData(temp)
   }
 
@@ -537,18 +504,27 @@ const DetailProject = () => {
       method: 'GET',
       endpoint: `/project/detail-project/projectId=${id}?size=5&page=0&sort=name,asc`
     })
-    console.log("res detail", res)
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
-      id: member.userId,
+      id: member.userId.toString(),
       no: index + 1,
       nip: member.nip,
       name: member.fullName,
+      // if want to input default value auto complete member
+      // firstName: member.fullName.split(' ')[0],
+      // lastName: member.fullName.split(' ')[1]
+      role: member.role,
+      roleId: member.roleId,
       joinDate: member.joinDate,
       endDate: member.endDate,
       roleId: member.roleId,
+      dataSelect: {
+        id: member.roleId.toString(),
+        role: member.role
+      },
       assignment: member.position,
     }));
-    
+    // if want to input default value auto complete member
+    // setValueUser(formattedData)
     setdataMember(formattedData);
     if (res) {
       setDataDetail(res.data.attributes)
@@ -741,7 +717,6 @@ const DetailProject = () => {
                             label="Start Date Project"
                             defaultValue={dayjs(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
-                              setStartProject(startProjectData.format("YYYY-MM-DD"));
                               setEditData({
                                 ...editData,
                                 startDateProject: startProjectData.format("YYYY-MM-DD")
@@ -774,7 +749,6 @@ const DetailProject = () => {
                             label="End Date Project"
                             defaultValue={dayjs(dataDetail.endDateProject) || null}
                             onChange={(endProjectDate) => {
-                              setEndProject(endProjectDate.format("YYYY-MM-DD"));
                               setEditData({
                                 ...editData,
                                 endDateProject: endProjectDate.format("YYYY-MM-DD")
@@ -888,7 +862,7 @@ const DetailProject = () => {
                 </Grid>
                 {isEdit && (
                   <Grid item container xs={12} justifyContent="end" mt={3.5}>
-                    <Grid item xs textAlign="right">
+                    <Grid item textAlign="right">
                       <Button
                         style={{ marginRight: "16px" }}
                         variant="cancelButton"
@@ -914,85 +888,82 @@ const DetailProject = () => {
             </Grid>
             {isEdit && (
               <Grid item xs={12} mb={2}>
-                    {/* {sendData.teamMember.map((res, index) => ( */}
-                    <div className='card-project' >
-                      <Grid container rowSpacing={2} columnSpacing={1.25}>
-                        <Grid item xs={12}>
-                          <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                          <Autocomplete
-                            multiple
-                            name="userId"
-                            value={valueUser}
-                            limitTags={2}
-                            onChange={(_event, newValue) => {
-                              setValueUser([...newValue])
-                              if(newValue){
-                                handleChange({target : { name : 'userId', value: newValue.userId }},newValue.firstName)
-                              }
-                            }}
-                            options={dataUser}
-                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-                            className='auto-custom'
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            renderInput={(params) => (
-                              <TextField 
-                                {...params}
-                                focused
-                                label="Invite by name" 
-                                placeholder="Search name"
-                                className='input-field-crud bg-white auto-chips'
-                              />
-                            )}
-                          >
-                          </Autocomplete>
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Autocomplete
-                            disablePortal
-                            name="roleProjectId"
-                            options={roles}
-                            getOptionLabel={(option) => option.role}
-                            onChange={(_event, newValue) => {
-                              if(newValue){
-                                onChangeRole(newValue)
-                              }
-                            }}
-                            sx={{ width: "100%" }}
-                            renderInput={(params) => (
-                              <TextField
-                                focused
-                                {...params} 
-                                label="Select Role"
-                                placeholder="Search Role" 
-                                className='blue-outline input-field-crud'
-                              />
-                            )}
+                {/* {sendData.teamMember.map((res, index) => ( */}
+                <div className='card-project' >
+                  <Grid container rowSpacing={2} columnSpacing={1.25}>
+                    <Grid item xs={12}>
+                      <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
+                    </Grid>
+                    <Grid item xs={7}>
+                      <Autocomplete
+                        multiple
+                        name="userId"
+                        value={valueUser}
+                        limitTags={2}
+                        onChange={(_event, newValue) => {
+                          setValueUser([...newValue])
+                          if(newValue){
+                            handleChange({target : { name : 'userId', value: newValue.userId }},newValue.firstName)
+                          }
+                        }}
+                        options={dataUser}
+                        getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                        className='auto-custom'
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        renderInput={(params) => (
+                          <TextField 
+                            {...params}
+                            focused
+                            label="Invite by name" 
+                            placeholder="Search name"
+                            className='input-field-crud bg-white auto-chips'
                           />
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Button 
-                            fullWidth
-                            style={{ minHeight: '72px'}}
-                            variant="saveButton"
-                            onClick={handleInvite}
-                          >
-                            INVITE
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </div>
+                        )}
+                      >
+                      </Autocomplete>
+                    </Grid>
+                    <Grid item xs={2.5}>
+                      <Autocomplete
+                        disablePortal
+                        name="roleProjectId"
+                        options={roles}
+                        getOptionLabel={(option) => option.role}
+                        onChange={(_event, newValue) => {
+                          if(newValue){
+                            onChangeRole(newValue)
+                          }
+                        }}
+                        sx={{ width: "100%" }}
+                        renderInput={(params) => (
+                          <TextField
+                            focused
+                            {...params} 
+                            label="Select Role"
+                            placeholder="Search Role" 
+                            className='blue-outline input-field-crud'
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={2.5}>
+                      <Button 
+                        fullWidth
+                        style={{ minHeight: '72px'}}
+                        variant="saveButton"
+                        onClick={handleInvite}
+                      >
+                        INVITE
+                      </Button>
+                    </Grid>
                   </Grid>
-                )}
+                </div>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TableNative
                 data={isEdit ? updateData : DetailMemberData}
                 columns={columnsProject}
-                getRowId={(params) => {
-                  console.log('params table : ', params);
-                  return params.id;
-                }}
+                getRowId={(params) => { return params.id }}
               />
             </Grid>
           </div>
