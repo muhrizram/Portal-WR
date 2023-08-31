@@ -54,6 +54,7 @@ const CreateProject = () => {
     startDate: null,
     endDate: null,
   });
+  const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const currentUserId = localStorage.getItem("userId");
 
   const columnsProject = [
@@ -250,7 +251,11 @@ const CreateProject = () => {
     getOptRoles()
     getOptDataUser()
     getOptCompany()
-  }, [])
+
+    if(valueUser.length > 0) {
+      setIsInviteDisabled(false)
+    }
+  }, [valueUser])
 
 
   const handleInvite = () => {
@@ -673,6 +678,7 @@ const CreateProject = () => {
                             style={{ minHeight: '72px'}}
                             variant="saveButton"
                             onClick={handleInvite}
+                            disabled={isInviteDisabled}
                           >
                             INVITE
                           </Button>

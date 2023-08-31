@@ -31,6 +31,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
+import { AlertContext } from "../../../context";
+import { useNavigate } from "react-router-dom";
 
 const DetailProject = () => {
   
@@ -46,19 +48,25 @@ const DetailProject = () => {
   const [dataDetail, setDataDetail] = useState({});
   const [editData, setEditData] = useState({});
   const [columnsProject, setColumns] = useState([])
-  
+
+  const currentUserId = parseInt(localStorage.getItem("userId"))
+
   useEffect(() => {
     if (isEdit) {
       setEditData(dataDetail);
-    }    
+    }
+   
   }, [dataDetail, isEdit]);
 
   const [dataMember, setdataMember] = useState([
     {
       id: '',
+      userId: '',
       no: null,
       nip: "",
       name: "",
+      firstName: "",
+      lastName: "",
       joinDate: "",
       endDate: "",
       roleId: "",
@@ -66,13 +74,10 @@ const DetailProject = () => {
     },
   ]);
   
-  const deleteMember = async (e, index) => {
-    e.preventDefault()
-    const temp = {...editData}
-    temp.teamMember.splice(index, 1)
-    setEditData(temp)
-  }
+ 
 
+  // console.log('edit state luar: ', editData);
+  // console.log('data member luar : ', dataMember);
   useEffect(() => {
     setColumns([
     {
@@ -105,7 +110,7 @@ const DetailProject = () => {
                 <span className="text-name">{params.row.name}</span>
               </Grid>
               <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
-                <span className="text-name">{params.row.position}</span>
+                <span className="text-name">{params.row.assignment}</span>
               </Grid>
             </Grid>
           </div>
@@ -125,11 +130,11 @@ const DetailProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         className="date-input-table"
-                        defaultValue={dayjs(dataDetail.teamMember.joinDate) || null}
+                        defaultValue={dayjs(params.row.joinDate)}
                         onChange={(startJoinProject) => {
                           const newStartDate = startJoinProject.format("YYYY-MM-DD");
                           const updatedListUser = editData.teamMember.map(u => {
-                            if (u.userId === params.row.id) {
+                            if (u.userId == params.row.id) {
                               return { ...u, joinDate: newStartDate };
                             }
                             return u;
@@ -152,11 +157,11 @@ const DetailProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         className="date-input-table"
-                        defaultValue={dayjs(dataDetail.teamMember.endDate) || null}
+                        defaultValue={dayjs(params.row.endDate)}
                         onChange={(endJoinProject) => {
                           const newEndDate = endJoinProject.format("YYYY-MM-DD");
                           const updatedListUser = editData.teamMember.map(u => {
-                            if (u.userId === params.row.id) {
+                            if (u.userId == params.row.id) {
                               return { ...u, endDate: newEndDate };
                             }
                             return u;
@@ -180,7 +185,7 @@ const DetailProject = () => {
             headerName: "Role",
             flex: 1.5,
             renderCell: (params) => {
-              console.log('params: ', params)
+              // console.log('params: ', params)
               return (
                 <Grid item xs={12}>
                   <Autocomplete
@@ -191,16 +196,18 @@ const DetailProject = () => {
                     getOptionLabel={(option) => option.role}
                     onChange={(_event, newValue) => {
                       if (newValue) {
-                        setEditData({
-                          ...editData,
-                          teamMember: editData.teamMember.map((member) =>
-                            member.id === selectedMember.id
-                              ? { ...member, roleId: newValue.id }
-                              : member
-                          ),
+                        const updatedListUser = editData.teamMember.map(u => {
+                          if (u.userId == params.row.id) {
+                            return { ...u, roleId: parseInt(newValue.id) };
+                          }
+                          return u;
                         });
-                      }
-                    }}
+          
+                        setEditData(prevData => ({
+                          ...prevData,
+                          teamMember: updatedListUser
+                        }));
+                    }}}
                     renderInput={(paramsInput) => (
                       <TextField
                         {...paramsInput}
@@ -233,7 +240,7 @@ const DetailProject = () => {
             renderCell: (params) => {
               return (
                 <IconButton
-                  onClick={(e) => deleteMember(e)}
+                  onClick={(e) => deleteMember(params.row.id)}
                   color="default"
                 >
                   <DeleteOutlineOutlined />
@@ -257,8 +264,7 @@ const DetailProject = () => {
       ),
       ]
     )
-    console.log('isEdit: ', isEdit)
-  }, [isEdit])
+  }, [isEdit, editData])
 
 
   const dataBread = [
@@ -287,49 +293,79 @@ const DetailProject = () => {
     getDetailProject()    
   }, [])
 
+  const navigate = useNavigate();
+  const { setDataAlert } = useContext(AlertContext);
+
+  const deleteMember = async (userId) => {
+    let updatedSelected;
+    setdataMember((prevSelected) => {
+      updatedSelected = prevSelected.filter(
+        (existingMember) => existingMember.id !== userId
+        );
+        return updatedSelected;
+      });
+      
+    const updatedListUser = editData.teamMember.filter(
+      (user) => user.userId != userId
+    );
+
+    const updatedDataUser = dataUser.filter(
+      (user) => user.id !== userId
+    );
+
+
+    const updatedValueUser = updatedSelected.map((member) => ({
+      id: member.id,
+      firstName: member.firstName,
+      lastName: member.lastName
+    }));
+    setValueUser(updatedValueUser);
+
+    setDataDetail((prevData) => ({
+      ...prevData,
+      teamMember: updatedListUser,
+    }));
+
+    setDataUser(updatedDataUser);
+  }
 
   const handleInvite = () => {
-    const newMembers = [];
-    for (const newUser of valueUser) {
-      const customAddUser = {        
-          id: parseInt(newUser.id),
-          userId: parseInt(newUser.id),
-          roleProjectId: newUser.roleProjectId,
-          nip: newUser.nip,
-          position: newUser.position,
-          joinDate: newUser.startJoin,
-          endDate: newUser.endDate,   
-      }
-      let exists = false;      
-      for (const existingMember of selectedMember) {
-        if (customAddUser.id === existingMember.id) {
-          exists = true;
-        }
-      }
-      if (!exists) {
-        newMembers.push(customAddUser)
-        // editData.teamMember.push(customAddUser);
-      }
-    }
-    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
-    // setValueUser([])    
-
-
-    const updatedListUser = [...editData.teamMember, ...newMembers.map((member, index) => ({
-      no: index + 1,
-      id: member.id,
-      userId: member.userId,
-      roleProjectId: member.roleProjectId,
-      joinDate: member.joinDate,
-      endDate: member.endDate
-    }))];
-
-    
+    const newMembers = valueUser
+      .filter(newUser => !dataMember.some(existingMember => newUser.id == existingMember.id))
+      .map(newUser => ({
+        id: parseInt(newUser.id),
+        userId: parseInt(newUser.id),
+        name: `${newUser.firstName} ${newUser.lastName}`,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        roleProjectId: newUser.roleProjectId,
+        roleId: parseInt(newUser.roleSelect.id),
+        nip: newUser.nip,
+        assignment: newUser.position,
+        joinDate: newUser.startJoin,
+        endDate: newUser.endDate,
+        dataSelect: newUser.roleSelect
+      }))
+      .filter(newMember => !dataMember.some(existingMember => newMember.id == existingMember.id));
+  
+    setSelectedMember(prevSelected => [...prevSelected, ...newMembers]);
+  
+    const updatedListUser = editData.teamMember
+      .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
+      .concat(newMembers.map((member, index) => ({
+        no: editData.teamMember.length + index + 1,
+        id: member.id,
+        name: member.name,
+        userId: parseInt(member.userId),
+        roleId: parseInt(member.roleId),
+        joinDate: member.joinDate,
+        endDate: member.endDate,
+      })));
+  
     setEditData(prevData => ({
       ...prevData,
       teamMember: updatedListUser
     }));
-    delete editData.teamMember
   }
 
   const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
@@ -338,14 +374,13 @@ const DetailProject = () => {
   }))]
 
   const DetailMemberData = [...dataMember.map((row, index) => ({
-    // ...row,
     id : row.id,
     name: row.name,
     nip: row.nip,
     no: index +1,
     role: row.role,
     dataSelect: {
-      id: row.roleId.toString(),
+      id: parseInt(row.roleId),
       role: row.role
     },
     joinandEndDate: (dayjs(row.joinDate).format('YYYY-MM-DD')) + '   -   ' + (dayjs(row.endDate).format('YYYY-MM-DD')),
@@ -432,64 +467,65 @@ const DetailProject = () => {
     }
     setOpen(false);
   };
+
   const onSave = async () => {
-    // setData(data)
     const data = {
       companyId: editData.companyId,
+      projectName: editData.projectName,
       picProjectName: editData.picProjectName,
       picProjectPhone: editData.picProjectPhone,
       projectDescription : editData.projectDescription,
-      startDate : editData.startDateProject,
-      endDate : editData.endDateProject,
-      projectType : editData.projectType,
-      lastModifiedBy: parseInt(localStorage.getItem("userId")),
+      startDate : dayjs(editData.startDateProject).format('YYYY-MM-DD'),
+      endDate : dayjs(editData.endDateProject).format('YYYY-MM-DD'),
+      projectType : editData.projectTypeId,
+      lastModifiedBy: currentUserId,
       initialProject : editData.initialProject,
-      projectName: editData.projectName,
       
       listUser: editData.teamMember.map(member => {
         return {
           userId: member.userId,
-          roleProjectId: member.roleId,
-          joinDate: member.joinDate,
-          endDate: member.endDate
+          roleProjectId: parseInt(member.roleId),
+          joinDate: dayjs(member.joinDate).format('YYYY-MM-DD'),
+          endDate: dayjs(member.endDate).format('YYYY-MM-DD')
         };
       })
     }
+
+    // console.log('data on save : ', data);
     
-    // const id = localStorage.getItem('projectId')  
-    // const res = await client.requestAPI({
-    //   method: 'PUT',
-    //   endpoint: `/project/update-project/projectId=${id}`,
-    //   data : data
-    // })
+    const id = localStorage.getItem('projectId')  
+    const res = await client.requestAPI({
+      method: 'PUT',
+      endpoint: `/project/update-project/projectId=${id}`,
+      data : data
+    })
     // console.log("res update", res)
-    // if (!res.isError) {
-    //   setDataAlert({
-    //     severity: 'success',
-    //     open: true,
-    //     message: res.data.meta.message
-    //   })
-    //   setTimeout(() => {
-    //     navigate('/masterProject')
-    //   }, 3000)
-    // } else {
-    //   setDataAlert({
-    //     severity: 'error',
-    //     message: res.error.detail,
-    //     open: true
-    //   })
-    // }
-    // setOpen(false);
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.data.meta.message
+      })
+      setTimeout(() => {
+        navigate('/masterProject')
+      }, 3000)
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+    }
+    setOpen(false);
   };
 
   const handleChange = (event, newValue) => {
     const {name, value} = event.target
-    delete editData.projectTypeId
     const temp = {...editData}
     if(name === 'companyName'){
       temp.companyId = newValue
     } else if(name === 'projectType'){
-      temp.projectType = newValue
+      temp.projectTypeId = newValue
     } else if(name === 'memberInvite'){
       temp.teamMember.userId = newValue
     } else if(name === 'roleProjectId'){
@@ -506,25 +542,23 @@ const DetailProject = () => {
     })
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
       id: member.userId.toString(),
+      userId: parseInt(member.userId),
       no: index + 1,
       nip: member.nip,
       name: member.fullName,
-      // if want to input default value auto complete member
-      // firstName: member.fullName.split(' ')[0],
-      // lastName: member.fullName.split(' ')[1]
+      firstName: member.fullName.split(' ')[0],
+      lastName: member.fullName.split(' ')[1],
       role: member.role,
-      roleId: member.roleId,
       joinDate: member.joinDate,
       endDate: member.endDate,
-      roleId: member.roleId,
+      roleId: parseInt(member.roleId),
       dataSelect: {
-        id: member.roleId.toString(),
+        id: parseInt(member.roleId),
         role: member.role
       },
       assignment: member.position,
     }));
-    // if want to input default value auto complete member
-    // setValueUser(formattedData)
+    setValueUser(formattedData)
     setdataMember(formattedData);
     if (res) {
       setDataDetail(res.data.attributes)
@@ -556,7 +590,7 @@ const DetailProject = () => {
       temp = valueUser.map((res) => {
         return {
           ...res,
-          roleProjectId: value.id,
+          roleId: value.id,
           roleSelect: value
         }
       })
@@ -888,7 +922,6 @@ const DetailProject = () => {
             </Grid>
             {isEdit && (
               <Grid item xs={12} mb={2}>
-                {/* {sendData.teamMember.map((res, index) => ( */}
                 <div className='card-project' >
                   <Grid container rowSpacing={2} columnSpacing={1.25}>
                     <Grid item xs={12}>
