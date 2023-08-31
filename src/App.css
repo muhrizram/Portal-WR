@@ -746,9 +746,9 @@
   background-color: black;
 }
 
-.fc-daygrid-day {
+/* .fc-daygrid-day {
   padding: 200px;
-}
+} */
 
 .fc-day.fc-day-wed.fc-day-today {
   background-color: #E6F2FB;
@@ -758,20 +758,17 @@
   border-radius: 10px;
 }
 
-.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-1tiad8z {
-  flex-direction: column-reverse;
-  /* padding-right: 40px; */
-  padding: 2.3vh 2vh 0vh 5vh;
-  margin-right: 9vh;
-}
-
-
 /* .MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-mhc70k-MuiGrid-root {
   height: 100px;
 } */
 
 .MuiButtonBase-root.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.MuiButton-root.MuiButton-outlined-warning.MuiButton-outlined-warningPrimary.MuiButton-sizeMedium.MuiButton-outlined-warningSizeMedium.css-gh9rs1-MuiButtonBase-root-MuiButton-root {
   margin-bottom: 0.5vh;
+}
+
+.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.fc-daygrid-day.fc-day.selected-date-range.css-mhc70k-MuiGrid-root {
+  margin-top: 0px;
+  margin-left: 0px;
 }
 
 .fc-day.fc-day-today.fc-daygrid-day {
@@ -783,6 +780,6 @@
   margin-top: -5px;
 } */
 
-.fc-day.fc-day-sat.fc-day-past.fc-daygrid-day {
+/* .fc-day.fc-day-sat.fc-day-past.fc-daygrid-day {
   background-color: 'red';
-}
+} */

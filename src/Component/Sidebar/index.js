@@ -21,6 +21,7 @@ import { useNavigate } from "react-router";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { finalRoutes } from "../../routes";
 import CustomAlert from "../Alert";
+import { convertBase64 } from "../../global/convertBase64";
 
 const drawerWidth = 240;
 
@@ -134,7 +135,7 @@ export default function SideBar({ children }) {
                       <Avatar
                         variant="square"
                         className={open ? "mini-avatar" : "lg-avatar"}
-                        src={photoProfile}
+                        src={convertBase64(photoProfile)}
                         onClick={handleDrawerClose}
                       />
                     </Grid>
