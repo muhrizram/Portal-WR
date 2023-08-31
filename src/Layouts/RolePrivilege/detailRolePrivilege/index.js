@@ -33,14 +33,9 @@ const DetailPrivilege = () => {
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  // const [role,setRole] = useState(["working report","master role privilege"])
   const [Cancel, setCancel] = React.useState(false);
   const { setDataAlert } = useContext(AlertContext)
-  // const Role = [
-  //   "Employee", "HRD"
-  // ];
-
-  const dataBreadDetailRolePrivilege = [
+  const dataBreadRolePrivilege = [
     {
       href: "/dashboard",
       title: "Dashboard",
@@ -53,25 +48,7 @@ const DetailPrivilege = () => {
     },
     {
       href: "/",
-      title: "Detail Privilege",
-      current: true,
-    },
-  ];
-
-  const dataBreadEditRolePrivilege = [
-    {
-      href: "/dashboard",
-      title: "Dashboard",
-      current: false,
-    },
-    {
-      href: "/masterroleprivilege",
-      title: "Master Role Privilege",
-      current: false,
-    },
-    {
-      href: "/",
-      title: "Edit Role Privilege",
+      title: isEdit ? "Edit Role Privilege" : "Detail Privilege",
       current: true,
     },
   ];
@@ -101,17 +78,14 @@ const DetailPrivilege = () => {
     }
   }
 
-  //option privilege
   const getDataPrivilege = async () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/privilege?search=`
     })
-    // rebuildData(res)
     const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));
     setPrivilegeCheck(data)
   }
-  //option privilege
 
   const handleChangeCheckbox = (id) => {
     if (selectedPrivilege.includes(id)) {
@@ -147,10 +121,12 @@ const DetailPrivilege = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setIsEdit(false)
   };
   const handleCloseOpenCancelData = () => {
     setCancel(false);
     setIsEdit(false);
+    navigate('/masterroleprivilege')
   };
 
   const handleClose1 = () => {
@@ -158,8 +134,10 @@ const DetailPrivilege = () => {
   };
 
   const SubmitSave = async () => {
+    
     const data = {      
       privilegeId: selectedPrivilege,
+      updateBy: parseInt(localStorage.getItem('userId'))
     }
     const res = await client.requestAPI({
       method: 'PUT',
@@ -178,13 +156,11 @@ const DetailPrivilege = () => {
     } else {
       setDataAlert({
         severity: 'error',
-        message: res.error.detail,
+        message: res.error.meta.message,
         open: true
       })
     }
-    // navigate('/masterroleprivilege')
     setOpen(false);
-    // setIsEdit(false);
   };
 
   return (
@@ -192,7 +168,7 @@ const DetailPrivilege = () => {
       <SideBar>
         {isEdit ? (
           <>
-            <Breadcrumbs breadcrumbs={dataBreadEditRolePrivilege} />
+            <Breadcrumbs breadcrumbs={dataBreadRolePrivilege} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
@@ -218,12 +194,12 @@ const DetailPrivilege = () => {
                             <Grid container direction="row" sx={{marginLeft:'30px'}}>
                               <Grid item xs={6}>
                             <FormGroup>
-                              {privilegeCheckboxes.slice(0,4)}
+                              {privilegeCheckboxes.slice(0,5)}
                             </FormGroup>
                             </Grid>
                             <Grid item xs={6}>
                             <FormGroup>
-                            {privilegeCheckboxes.slice(4)}
+                            {privilegeCheckboxes.slice(5)}
                             </FormGroup>
                             </Grid>
                             </Grid>
@@ -335,7 +311,7 @@ const DetailPrivilege = () => {
           </>
         ) : (
           <>
-            <Breadcrumbs breadcrumbs={dataBreadDetailRolePrivilege} />
+            <Breadcrumbs breadcrumbs={dataBreadRolePrivilege} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>

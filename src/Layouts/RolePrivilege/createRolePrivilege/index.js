@@ -34,6 +34,7 @@ const CreateRolePrivilege = () => {
   const navigate = useNavigate();
   const [optPrivilege, setOptPrivilege] = useState([])
   const [optRole, setOptRole] = useState([])
+  const [getoptRoleId, setgetoptRoleId] = useState([])
   
   const dataBread = [
     {
@@ -67,61 +68,59 @@ const CreateRolePrivilege = () => {
     getDataRole()
   }, [])
 
-  //option role
+  
   const getDataRole = async () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/role?search=`
     })
-    // rebuildData(res)
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
     setOptRole(data)
   }
-  //option role
 
-  //option privilege
   const getDataPrivilege = async () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/privilege?search=`
     })
-    // rebuildData(res)
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
     setOptPrivilege(data)
   }
-  //option privilege
 
 
   const onSave = async () => {
-
-    const data = {
-      roleId: optRole,
-      listPrivilege: selectPrivilege,
-      createdBy: parseInt(localStorage.getItem('createRolePrivilege'))
-    }
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: '/rolePrivilege/addRolePrivilege',
-      data
-    })
-    if(!res.isError){
-      setDataAlert({
-        severity: 'success',
-        open: true,
-        message: res.data.meta.message
+    if(!isSave){
+      setOpen(false)
+    } else{
+      const data = {
+        roleId: getoptRoleId,
+        listPrivilege: selectPrivilege,
+        createdBy: parseInt(localStorage.getItem('userId'))
+      }
+      const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: '/rolePrivilege/addRolePrivilege',
+        data
       })
-      setTimeout(() => {
-        navigate('/masterroleprivilege')
-      }, 3000)
-    } else {
-      setDataAlert({
-        severity: 'error',
-        message: res.error.detail,
-        open: true
-      })
+      console.log(res)
+      if(!res.isError){
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        })
+        setTimeout(() => {
+          navigate('/masterroleprivilege')
+        }, 3000)
+      } else {
+        setDataAlert({
+          severity: 'error',
+          message: res.error.meta.message,
+          open: true
+        })
+      }
+      setOpen(false)
     }
-    setOpen(false)
-    // localStorage.setItem("createRolePrivilege", true);
   }
 
   const confirmSave = async (data) => {
@@ -142,11 +141,12 @@ const CreateRolePrivilege = () => {
     setOpen(false);
   };
 
-  const handleChangeRole = (value) => {
-    setOptRole(value.name)
-    setOptRole(value.id)
+  const handleChangeRole = (value) => {    
+    if(value){
+      setgetoptRoleId(value.id)
+    }
   }
-  const options = Array.isArray(optRole) ? optRole : [];
+  // const options = Array.isArray(optRole) ? optRole : [];
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -165,13 +165,13 @@ const CreateRolePrivilege = () => {
                       disablePortal
                       id="combo-box-demo"
                       name="role"
-                      options={options}
+                      options={optRole}
                       sx={{ width: "100%", marginTop: "8px" }}
                       getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => handleChangeRole(newValue)}
-                      // isOptionEqualToValue={(option, value) => option.value === value.value}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
-                        <TextField {...params} label="Role" placeholder="Select Role" />
+                        <TextField {...params} focused label="Role" placeholder="Select Role" />
                       )}
                     />      
                 </Grid>  
@@ -187,7 +187,7 @@ const CreateRolePrivilege = () => {
                 <Grid container direction="row" sx={{marginLeft:'30px'}}>
                   <Grid item xs={6}>
                   <FormGroup>
-                    {optPrivilege.slice(0, 4).map((privilege) => (
+                    {optPrivilege.slice(0, 5).map((privilege) => (
                       <FormControlLabel
                         control={
                           <Checkbox
@@ -204,7 +204,7 @@ const CreateRolePrivilege = () => {
 
                   <Grid item xs={6}>
                   <FormGroup>
-                    {optPrivilege.slice(4).map((privilege) => (
+                    {optPrivilege.slice(5).map((privilege) => (
                       <FormControlLabel
                         control={
                           <Checkbox

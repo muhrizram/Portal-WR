@@ -54,25 +54,7 @@ const DetailUserRole = () => {
     },
     {
       href: "/",
-      title: "Detail User Role",
-      current: true,
-    },
-  ];
-
-  const dataBread2 = [
-    {
-      href: "/dashboard",
-      title: "Dashboard",
-      current: false,
-    },
-    {
-      href: "/masteruserrole",
-      title: "Master User Role",
-      current: false,
-    },
-    {
-      href: "/",
-      title: "Edit User Role",
+      title: isEdit ? "Edit User Role" : "Detail User Role",
       current: true,
     },
   ];
@@ -121,8 +103,7 @@ const DetailUserRole = () => {
     if (!isSave){
       navigate('/masteruserrole')
     }
-    setOpen(false);  
-    setIsEdit(false);
+    setOpen(false);
   };
 
   useEffect(() => {    
@@ -159,16 +140,16 @@ const DetailUserRole = () => {
   const SubmitSave = async () => {
     if (!isSave){
       setOpen(false);  
-    }else{    
+    }else{
       const data = {      
         roleId: selectedRoles,
-        lastModifiedBy: parseInt(localStorage.getItem("userId"))
-      }    
+        lastModifiedBy : parseInt(localStorage.getItem('userId'))
+      }
       const res = await client.requestAPI({
         method: 'PUT',
         endpoint: `/userRole/update/${Detailid}`,
         data
-      })    
+      })
       if(!res.isError){        
         setDataAlert({
           severity: 'success',
@@ -194,7 +175,7 @@ const DetailUserRole = () => {
       <SideBar>
         {isEdit ? (
           <>
-            <Breadcrumbs breadcrumbs={dataBread2} />
+            <Breadcrumbs breadcrumbs={dataBread} />
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>

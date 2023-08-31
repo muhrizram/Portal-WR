@@ -11,6 +11,8 @@ import FormInputText from '../../../Component/FormInputText';
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { AlertContext } from '../../../context';
+import { yupResolver } from '@hookform/resolvers/yup';
+import shemabacklog from '../shema';
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -203,9 +205,23 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               label='Estimation Duration'
             />
           </Grid>
-            <Grid item xs={6}>
+          <Grid item xs={6}>
+            <FormInputText
+              style={{ paddingRight: "10px" }}
+              focused
+              disabled
+              value={taskData.actualTime}
+              onChange={handleChange}
+              name='actualTime'
+              className='input-field-crud'
+              placeholder='e.g 1 Hour'
+              label='Actual Duration'
+            />
+          </Grid>
+            <Grid item xs={12}>
             <Autocomplete
               disablePortal
+              style={{marginTop: "30px"}}
               id="combo-box-demo"
               name="statusBacklog"
               options={AssignedTo}
@@ -427,7 +443,7 @@ const DetailBacklog = () => {
   };
 
   const methods = useForm({
-    // resolver: yupResolver(shemabacklog),
+    resolver: yupResolver(shemabacklog),
     defaultValues: {      
       projectId: valueproject,
       userId: '',
@@ -510,6 +526,7 @@ const DetailBacklog = () => {
                 <form onSubmit={methods.handleSubmit(confirmSave)}>
                   <Autocomplete                    
                     disablePortal
+                    disabled
                     id="combo-box-demo"
                     name="ProjectName"
                     options={ProjectName}      
