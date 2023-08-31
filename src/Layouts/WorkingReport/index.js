@@ -24,6 +24,7 @@ import { getWorkingReportExcelUrl, getWorkingReportPdfUrl } from "../../global/d
 import DownloadConfiguration from "../../Component/DownloadConfig";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LockIcon from '@mui/icons-material/Lock'; 
+import { convertBase64 } from "../../global/convertBase64";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -174,9 +175,10 @@ export default function WorkingReport() {
   }
 
   const rebuildData = (resData) => {
-    console.log("data: ", resData);
-    let temp = [];
+    // console.log("data: ", resData);
+    let temp = [];    
     temp = resData.data.map((value, index) => {
+      const isToday = moment( value.attributes.listDate.date).isSame(moment(), 'day');
       return value.attributes.listDate.holiday
         ? {
             title: "Libur",
@@ -196,10 +198,9 @@ export default function WorkingReport() {
             workingReportId: value.attributes.listDate.workingReportId,
             task: value.attributes.listDate.task,
             overtime: value.attributes.listDate.overtime,
-            isToday: value.attributes.listDate.date === moment().format('yyyy-MM-DD'),
+            isToday: isToday
           };
-    });
-    console.log(temp);
+    });    
     if(selectedUser == null){
       setData([])
     }
@@ -235,11 +236,12 @@ export default function WorkingReport() {
           setIsCheckin={(param) => {            
             setIsCheckin(true);
           }}
+          beforeThanToday={dataAttandance.dataPeriod.isToday}
         />
       );
     } else if (isCheckOut) {
       dom = <CheckOut />;
-    } else if (isViewTask) {
+    } else if (isViewTask) {      
       dom = (
         <ViewTask
           setIsCheckOut={() => {
@@ -247,7 +249,7 @@ export default function WorkingReport() {
             setIsCheckOut(true);
           }}          
           WrIdDetail={WrIdDetail}
-          beforeThanToday={data.isToday}
+          dataAll={data}
         />
       );
     } else if (isViewOvertime) {
@@ -258,7 +260,7 @@ export default function WorkingReport() {
       )
     }
       else {
-        console.log('data cal : ', data);
+        // console.log('data cal : ', data);
         {
           isHr ? (
             selectedUser == null ? (
@@ -461,7 +463,7 @@ export default function WorkingReport() {
                 <Avatar
                   variant="square"
                   className="full-avatar" 
-                  src={userProfile != null ? localStorage.getItem("photoProfile") : ''}                   
+                  src={userProfile != null ? convertBase64(localStorage.getItem("photoProfile")) : ''}                   
                 />
               </Grid>
               <Grid item xs={11}>

@@ -97,8 +97,8 @@ const PopupTask = ({
     getlistTaskProject()
     getlistProject()
     getstatusTask()
-    console.log("DATA",dataProject)
-    console.log("MAU EDIT",dataDetailnya)
+    // console.log("DATA",dataProject)
+    // console.log("MAU EDIT",dataDetailnya)
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
@@ -218,8 +218,8 @@ const PopupTask = ({
       ...prevState,
       listProject: updatedListProject,
     }));
-  }
-};
+    }
+  };
 
   const AddTask = (idxProject) => {        
     if(isEdit){

@@ -5,23 +5,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { Button, Grid, Typography } from '@mui/material';
-import FilterList from '@mui/icons-material/FilterList';
 import { AlertContext } from '../../context';
 
-export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus, setchangeCurrentMonth}) {
+export default function DateRangeCalendar({setStartDateCall, setEndDateCall}) {
   const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
-  const [count, setCount] = React.useState(0);
+  const [endDate, setEndDate] = React.useState(null);  
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
   const { setDataAlert } = useContext(AlertContext);
-
-  useEffect(() => {
-    if(startDate || endDate){
-    console.log("START",startDate)
-    console.log("END",endDate)
-  }
-  // console.log("count",count)
-  },[startDate,endDate,count])
 
   const handleDateChange = (date, isStart) => {
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
@@ -41,49 +31,36 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
         open: true,
       });
     }else{
-      const startMonth = dayjs(startDate).format('MMMM');
-      const endMonth = dayjs(endDate).format('MMMM');
-      const startYear = dayjs(startDate).format('YYYY');
-      const endYear = dayjs(endDate).format('YYYY');
+      // const startMonth = dayjs(startDate).format('MMMM');
+      // const endMonth = dayjs(endDate).format('MMMM');
+      // const startYear = dayjs(startDate).format('YYYY');
+      // const endYear = dayjs(endDate).format('YYYY');
   
-      const formattedRange = startMonth === endMonth && startYear === endYear
-        ? `${startMonth} ${startYear}`
-        : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+      // const formattedRange = startMonth === endMonth && startYear === endYear
+      //   ? `${startMonth} ${startYear}`
+      //   : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
   
-      setSelectedMonthRange(formattedRange);
+      // setSelectedMonthRange(formattedRange);
       
-      if (startDate && endDate) {
-        const daysDifference = dayjs(endDate).diff(startDate, 'day');
-        if (daysDifference >= 28 && daysDifference <= 30) {
-          console.log('Selected range is 30 days');
-        } else {
-          console.log('Selectedlebih');
-        }
-      }
-      const hasil = []
-      const startDatenew = new Date(startDate);
-      const endDatenew = new Date(endDate);
-  
-    while (startDatenew <= endDatenew) {
-      hasil.push(startDatenew.toISOString().split('T')[0]);
-      startDatenew.setDate(startDatenew.getDate() + 1);
-    }
-    setfilterRangeData(hasil)
-    setfilternowStatus(true)
-    setchangeCurrentMonth(true)
-      // if(count >= 1){      
-      //   setfilterRangeData(['2023-08-25'])
-      //   setfilterRangeData(hasil)
-      //   setfilternowStatus(true)
-      //   setfilternowStatus(false)
-      //   setCount(count + 1);
-      // }else{
-      //   setfilterRangeData(['2023-08-24'])
-      //   setCount(count + 1);
-      //   setfilternowStatus(true)
+      // if (startDate && endDate) {
+      //   const daysDifference = dayjs(endDate).diff(startDate, 'day');
+      //   if (daysDifference >= 28 && daysDifference <= 30) {
+      //     console.log('Selected range is 30 days');
+      //   } else {
+      //     console.log('Selectedlebih');
+      //   }
       // }
-      // console.log("INI COUNT",count)
+      // const hasil = []
+      // const startDatenew = new Date(startDate);
+      // const endDatenew = new Date(endDate);
+  
+      // while (startDatenew <= endDatenew) {
+      //   hasil.push(startDatenew.toISOString().split('T')[0]);
+      //   startDatenew.setDate(startDatenew.getDate() + 1);
+      // }
     };
+    setStartDateCall(startDate)
+    setEndDateCall(endDate)
     }    
 
   return (
@@ -110,8 +87,7 @@ export default function DateRangeCalendar({setfilterRangeData,setfilternowStatus
           <Grid item sx={{marginTop:'2%'}}>
             <Button onClick={handleApplyFilter}>Filters</Button>
           </Grid>                  
-        </Grid>
-      {/* </div>       */}
+        </Grid>      
     </LocalizationProvider>
   );
 }

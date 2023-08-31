@@ -12,7 +12,7 @@ import UploaderFile from "../../../Component/UploaderFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
-const Attendance = ({ dataPeriod, setIsCheckin }) => {
+const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday }) => {
   const listLocation = [
     {
       label: "Work From Home",
@@ -84,7 +84,18 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
           res.data.attributes.workingReportId
         );
         console.log("harusnya");
-        setIsCheckin(true);
+        if(beforeThanToday){
+          setDataAlert({
+            severity: "success",
+            open: true,
+            message: res.data.meta.message,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
+        }else{
+          setIsCheckin(true);
+        }
       } else {
         setDataAlert({
           severity: "error",
@@ -116,7 +127,7 @@ const Attendance = ({ dataPeriod, setIsCheckin }) => {
           open: true,
         });
       }
-    }
+    }    
   };
 
   const renderBottom = () => {
