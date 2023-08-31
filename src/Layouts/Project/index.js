@@ -63,7 +63,7 @@ export default function Project() {
   const handleChangeSearch = (event) => {    
     setFilter({
       ...filter,
-      search: event.target.value
+      search: event.target.value.toLowerCase()
     });
   }
 
@@ -110,7 +110,34 @@ export default function Project() {
   const handleDelete = async (id) => {    
     setDataId(id);
     setOpen(true);
-    console.log("Deleted Data ?")
+  };
+
+  const handleUploadSuccess = () => {
+    setOpen(false);
+    getData();
+  };
+
+  const handleDeleteProject = async () => { 
+    const res = await client.requestAPI({
+      method: 'DELETE',
+      endpoint: `/project/delete/${dataId}`
+    })
+
+    if (!res.isError) {
+      setDataAlert({
+        severity: 'success',
+        open: true,
+        message: res.meta.message
+      })
+      handleUploadSuccess();
+    } else {
+      setDataAlert({
+        severity: 'error',
+        message: res.error.detail,
+        open: true
+      })
+      setOpen(false)
+    }
   };
 
   const handleClose = () => {    
@@ -137,7 +164,7 @@ export default function Project() {
         onAdd={() => handleAdd()}
         onDelete={(id) => handleDelete(id)}
       />
-      <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDelete} id={dataId} />
+      <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDeleteProject} id={dataId} />
     </SideBar>
   );
 }
