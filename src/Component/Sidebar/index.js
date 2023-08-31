@@ -76,7 +76,11 @@ export default function SideBar({ children }) {
   // const auth = useAuth();
 
   // const username = auth.user ? auth.user.profile.name : "";
-  const username = ''
+
+  const photoProfile = localStorage.getItem("photoProfile");
+  const username = localStorage.getItem("employeeName");
+  const position = localStorage.getItem("position");
+
   const handleDrawerClose = () => {
     setOpen(!open);
   };
@@ -130,6 +134,7 @@ export default function SideBar({ children }) {
                       <Avatar
                         variant="square"
                         className={open ? "mini-avatar" : "lg-avatar"}
+                        src={photoProfile}
                         onClick={handleDrawerClose}
                       />
                     </Grid>
@@ -143,7 +148,7 @@ export default function SideBar({ children }) {
                           </Grid>
                           <Grid item container xs={12}>
                             <Typography variant="drawerPostion">
-                              UI/UX
+                              {position}
                             </Typography>
                           </Grid>
                         </Grid>

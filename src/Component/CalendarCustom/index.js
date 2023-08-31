@@ -102,8 +102,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   }; 
 
-  const renderCalendar = (info) => {    
-    
+  const renderCalendar = (info) => {        
     const FilterTanggal = () => {
       if(filternowStatus){        
         let tanggalRender = moment(info.date).format("YYYY-MM-DD");
@@ -113,6 +112,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       }
     };
     
+    const currentDate = moment().startOf("day");
+
     const isWeekend = (date) => {
       const dayOfWeek = moment(date).day();
       return dayOfWeek === 0 || dayOfWeek === 6;
@@ -127,23 +128,47 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Grid container spacing={2} sx={{height:'10vh'}}>
             <Grid item xs={12} display="flex" justifyContent="right" >            
               <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
-            </Grid>
-            <Grid item xs={12} display="flex" justifyContent="left" >
+            </Grid>            
+            <Grid item >
                 {info.isToday ? (
                     null
                   ) : (
                     datalibur[0].workingReportId == null ? (
                       <>
-                        {isWeekend(info.date) ? (
-                          <Button variant="outlined-holiday">
-                            holiday
+                        {moment(info.date).isSameOrBefore(currentDate) && data.length > 0 && !data[0].workingReportId ? (
+                          <Button
+                            variant="outlined-attedance"
+                            onClick={() => {
+                              setOnClick(info)}  
+                            }
+                          >
+                            attedance
                           </Button>
+                        ) : null}
+                        {isWeekend(info.date) ? (
+                          <Grid justifyContent="left">
+                              <Button variant="outlined-holiday">
+                                holiday
+                              </Button>
+                          </Grid>                          
                         ) : (
                           data.length > 0 && data[0].overtime ? (
                             null
-                          ) : ( <CustomButton disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
+                          ) : ( data.length > 0 && data[0].workingReportId ? (
+                            <CustomButton variant="outlined-task"  onClick={
+                              () => 
+                              {
+                                setWrIdDetail(data[0].workingReportId)
+                                setIsViewTask(true)
+                              }
+                            }>
                               task
-                            </CustomButton>)
+                            </CustomButton>
+                          ) : (
+                            <CustomButton disabled variant="outlined" >
+                              task
+                            </CustomButton>
+                          ))
                         )}
                       </>
                     ) : null
@@ -151,7 +176,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 </Grid>   
             {data.length > 0 ? 
             <> 
-                <Grid item xs={12} display="flex" justifyContent="left" >
+                {/* <Grid item xs={12} display="flex" justifyContent="left" >
                 {isWeekend(info.date) ? 
                         <Button variant="outlined-holiday" >
                         holiday
@@ -159,11 +184,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         : 
                           null
                         }                  
-                </Grid>     
-                <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "8vh", marginTop: "0.8vh", flexDirection: "column" }}>                
+                </Grid>      */}
+                <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "4vh", marginTop: "0.8vh", flexDirection: "column" }}>                
                 {info.isToday && !data[0].workingReportId ? (
                   <Button                    
-                    variant="outlined-attedance"
+                    variant="outlined-attedance-today"
                     onClick={() => {
                       setOnClick(info)}  
                     }
@@ -233,50 +258,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   >
                     task
                   </Button>
-                ) : (
-                  data.length > 0 && data[0].overtime ? (
-                  <CustomButtonDisabledovertime disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
-                      task
-                  </CustomButtonDisabledovertime>
-                  ) : null
-                )              
-                }
-
-                {info.isToday ? (
-                  <Button                  
-                    variant="outlined-warning"
-                    onClick={
-                      data[0].overtime == true ?() => {
-                        setId(data[0].workingReportId)
-                        setWrIdDetail(data[0].workingReportId);
-                        setIsViewOvertime(true);
-                      }
-                      : () => {
-                        setOpenOvertime(true);
-                        setId(data[0].workingReportId)
-                      }
-                    }
-                  >
-                    {data[0].overtime == true ? "View Overtime" : "Overtime"}
-                  </Button>
-                ) : 
-                (
-                  data[0].overtime === true && (
-                  <Button
-                    // sx={{marginTop: "5vh"}}
-                    variant="outlined-warning"
-                    onClick={
-                      () => {
-                        setId(data[0].workingReportId)
-                        setWrIdDetail(data[0].workingReportId);
-                        setIsViewOvertime(true);
-                      }
-                    }
-                  >
-                    {"View Overtime"}
-                  </Button>
-                  )
-                )}
+                  ) : (
+                    data.length > 0 && data[0].overtime ? (
+                    <CustomButtonDisabledovertime disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
+                        task
+                    </CustomButtonDisabledovertime>
+                    ) : null
+                  )              
+                }                
               </Grid>
             </> : null
           
@@ -285,7 +274,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         );
       }
     } else {
-      return null; // Jika tanggal tidak ada dalam tanggalfilter, jangan render apa pun
+      return null;
     }
     
   };
@@ -299,8 +288,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           </Grid>
       </div>
       }
-      <Grid marginLeft={63} marginTop={4} position='absolute' container alignItems="flex-start" justifyContent="flex-start" >
-            `<Grid item>
+      {/* <Grid marginLeft={63} marginTop={4} position='absolute' container alignItems="flex-start" justifyContent="flex-start" >
+            <Grid item>
               <IconButton>
                 <ArrowLeftIcon />
               </IconButton>
@@ -313,7 +302,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 <ArrowRightIcon />
               </IconButton>
             </Grid>             
-      </Grid>
+      </Grid> */}
       <DateRangeCalendar setchangeCurrentMonth={setchangeCurrentMonth} setfilterRangeData={setfilterRangeData} setfilternowStatus={setfilternowStatus}/> 
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

@@ -4,9 +4,6 @@ import {
   InputAdornment,
   TextField,
   Typography,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React, {useEffect,useContext} from "react";
@@ -36,18 +33,28 @@ const Login = ({ changeStat }) => {
       endpoint: `/auth/login`,
       data: dataReadyLogin,
       isLogin: true
-    })
+    })    
     if (!res.isError) {
       localStorage.setItem('privilage', JSON.stringify(res.listPrivilege))
       localStorage.setItem('token', res.accessToken)
       localStorage.setItem('refreshtoken', res.refreshToken)
       localStorage.setItem('roles', JSON.stringify(res.listRole))
-      localStorage.setItem("userId", res.userId)
+      localStorage.setItem("userId", res.userId)      
+      localStorage.setItem("employeeName", res.employeeName)
+      localStorage.setItem("position", res.position)
       setDataAlert({
         severity: 'success',
         open: true,
         message: res.detail
       })
+      const currentUserId = localStorage.getItem("userId");
+      const resUser = await client.requestAPI({
+        method: "GET",
+        endpoint: `/users/employee/${currentUserId}`,
+      });
+      if (!resUser.isError) {
+        localStorage.setItem("photoProfile", resUser.data.attributes.photoProfile);
+      }
       navigate('/')
     }else{
       setDataAlert({
@@ -55,7 +62,7 @@ const Login = ({ changeStat }) => {
         open: true,
         message: res.error.detail
       })       
-    }        
+    }    
     // auth.signinRedirect();
   };
 
@@ -123,14 +130,14 @@ const Login = ({ changeStat }) => {
           }} 
         />
       </Grid>
-      <Grid item xs={6}>
+      {/* <Grid item xs={6}>
         <FormGroup>
           <FormControlLabel control={<Checkbox />} label="Remember Me" />
         </FormGroup>
       </Grid>
       <Grid item xs={6} textAlign="right" alignSelf="center">
         <Typography style={{ cursor: 'pointer' }} variant='primaryText' onClick={() => changeStat('forgot')}>Forgot Password ?</Typography>
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} paddingTop={2}>
         <Button variant="primaryButton" fullWidth onClick={() => handleLogin()}>
           SIGN IN

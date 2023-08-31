@@ -14,7 +14,7 @@ import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
+export default function ViewTask({ setIsCheckOut, WrIdDetail, beforeThanToday }) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState([]);
@@ -185,13 +185,15 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button
+            {beforeThanToday ? (
+              <Button
               startIcon={<CreateIcon />}
               variant="outlined"
               onClick={() => setOpenTask(true)}
-            >
-              Edit Task
-            </Button>
+              >
+                Edit Task
+              </Button>
+            ) : null}            
           </Grid>
           <Grid item>
             <Button

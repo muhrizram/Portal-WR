@@ -23,6 +23,7 @@ import Box from "@mui/material/Box";
 import { getWorkingReportExcelUrl, getWorkingReportPdfUrl } from "../../global/donwloadConfig";
 import DownloadConfiguration from "../../Component/DownloadConfig";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import LockIcon from '@mui/icons-material/Lock'; 
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -64,9 +65,13 @@ export default function WorkingReport() {
   const [filteredNames, setFilteredNames] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null); 
   const [selectedUserDetail, setSelectedUserDetail] = useState(null)
+  const [userProfile, setUserProfile] = useState();
   const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
+    if(isHr == false) {
+      getData();
+    }
     console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");
     let listRoles = localStorage.getItem("roles");
@@ -77,12 +82,8 @@ export default function WorkingReport() {
       if(role.roleName == 'HRD') {
         setIsHr(true)
       }
-    }
-
-    if(isHr == false) {
-      getData();
-    }
-  }, [filter], WrIdDetail);
+    }    
+  }, [filter]);
 
   const getData = async (id = null) => {
     let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
@@ -108,6 +109,27 @@ export default function WorkingReport() {
         open: true,
       });
     }
+
+    const resUser = await client.requestAPI({
+      method: "GET",
+      endpoint: `/users/employee/${currentUserId}`,
+    });
+    if (!resUser.isError) {            
+      const data = {
+        id: resUser.data.id,
+        name: resUser.data.attributes.fullName,
+        role: resUser.data.attributes.role.join(', '),
+        email: resUser.data.attributes.email,        
+      };
+      setUserProfile(data)
+    } else {
+      setDataAlert({
+        severity: "error",
+        message: res.error.detail,
+        open: true,
+      });
+    }
+
   };
 
   const getDetailData = async (id) => {
@@ -174,6 +196,7 @@ export default function WorkingReport() {
             workingReportId: value.attributes.listDate.workingReportId,
             task: value.attributes.listDate.task,
             overtime: value.attributes.listDate.overtime,
+            isToday: value.attributes.listDate.date === moment().format('yyyy-MM-DD'),
           };
     });
     console.log(temp);
@@ -224,6 +247,7 @@ export default function WorkingReport() {
             setIsCheckOut(true);
           }}          
           WrIdDetail={WrIdDetail}
+          beforeThanToday={data.isToday}
         />
       );
     } else if (isViewOvertime) {
@@ -434,12 +458,26 @@ export default function WorkingReport() {
               </>
               )}
               <Grid item xs={1}>
-                <Avatar variant="square" className="full-avatar" src={selectedUserDetail != null ? selectedUserDetail.photoProfile : ''} />
+                <Avatar
+                  variant="square"
+                  className="full-avatar" 
+                  src={userProfile != null ? localStorage.getItem("photoProfile") : ''}                   
+                />
               </Grid>
               <Grid item xs={11}>
                 <Grid container>
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <Typography variant="body2">Employee Details</Typography>
+                  </Grid>
+                  <Grid item xs={5.25} textAlign="right">
+                      <Button
+                      variant="outlined"
+                      // onClick={}
+                      startIcon={<LockIcon />}
+                      sx={{ paddingY: 1 }}
+                      >
+                        CHANGE PASSWORD
+                      </Button>
                   </Grid>
                   {isHr ? (
                     <>
@@ -466,17 +504,17 @@ export default function WorkingReport() {
                       <Grid item xs={4}>
                         <Typography>Name</Typography>
                         <Typography variant="drawerNameUser">
-                          ikiwprikitiw
+                        {userProfile == null ? "-" : userProfile.name}
                         </Typography>
                       </Grid>
                       <Grid item xs={4}>
                         <Typography>Role</Typography>
-                        <Typography variant="drawerNameUser">Dev Ops</Typography>
+                        <Typography variant="drawerNameUser">{userProfile == null ? "-" : userProfile.role}</Typography>
                       </Grid>
                       <Grid item xs={4}>
                         <Typography>Email</Typography>
                         <Typography variant="drawerNameUser">
-                          ikiwprikitiw@gmail.com
+                        {userProfile == null ? "-" : userProfile.email}
                         </Typography>
                       </Grid>
                     </Grid>

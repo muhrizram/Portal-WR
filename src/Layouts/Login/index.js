@@ -1,6 +1,3 @@
-
-
-
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import rightBackground from '../../assets/frame79.png'
