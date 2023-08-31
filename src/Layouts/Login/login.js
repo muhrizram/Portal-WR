@@ -4,6 +4,9 @@ import {
   InputAdornment,
   TextField,
   Typography,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React, {useEffect,useContext} from "react";
@@ -130,14 +133,14 @@ const Login = ({ changeStat }) => {
           }} 
         />
       </Grid>
-      {/* <Grid item xs={6}>
+      <Grid item xs={6}>
         <FormGroup>
           <FormControlLabel control={<Checkbox />} label="Remember Me" />
         </FormGroup>
       </Grid>
       <Grid item xs={6} textAlign="right" alignSelf="center">
         <Typography style={{ cursor: 'pointer' }} variant='primaryText' onClick={() => changeStat('forgot')}>Forgot Password ?</Typography>
-      </Grid> */}
+      </Grid>
       <Grid item xs={12} paddingTop={2}>
         <Button variant="primaryButton" fullWidth onClick={() => handleLogin()}>
           SIGN IN

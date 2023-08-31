@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import SideBar from "../../../Component/Sidebar";
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -75,9 +75,6 @@ const DetailProject = () => {
   ]);
   
  
-
-  // console.log('edit state luar: ', editData);
-  // console.log('data member luar : ', dataMember);
   useEffect(() => {
     setColumns([
     {
