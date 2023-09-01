@@ -76,31 +76,32 @@ const DataTable = ({
 
   useEffect(() => {
     const temp = [...columns];   
-    if(!onEmployee) {
-      temp.push({
-        field: "actions",
-        headerName: "Action",
-        width: 200,
-        renderCell: (data) => {
-          return (
-            <div>
-              {onEdit ? (
-                <IconButton onClick={() => onEdit(data.id)}>
-                  <EditOutlined />
-                </IconButton>
-              ) : (
-                <IconButton onClick={() => onDetail(data.id)}>
-                  <PreviewIcon />
-                </IconButton>                 
-              )} 
+    temp.push({
+      field: "actions",
+      headerName: "Action",
+      width: 200,
+      sortable: false,
+      renderCell: (data) => {
+        return (
+          <div>
+            {onEdit ? (
+              <IconButton onClick={() => onEdit(data.id)}>
+                <EditOutlined />
+              </IconButton>
+            ) : (
+              <IconButton onClick={() => onDetail(data.id)}>
+                <PreviewIcon />
+              </IconButton>                 
+            )} 
+            {onDelete && 
               <IconButton onClick={() => onDelete(data.id)}>
                 <DeleteIcon />
-              </IconButton>  
-            </div>
-          );
-        },
-      }); 
-    }
+              </IconButton>
+            }
+          </div>
+        );
+      },
+    }); 
     setDataColumns(temp);
   }, [columns]);
 
@@ -209,7 +210,7 @@ const DataTable = ({
             rows={data}
             columns={dataColumns}
             disableRowSelectionOnClick
-            pageSizeOptions={[10, 20, 50]}
+            pageSizeOptions={[10, 25, 50, 100]}
             paginationMode='server'
             paginationModel={{ ...pagination }}
             onPaginationModelChange={(model) => changePagination(model)}
