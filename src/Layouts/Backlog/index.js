@@ -17,7 +17,8 @@ const Backlog = () => {
     {
       field: 'no',
       headerName: 'No',
-      flex: 0.3
+      flex: 0.3,
+      sortable: false
     },
     {
       field: 'projectName',

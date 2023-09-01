@@ -97,8 +97,8 @@ const PopupTask = ({
     getlistTaskProject()
     getlistProject()
     getstatusTask()
-    console.log("DATA",dataProject)
-    console.log("MAU EDIT",dataDetailnya)
+    // console.log("DATA",dataProject)
+    // console.log("MAU EDIT",dataDetailnya)
   },[dataProject,dataDetailnya,dataDetail])
 
   const getstatusTask = async () => {
@@ -218,8 +218,8 @@ const PopupTask = ({
       ...prevState,
       listProject: updatedListProject,
     }));
-  }
-};
+    }
+  };
 
   const AddTask = (idxProject) => {        
     if(isEdit){
@@ -235,8 +235,11 @@ const PopupTask = ({
 
   const handleChange = (event, idxProject, index, backlogId) => {
     if(isEdit){      
-      const { name, value } = event.target;      
       const updatedFirstEditTask = { ...firstEditTask };
+      if (name === 'taskName') {
+        updatedFirstEditTask.listProject[idxProject].listTask[index].backlogId = backlogId;
+      }  
+      const { name, value } = event.target;            
       updatedFirstEditTask.listProject[idxProject].listTask[index][name] = value;
       setfirstEditTask(updatedFirstEditTask);      
     }else{

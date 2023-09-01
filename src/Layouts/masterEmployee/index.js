@@ -15,6 +15,7 @@ import SideBar from "../../Component/Sidebar";
 import { AlertContext } from "../../context";
 import { useNavigate } from "react-router-dom";
 import { ChipComponent } from "../../Component/Chip";
+import { convertBase64 } from "../../global/convertBase64";
 
 const Employee = () => {
   const [open, setOpen] = useState(false);
@@ -51,7 +52,7 @@ const Employee = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.image
-          ? `${process.env.REACT_APP_BASE_API}/${params.row.image}`
+          ? convertBase64(params.row.image)
           : "";
         const [isNew, setIsNew] = useState(false);
         const newData = synchroniseData.some((data) => {

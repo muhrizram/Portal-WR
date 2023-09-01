@@ -13,36 +13,30 @@ import {
   Typography,
   Avatar,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Autocomplete,
   TextField,
   IconButton,
 } from "@mui/material";
 import "../../../App.css";
-import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInputText from "../../../Component/FormInputText";
 import schemacompany from "../shema";
 import client from "../../../global/client";
-import uploadFile from "../../../global/uploadFile";
-import CustomAlert from "../../../Component/Alert";
 import TableNative from "../../../Component/DataTable/Native";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AlertContext } from '../../../context';
-import DeleteIcon from '@mui/icons-material/Delete';
+import dayjs from "dayjs";
+import { DeleteOutlineOutlined } from "@mui/icons-material";
+import { AlertContext } from "../../../context";
+import { useNavigate } from "react-router-dom";
 
 const DetailProject = () => {
   
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [sendData, setData] = useState({});  
   const [isSave, setIsSave] = useState(false);
   const [dataUser, setDataUser] = useState([])
   const [roles, setOptRoles] = useState([])
@@ -50,54 +44,39 @@ const DetailProject = () => {
   const [company, setOptCompany] = useState([])
   const [projectTypes, setOptProjectType] = useState([])
   const [selectedMember, setSelectedMember] = useState([])
-  const [dataProject, setDataProject] = useState([]);
-  const [startProject, setStartProject] = useState()
-  const [endProject, setEndProject] = useState()
-  const [startJoin, setStartJoin] = useState()
-  const [endJoin, setEndJoin] = useState()
-  const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [editData, setEditData] = useState({});
+  const [columnsProject, setColumns] = useState([])
+
+  const currentUserId = parseInt(localStorage.getItem("userId"))
 
   useEffect(() => {
     if (isEdit) {
       setEditData(dataDetail);
-    }    
+    }
+   
   }, [dataDetail, isEdit]);
 
   const [dataMember, setdataMember] = useState([
     {
       id: '',
+      userId: '',
       no: null,
       nip: "",
       name: "",
+      firstName: "",
+      lastName: "",
       joinDate: "",
       endDate: "",
       roleId: "",
+      role: ""
     },
   ]);
-
   
-  const setDate = (dateString) => {
-    let Ubah = String(dateString)
-    const [month, day, year] = Ubah.split("-");
-    const currentDate = new Date();
-    currentDate.setDate(parseInt(day));
-    currentDate.setMonth(parseInt(month) - 1);
-    currentDate.setFullYear(parseInt(year));
-    return currentDate;
-  }
-
-  const deleteMember = async (e, index) => {
-    e.preventDefault()
-    const temp = {...editData}
-    temp.teamMember.splice(index, 1)
-    setEditData(temp)
-  }
-
-
-  const columnsProject = [
+ 
+  useEffect(() => {
+    setColumns([
     {
       field: "no",
       headerName: "No",
@@ -106,12 +85,12 @@ const DetailProject = () => {
     {
       field: "nip",
       headerName: "NIP",
-      flex: 0.7,
-    },   
+      flex: 0.9,
+    },
     {
       field: "name",
       headerName: "Name",
-      flex: 1.3,
+      flex: 1.5,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -123,186 +102,166 @@ const DetailProject = () => {
               className="img-master-employee"
               alt="Profile Image"
             />
-            <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
-            </div>
+            <Grid container>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
+                <span className="text-name">{params.row.name}</span>
+              </Grid>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
+                <span className="text-name">{params.row.assignment}</span>
+              </Grid>
+            </Grid>
           </div>
         );
       },
     },
-    !isEdit && {
-      field: "joinandEndDate",
-      headerName: "Join-End Date",
-      flex: 3,
-    },
-    isEdit && {
-      field: "joinDate",
-      headerName: "Join-End Date",
-      flex: 3,
-      renderCell: (params) => {
-        return (
-          <Grid container columnSpacing={1} margin={2.5}>
-            <Grid item xs={5.5}>
-              {isEdit ? (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      defaultValue={setDate(dataDetail.teamMember.joinDate) || null}
-                      onChange={(startJoinProject) => {
-                        setStartJoin(startJoinProject.format("YYYY-MM-DD"));
-
-                        setEditData({
-                          ...editData,
-                          teamMember: editData.teamMember.map((member) =>
-                            member.id === selectedMember.id
-                              ? { ...member, joinDate: startJoinProject.format("YYYY-MM-DD") }
-                              : member
-                          )
-                        });
-
-                      }}
-                      sx={{ width: "100%", paddingRight: "20px" }}
-                    />
-                </LocalizationProvider>
-              ) : (
+    ...(isEdit
+      ? [
+          {
+            field: "joinDate",
+            headerName: "Join-End Date",
+            flex: 3,
+            renderCell: (params) => {
+              return (
                 <Grid container>
-                  {/* {dataMember.map((member, index) => (
-                    <Grid item xs={12} key={index}>
-                      <Typography variant="inputDetail">
-                        {member.joinDate}
-                      </Typography>
-                    </Grid>
-                  ))} */}
-                </Grid>
-              )}
-            </Grid>
-            <Grid item xs={1}>
-              <span>-</span>
-            </Grid>
-            <Grid item xs={5.5}>
-              {isEdit ? (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      defaultValue={setDate(dataDetail.teamMember.endDate) || null}
-                      onChange={(endJoinProject) => {
-                        setEndProject(endJoinProject.format("YYYY-MM-DD"));
-
-                        setEditData({
-                          ...editData,
-                          teamMember: editData.teamMember.map((member) =>
-                            member.id === selectedMember.id
-                              ? { ...member, endDate: endJoinProject.format("YYYY-MM-DD") }
-                              : member
-                          )
-                        });
-
-                      }}
-                      sx={{ width: "100%", paddingRight: "20px" }}
-                    />
-                </LocalizationProvider>
-              ) : (
-                <Grid container>
-                  {/* {dataMember.map((member, index) => (
-                    <Grid item xs={12} key={index}>
-                      <Typography variant="inputDetail">
-                        {member.endDate}
-                      </Typography>
-                    </Grid>
-                  ))} */}
-                </Grid>
-              )}
-            </Grid>
-          </Grid>
-        )
-      }
-    },
-    !isEdit && {
-      field: "role",
-      headerName: "Role",
-      flex: 1,
-    },
-    isEdit &&{
-      field: "role",
-      headerName: "Role",
-      flex: 1,
-      renderCell: (params) => {
-        return(
-          <Grid>
-            {isEdit ? (
-            <Autocomplete
-              disablePortal
-              name="roleProjectId"
-              options={roles}
-              defaultValue={roles.find((option) => parseInt(option.id) === dataDetail.teamMember.roleId) || null}
-              // defaultValue={70}
-              getOptionLabel={(option) => option.role}
-              onChange={(_event, newValue) => {
-                if(newValue){
-                  setEditData({
-                    ...editData,
-                    teamMember: editData.teamMember.map((member) =>
-                      member.id === selectedMember.id
-                        ? { ...member, roleId: newValue.id }
-                        : member
-                    )
-                  });
-                  // handleEditChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
-                }
-              }}
-              sx={{ width: "100%" }}
-              renderInput={(params) => (
-                <TextField
-                // defaultValue='tes'
-                  focused
-                  {...params}
-                  placeholder="Search Role" 
-                  className='input-field-crud'
-                />
-              )}
-            />
-            ) : (
-              <>
-              {/* {dataMember.map((member, index) => {                
-                const matchedRole = roles.find(role => parseInt(role.id) === member.roleId);                
-                return (
-                  <Grid item xs={12} key={index}>
-                    <Typography variant="inputDetail">
-                      {matchedRole ? matchedRole.role : ''}
-                    </Typography>
+                  <Grid item xs={5.5}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        className="date-input-table"
+                        defaultValue={dayjs(params.row.joinDate)}
+                        onChange={(startJoinProject) => {
+                          const newStartDate = startJoinProject.format("YYYY-MM-DD");
+                          const updatedListUser = editData.teamMember.map(u => {
+                            if (u.userId == params.row.id) {
+                              return { ...u, joinDate: newStartDate };
+                            }
+                            return u;
+                          });
+  
+                          setEditData({
+                            ...editData,
+                            teamMember: updatedListUser
+                          });
+  
+                        }}
+                        sx={{ paddingRight: "2px" }}
+                      />
+                    </LocalizationProvider>
                   </Grid>
-                );
-              })} */}
-              </>
-            )}
-          </Grid>
-        )
-      }
-      },
-      {
-        field: "action",
-        headerName: "Action",
-        flex: 1,
-        renderCell: (params) => {
-          return(
-            <>
-            {isEdit ? (
-            <IconButton
-              onClick={(e) => deleteMember(e)}
-            >
-              <DeleteIcon 
-                className='icon-trash'
-              />
-            </IconButton>
-            ) : (<></>)}
-            </>
-          )
-        }
-      },
-  ];
-
-  if (!isEdit) {
-    // Remove the "Action" column if isEdit is false
-    columnsProject.splice(columnsProject.findIndex(column => column.field === 'action'), 1);
-  }
+                  <Grid item xs={0.5}>
+                    {' -'}
+                  </Grid>
+                  <Grid item xs={5.5}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        className="date-input-table"
+                        defaultValue={dayjs(params.row.endDate)}
+                        onChange={(endJoinProject) => {
+                          const newEndDate = endJoinProject.format("YYYY-MM-DD");
+                          const updatedListUser = editData.teamMember.map(u => {
+                            if (u.userId == params.row.id) {
+                              return { ...u, endDate: newEndDate };
+                            }
+                            return u;
+                          });
+  
+                          setEditData({
+                            ...editData,
+                            teamMember: updatedListUser
+                          });
+  
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                </Grid>
+              )
+            },
+          },
+          {
+            field: "role",
+            headerName: "Role",
+            flex: 1.5,
+            renderCell: (params) => {
+              // console.log('params: ', params)
+              return (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    freeSolo
+                    name="roleProjectId"
+                    options={roles}
+                    defaultValue={params.row.dataSelect}
+                    getOptionLabel={(option) => option.role}
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const updatedListUser = editData.teamMember.map(u => {
+                          if (u.userId == params.row.id) {
+                            return { ...u, roleId: parseInt(newValue.id) };
+                          }
+                          return u;
+                        });
+          
+                        setEditData(prevData => ({
+                          ...prevData,
+                          teamMember: updatedListUser
+                        }));
+                    }}}
+                    renderInput={(paramsInput) => (
+                      <TextField
+                        {...paramsInput}
+                        name="roleProjectId"
+                        label="Select Role"
+                        inputProps={{
+                          ...paramsInput.inputProps,
+                          style: {
+                            height: '8px',
+                          },
+                        }}
+                        InputLabelProps={{
+                          ...paramsInput.InputLabelProps,
+                          style: {
+                            marginTop: '-8px',
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              );
+              
+            },
+          },
+          {
+            field: "action",
+            headerName: "Action",
+            flex: 0.7,
+            renderCell: (params) => {
+              return (
+                <IconButton
+                  onClick={(e) => deleteMember(params.row.id)}
+                  color="default"
+                >
+                  <DeleteOutlineOutlined />
+                </IconButton>
+              )
+            }
+          },
+        ]
+      : [
+          {
+            field: "joinandEndDate",
+            headerName: "Join-End Date",
+            flex: 2,
+          },
+          {
+            field: "role",
+            headerName: "Role",
+            flex: 1.5,
+          },
+        ]
+      ),
+      ]
+    )
+  }, [isEdit, editData])
 
 
   const dataBread = [
@@ -331,52 +290,97 @@ const DetailProject = () => {
     getDetailProject()    
   }, [])
 
+  const navigate = useNavigate();
+  const { setDataAlert } = useContext(AlertContext);
+
+  const deleteMember = async (userId) => {
+    let updatedSelected;
+    setdataMember((prevSelected) => {
+      updatedSelected = prevSelected.filter(
+        (existingMember) => existingMember.id !== userId
+        );
+        return updatedSelected;
+      });
+      
+    const updatedListUser = editData.teamMember.filter(
+      (user) => user.userId != userId
+    );
+
+    const updatedDataUser = dataUser.filter(
+      (user) => user.id !== userId
+    );
+
+
+    const updatedValueUser = updatedSelected.map((member) => ({
+      id: member.id,
+      firstName: member.firstName,
+      lastName: member.lastName
+    }));
+    setValueUser(updatedValueUser);
+
+    setDataDetail((prevData) => ({
+      ...prevData,
+      teamMember: updatedListUser,
+    }));
+
+    setDataUser(updatedDataUser);
+  }
 
   const handleInvite = () => {
-    const newMembers = [];
-    for (const newUser of valueUser) {
-      const customAddUser = {        
-          id: parseInt(newUser.id),
-          userId: parseInt(newUser.id),
-          positionId: newUser.positionId,
-          roleProjectId: newUser.roleId,
-          nip: newUser.nip,
-          name : newUser.firstName + ' ' +  newUser.lastName,
-          photoProfile: newUser.photoProfile,
-          position: newUser.position,
-          joinDate: newUser.startJoin,
-          endDate: newUser.endDate,
-          assignment: newUser.assignment,
-          active: newUser.active      
-      }
-      console.log("member", customAddUser)
-      let exists = false;      
-      for (const existingMember of selectedMember) {
-        if (customAddUser.id === existingMember.id) {
-          exists = true;
-        }
-      }
-      if (!exists) {
-        newMembers.push(customAddUser)
-        editData.teamMember.push(customAddUser);
-        console.log("NEW", editData.teamMember)
-      }
-    }        
-    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
-    setValueUser([])    
+    const newMembers = valueUser
+      .filter(newUser => !dataMember.some(existingMember => newUser.id == existingMember.id))
+      .map(newUser => ({
+        id: parseInt(newUser.id),
+        userId: parseInt(newUser.id),
+        name: `${newUser.firstName} ${newUser.lastName}`,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        roleProjectId: newUser.roleProjectId,
+        roleId: parseInt(newUser.roleSelect.id),
+        nip: newUser.nip,
+        assignment: newUser.position,
+        joinDate: newUser.startJoin,
+        endDate: newUser.endDate,
+        dataSelect: newUser.roleSelect
+      }))
+      .filter(newMember => !dataMember.some(existingMember => newMember.id == existingMember.id));
+  
+    setSelectedMember(prevSelected => [...prevSelected, ...newMembers]);
+  
+    const updatedListUser = editData.teamMember
+      .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
+      .concat(newMembers.map((member, index) => ({
+        no: editData.teamMember.length + index + 1,
+        id: member.id,
+        name: member.name,
+        userId: parseInt(member.userId),
+        roleId: parseInt(member.roleId),
+        joinDate: member.joinDate,
+        endDate: member.endDate,
+      })));
+  
+    setEditData(prevData => ({
+      ...prevData,
+      teamMember: updatedListUser
+    }));
   }
+
   const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
     ...row,
     no: dataMember.length + index +1,
   }))]
+
   const DetailMemberData = [...dataMember.map((row, index) => ({
-    // ...row,
     id : row.id,
     name: row.name,
     nip: row.nip,
     no: index +1,
-    role: row.assignment,
-    joinandEndDate: row.joinDate + '   -   ' + row.endDate,
+    role: row.role,
+    dataSelect: {
+      id: parseInt(row.roleId),
+      role: row.role
+    },
+    joinandEndDate: (dayjs(row.joinDate).format('YYYY-MM-DD')) + '   -   ' + (dayjs(row.endDate).format('YYYY-MM-DD')),
   }))]
 
   const getOptDataUser = async () => {
@@ -437,7 +441,6 @@ const DetailProject = () => {
   const confirmSave = async (data) => {
     setIsSave(true);
     setOpen(true);
-    setData(editData);
     setEditData(editData)
   };
 
@@ -456,34 +459,36 @@ const DetailProject = () => {
 
   const handleClose = () => {
     if (!isSave) {
+      setColumns([])
       setIsEdit(false);
     }
     setOpen(false);
   };
+
   const onSave = async () => {
-    // setData(data)
     const data = {
       companyId: editData.companyId,
+      projectName: editData.projectName,
       picProjectName: editData.picProjectName,
       picProjectPhone: editData.picProjectPhone,
       projectDescription : editData.projectDescription,
-      startDate : editData.startDateProject,
-      endDate : editData.endDateProject,
+      startDate : dayjs(editData.startDateProject).format('YYYY-MM-DD'),
+      endDate : dayjs(editData.endDateProject).format('YYYY-MM-DD'),
       projectType : editData.projectTypeId,
-      lastModifiedBy: parseInt(localStorage.getItem("userId")),
+      lastModifiedBy: currentUserId,
       initialProject : editData.initialProject,
-      projectName: editData.projectName,
       
       listUser: editData.teamMember.map(member => {
         return {
           userId: member.userId,
-          roleProjectId: member.roleId,
-          joinDate: member.joinDate,
-          endDate: member.endDate
+          roleProjectId: parseInt(member.roleId),
+          joinDate: dayjs(member.joinDate).format('YYYY-MM-DD'),
+          endDate: dayjs(member.endDate).format('YYYY-MM-DD')
         };
       })
     }
-    console.log("DATA UPDATE", data)
+
+    // console.log('data on save : ', data);
     
     const id = localStorage.getItem('projectId')  
     const res = await client.requestAPI({
@@ -491,7 +496,7 @@ const DetailProject = () => {
       endpoint: `/project/update-project/projectId=${id}`,
       data : data
     })
-    console.log("res update", res)
+    // console.log("res update", res)
     if (!res.isError) {
       setDataAlert({
         severity: 'success',
@@ -517,13 +522,12 @@ const DetailProject = () => {
     if(name === 'companyName'){
       temp.companyId = newValue
     } else if(name === 'projectType'){
-      temp.projectType = newValue
+      temp.projectTypeId = newValue
     } else if(name === 'memberInvite'){
-      temp.listUser.userId = newValue
+      temp.teamMember.userId = newValue
     } else if(name === 'roleProjectId'){
       temp.teamMember.roleId = newValue
     }
-
     setEditData(temp)
   }
 
@@ -533,18 +537,25 @@ const DetailProject = () => {
       method: 'GET',
       endpoint: `/project/detail-project/projectId=${id}?size=5&page=0&sort=name,asc`
     })
-    console.log("res detail", res)
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
-      id: member.userId,
+      id: member.userId.toString(),
+      userId: parseInt(member.userId),
       no: index + 1,
       nip: member.nip,
       name: member.fullName,
+      firstName: member.fullName.split(' ')[0],
+      lastName: member.fullName.split(' ')[1],
+      role: member.role,
       joinDate: member.joinDate,
       endDate: member.endDate,
-      roleId: member.roleId,
+      roleId: parseInt(member.roleId),
+      dataSelect: {
+        id: parseInt(member.roleId),
+        role: member.role
+      },
       assignment: member.position,
     }));
-    
+    setValueUser(formattedData)
     setdataMember(formattedData);
     if (res) {
       setDataDetail(res.data.attributes)
@@ -569,6 +580,20 @@ const DetailProject = () => {
     setEditData(updatedEditData);
 
   };
+
+  const onChangeRole = (value) => {
+    let temp = []
+    if (valueUser.length > 0) {
+      temp = valueUser.map((res) => {
+        return {
+          ...res,
+          roleId: value.id,
+          roleSelect: value
+        }
+      })
+    }
+    setValueUser(temp)
+  }
 
   return (
     <SideBar>
@@ -721,9 +746,8 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="Start Date Project"
-                            defaultValue={setDate(dataDetail.startDateProject) || null}
+                            defaultValue={dayjs(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
-                              setStartProject(startProjectData.format("YYYY-MM-DD"));
                               setEditData({
                                 ...editData,
                                 startDateProject: startProjectData.format("YYYY-MM-DD")
@@ -742,7 +766,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dataDetail.startDateProject}
+                            {dayjs(dataDetail.startDateProject).format('YYYY-MM-DD')}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -754,9 +778,8 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="End Date Project"
-                            defaultValue={setDate(dataDetail.endDateProject) || null}
+                            defaultValue={dayjs(dataDetail.endDateProject) || null}
                             onChange={(endProjectDate) => {
-                              setEndProject(endProjectDate.format("YYYY-MM-DD"));
                               setEditData({
                                 ...editData,
                                 endDateProject: endProjectDate.format("YYYY-MM-DD")
@@ -775,7 +798,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dataDetail.endDateProject}
+                            {dayjs(dataDetail.endDateProject).format('YYYY-MM-DD')}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -870,7 +893,7 @@ const DetailProject = () => {
                 </Grid>
                 {isEdit && (
                   <Grid item container xs={12} justifyContent="end" mt={3.5}>
-                    <Grid item xs textAlign="right">
+                    <Grid item textAlign="right">
                       <Button
                         style={{ marginRight: "16px" }}
                         variant="cancelButton"
@@ -894,84 +917,83 @@ const DetailProject = () => {
             <Grid item xs={12} mb={3}>
               <Typography variant="inputDetail">Teams Member</Typography>
             </Grid>
-            {isEdit ? (<>
+            {isEdit && (
               <Grid item xs={12} mb={2}>
-                    {/* {sendData.listUser.map((res, index) => ( */}
-                    <div className='card-project' >
-                      <Grid container rowSpacing={2} columnSpacing={1.25}>
-                        <Grid item xs={12}>
-                          <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
-                        </Grid>
-                        <Grid item xs={7}>
-                          <Autocomplete
-                            multiple
-                            name="userId"
-                            value={valueUser}
-                            limitTags={2}
-                            onChange={(_event, newValue) => {
-                              setValueUser([...newValue])
-                              if(newValue){
-                                handleChange({target : { name : 'userId', value: newValue.userId }},newValue.firstName)
-                              }
-                            }}
-                            options={dataUser}
-                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-                            className='auto-custom'
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            renderInput={(params) => (
-                              <TextField 
-                                {...params}
-                                focused
-                                label="Invite by name" 
-                                placeholder="Search name"
-                                className='input-field-crud bg-white auto-chips'
-                              />
-                            )}
-                          >
-                          </Autocomplete>
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Autocomplete
-                            disablePortal
-                            name="roleProjectId"
-                            options={roles}
-                            getOptionLabel={(option) => option.role}
-                            onChange={(_event, newValue) => {
-                              if(newValue){
-                                handleChange({target : { name : 'roleProjectId', value: newValue.id }},newValue.id)
-                              }
-                            }}
-                            sx={{ width: "100%" }}
-                            renderInput={(params) => (
-                              <TextField
-                                focused
-                                {...params} 
-                                label="Select Role"
-                                placeholder="Search Role" 
-                                className='blue-outline input-field-crud'
-                              />
-                            )}
+                <div className='card-project' >
+                  <Grid container rowSpacing={2} columnSpacing={1.25}>
+                    <Grid item xs={12}>
+                      <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
+                    </Grid>
+                    <Grid item xs={7}>
+                      <Autocomplete
+                        multiple
+                        name="userId"
+                        value={valueUser}
+                        limitTags={2}
+                        onChange={(_event, newValue) => {
+                          setValueUser([...newValue])
+                          if(newValue){
+                            handleChange({target : { name : 'userId', value: newValue.userId }},newValue.firstName)
+                          }
+                        }}
+                        options={dataUser}
+                        getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                        className='auto-custom'
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        renderInput={(params) => (
+                          <TextField 
+                            {...params}
+                            focused
+                            label="Invite by name" 
+                            placeholder="Search name"
+                            className='input-field-crud bg-white auto-chips'
                           />
-                        </Grid>
-                        <Grid item xs={2.5}>
-                          <Button 
-                            fullWidth
-                            style={{ minHeight: '72px'}}
-                            variant="saveButton"
-                            onClick={handleInvite}
-                          >
-                            INVITE
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </div>
-                    {/* ))} */}
+                        )}
+                      >
+                      </Autocomplete>
+                    </Grid>
+                    <Grid item xs={2.5}>
+                      <Autocomplete
+                        disablePortal
+                        name="roleProjectId"
+                        options={roles}
+                        getOptionLabel={(option) => option.role}
+                        onChange={(_event, newValue) => {
+                          if(newValue){
+                            onChangeRole(newValue)
+                          }
+                        }}
+                        sx={{ width: "100%" }}
+                        renderInput={(params) => (
+                          <TextField
+                            focused
+                            {...params} 
+                            label="Select Role"
+                            placeholder="Search Role" 
+                            className='blue-outline input-field-crud'
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={2.5}>
+                      <Button 
+                        fullWidth
+                        style={{ minHeight: '72px'}}
+                        variant="saveButton"
+                        onClick={handleInvite}
+                      >
+                        INVITE
+                      </Button>
+                    </Grid>
                   </Grid>
-                  </>) : (<></>)}
+                </div>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TableNative
                 data={isEdit ? updateData : DetailMemberData}
                 columns={columnsProject}
+                getRowId={(params) => { return params.id }}
               />
             </Grid>
           </div>

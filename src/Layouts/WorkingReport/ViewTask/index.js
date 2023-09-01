@@ -14,14 +14,27 @@ import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
+export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState([]);
+  const [beforeThanToday, setBeforeThanToday] = useState(false);
   
-  useEffect(() => (    
-    getDetailTask()
+  useEffect(() => (
+    getDetailTask(),
+    checkForMatch()
   ),[])
+
+  const checkForMatch = () => {
+    for (const item of dataAll) {
+      if (item.workingReportId === WrIdDetail) {      
+        setBeforeThanToday(item.isToday);        
+        break;
+      }else{
+        setBeforeThanToday(false)        
+      }
+    }
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -185,13 +198,15 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail }) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            <Button
+            {beforeThanToday ? (
+              <Button
               startIcon={<CreateIcon />}
               variant="outlined"
               onClick={() => setOpenTask(true)}
-            >
-              Edit Task
-            </Button>
+              >
+                Edit Task
+              </Button>
+            ) : null}            
           </Grid>
           <Grid item>
             <Button

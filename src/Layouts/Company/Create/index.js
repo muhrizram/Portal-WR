@@ -68,32 +68,36 @@ const CreateCompany = () => {
     setOpen(false)
   }
   const onSave = async () => {
-    const data = {
-      ...sendData,
-      companyProfile: filePath
-    }
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: '/company/addCompany',
-      data
-    })
-    if (!res.isError) {
-      setDataAlert({
-        severity: 'success',
-        open: true,
-        message: res.data.meta.message
+    if(!isSave){
+      setOpen(false)
+    } else{
+      const data = {
+        ...sendData,
+        companyProfile: filePath
+      }
+      const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: '/company/addCompany',
+        data
       })
-      setTimeout(() => {
-        navigate('/master-company')
-      }, 3000)
-    } else {
-      setDataAlert({
-        severity: 'error',
-        message: res.error.detail,
-        open: true
-      })
+      if (!res.isError) {
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        })
+        setTimeout(() => {
+          navigate('/master-company')
+        }, 3000)
+      } else {
+        setDataAlert({
+          severity: 'error',
+          message: res.error.detail,
+          open: true
+        })
+      }
+      setOpen(false)
     }
-    setOpen(false)
   }
 
   const handleChange = async (e) => {

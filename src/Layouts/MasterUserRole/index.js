@@ -10,23 +10,24 @@ import DeleteDialog from "../../Component/DialogDelete";
 
 const RoleUser = () => {
   const [open, setOpen] = useState(false);
-  const { setDataAlert } = useContext(AlertContext)
   const [dataIduser, setDataIduser] = useState();
-  const navigate = useNavigate();
+  const [totalData, setTotalData] = useState()
   const [data, setData] = useState([]);
+  const { setDataAlert } = useContext(AlertContext)
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'name',
-    sortType: 'desc',
+    sortName: 'role',
+    sortType: 'asc',
     search: ''
   })
   const onFilter = (dataFilter) => {    
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
-      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'desc',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'role',
+      sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
       search: filter.search
     })
   }
@@ -41,6 +42,7 @@ const RoleUser = () => {
       method: 'GET',
       endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
+    console.log(res)
     if(!res.isError){      
       rebuildData(res)          
     }else {      
@@ -68,7 +70,8 @@ const RoleUser = () => {
         ]),      
       }
     })    
-    setData([...temp])    
+    setData([...temp])
+    setTotalData(resData.meta.page.totalElements)
   }
   
 
@@ -118,10 +121,11 @@ const RoleUser = () => {
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.3,
+      sortable: false
     },
     {
-      field: "user",
+      field: "name",
       headerName: "User",
       width: 200,
       flex: 1,
@@ -134,11 +138,11 @@ const RoleUser = () => {
     {
       field: "nip",
       headerName: "NIP",
-      flex: 1,
+      flex: 0.7,
     },   
     
     {
-      field: "listRole",
+      field: "role",
       headerName: "Role",
       flex: 1,
       renderCell: (data) => (
@@ -206,10 +210,12 @@ const RoleUser = () => {
           handleChangeSearch={handleChangeSearch}
           onDetail={(userId) => handleDetail(userId)}
           onDelete={(userId) => handleDelete(userId)}
-          onFilter={(dataFilter => onFilter(dataFilter))}          
+          onFilter={(dataFilter => onFilter(dataFilter))}
+          totalData={totalData}
+          getRowHeight={() => 'auto'}
         />
 
-        <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDelete} id={dataIduser} />       
+        <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={deleteData} id={dataIduser} />       
       </SideBar>
     </div>
   );

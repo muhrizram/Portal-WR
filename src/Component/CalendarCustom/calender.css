@@ -1,0 +1,15 @@
+.selected-date-range {
+    background-color: #E6F2FB;
+}
+
+.date-weekend {
+    background-color: #FDECEB;
+}
+
+.weekend-event {
+    background-color: red;
+}
+
+.weekend-day-header {
+    background-color: pink;
+}
