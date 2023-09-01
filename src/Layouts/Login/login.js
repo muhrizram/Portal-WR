@@ -58,7 +58,7 @@ const Login = ({ changeStat }) => {
       if (!resUser.isError) {
         localStorage.setItem("photoProfile", resUser.data.attributes.photoProfile);
       }
-      navigate('/')
+      navigate('/workingReport')
     }else{
       setDataAlert({
         severity: 'error',
