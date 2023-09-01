@@ -14,7 +14,7 @@ import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { AlertContext } from "../../context";
 import { useNavigate } from "react-router-dom";
-import { ChipComponent } from "../../Component/Chip";
+// import { ChipComponent } from "../../Component/Chip";
 import { convertBase64 } from "../../global/convertBase64";
 
 const Employee = () => {
@@ -54,18 +54,18 @@ const Employee = () => {
         const urlMinio = params.row.image
           ? convertBase64(params.row.image)
           : "";
-        const [isNew, setIsNew] = useState(false);
-        const newData = synchroniseData.some((data) => {
-          if (
-            params.row.id === data.id &&
-            data.attributes.status === "Syncronize Added"
-          )
-            setIsNew(true);
-        });
+        // const [isNew, setIsNew] = useState(false);
+        // const newData = synchroniseData.some((data) => {
+        //   if (
+        //     params.row.id === data.id &&
+        //     data.attributes.status === "Syncronize Added"
+        //   )
+        //     setIsNew(true);
+        // });
 
-        setTimeout(() => {
-          setIsNew(false)
-        }, 5000);
+        // setTimeout(() => {
+        //   setIsNew(false)
+        // }, 5000);
         return (
           <div
             style={{
@@ -87,11 +87,11 @@ const Employee = () => {
                 <span className="text-position">{params.row.position}</span>
               </div>
             </div>
-            {isNew && 
+            {/* {isNew && 
               <div style={{ position: "absolute", right:0 }}>
                 <ChipComponent label="New" sx={{ fontWeight: 500 }} />
               </div>
-            }
+            } */}
           </div>
         );
       },
@@ -182,7 +182,7 @@ const Employee = () => {
       endpoint: "/syncWithOdoo",
     });
     if (!res.isError) {
-      setSynchroniseMessage(res.meta.message);
+      // setSynchroniseMessage(res.meta.message);
       setSynchroniseData(res.data);
       setSynchroniseLoading(false);
     } else {
