@@ -87,7 +87,8 @@ export default function WorkingReport() {
   }, [filter]);
 
   const getData = async (id = null) => {
-    let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
+    // let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
+    let endpoint = `/workingReport/2023-08-01/2023-08-31`;
     
     if(id !== null) {
       console.log('selected user id : ', id);
@@ -496,7 +497,7 @@ export default function WorkingReport() {
                     <Grid item xs={4}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
-                        {selectedUserDetail == null ? "-" : selectedUserDetail.email}
+                        {!selectedUserDetail.email ? "-" : selectedUserDetail.email}
                       </Typography>
                     </Grid>
                   </>
@@ -516,7 +517,9 @@ export default function WorkingReport() {
                       <Grid item xs={4}>
                         <Typography>Email</Typography>
                         <Typography variant="drawerNameUser">
-                        {userProfile == null ? "-" : userProfile.email}
+                        {userProfile ? (
+                          userProfile.email ? userProfile.email : '-'
+                        ) : '-'}
                         </Typography>
                       </Grid>
                     </Grid>

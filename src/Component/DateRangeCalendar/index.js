@@ -7,7 +7,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { Button, Grid, Typography } from '@mui/material';
 import { AlertContext } from '../../context';
 
-export default function DateRangeCalendar({setStartDateCall, setEndDateCall}) {
+export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);  
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
@@ -22,6 +22,20 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall}) {
     }
   };
 
+  const calculateWeekendDates = (start, end) => {
+    const weekendDates = [];
+    let currentDay = start.clone();
+
+    while (currentDay.isBefore(end) || currentDay.isSame(end, 'day')) {
+      if (currentDay.day() === 0 || currentDay.day() === 6) {
+        weekendDates.push(currentDay.format('YYYY-MM-DD'));
+      }
+      currentDay = currentDay.add(1, 'day');
+    }
+
+    return weekendDates;
+  };
+
   const handleApplyFilter = () => {
     if (!startDate || !endDate) {
       console.log("Incorrect date format")
@@ -30,35 +44,15 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall}) {
         message: "Incorrect date format",
         open: true,
       });
-    }else{
-      // const startMonth = dayjs(startDate).format('MMMM');
-      // const endMonth = dayjs(endDate).format('MMMM');
-      // const startYear = dayjs(startDate).format('YYYY');
-      // const endYear = dayjs(endDate).format('YYYY');
-  
-      // const formattedRange = startMonth === endMonth && startYear === endYear
-      //   ? `${startMonth} ${startYear}`
-      //   : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
-  
-      // setSelectedMonthRange(formattedRange);
-      
-      // if (startDate && endDate) {
-      //   const daysDifference = dayjs(endDate).diff(startDate, 'day');
-      //   if (daysDifference >= 28 && daysDifference <= 30) {
-      //     console.log('Selected range is 30 days');
-      //   } else {
-      //     console.log('Selectedlebih');
-      //   }
-      // }
-      // const hasil = []
-      // const startDatenew = new Date(startDate);
-      // const endDatenew = new Date(endDate);
-  
-      // while (startDatenew <= endDatenew) {
-      //   hasil.push(startDatenew.toISOString().split('T')[0]);
-      //   startDatenew.setDate(startDatenew.getDate() + 1);
-      // }
-    };
+    }
+   
+    const start = dayjs(startDate);
+    const end = dayjs(endDate);
+    const weekendDates = calculateWeekendDates(start, end);     
+
+    console.log("Weekend Dates:", weekendDates);
+    setWeekendDates(weekendDates)
+
     setStartDateCall(startDate)
     setEndDateCall(endDate)
     }    
