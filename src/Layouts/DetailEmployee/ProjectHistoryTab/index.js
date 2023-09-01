@@ -1,80 +1,165 @@
-import React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
+import React, { useEffect, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Grid, Typography } from "@mui/material";
+import client from "../../../global/client";
+import blanktable from "../../../assets/blanktable.png";
 
-const ProjectHistoryTab = () => {
-  function createData(
-    project,
-    contractstart,
-    contractend,
-    contractfile,
-    action
-  ) {
-    return { project, contractstart, contractend, contractfile, action };
-  }
-  const rows = [
-    createData("Fulltime", "01/01/2019", "01/01/2020", "preview.pdf"),
-    createData("On Job Training", "01/01/2019", "01/01/2019", "preview.pdf"),
-    createData("Bootcamp", "01/01/2019", "01/01/2019", "preview.pdf"),
+const ProjectHistoryTab = ({ id }) => {
+  const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
+  const [sorting, setSort] = useState([]);
+  const [dataColumns, setDataColumns] = useState([]);
+  const [data, setData] = useState([]);
+  const [totalData, setTotalData] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: "startDate",
+    sortType: "asc",
+  });
+
+  const changePagination = (model) => {
+    setPagination({ ...model });
+  };
+
+  const changeSort = (model) => {
+    if (model.length > 0) {
+      setSort([{ ...model }]);
+    } else {
+      setSort([
+        {
+          field: "",
+          sort: "",
+        },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    const filter = {
+      sorting: sorting.length > 0 ? { ...sorting[0] } : { field: "", sort: "" },
+      ...pagination,
+    };
+    handleBuildList(filter);
+  }, [sorting, pagination]);
+
+  const handleBuildList = (dataFilter) => {
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName:
+        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "startDate",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
+      search: filter.search,
+    });
+  };
+
+  const columns = [
+    {
+      field: "no",
+      headerName: "No",
+      sortable: false,
+    },
+    {
+      field: "projectName",
+      headerName: "Project Name",
+      flex: 1,
+    },
+    {
+      field: "clientName",
+      headerName: "Client Name",
+      flex: 1,
+    },
+    {
+      field: "startDate",
+      headerName: "Start Date",
+      flex: 1,
+    },
+    {
+      field: "endDate",
+      headerName: "End Date",
+      flex: 1,
+    },
   ];
 
-  return (
-    <TableContainer component={Paper}>
-      <Table aria-label="caption table">
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ color: "#004881", fontSize: "13px" }}>
-              Contract Status
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
-              Contract Start Date
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
-              Contract End Date
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "13px" }}>
-              Contract File
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.project}>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                scope="row"
-              >
-                {row.project}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                {row.contractstart}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                {row.contractend}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                <Link href="">{row.contractfile}</Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  const getData = async (id) => {
+    setLoading(true);
+    const res = await client.requestAPI({
+      endpoint: `/userUtilization/detail?id=3&page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
+      method: "GET",
+    });
+
+    if (!res.isError) {
+      rebuildData(res);
+    } else {
+    }
+    setLoading(false);
+  };
+
+  const rebuildData = (resData) => {
+    let temp = [];
+    let number = filter.page * filter.size;
+
+    const intlDate = new Intl.DateTimeFormat('id',{day:"2-digit", month:'2-digit', year:'numeric'});
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        projectName: value.attributes.projectName,
+        clientName: value.attributes.companyName,
+        startDate: intlDate.format(new Date(value.attributes.startDate)),
+        endDate: intlDate.format(new Date(value.attributes.endDate)),
+      };
+    });
+    setData([...temp]);
+    setTotalData(resData.data.length);
+  };
+
+  useEffect(() => {
+    getData(id);
+  }, [filter]);
+
+  useEffect(()=>{
+    console.log("Data: ", data)
+  })
+
+  return data.length > 0 ?
+  (
+    <DataGrid
+      rows={data}
+      columns={columns}
+      disableRowSelectionOnClick
+      pageSizeOptions={[10, 25, 50, 100]}
+      paginationMode="server"
+      disableColumnFilter
+      disableColumnMenu
+      rowCount={totalData}
+      paginationModel={{ ...pagination }}
+      onPaginationModelChange={(model) => changePagination(model)}
+      onSortModelChange={(model) => changeSort(model)}
+      loading={loading}
+      getRowId={(row) => row.id}
+    />
+  ):
+  (
+    <Grid
+      container
+      item
+      xs={12}
+      alignContent="center"
+      alignItems="center"
+      display="flex"
+      justifyContent="center"
+      textAlign="center"
+    >
+      <Grid item xs={12} pb={3.75}>
+        <img src={blanktable} alt="blank-table" />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="noDataTable">Sorry, the data you are looking for could not be found.</Typography>
+      </Grid>
+    </Grid>
   );
 };
 

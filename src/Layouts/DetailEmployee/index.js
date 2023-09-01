@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -7,8 +7,6 @@ import Header from "../../Component/Header";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import BiodataDetailsTab from "./BiodataDetailsTab";
-import EmployeeBiodataTab from "./EmployeeBiodataTab";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
@@ -29,7 +27,11 @@ import SideBar from "../../Component/Sidebar";
 //compinedit
 import StatusEmployeeTab from "./StatusEmployeeTab";
 import ProjectHistoryTab from "./ProjectHistoryTab";
-import InsuranceTab from "./InsuranceTab";
+
+import { AlertContext } from "../../context";
+import { useLocation } from "react-router-dom";
+import { UploadFileOutlined } from "@mui/icons-material";
+import client from "../../global/client";
 
 const DetailEmployee = () => {
   const ContractStatus = [
@@ -72,11 +74,11 @@ const DetailEmployee = () => {
       current: true,
     },
   ];
-  const [value, setValue] = React.useState("one");
-  const [isEdit, setIsEdit] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [Cancel, setCancel] = React.useState(false);
-  const [AddContract, setAddContract] = React.useState(false);
+  const [value, setValue] = useState("one");
+  const [isEdit, setIsEdit] = useState(false);
+  const [loadingUpload, setLoadingUpload] = useState(false);
+  const [AddContract, setAddContract] = useState(false);
+  
   const [dataFix, setDataFix] = useState({
     jobTypeId: "",
     nip: "12345555",
@@ -116,33 +118,78 @@ const DetailEmployee = () => {
     department: "",
     isActive: "",
   });
+  const { setDataAlert } = useContext(AlertContext);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const userId = useLocation().state.userId;
   const [dataEdit, setDataEdit] = useState(dataFix);
+  const handleFileChange = useCallback((event) => {
+    const file = event.target.files[0];
+    setUploadedFile(file);
+  }, []);
 
-  const onChangeField = (nameObj, value) => {
-    const temp = {
-      ...dataEdit,
-      [nameObj]: value,
-    };
-    setDataEdit(temp);
+  const handleDragOver = useCallback((event) => {
+    event.preventDefault();
+    setIsDraggingOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setIsDraggingOver(false);
+  }, []);
+
+  const handleDrop = useCallback((event) => {
+    event.preventDefault();
+    setIsDraggingOver(false);
+    const file = event.dataTransfer.files[0];
+    setUploadedFile(file);
+  }, []);
+
+  const MAX_SIZE_FILE = 10485760;
+
+  const onSave = async (event) => {
+    event.preventDefault();
+    if (uploadedFile.size >= MAX_SIZE_FILE) {
+      setDataAlert({
+        severity: "error",
+        open: true,
+        message: "Max file size is 10 MB",
+      });
+      return;
+    }
+
+    // const formData = new FormData();
+    // formData.append("file", uploadedFile);
+    // const res = await client.requestAPI({
+    //   method: "POST",
+    //   endpoint: "/",
+    //   data: formData,
+    //   headers: {
+    //     "Content-Type": "multipart/form-data",
+    //   },
+    // });
+
+    // if (!res.isError) {
+    //   setDataAlert({
+    //     severity: "success",
+    //     open: true,
+    //     message: res.meta.message,
+    //   });
+    //   setUploadedFile(null);
+    //   // getData();
+    //   setAddContract(false);
+    // } else {
+    //   setDataAlert({
+    //     severity: "error",
+    //     message: res.error.detail,
+    //     open: true,
+    //   });
+    // }
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClickCancel = () => {
-    setCancel(true);
-  };
   const handleClickAddContract = () => {
     setAddContract(true);
   };
-  const handleClose1 = () => {
-    setCancel(false);
-  };
-  const handleCloseOpenCancelData = () => {
-    setCancel(false);
-    setDataEdit(dataFix);
-    setIsEdit(false);
-  };
+  const [open, setOpen] = useState(false);
   const handleCloseContract = () => {
     setAddContract(false);
   };
@@ -189,183 +236,38 @@ const DetailEmployee = () => {
                   <Header judul="Detail Employee" />
                 </Grid>
               )}
-
-              <Grid item />
-
               <Grid item xs={2} alignSelf="center" textAlign="right">
                 <Button
                   variant="outlined"
                   startIcon={<CreateIcon />}
                   style={{ marginRight: "10px" }}
-                  onClick={clickEdit}
+                  onClick={handleClickAddContract}
                 >
-                  Edit Data Employee
+                  Add Contract Status
                 </Button>
               </Grid>
             </Grid>
 
             <Grid container className="HeaderDetail">
               <Box sx={{ width: "100%" }}>
-                <Tabs value={value1} onChange={handleChange1}>
-                  <Tab value="one" label="Employee Biodata"></Tab>
-                  <Tab value="two" label="Biodata Details" />
-                  <Tab value="three" label="Insurance Details" />
-                </Tabs>
-              </Box>
-              {value1 === "one" && (
-                <EmployeeBiodataTab
-                  isEdit={isEdit}
-                  changeField={onChangeField}
-                  dataEdit={dataEdit}
-                />
-              )}
-              {value1 === "two" && (
-                <BiodataDetailsTab
-                  isEdit={isEdit}
-                  dataEdit={dataEdit}
-                  changeField={onChangeField}
-                />
-              )}
-              {value1 === "three" && (
-                <InsuranceTab
-                  isEdit={isEdit}
-                  dataEdit={dataEdit}
-                  changeField={onChangeField}
-                />
-              )}
-              {isEdit && (
-                <>
-                  <Grid
-                    item
-                    xs={12}
-                    alignSelf="center"
-                    textAlign="right"
-                    sx={{ marginTop: "20px" }}
-                  >
-                    <Button
-                      onClick={handleClickCancel}
-                      variant="outlined"
-                      style={{ marginRight: "10px" }}
-                      color="error"
-                    >
-                      Cancel Data
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleClickOpen}
-                      style={{ marginRight: "10px" }}
-                    >
-                      Save Data
-                    </Button>
-                  </Grid>
-
-                  <Dialog
-                    open={Cancel}
-                    onClose={handleClose1}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
-                    <DialogTitle
-                      sx={{
-                        alignSelf: "center",
-                        fontSize: "30px",
-                        fontStyle: "Poppins",
-                      }}
-                      id="alert-dialog-title"
-                    >
-                      {"Cancel Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Warning: canceling with result in data loss without
-                        saving!
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        variant="outlined"
-                        onClick={handleCloseOpenCancelData}
-                      >
-                        Cancel Without Saving
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleClose1}
-                        autoFocus
-                      >
-                        Back
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    className="dialog-delete"
-                  >
-                    <DialogTitle
-                      sx={{
-                        alignSelf: "center",
-                        fontSize: "30px",
-                        fontStyle: "Poppins",
-                      }}
-                      id="alert-dialog-title"
-                    >
-                      {"Save Data"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Save your progress: Don't forget to save your data
-                        before leaving
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button variant="outlined" onClick={handleClose}>
-                        Back
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={SubmitSave}
-                        autoFocus
-                      >
-                        Save Data
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </>
-              )}
-            </Grid>
-            <Grid container className="HeaderDetail">
-              <Grid item xs={12} alignSelf="center" textAlign="right">
-                <Grid sx={{ alignContent: "center" }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<CreateIcon />}
-                    style={{ marginRight: "10px" }}
-                    onClick={handleClickAddContract}
-                  >
-                    <Typography sx={{ fontSize: "14px" }}>
-                      {" "}
-                      Add Contract Status{" "}
-                    </Typography>
-                  </Button>
-                </Grid>
-              </Grid>
-              <Box sx={{ width: "100%" }}>
                 <Tabs value={value} onChange={handleChange}>
-                  <Tab value="one" label="Employee Status" />
-                  <Tab value="two" label="Project History" />
+                  <Tab
+                    value="one"
+                    label="Contract History"
+                    sx={{ textTransform: "none" }}
+                  />
+                  <Tab
+                    value="two"
+                    label="Project History"
+                    sx={{ textTransform: "none" }}
+                  />
                 </Tabs>
               </Box>
-              {value === "one" && <StatusEmployeeTab />}
-              {value === "two" && <ProjectHistoryTab />}
+              {value === "one" && <StatusEmployeeTab id={userId} />}
+              {value === "two" && <ProjectHistoryTab id={userId} />}
 
               <Dialog
                 maxWidth="xl"
-                maxHeight="xl"
                 open={AddContract}
                 onClose={handleCloseContract}
                 aria-labelledby="alert-dialog-title"
@@ -382,14 +284,16 @@ const DetailEmployee = () => {
                 >
                   {"Add Contract Status"}
                 </DialogTitle>
-                <DialogContent>
-                  <DialogContentText
-                    id="alert-dialog-description"
-                    sx={{ fontSize: "16px" }}
-                  >
-                    Add Contract Status: Streamline employee contract management
-                    with ease by assigning and tracking various contract
-                    statuses.
+                <form onSubmit={onSave} encType="multipart/formData">
+                  <DialogContent>
+                    <DialogContentText
+                      id="alert-dialog-description"
+                      sx={{ fontSize: "16px" }}
+                    >
+                      Add Contract Status: Streamline employee contract
+                      management with ease by assigning and tracking various
+                      contract statuses.
+                    </DialogContentText>
                     <Autocomplete
                       disablePortal
                       id="combo-box-demo"
@@ -410,6 +314,11 @@ const DetailEmployee = () => {
                             <DatePicker
                               label="Contract Start Date"
                               sx={{ width: "100%", paddingRight: "20px" }}
+                              slotProps={{
+                                textField: {
+                                  required: true,
+                                },
+                              }}
                             />
                           </DemoContainer>
                         </LocalizationProvider>
@@ -420,23 +329,98 @@ const DetailEmployee = () => {
                             <DatePicker
                               label="Contract End Date"
                               sx={{ width: "100%" }}
+                              slotProps={{
+                                textField: {
+                                  required: true,
+                                },
+                              }}
                             />
                           </DemoContainer>
                         </LocalizationProvider>
                       </Grid>
                     </Grid>
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ alignSelf: "center" }}>
-                  <Button variant="outlined" onClick={handleCloseContract}>
-                    Back
-                  </Button>
-                  <Button variant="contained" onClick={handleCloseContract} autoFocus>
-                    Save Data
-                  </Button>
-                </DialogActions>
+                    <Grid container direction="row" sx={{ marginTop: "20px" }}>
+                      <Grid item xs={12}>
+                        <label
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <div
+                            style={{
+                              border: isDraggingOver
+                                ? "2px dashed #0078D7"
+                                : "2px dashed #ddd",
+                              borderRadius: "4px",
+                              padding: "20px",
+                              textAlign: "center",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <TextField
+                              type="file"
+                              name="file"
+                              style={{ display: "none" }}
+                              onChange={handleFileChange}
+                            />
+                            <UploadFileOutlined
+                              fontSize="large"
+                              style={{ color: "#0078D7" }}
+                            />
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Typography
+                                variant="subtitle1"
+                                sx={{
+                                  color: "#0078D7",
+                                  marginRight: "3px",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                {uploadedFile != null
+                                  ? uploadedFile.name
+                                  : "Click to upload"}
+                              </Typography>
+                              <Typography variant="subtitle1">
+                                {uploadedFile != null
+                                  ? " - Selected"
+                                  : "or drag and drop"}
+                              </Typography>
+                            </Box>
+                            {uploadedFile == null && (
+                              <Typography color="textSecondary">
+                                e.g., DOCX or PDF &#40;max. 10MB&#41;
+                              </Typography>
+                            )}
+                          </div>
+                        </label>
+                      </Grid>
+                    </Grid>
+                  </DialogContent>
+                  <DialogActions sx={{ alignSelf: "center", justifyContent:"center" }}>
+                    <Button
+                      variant="outlined"
+                      className="button-text"
+                      onClick={handleCloseContract}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      autoFocus
+                      className="button-text"
+                      type="submit"
+                    >
+                      Save Data
+                    </Button>
+                  </DialogActions>
+                </form>
               </Dialog>
-              {/* <DialogBox open={AddContract} title="Test" deskripsi="Test" /> */}
             </Grid>
           </Grid>
         </Grid>
