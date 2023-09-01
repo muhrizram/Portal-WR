@@ -13,6 +13,8 @@ import {
 import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { AlertContext } from "../../context";
+import { useNavigate } from "react-router-dom";
+import { ChipComponent } from "../../Component/Chip";
 import { convertBase64 } from "../../global/convertBase64";
 
 const Employee = () => {
@@ -21,6 +23,7 @@ const Employee = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [synchroniseMessage, setSynchroniseMessage] = useState("");
+  const [synchroniseData, setSynchroniseData] = useState([]);
   const [synchroniseLoading, setSynchroniseLoading] = useState(false);
   const [totalData, setTotalData] = useState();
   const [filter, setFilter] = useState({
@@ -30,6 +33,7 @@ const Employee = () => {
     sortType: "desc",
     search: "",
   });
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -45,23 +49,49 @@ const Employee = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 200,
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.image
           ? convertBase64(params.row.image)
           : "";
+        const [isNew, setIsNew] = useState(false);
+        const newData = synchroniseData.some((data) => {
+          if (
+            params.row.id === data.id &&
+            data.attributes.status === "Syncronize Added"
+          )
+            setIsNew(true);
+        });
+
+        setTimeout(() => {
+          setIsNew(false)
+        }, 5000);
         return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Avatar
-              src={urlMinio}
-              className="img-master-employee"
-              alt="Profile Image"
-            />
-            <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.name}</span>
-              <span className="text-position">{params.row.position}</span>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flex: 1,
+              position: "relative",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Avatar
+                src={urlMinio}
+                className="img-master-employee"
+                alt="Profile Image"
+              />
+              <div style={{ marginLeft: "0.5rem" }}>
+                <span className="text-name">{params.row.name}</span>
+                <span className="text-position">{params.row.position}</span>
+              </div>
             </div>
+            {isNew && 
+              <div style={{ position: "absolute", right:0 }}>
+                <ChipComponent label="New" sx={{ fontWeight: 500 }} />
+              </div>
+            }
           </div>
         );
       },
@@ -74,11 +104,6 @@ const Employee = () => {
     {
       field: "departement",
       headerName: "Departement",
-      flex: 1,
-    },
-    {
-      field: "division",
-      headerName: "Division Group",
       flex: 1,
     },
   ];
@@ -116,9 +141,8 @@ const Employee = () => {
         name: value.attributes.fullName,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
-        email: value.attributes.email,
+        email: value.attributes.email !== "false" ? value.attributes.email : "",
         departement: value.attributes.department,
-        division: value.attributes.divisionGroup,
       };
     });
     setData([...temp]);
@@ -137,13 +161,14 @@ const Employee = () => {
     });
   };
 
-
   const RenderSyncMessage = () => {
     if (synchroniseMessage.length < 1) return;
     const usersTotal = synchroniseMessage.match(/\d+/g);
     return (
       <React.Fragment>
-        <b>{usersTotal[2]} </b>users have been successfully synchronized. <b>{usersTotal[1]} </b>new users added. <b>{usersTotal[0]} </b>user are out of sync.
+        <b>{usersTotal[2]} </b>users have been successfully synchronized.{" "}
+        <b>{usersTotal[1]} </b>new users added. <b>{usersTotal[0]} </b>user are
+        out of sync.
       </React.Fragment>
     );
   };
@@ -154,14 +179,14 @@ const Employee = () => {
 
     const res = await client.requestAPI({
       method: "POST",
-      endpoint: "/syncWithOdoo"
-    })
+      endpoint: "/syncWithOdoo",
+    });
     if (!res.isError) {
       setSynchroniseMessage(res.meta.message);
+      setSynchroniseData(res.data);
       setSynchroniseLoading(false);
-    }
-    else {
-      console.error(res)
+    } else {
+      console.error(res);
     }
   };
 
@@ -175,6 +200,10 @@ const Employee = () => {
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
       search: filter.search,
     });
+  };
+
+  const redirectDetail = (id) => {
+    navigate("/masteremployee/detail", { state: { userId: id } });
   };
 
   return (
@@ -191,6 +220,7 @@ const Employee = () => {
           handleChangeSearch={handleChangeSearch}
           totalData={totalData}
           loading={loading}
+          onDetail={(id) => redirectDetail(id)}
         />
       </SideBar>
       <Dialog

@@ -76,32 +76,32 @@ const DataTable = ({
 
   useEffect(() => {
     const temp = [...columns];   
-    if(!onEmployee) {
-      temp.push({
-        field: "actions",
-        headerName: "Action",
-        sortable: false,
-        width: 200,
-        renderCell: (data) => {
-          return (
-            <div>
-              {onEdit ? (
-                <IconButton onClick={() => onEdit(data.id)}>
-                  <EditOutlined />
-                </IconButton>
-              ) : (
-                <IconButton onClick={() => onDetail(data.id)}>
-                  <PreviewIcon />
-                </IconButton>                 
-              )} 
+    temp.push({
+      field: "actions",
+      headerName: "Action",
+      width: 200,
+      sortable: false,
+      renderCell: (data) => {
+        return (
+          <div>
+            {onEdit ? (
+              <IconButton onClick={() => onEdit(data.id)}>
+                <EditOutlined />
+              </IconButton>
+            ) : (
+              <IconButton onClick={() => onDetail(data.id)}>
+                <PreviewIcon />
+              </IconButton>                 
+            )} 
+            {onDelete && 
               <IconButton onClick={() => onDelete(data.id)}>
                 <DeleteIcon />
-              </IconButton>  
-            </div>
-          );
-        },
-      }); 
-    }
+              </IconButton>
+            }
+          </div>
+        );
+      },
+    }); 
     setDataColumns(temp);
   }, [columns]);
 
