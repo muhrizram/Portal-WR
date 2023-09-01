@@ -82,8 +82,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday }) => {
         localStorage.setItem(
           "workingReportId",
           res.data.attributes.workingReportId
-        );
-        console.log("harusnya",beforeThanToday);
+        );      
         if(!beforeThanToday){
           setDataAlert({
             severity: "success",
