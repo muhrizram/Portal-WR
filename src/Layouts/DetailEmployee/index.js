@@ -303,7 +303,7 @@ const DetailEmployee = () => {
                         <TextField
                           required
                           {...params}
-                          label="Placement Type"
+                          label="Contract Status"
                         />
                       )}
                     />
