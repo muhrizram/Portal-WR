@@ -354,20 +354,27 @@ const CreateNewBacklog = () => {
     setTasks(newTasks);
   };
 
-  const methods = useForm({
+  // const methods = useForm({
+  //   resolver: yupResolver(shemabacklog),
+  //   defaultValues: {      
+  //     // projectId: '',
+  //     // userId: '',
+  //     // actualTime:'',   
+  //     // taskCode:'',
+  //     // projectName:'',
+  //     // priority:'',
+  //     taskName:'',
+  //     taskDescription: '',
+  //     estimationTime:'',
+  //     // statusBacklog:'',
+  //   }
+  // })
+  let methods = useForm({
     resolver: yupResolver(shemabacklog),
-    defaultValues: {      
-      projectId: '',
-      userId: '',
-      actualTime:'',   
-      taskCode:'',
-      //
-      projectName:'',
-      priority:'',
-      taskName:'',
+    defaultValues: {
+      taskName: '',
+      estimationTime: '',
       taskDescription: '',
-      estimationTime:'',
-      statusBacklog:'',
     }
   })
 

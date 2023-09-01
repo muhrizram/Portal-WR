@@ -13,6 +13,7 @@ import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import client from "../../global/client";
 import { AlertContext } from "../../context";
+import { convertBase64 } from "../../global/convertBase64";
 const MasterCompany = () => {
   const columns = [
     {
@@ -26,12 +27,13 @@ const MasterCompany = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
+        console.log("minion",urlMinio)
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
               <Avatar
-                src={urlMinio}
                 className="img-master-employee"
                 alt="Profile Image"
+                src={urlMinio}
               />
             <div style={{ marginLeft: "0.5rem" }}>
               <span className="text-name">{params.row.companyName}</span>
@@ -109,6 +111,7 @@ const MasterCompany = () => {
       method: 'GET',
       endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
+    console.log(res)
     if (!res.isError) {
       rebuildData(res)
     } else {
