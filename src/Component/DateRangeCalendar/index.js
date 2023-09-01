@@ -36,6 +36,12 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
     return weekendDates;
   };
 
+  const ResetFilter = () => {
+    setStartDateCall(null)
+    setEndDateCall(null)
+    setWeekendDates([])
+  }
+
   const handleApplyFilter = () => {
     if (!startDate || !endDate) {
       console.log("Incorrect date format")
@@ -79,9 +85,12 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
             </DemoItem>            
           </Grid>
           <Grid item sx={{marginTop:'2%'}}>
+            <Grid display='flex'>
             <Button onClick={handleApplyFilter}>Filters</Button>
-          </Grid>                  
-        </Grid>      
+            <Button onClick={ResetFilter}>Reset</Button>
+            </Grid>
+          </Grid>
+        </Grid>
     </LocalizationProvider>
   );
 }

@@ -30,7 +30,7 @@ import './calender.css'
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail, updateFilterDates }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -53,12 +53,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
    setCurrentMonthYear(formattedMonthYear);
   },[])  
   
-  const navigateNextMonth = () => {
+  const navigateNextMonth = () => {    
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
+    updateFilterDates(moment(activeMonth).add(1, "month").toDate(), true);
   };
   
-  const navigatePreviousMonth = () => {
+  const navigatePreviousMonth = () => {    
     setActiveMonth(moment(activeMonth).subtract(1, "month").toDate());
+    updateFilterDates(moment(activeMonth).subtract(1, "month").toDate(),false);
   };
 
   const CustomButton = styled(Button)(({ theme }) => ({
@@ -108,8 +110,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   }; 
 
   const renderCalendar = (info) => {            
-    const currentDate = moment().startOf("day");
-
+    const currentDate = moment().startOf("day");    
     const isWeekend = (date) => {
       const dayOfWeek = moment(date).day();      
       return dayOfWeek === 0 || dayOfWeek === 6;
@@ -165,13 +166,15 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           )}
                         </Grid>
                         {isWeekend(info.date) ? (
+                          <>                          
                           <Grid justifyContent="left">
                               <Button variant="outlined-holiday">
                                 holiday
                               </Button>
-                          </Grid>                          
-                        ) : (
+                          </Grid>
                           
+                          </>
+                        ) : (                          
                           data.length > 0 && data[0].workingReportId ? (
 
                             <CustomButton variant="outlined-task" onClick={                              
@@ -182,8 +185,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   absenceId: data[0].absenceId,
                                 });
                                 setWrIdDetail(data[0].workingReportId);
-                                setIsViewTask(true);
-                                // setOpenTask(true);
+                                setIsViewTask(true);                                
                                 }
                               : () => {                          
                                 setOpenTask(true);
@@ -206,8 +208,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   )}
                 </Grid>   
             {data.length > 0 ? 
-            <> 
-
+              <> 
                 <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "4vh", marginTop: "0.8vh", flexDirection: "column" }}>                
                 {info.isToday && !data[0].workingReportId ? (
                   <Button                    
@@ -240,8 +241,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 ) : 
                 (
                   data[0].overtime === true && (
-                  <Button
-                    // sx={{marginTop: "5vh"}}
+                  <Button                    
                     variant="outlined-warning"
                     onClick={
                       () => {
@@ -290,8 +290,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   )              
                 }                
               </Grid>
-            </> : null
-          
+            </> : null          
             }
           </Grid>
         );

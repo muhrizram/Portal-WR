@@ -83,8 +83,8 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday }) => {
           "workingReportId",
           res.data.attributes.workingReportId
         );
-        console.log("harusnya");
-        if(beforeThanToday){
+        console.log("harusnya",beforeThanToday);
+        if(!beforeThanToday){
           setDataAlert({
             severity: "success",
             open: true,

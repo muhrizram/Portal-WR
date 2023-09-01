@@ -65,7 +65,7 @@ export default function WorkingReport() {
 
   const [filteredNames, setFilteredNames] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null); 
-  const [selectedUserDetail, setSelectedUserDetail] = useState(null)
+  const [selectedUserDetail, setSelectedUserDetail] = useState()
   const [userProfile, setUserProfile] = useState();
   const currentUserId = localStorage.getItem("userId");
 
@@ -86,10 +86,26 @@ export default function WorkingReport() {
     }    
   }, [filter]);
 
+  const updateFilterDates = (newActiveMonth,value) => {
+    if(value){      
+      const newEndDate = moment(newActiveMonth).endOf("month").toDate();
+      setFilter({
+        startDate: filter.startDate,
+        endDate: newEndDate,
+      });
+    }else{
+      const newStartDate = moment(newActiveMonth).startOf("month").toDate();      
+      setFilter({
+        startDate: newStartDate,
+        endDate: filter.endDate,
+      });
+    }    
+    getData();
+  };
+
   const getData = async (id = null) => {
-    // let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
-    let endpoint = `/workingReport/2023-08-01/2023-08-31`;
-    
+    let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
+
     if(id !== null) {
       console.log('selected user id : ', id);
       endpoint += `/${id}`
@@ -311,6 +327,7 @@ export default function WorkingReport() {
               setIsViewOvertime={setIsViewOvertime}
               events={data}
               setWrIdDetail={setWrIdDetail}
+              updateFilterDates={updateFilterDates}
             />)
           )
         }
@@ -497,7 +514,9 @@ export default function WorkingReport() {
                     <Grid item xs={4}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
-                        {!selectedUserDetail.email ? "-" : selectedUserDetail.email}
+                        {selectedUserDetail ? (
+                          selectedUserDetail.email ? "-" : selectedUserDetail.email
+                        ):'-'}
                       </Typography>
                     </Grid>
                   </>
