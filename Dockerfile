@@ -21,7 +21,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY . /usr/src/app
 RUN rm -f package-lock.json
 RUN npm cache clean --force
-RUN npm install && npm run build --prefer-offline --no-audit
+RUN npm install --prefer-offline --no-audit && npm run build --prefer-offline --no-audit
 
 # RUNNER IMAGE
 FROM nginx:stable
