@@ -231,8 +231,7 @@ let globalTheme = createTheme({
             borderRadius: "6px",
             background: "#EECEB0",
             color: "#734011",
-            borderColor: "#734011",
-            marginBottom: "2px",
+            borderColor: "#734011",            
           },          
         },
         {
@@ -276,7 +275,7 @@ let globalTheme = createTheme({
             variant: "outlined-attedance",
           },
           style: {
-            // marginTop:'-53px',
+            marginTop:'-33px',
             position: "absolute",
             textTransform: "none",
             width: "45%",
