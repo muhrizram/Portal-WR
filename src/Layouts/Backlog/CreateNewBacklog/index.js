@@ -330,6 +330,13 @@ const CreateNewBacklog = () => {
     setIsSave(true)
     setOpen(true)    
   }
+  
+  const currentDate = new Date()
+  currentDate.setDate(currentDate.getDate() + 1)
+  const year = currentDate.getFullYear();
+  const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+  const day = ('0' + currentDate.getDate()).slice(-2);
+  const formattedDate = year + '-' + month + '-' + day;
 
   const handleClickTask = () => {
     setAddTask(true);
@@ -337,16 +344,16 @@ const CreateNewBacklog = () => {
       id: tasks.length + 1,
       projectId : valueproject,
       statusBacklog: null,
-      userId : 2,
+      userId : parseInt(localStorage.getItem('userId')),
       taskName: '',
       taskDescription: '',
       estimationTime: null,
-      actualTime: 5,
-      estimationDate: "2023-08-07",
-      actualDate: "2023-08-07",
-      createdBy: 1,
-      updatedBy: 1,
-      priority: '0',           
+      actualTime: '',
+      estimationDate: formattedDate,
+      actualDate: formattedDate,
+      createdBy: parseInt(localStorage.getItem('userId')),
+      updatedBy: parseInt(localStorage.getItem('userId')),
+      priority: '',           
       taskCode:`T-WR-00${tasks.length + 1}`,        
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
@@ -354,27 +361,12 @@ const CreateNewBacklog = () => {
     setTasks(newTasks);
   };
 
-  // const methods = useForm({
-  //   resolver: yupResolver(shemabacklog),
-  //   defaultValues: {      
-  //     // projectId: '',
-  //     // userId: '',
-  //     // actualTime:'',   
-  //     // taskCode:'',
-  //     // projectName:'',
-  //     // priority:'',
-  //     taskName:'',
-  //     taskDescription: '',
-  //     estimationTime:'',
-  //     // statusBacklog:'',
-  //   }
-  // })
-  let methods = useForm({
+  const methods = useForm({
     resolver: yupResolver(shemabacklog),
     defaultValues: {
-      taskName: '',
-      estimationTime: '',
+      taskName:'',
       taskDescription: '',
+      estimationTime:'',
     }
   })
 
@@ -391,6 +383,7 @@ const CreateNewBacklog = () => {
           endpoint: '/backlog/addBacklog',
           data: taskObject,
         });
+        console.log(taskObject)
     
         if(!res.isError){
           setDataAlert({

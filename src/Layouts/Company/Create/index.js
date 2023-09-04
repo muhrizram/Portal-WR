@@ -94,7 +94,7 @@ const CreateCompany = () => {
       } else {
         setDataAlert({
           severity: 'error',
-          message: res.error.detail,
+          message: res.error.meta.message,
           open: true
         })
       }

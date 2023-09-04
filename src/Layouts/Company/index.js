@@ -109,7 +109,7 @@ const MasterCompany = () => {
     setLoading(true)
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/company?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+      endpoint: `/company?page-${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
     console.log(res)
     if (!res.isError) {

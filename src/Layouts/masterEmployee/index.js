@@ -89,7 +89,7 @@ const Employee = () => {
             </div>
             {/* {isNew && 
               <div style={{ position: "absolute", right:0 }}>
-                <ChipComponent label="New" sx={{ fontWeight: 500 }} />
+                {/* <ChipComponent label="New" sx={{ fontWeight: 500 }} /> */}
               </div>
             } */}
           </div>
