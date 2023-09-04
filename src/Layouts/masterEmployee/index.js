@@ -90,8 +90,8 @@ const Employee = () => {
             {/* {isNew && 
               <div style={{ position: "absolute", right:0 }}>
                 {/* <ChipComponent label="New" sx={{ fontWeight: 500 }} /> */}
-              </div>
-            } */}
+              {/* </div> */}
+            {/* } */}
           </div>
         );
       },
