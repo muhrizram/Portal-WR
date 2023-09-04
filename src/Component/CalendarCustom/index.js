@@ -332,7 +332,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       <FullCalendar  
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         // initialView={"dayGridMonth"}
-        key={activeMonth.getTime()} 
+        firstDay={1}
+        key={activeMonth.getTime()}
         initialDate={activeMonth}
         dayCellContent={(info, create) => renderCalendar(info)}        
         // eventAdd={(info, create) => renderCalendar(info)}
