@@ -20,7 +20,8 @@ const MasterHoliday = () => {
     {
       field: 'no',
       headerName: 'No',
-      flex: 0.5
+      flex: 0.5,
+      sortable:false,
     },
     {
       field: 'date',
@@ -28,18 +29,18 @@ const MasterHoliday = () => {
       flex: 1
     },
     {
-      field: 'weekday',
+      field: 'day',
       headerName: 'Weekday',
-      flex: 1
+      flex: 1,
     },
     {
-      field: 'name',
+      field: 'notes',
       headerName: 'Name',
       flex: 1
     }
   ];
 
-
+  const CURRENT_YEAR = new Date().getFullYear().toString();
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState()
   const [openDelete, setOpenDelete] = useState(false)
@@ -55,10 +56,8 @@ const MasterHoliday = () => {
     sortName: 'date',
     sortType: 'asc',
     month: null,
-    year: null
+    year: CURRENT_YEAR,
   })
-
-
 
   const handleClickOpen = (id) => {
     setOpenDelete(true)
@@ -105,8 +104,8 @@ const MasterHoliday = () => {
         no: number + (index + 1),
         id: value.id,
         date: value.attributes.date,
-        weekday: value.attributes.weekdays,
-        name: value.attributes.name
+        day: value.attributes.weekdays,
+        notes: value.attributes.notes
       }
     })
     setData([...temporary])
@@ -178,7 +177,7 @@ const MasterHoliday = () => {
     })
     if (!res.isError) {
       setDataAlert({
-        severity: 'success',
+        severity: 'warning',
         open: true,
         message: res.meta.message
       })
@@ -202,9 +201,9 @@ const MasterHoliday = () => {
           loading={loading}
           totalData={totalData}
           columns={columns}
-          handleChangeMonthFilter={(value) => handleMonthFilter(value.format("MM"))}
-          handleChangeYearFilter={(value) => handleYearFilter(value.format("YYYY"))}
           onFilter={(dataFilter => onFilter(dataFilter))}
+          handleChangeMonthFilter={(value) => value ? handleMonthFilter(value.format("MM")) : handleMonthFilter(null)}
+          handleChangeYearFilter={(value) => value ? handleYearFilter(value.format("YYYY")) : handleYearFilter(null)}
           onAdd={() => handleAdd()}
           onUpload={() => handleUpload()}
           onEdit={(id) => handleEdit(id)}

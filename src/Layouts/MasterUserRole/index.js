@@ -42,7 +42,6 @@ const RoleUser = () => {
       method: 'GET',
       endpoint: `/userRole?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
-    console.log(res)
     if(!res.isError){      
       rebuildData(res)          
     }else {      

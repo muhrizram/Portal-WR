@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,13 +24,17 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const { setDataAlert } = useContext(AlertContext);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSave = async (event) => {
-    event.preventDefault()
-    if(uploadedFile.size >= MAX_SIZE_FILE){
+    event.preventDefault();
+    if(uploadedFile === null){
+      return;
+    }
+    if (uploadedFile.size >= MAX_SIZE_FILE) {
       setDataAlert({
-        severity:"error",
-        open:true,
+        severity: "error",
+        open: true,
         message: "Max file size is 1 MB",
       });
       return;
@@ -38,6 +43,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
     const formData = new FormData();
     formData.append("file", uploadedFile);
 
+    setLoading(true);
     const res = await client.requestAPI({
       method: "POST",
       endpoint: "/holiday/upload",
@@ -47,7 +53,6 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
       },
     });
 
-
     if (!res.isError) {
       setDataAlert({
         severity: "success",
@@ -55,7 +60,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
         message: res.meta.message,
       });
       onSaveSuccess();
-      setUploadedFile(null); 
+      setUploadedFile(null);
       setOpenUpload(false);
     } else {
       setDataAlert({
@@ -64,6 +69,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
         open: true,
       });
     }
+    setLoading(false);
   };
 
   const handleFileChange = useCallback((event) => {
@@ -84,12 +90,11 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
     event.preventDefault();
     setIsDraggingOver(false);
     const file = event.dataTransfer.files[0];
-    console.log(file);
     setUploadedFile(file);
   }, []);
-  
+
   const handleClose = () => {
-    setUploadedFile(null); 
+    setUploadedFile(null);
     setOpenUpload(false);
   };
 
@@ -114,54 +119,70 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
               id="alert-dialog-description"
               sx={{ marginBottom: 2 }}
             >
-              Grant administrators the authority to manually Upload holidays for employees.
+              Grant administrators the authority to manually Upload holidays for
+              employees.
             </DialogContentText>
 
-            <a
-              href={downloadUrl}
-              download="template_import_holiday.xlsx"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ cursor: "pointer", textDecoration: "none" }}
-            >
-              <Typography component="span" alignItems={"center"} color={"#0078D7"}>
-                DOWNLOAD TEMPLATE
-              </Typography>
-            </a>
-
             <Grid item xs={12}>
-              <Accordion sx={{ boxShadow: "none", width: "100%", marginTop: 2 }}>
+              <Accordion
+                sx={{ boxShadow: "none", width: "100%", marginTop: 2 }}
+              >
                 <AccordionDetails>
                   <Grid container rowSpacing={2}>
                     <Grid item xs={12}>
                       <label
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}>
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                      >
                         <div
-                           style={{
-                            border: isDraggingOver ? "2px dashed #0078D7" : "2px dashed #ddd",
+                          style={{
+                            border: isDraggingOver
+                              ? "2px dashed #0078D7"
+                              : "2px dashed #ddd",
                             borderRadius: "4px",
                             padding: "20px",
                             textAlign: "center",
                             cursor: "pointer",
                           }}
-                          
                         >
-                          <TextField type="file" name="file" style={{ display: "none" }} onChange={handleFileChange} />
-                          <UploadFileOutlined fontSize="large" style={{ color: "#0078D7" }} />
+                          <TextField
+                            type="file"
+                            name="file"
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                          />
+                          <UploadFileOutlined
+                            fontSize="large"
+                            style={{ color: "#0078D7" }}
+                          />
 
-                          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Typography variant="subtitle1" sx={{ color: "#0078D7", marginRight: "3px" }}>
-                              {uploadedFile != null ? uploadedFile.name : "Click to Upload"}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              sx={{ color: "#0078D7", marginRight: "3px" }}
+                            >
+                              {uploadedFile != null
+                                ? uploadedFile.name
+                                : "Click to Upload"}
                             </Typography>
                             <Typography variant="subtitle1">
-                              {uploadedFile != null ? " - Selected" : "or Drag and Drop"}
+                              {uploadedFile != null
+                                ? " - Selected"
+                                : "or Drag and Drop"}
                             </Typography>
                           </Box>
 
                           {uploadedFile == null && (
-                            <Typography color="textSecondary">XLS or XSLX (max. 1MB)</Typography>
+                            <Typography color="textSecondary">
+                              XLS or XSLX (max. 1MB)
+                            </Typography>
                           )}
                         </div>
                       </label>
@@ -174,13 +195,39 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
           <DialogActions>
             <Grid container justifyContent="center" spacing={2}>
               <Grid item>
-                <Button variant="outlined" className="button-text" onClick={handleClose}>
+                <a
+                  href={downloadUrl}
+                  download="template_import_holiday.xlsx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ cursor: "pointer", textDecoration: "none" }}
+                >
+                  <Typography
+                    component="span"
+                    alignItems={"center"}
+                    color={"#0078D7"}
+                  >
+                    DOWNLOAD TEMPLATE
+                  </Typography>
+                </a>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  className="button-text"
+                  onClick={handleClose}
+                >
                   Back
                 </Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" className="button-text" type="submit">
-                  Upload File
+                <Button
+                  variant="contained"
+                  className="button-text"
+                  type="submit"
+                  disabled={loading ? true : false || uploadedFile === null}
+                >
+                  {loading ? <CircularProgress size="16px" /> : "Upload File"}
                 </Button>
               </Grid>
             </Grid>

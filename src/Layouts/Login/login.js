@@ -37,7 +37,7 @@ const Login = ({ changeStat }) => {
       data: dataReadyLogin,
       isLogin: true
     })    
-    if (!res.isError) {      
+    if (!res.isError) {
       localStorage.setItem('privilage', JSON.stringify(res.listPrivilege))
       localStorage.setItem('token', res.accessToken)
       localStorage.setItem('refreshtoken', res.refreshToken)
@@ -58,7 +58,7 @@ const Login = ({ changeStat }) => {
       if (!resUser.isError) {
         localStorage.setItem("photoProfile", resUser.data.attributes.photoProfile);
       }
-      navigate('/')
+      navigate('/workingReport')
     }else{
       setDataAlert({
         severity: 'error',
