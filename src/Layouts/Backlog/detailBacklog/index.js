@@ -418,23 +418,30 @@ const DetailBacklog = () => {
     setOpen(true)    
   }  
 
+  const currentDate = new Date()
+  currentDate.setDate(currentDate.getDate() + 1)
+  const year = currentDate.getFullYear();
+  const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+  const day = ('0' + currentDate.getDate()).slice(-2);
+  const formattedDate = year + '-' + month + '-' + day;
+  
   const handleClickTask = () => {
     setAddTask(true);
     const newTask = {      
       
       id: tasks.length + 1,
-      projectId : 1,
-      statusBacklog: 64,
-      userId : 2,
+      projectId : valueproject,
+      statusBacklog: null,
+      userId : parseInt(localStorage.getItem('userId')),
       taskName: '',
       taskDescription: '',
-      estimationTime: 5,
-      actualTime: 5,
-      estimationDate: "2023-08-07",
-      actualDate: "2023-08-07",
-      createdBy: 1,
-      updatedBy: 1,
-      priority: '3',           
+      estimationTime: null,
+      actualTime: '',
+      estimationDate: formattedDate,
+      actualDate: formattedDate,
+      createdBy: parseInt(localStorage.getItem('userId')),
+      updatedBy: parseInt(localStorage.getItem('userId')),
+      priority: '',           
       taskCode:`T-WR-00${tasks.length + 1}`,
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
@@ -444,18 +451,10 @@ const DetailBacklog = () => {
 
   const methods = useForm({
     resolver: yupResolver(shemabacklog),
-    defaultValues: {      
-      projectId: valueproject,
-      userId: '',
-      actualTime:'',   
-      taskCode:'',
-      //
-      projectName:'',
-      priority:'',
+    defaultValues: {    
       taskName:'',
       taskDescription: '',
       estimationTime:'',
-      statusBacklog:'',
     }
   })
 
