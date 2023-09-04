@@ -29,8 +29,8 @@ const Employee = () => {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: "name",
-    sortType: "desc",
+    sortName: "firstName",
+    sortType: "asc",
     search: "",
   });
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Employee = () => {
       flex: 0.5,
     },
     {
-      field: "name",
+      field: "firstName",
       headerName: "Name",
       flex: 1,
       renderCell: (params) => {
@@ -138,7 +138,7 @@ const Employee = () => {
         no: number + (index + 1),
         id: value.id,
         nip: value.attributes.nip,
-        name: value.attributes.fullName,
+        firstName: value.attributes.fullName,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
         email: value.attributes.email !== "false" ? value.attributes.email : "",
@@ -182,7 +182,7 @@ const Employee = () => {
       endpoint: "/syncWithOdoo",
     });
     if (!res.isError) {
-      // setSynchroniseMessage(res.meta.message);
+      setSynchroniseMessage(res.data.meta.message);
       setSynchroniseData(res.data);
       setSynchroniseLoading(false);
     } else {
@@ -195,7 +195,7 @@ const Employee = () => {
       page: dataFilter.page,
       size: dataFilter.pageSize,
       sortName:
-        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "name",
+        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "firstName",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
       search: filter.search,
