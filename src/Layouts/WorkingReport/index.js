@@ -25,6 +25,7 @@ import DownloadConfiguration from "../../Component/DownloadConfig";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LockIcon from '@mui/icons-material/Lock'; 
 import { convertBase64 } from "../../global/convertBase64";
+import Reset from "../Login/reset";
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -60,6 +61,9 @@ export default function WorkingReport() {
   });
   const { setDataAlert } = useContext(AlertContext);
   const [downloadConfiguration, setDownloadConf] = useState({
+    open: false
+  })
+  const [changePass, setChangePass] = useState({
     open: false
   })
 
@@ -374,6 +378,13 @@ export default function WorkingReport() {
     }
   };
 
+  const handleReset = (open) => {
+    // navigate('/reset-password')
+    setChangePass({
+      open
+    })
+  }
+
   return (
     <SideBar>
       <Grid container rowSpacing={2}>
@@ -475,7 +486,7 @@ export default function WorkingReport() {
                   <Grid item xs={5.25} textAlign="right">
                       <Button
                       variant="outlined"
-                      // onClick={}
+                      onClick={handleReset}
                       startIcon={<LockIcon />}
                       sx={{ paddingY: 1 }}
                       >
@@ -539,6 +550,7 @@ export default function WorkingReport() {
       {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
       <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
+      <Reset {...changePass} onClose={() => handleReset(false)} />
     </SideBar>
   );
 }

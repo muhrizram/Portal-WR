@@ -73,7 +73,9 @@ const CreateCompany = () => {
     } else{
       const data = {
         ...sendData,
-        companyProfile: filePath
+        companyProfile: filePath,
+        createdBy: parseInt(localStorage.getItem('userId')),
+        lastModifiedBy: parseInt(localStorage.getItem('userId'))
       }
       const res = await client.requestAPI({
         method: 'POST',
@@ -92,7 +94,7 @@ const CreateCompany = () => {
       } else {
         setDataAlert({
           severity: 'error',
-          message: res.error.detail,
+          message: res.error.meta.message,
           open: true
         })
       }

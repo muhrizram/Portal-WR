@@ -156,7 +156,7 @@ const DetailPrivilege = () => {
     } else {
       setDataAlert({
         severity: 'error',
-        message: res.error.meta.message,
+        message: res.error.detail,
         open: true
       })
     }

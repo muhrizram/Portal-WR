@@ -127,8 +127,8 @@ const CreateUserRole = () => {
       setOpen(false);
     }else{
     
-      const data = {     
-        userId: selectedUser, 
+      const data = {
+        userId: selectedUser ? selectedUser.value : null, 
         roleId: selectedRoles,
         createdBy: parseInt(localStorage.getItem('userId'))
       }    
@@ -146,10 +146,10 @@ const CreateUserRole = () => {
         setTimeout(() => {
           navigate('/masteruserrole')
         }, 3000)      
-      }else {      
+      }else {
         setDataAlert({
           severity: 'error',
-          message: res.error.meta.message,
+          message: res.error.detail,
           open: true
         })
       }
