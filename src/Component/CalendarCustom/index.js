@@ -23,14 +23,14 @@ import PopupTask from "../../Layouts/WorkingReport/PopupTask";
 import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 import IconButton from '@mui/material/IconButton';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import './calender.css'
 
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setSelectedWorkingReportId, setWrIdDetail }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -42,6 +42,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [weekendDates, setWeekendDates] = useState([]);
   const [StartDate, setStartDate] = useState()
   const [EndDate, setEndDate] = useState()
+  const [activeMonth, setActiveMonth] = useState(new Date());
+
 
   const navigate = useNavigate();
 
@@ -51,7 +53,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
    setCurrentMonthYear(formattedMonthYear);
   },[])  
   
-
+  const navigateNextMonth = () => {
+    setActiveMonth(moment(activeMonth).add(1, "month").toDate());
+  };
+  
+  const navigatePreviousMonth = () => {
+    setActiveMonth(moment(activeMonth).subtract(1, "month").toDate());
+  };
 
   const CustomButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
@@ -60,7 +68,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   lineHeight: '100%',
   borderColor: 'black', 
   marginRight: '10vh',
-  marginTop: '9vh',  
+  marginTop: '2vh',  
   borderRadius:6
   }));
 
@@ -99,24 +107,19 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   }; 
 
-  const renderCalendar = (info) => {        
-
+  const renderCalendar = (info) => {            
     const currentDate = moment().startOf("day");
 
     const isWeekend = (date) => {
       const dayOfWeek = moment(date).day();      
       return dayOfWeek === 0 || dayOfWeek === 6;
-    };    
-
-    const isWeekendDay = isWeekend(info.date);
-    if (isWeekendDay) {      
-      setWeekendDates(info.date);
-    }  
+    };
        
       const datalibur = moment(info.date).format("yyyy-MM-DD") 
       const data = events.filter(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );      
+
       if (datalibur.length > 0) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
@@ -129,6 +132,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   ) : (
                     datalibur[0].workingReportId == null ? (
                       <>
+                        <Grid>                      
                         {moment(info.date).isSameOrBefore(currentDate) && data.length > 0 && !data[0].workingReportId && !data.task ? (
                           <Button
                             variant="outlined-attedance"
@@ -138,7 +142,28 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           >
                             attedance
                           </Button>
-                        ) : null}
+                        ) :  null}
+                        </Grid>
+                        <Grid>
+                          {moment(info.date).isSameOrBefore(currentDate) && data.length > 0 && (
+                          <CustomButton
+                            variant="outlined-warning"
+                            onClick={
+                              data[0].overtime == true ?() => {
+                                setId(data[0].workingReportId)
+                                setWrIdDetail(data[0].workingReportId);
+                                setIsViewOvertime(true);
+                              }
+                              : () => {
+                                setOpenOvertime(true);
+                                setId(data[0].workingReportId)
+                              }
+                             }
+                          >
+                            {data[0].overtime == true ? "View Overtime" : "Overtime"}
+                          </CustomButton>
+                          )}
+                        </Grid>
                         {isWeekend(info.date) ? (
                           <Grid justifyContent="left">
                               <Button variant="outlined-holiday">
@@ -146,7 +171,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               </Button>
                           </Grid>                          
                         ) : (
+                          
                           data.length > 0 && data[0].workingReportId ? (
+
                             <CustomButton variant="outlined-task" onClick={                              
                               data[0].task
                               ? () => {                         
@@ -167,7 +194,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                 }
                             }>
                               task
-                            </CustomButton>
+                            </CustomButton>                            
                           ) : (
                             <CustomButton disabled variant="outlined" >
                               task
@@ -274,33 +301,41 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
 
   return (
     <Grid>      
-      {!changeCurrentMonth &&
-      <div style={{ position: 'relative' }}>
-          <Grid position='absolute' margin={4}>
-            <Typography variant='TextBulankalender'>{currentMonthYear}</Typography>                    
+       {!changeCurrentMonth && (
+      <div style={{ position: "relative" }}>
+        <Grid position="absolute" margin={4}>
+          <Grid
+            display="flex"
+            container
+            alignItems="center"
+            justifyContent="flex-start"
+          >
+            <Typography variant="TextBulankalender">
+              {moment(activeMonth).format("MMMM YYYY")}
+            </Typography>
+            <Grid item>
+              <IconButton color="primary" onClick={navigatePreviousMonth}>
+                <KeyboardArrowLeftIcon />
+              </IconButton>
+              <Button onClick={() => setActiveMonth(new Date())}>
+                Today
+              </Button>
+              <IconButton color="primary" onClick={navigateNextMonth}>
+                <KeyboardArrowRightIcon />
+              </IconButton>
+            </Grid>
           </Grid>
+        </Grid>
       </div>
-      }
-      {/* <Grid marginLeft={63} marginTop={4} position='absolute' container alignItems="flex-start" justifyContent="flex-start" >
-            <Grid item>
-              <IconButton>
-                <ArrowLeftIcon />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <Typography variant="h6">Today</Typography>
-            </Grid>
-            <Grid item>
-              <IconButton>
-                <ArrowRightIcon />
-              </IconButton>
-            </Grid>             
-      </Grid> */}
-      <DateRangeCalendar setchangeCurrentMonth={setchangeCurrentMonth} setEndDateCall={setEndDate} setStartDateCall={setStartDate} /> 
+    )}
+      <DateRangeCalendar setchangeCurrentMonth={setchangeCurrentMonth} setEndDateCall={setEndDate} setStartDateCall={setStartDate} setWeekendDates={setWeekendDates}/> 
       <FullCalendar  
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={"dayGridMonth"}
-        dayCellContent={(info, create) => renderCalendar(info)}
+        // initialView={"dayGridMonth"}
+        firstDay={1}
+        key={activeMonth.getTime()}
+        initialDate={activeMonth}
+        dayCellContent={(info, create) => renderCalendar(info)}        
         // eventAdd={(info, create) => renderCalendar(info)}
         height={1100}        
         selectable={true}
@@ -318,8 +353,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             end: EndDate,
             display: 'background',
             color:'blue'
-          },          
-        ]}
+          },
+          ...(Array.isArray(weekendDates)
+          ? weekendDates.map(date => ({
+              start: date,
+              display: 'background',
+              color: 'red'
+            }))
+          : []
+          )
+        ]}        
       />
       <Dialog
         fullWidth={fullWidth}
