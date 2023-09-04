@@ -195,8 +195,7 @@ export default function WorkingReport() {
     console.log(link.href);
   }
 
-  const rebuildData = (resData) => {
-    // console.log("data: ", resData);
+  const rebuildData = (resData) => {    
     let temp = [];    
     temp = resData.data.map((value, index) => {
       const isToday = moment( value.attributes.listDate.date).isSame(moment(), 'day');
@@ -221,7 +220,8 @@ export default function WorkingReport() {
             overtime: value.attributes.listDate.overtime,
             isToday: isToday
           };
-    });    
+    });
+    // console.log('temp : ', temp);
     if(selectedUser == null){
       setData([])
     }
