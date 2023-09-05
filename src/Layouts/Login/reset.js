@@ -71,7 +71,7 @@ const Reset = ({open=false, handleClose = () => false}) => {
       setDataAlert({
         severity: 'error',
         open: true,
-        message: res.error.detail
+        message: res.error.meta.message
       })       
     }
   };

@@ -36,11 +36,6 @@ import Box from "@mui/material/Box";
 import Allura from "../../../assets/Allura.png";
 
 const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
-  const ProjectName = [
-    { label: "Electronic Health Record" },
-    { label: "API Factory" },
-    { label: "Selection Exam" },
-  ];   
   const [AssignedTo, setAssignedTo] = useState([]);
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
