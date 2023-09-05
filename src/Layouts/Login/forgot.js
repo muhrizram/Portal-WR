@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Divider, InputAdornment, TextField, Typography } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Button, CircularProgress, Divider, InputAdornment, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import client from '../../global/client';
+import CustomAlert from '../../Component/Alert';
+import { AlertContext } from '../../context';
 
 const ForgotSchema = Yup.object().shape({
   email: Yup.string().email('Oops, Invalid email, Try again').required('Please input your email!'),
@@ -14,6 +16,8 @@ const ForgotSchema = Yup.object().shape({
 
 const Forgot = ({ changeStat }) => {
   const [sentEmail, setSentEmail] = useState(false);
+  const { setDataAlert } = useContext(AlertContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -25,8 +29,8 @@ const Forgot = ({ changeStat }) => {
   });
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     const { email } = data;
-    console.log({email});
 
     const res = await client.requestAPI({
       method: 'POST',
@@ -36,8 +40,21 @@ const Forgot = ({ changeStat }) => {
     });
 
     if (!res.isError) {
+      setDataAlert({
+        severity: "success",
+        open: true,
+        message: res.meta.message
+      });
       setSentEmail(true);
       reset();
+      setIsLoading(false);
+    } else {
+      setDataAlert({
+        severity: 'error',
+        open: true,
+        message: res.error.detail
+      })
+      setIsLoading(false);
     }
   };
 
@@ -46,6 +63,8 @@ const Forgot = ({ changeStat }) => {
   };
 
   return (
+    <>
+    <CustomAlert />
     <Grid container paddingTop={22}>
       {sentEmail ? (
         <Grid spacing={2} sx={{ textAlign: 'center' }}>
@@ -85,8 +104,15 @@ const Forgot = ({ changeStat }) => {
             />
           </Grid>
           <Grid item xs={12} paddingTop={4}>
-            <Button variant="primaryButton" type="submit" fullWidth>
-              SEND
+            <Button variant="contained" type="submit" fullWidth disabled={isLoading} >
+            {isLoading ? (
+              <>
+                <CircularProgress size={16} color="inherit" />
+                <Typography marginLeft={1}>Loading...</Typography>
+              </>
+            ) : (
+              "SEND"
+            )}
             </Button>
           </Grid>
         </form>
@@ -100,6 +126,7 @@ const Forgot = ({ changeStat }) => {
         <Typography style={{ cursor: 'pointer' }} variant='primaryText' onClick={() => changeStat('login')}>BACK TO LOG IN</Typography>
       </Grid>
     </Grid>
+    </>
   );
 };
 

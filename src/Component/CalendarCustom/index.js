@@ -43,7 +43,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [StartDate, setStartDate] = useState()
   const [EndDate, setEndDate] = useState()
   const [activeMonth, setActiveMonth] = useState(new Date());
-
+  const [wrDate, setWrDate] = useState(null)
 
   const navigate = useNavigate();
 
@@ -158,6 +158,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               : () => {
                                 setOpenOvertime(true);
                                 setId(data[0].workingReportId)
+                                setWrDate(data[0].tanggal)
                               }
                              }
                           >
@@ -251,6 +252,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       : () => {
                         setOpenOvertime(true);
                         setId(data[0].workingReportId)
+                        setWrDate(data[0].tanggal)
                       }
                     }
                   >
@@ -426,7 +428,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} wrDate={wrDate} />
       <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );

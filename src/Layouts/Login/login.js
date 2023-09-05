@@ -1,3 +1,6 @@
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   IconButton,
   Button,
@@ -7,9 +10,10 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  CircularProgress
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, {useEffect,useContext} from "react";
+import React, {useContext} from "react";
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -17,24 +21,39 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import client from "../../global/client";
 import { useNavigate } from 'react-router';
 import { AlertContext } from '../../context';
-// import { finalRoutes } from "../../routes";
-// import { useAuth } from "react-oidc-context";
+import CustomAlert from "../../Component/Alert";
+
 const Login = ({ changeStat }) => {
-  // const auth = useAuth();
   const navigate = useNavigate()
   const { setDataAlert } = useContext(AlertContext)
   const [showPassword, setShowPassword] = React.useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const [paramsLogin,setparamsLogin] = React.useState({})
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };  
-  const handleLogin = async() => {
-    const dataReadyLogin = paramsLogin
+  const handleClickShowPassword = () => setShowPassword((show) => !show); 
+
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const validationSchema = yup.object().shape({
+    email: yup.string().required("Email is required").email("Invalid email address"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must not exceed 16 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
+  });
+
+  const { handleSubmit, formState: { errors }, register } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
+
+  const handleLogin = async (data) => {
+    setIsLoading(true)
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/auth/login`,
-      data: dataReadyLogin,
+      data,
       isLogin: true
     })    
     if (!res.isError) {
@@ -48,7 +67,7 @@ const Login = ({ changeStat }) => {
       setDataAlert({
         severity: 'success',
         open: true,
-        message: res.detail
+        message: "Login successful!"
       })
       const currentUserId = localStorage.getItem("userId");
       const resUser = await client.requestAPI({
@@ -59,28 +78,22 @@ const Login = ({ changeStat }) => {
         localStorage.setItem("photoProfile", resUser.data.attributes.photoProfile);
       }
       navigate('/workingReport')
+      setIsLoading(false);
     }else{
       setDataAlert({
         severity: 'error',
         open: true,
-        message: res.error.detail
-      })       
-    }    
-    // auth.signinRedirect();
+        message: res.error.meta.message
+      })   
+      setIsLoading(false);    
+    }   
   };
 
-  useEffect(() => {
-    console.log("paramsLogin", paramsLogin)
-  },[paramsLogin])
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    const updateParams = { ...paramsLogin };
-    updateParams[name] = value;
-    setparamsLogin(updateParams)      
-  }
 
   return (
+    <>
+    <CustomAlert />
+    <form onSubmit={handleSubmit(handleLogin)}>
     <Grid container paddingTop={20}>
       <Grid item xs={12}>
         <Typography variant="body2">Welcome to</Typography>
@@ -90,29 +103,29 @@ const Login = ({ changeStat }) => {
         <Typography variant="body4">Please sign in to continue</Typography>
       </Grid>
       <Grid item xs={12} paddingBottom={2} paddingTop={4}>
-        <TextField 
+        <TextField
           label="Email"
-          onChange={(e) => handleChange(e)}
-          name="email"
           fullWidth
           placeholder="Input your email"
+          {...register('email')}
+          error={errors.email !== undefined}
+          helperText={errors.email ? errors.email.message : ''}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
                 <PersonOutlineOutlinedIcon />
               </InputAdornment>
             ),
-          }} 
+          }}
         />
       </Grid>
       <Grid item xs={12} paddingBottom={2}>
-        <TextField 
-          fullWidth 
-          placeholder="Input your password" 
-          label="password" 
-          onChange={(e) => handleChange(e)}
-          name="password"
-          type={showPassword ? 'text' : 'password'}
+        <TextField
+          fullWidth
+          {...register('password')}
+          label="Password"
+          placeholder="Input your password"
+          type={showPassword ? "text" : "password"}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -124,14 +137,16 @@ const Login = ({ changeStat }) => {
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
+                  onMouseDown={(e) => e.preventDefault()}
                 >
-                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
               </InputAdornment>
-            )
-          }} 
-        />
+            ),
+          }}
+          error={errors.password !== undefined}
+          helperText={errors.password ? errors.password.message : ''}
+        />    
       </Grid>
       <Grid item xs={6}>
         <FormGroup>
@@ -139,14 +154,25 @@ const Login = ({ changeStat }) => {
         </FormGroup>
       </Grid>
       <Grid item xs={6} textAlign="right" alignSelf="center">
-        <Typography style={{ cursor: 'pointer' }} variant='primaryText' onClick={() => changeStat('forgot')}>Forgot Password ?</Typography>
+        <Typography style={{ cursor: "pointer" }} variant="primaryText" onClick={() => changeStat("forgot")}>
+          Forgot Password ?
+        </Typography>
       </Grid>
       <Grid item xs={12} paddingTop={2}>
-        <Button variant="primaryButton" fullWidth onClick={() => handleLogin()}>
-          SIGN IN
+        <Button variant="contained" type="submit" fullWidth disabled={isLoading}>
+        {isLoading ? (
+          <>
+            <CircularProgress size={16} color="inherit" />
+            <Typography marginLeft={1}>Loading...</Typography>
+          </>
+        ) : (
+          "SIGN IN"
+        )}
         </Button>
       </Grid>
     </Grid>
+    </form>
+    </>
   );
 };
 
