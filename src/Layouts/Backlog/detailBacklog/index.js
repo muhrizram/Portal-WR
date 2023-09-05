@@ -402,9 +402,18 @@ const DetailBacklog = () => {
   };
 
   const handleDeleteTask = (taskId) => {
+    if (tasks.length === 1) {
+      setDataAlert({
+        severity: 'error',
+        message: 'Cannot delete task.',
+        open: true,
+      });
+    }
+    else{
     handleUpdateTasks(taskId);
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
+    }
   };
 
   const handleUpdateTask = (updatedTask) => {    

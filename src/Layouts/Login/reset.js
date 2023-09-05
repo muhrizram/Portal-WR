@@ -26,13 +26,9 @@ const Schemareset = Yup.object().shape({
       ).required(`${textPlease} Confirm Password`),
   });
 
-const Reset = ({changeStat, open=false, handleClose = () => false}) => {
+const Reset = ({open=false, handleClose = () => false}) => {
   
-  const [dataPassword, setDataPassword] = useState({
-    password: '',
-    newPassword: '',
-    confirmPassword: ''
-  })
+  const [dataPassword, setDataPassword] = useState({})
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const { setDataAlert } = useContext(AlertContext)
@@ -52,30 +48,17 @@ const Reset = ({changeStat, open=false, handleClose = () => false}) => {
 
   const handleReset = async() => {
     console.log("coba data reset", dataPassword)
-
-    if(dataPassword.newPassword !== dataPassword.confirmPassword){
-      setDataAlert({
-          severity: 'error',
-          open: true,
-          // message: res.error.detail
-          // message: 'new password dan confirm tidak sama'
-      })
-    } else if(dataPassword.password === dataPassword.newPassword){
-      setDataAlert({
-          severity: 'error',
-          open: true,
-          // message: res.error.detail
-          // message: 'password tidak boleh sama dengan sebelumnya'
-      })
-    }
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/auth/changePassword`,
       data: dataPassword,
-      isLogin: true
+      // isLogin: true
     })    
     console.log("cek respon", res)
     if (!res.isError) {
+      
+      localStorage.removeItem('token')
+      localStorage.removeItem('refreshtoken')
       setDataAlert({
         severity: 'success',
         open: true,
@@ -123,120 +106,105 @@ const Reset = ({changeStat, open=false, handleClose = () => false}) => {
         </DialogContentText>
       </DialogContent>
 
-        <DialogContent>
-        {/* <FormProvider {...methods}> */}
-          {/* <form onSubmit={methods.handleSubmit()}> */}
-            {/* <div> */}
-          <Grid item xs={12} paddingBottom={2} paddingTop={1}>
-            <TextField 
-              label="Current Password*"
-              name="password"
-              fullWidth
-              onChange={(e) => handleChange(e)}
-              placeholder="Input your password"
-              type={showPassword ? 'text' : 'password'}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }} 
-            />
-          </Grid>
-          <Grid item xs={12} paddingBottom={2} paddingTop={1}>
-            <TextField 
-              label="New Password*"
-              name="newPassword"
-              fullWidth
-              onChange={(e) => handleChange(e)}
-              placeholder="Input your password"
-              type={showPassword ? 'text' : 'password'}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }} 
-            />
-          </Grid>
-          <Grid item xs={12} paddingBottom={2} paddingTop={1}>
-            <TextField 
-              label="Confirm New Password*"
-              name="confirmPassword"
-              fullWidth
-              onChange={(e) => handleChange(e)}
-              placeholder="Input your pasword"
-              type={showPassword ? 'text' : 'password'}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockOutlinedIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }} 
-            />
-          </Grid>
-          
-        </DialogContent>
-
-          <DialogActions>
-            <Button onClick={handleClose} variant='outlined' className='button-text'>Back</Button>
-            <Button onClick={handleReset} variant='contained' className='button-text'>Save Data</Button>
-          {/* <Grid item xs={12} paddingTop={4} >
-            <Button 
-                variant="primaryButton"
-                type="submit"
-                fullWidth
-                disabled={!fieldDisable}
-                onClick={handleReset}
-            >
-                SET NEW PASSWORD
-            </Button>
-          </Grid>
-          <Grid item xs={12} padding={2}>
-            <Divider />
-          </Grid>
-          <Grid item xs={12} textAlign="center" display="flex" alignItems="center" justifyContent="center">
-              <ArrowBackIosNewIcon style={{ color: "#0078D7", fontSize: '18px', paddingRight: '14px' }} />
-              <Typography style={{ cursor: 'pointer' }} variant='primaryText' onClick={() => changeStat('login')}>BACK TO LOG IN</Typography>
-          </Grid> */}
-            </DialogActions>
+      <DialogContent>
+      <FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit()}>
+          <div>
+        <Grid item xs={12} paddingBottom={2} paddingTop={1}>
+          <TextField 
+            label="Current Password*"
+            name="password"
+            fullWidth
+            onChange={(e) => handleChange(e)}
+            placeholder="Input your password"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlinedIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                  </IconButton>
+                </InputAdornment>
+              )
+            }} 
+          />
+        </Grid>
+        <Grid item xs={12} paddingBottom={2} paddingTop={1}>
+          <TextField 
+            label="New Password*"
+            name="newPassword"
+            fullWidth
+            onChange={(e) => handleChange(e)}
+            placeholder="Input your password"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlinedIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                  </IconButton>
+                </InputAdornment>
+              )
+            }} 
+          />
+        </Grid>
+        <Grid item xs={12} paddingBottom={2} paddingTop={1}>
+          <TextField 
+            label="Confirm New Password*"
+            name="confirmPassword"
+            fullWidth
+            onChange={(e) => handleChange(e)}
+            placeholder="Input your pasword"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlinedIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                  </IconButton>
+                </InputAdornment>
+              )
+            }} 
+          />
+        </Grid>
+        
+      <DialogActions>
+        <Button onClick={handleClose} variant='outlined' className='button-text'>Back</Button>
+        <Button onClick={handleReset} variant='contained' className='button-text'>Save Data</Button>
+      </DialogActions>
       
+        </div>
+        </form>
+        </FormProvider>
+      </DialogContent>
+
     </Dialog>
     </>
   )

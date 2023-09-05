@@ -21,7 +21,7 @@ const CreateCompany = () => {
   const [isSave, setIsSave] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const [file, setFile] = useState('')
-  const [filePath, setFilePath] = useState('')
+  const [filePath, setFilePath] = useState()
   const dataBread = [
     {
       href: "/dashboard",
@@ -71,40 +71,51 @@ const CreateCompany = () => {
     if(!isSave){
       setOpen(false)
     } else{
-      const data = {
-        ...sendData,
-        companyProfile: filePath,
-        createdBy: parseInt(localStorage.getItem('userId')),
-        lastModifiedBy: parseInt(localStorage.getItem('userId'))
-      }
-      const res = await client.requestAPI({
-        method: 'POST',
-        endpoint: '/company/addCompany',
-        data
-      })
-      if (!res.isError) {
-        setDataAlert({
-          severity: 'success',
-          open: true,
-          message: res.data.meta.message
-        })
-        setTimeout(() => {
-          navigate('/master-company')
-        }, 3000)
-      } else {
+      if(filePath === false){
+        
         setDataAlert({
           severity: 'error',
-          message: res.error.meta.message,
+          message: 'Max Image Size is 3 MB',
           open: true
         })
       }
-      setOpen(false)
+      else{
+        const data = {
+          ...sendData,
+          companyProfile: filePath,
+          createdBy: parseInt(localStorage.getItem('userId')),
+          lastModifiedBy: parseInt(localStorage.getItem('userId'))
+        }
+        const res = await client.requestAPI({
+          method: 'POST',
+          endpoint: '/company/addCompany',
+          data
+        })
+        if (!res.isError) {
+          setDataAlert({
+            severity: 'success',
+            open: true,
+            message: res.data.meta.message
+          })
+          setTimeout(() => {
+            navigate('/master-company')
+          }, 3000)
+        } else {
+          setDataAlert({
+            severity: 'error',
+            message: res.error.detail,
+            open: true
+          })
+        }
+        setOpen(false)
+      }
     }
   }
 
   const handleChange = async (e) => {
     if (e.target.files) {
       const tempFilePath = await uploadFile(e.target.files[0])
+      console.log("cek", tempFilePath)
       setFilePath(tempFilePath)
       setFile(URL.createObjectURL(e.target.files[0]));
     }
@@ -188,33 +199,6 @@ const CreateCompany = () => {
                           label='Company Address'
                         />
                       </Grid>
-                      {/* <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picName'
-                          className='input-field-crud'
-                          placeholder='e.g Steven White'
-                          label='PIC Name'
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picPhone'
-                          className='input-field-crud'
-                          placeholder='e.g 08*********'
-                          label='PIC Phone'
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picEmail'
-                          className='input-field-crud'
-                          placeholder='e.g pic@mail.com'
-                          label='PIC Email'
-                        />
-                      </Grid> */}
                     </Grid>
                   <Grid
                     item 
