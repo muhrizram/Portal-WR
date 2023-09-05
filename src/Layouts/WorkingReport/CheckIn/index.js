@@ -186,7 +186,7 @@ export default function CheckinTime({ setIsCheckin }) {
                         value={10}
                         readOnly
                       >
-                        <MenuItem value={10}>Check In Present</MenuItem>
+                        <MenuItem disabled value={10}>Check In Present</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -196,13 +196,14 @@ export default function CheckinTime({ setIsCheckin }) {
                         Check In Location
                       </InputLabel>
                       <Select
+                        disabled
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Age"
                         value={10}
                         readOnly
                       >
-                        <MenuItem value={10}>Work From Office</MenuItem>
+                        <MenuItem disabled value={10}>Work From Office</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -215,7 +216,7 @@ export default function CheckinTime({ setIsCheckin }) {
                             console.log(value.format("HH:mm:ss"));
                           }}
                           value={startTime}
-                          label="Basic time picker"
+                          label="Start Time"
                         />
                       </DemoContainer>
                     </LocalizationProvider>
@@ -226,7 +227,7 @@ export default function CheckinTime({ setIsCheckin }) {
                         <TimePicker
                           onChange={(value) => setEndTime(value)}
                           value={endTime}
-                          label="Basic time picker"
+                          label="End Time"
                         />
                       </DemoContainer>
                     </LocalizationProvider>

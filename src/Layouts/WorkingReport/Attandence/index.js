@@ -103,6 +103,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday }) => {
         });
       }
     } else {
+      console.log("EHEHEHEASDASDASDA")
       body = {
         periodId: dataPeriod.period,
         presenceId: parseInt(presence.value),

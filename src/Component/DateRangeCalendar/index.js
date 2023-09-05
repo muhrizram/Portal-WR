@@ -1,4 +1,4 @@
-import React, { useEffect,useContext } from 'react';
+import React, { useEffect,useContext,useState } from 'react';
 import dayjs from 'dayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,8 +8,8 @@ import { Button, Grid, Typography } from '@mui/material';
 import { AlertContext } from '../../context';
 
 export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [filterOn, setFilterOn] = React.useState(false);
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
   const { setDataAlert } = useContext(AlertContext);
@@ -40,6 +40,8 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
   const ResetFilter = () => {
     setFilterOn(false)
     setStartDateCall(null)
+    setStartDate(null)
+    setEndDate(null)
     setEndDateCall(null)
     setWeekendDates([])
   }
