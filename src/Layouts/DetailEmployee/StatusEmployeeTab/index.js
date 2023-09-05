@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,20 +8,24 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CircularProgress, Grid, IconButton, Typography } from "@mui/material";
+import { CircularProgress, Dialog, Grid, IconButton, Typography } from "@mui/material";
 import client from "../../../global/client";
 import blanktable from "../../../assets/blanktable.png";
+import { AlertContext } from "../../../context";
+import DeleteDialog from "../../../Component/DialogDelete";
 
-const StatusEmployeeTab = ({ id }) => {
+const StatusEmployeeTab = ({ id, dataChange }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [noDataMessage, setNoDataMessage] = useState("");
+  const { setDataAlert } = useContext(AlertContext);
 
   const getData = async (id) => {
     setLoading(true);
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/contractHistory?id=${105}`,
+      endpoint: `/users/contractHistory?id=${id}`,
     });
     if (!res.isError) {
       setData(res.data);
@@ -33,10 +37,30 @@ const StatusEmployeeTab = ({ id }) => {
 
   useEffect(() => {
     getData(id);
-  }, []);
+  }, [dataChange]);
 
-  const handleDelete = (id) => {
-    // console.log("ID", id);
+  const handleDelete = async (id) => {
+    setLoadingDelete(true);
+    const res = await client.requestAPI({
+      method:"DELETE",
+      endpoint: `/users/contractHistory?id=${id}`,
+    });
+    console.log("Delete contract: ", res);
+    if(!res.isError) {
+      setDataAlert({
+        severity: "warning",
+        open: true,
+        message: "",
+      });
+    }
+    else {
+      setDataAlert({
+        severity: "error",
+        open: true,
+        message: res.error.meta.message,
+      });
+    }
+    setLoadingDelete(false);
   };
 
   const intlDate = Intl.DateTimeFormat("id", {day:'2-digit', month:'2-digit', year:'numeric'});
@@ -92,7 +116,10 @@ const StatusEmployeeTab = ({ id }) => {
                 sx={{ color: "text.secondary", fontSize: "14px" }}
                 align="left"
               >
-                <Link href="">preview pdf</Link>
+                {row.attributes.file ?
+                <Link  href={`https://portalwr-dev.cloudias79.com/apis/minio/view?file=${row.attributes.file}`} target="_blank">preview pdf</Link>:
+                <Typography>-</Typography>
+              }
               </TableCell>
               <TableCell
                 sx={{ color: "text.secondary", fontSize: "14px" }}
@@ -105,6 +132,7 @@ const StatusEmployeeTab = ({ id }) => {
                 >
                   <DeleteIcon />
                 </IconButton>
+                <DeleteDialog dialogOpen={false} />
               </TableCell>
             </TableRow>
           ))}
