@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Button, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
@@ -32,14 +32,12 @@ import { AlertContext } from "../../context";
 import { useLocation } from "react-router-dom";
 import { UploadFileOutlined } from "@mui/icons-material";
 import client from "../../global/client";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import schemacontract from "./schema";
+import dayjs from "dayjs";
 
 const DetailEmployee = () => {
-  const ContractStatus = [
-    { label: "Fulltime" },
-    { label: "On Job Training" },
-    { label: "Bootcamp" },
-  ];
-
   const dataBread = [
     {
       href: "/dashboard",
@@ -78,7 +76,12 @@ const DetailEmployee = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
   const [AddContract, setAddContract] = useState(false);
-  
+  const [isContractAdded, setIsContractAdded] = useState(false);
+  const [contractStatusOL, setContractStatusOL] = useState([]);
+  const [contractOLValue, setContractOLValue] = useState({
+    id: null,
+    name: "",
+  });
   const [dataFix, setDataFix] = useState({
     jobTypeId: "",
     nip: "12345555",
@@ -144,46 +147,96 @@ const DetailEmployee = () => {
     setUploadedFile(file);
   }, []);
 
+  const { formState, handleSubmit, reset, control, getValues, setError } =
+    useForm({
+      resolver: yupResolver(schemacontract),
+      mode: "onBlur",
+      defaultValues: {
+        startDate: null,
+        endDate: null,
+        file: "",
+      },
+    });
+
   const MAX_SIZE_FILE = 10485760;
 
-  const onSave = async (event) => {
-    event.preventDefault();
-    if (uploadedFile.size >= MAX_SIZE_FILE) {
+  const onSave = async (data) => {
+    console.log("Before ", data);
+    if (uploadedFile) {
+      if (uploadedFile.size >= MAX_SIZE_FILE) {
+        setDataAlert({
+          severity: "error",
+          open: true,
+          message: "Max file size is 10 MB",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", uploadedFile);
+      const res = await client.requestAPI({
+        method: "POST",
+        endpoint: "/users/uploadFile",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if(!res.isError){
+        data.file = res.data.attributes.filePath;
+      }
+      else{
+        setDataAlert({
+          severity:"error",
+          open:true,
+          message:res.error.meta.message
+        });
+        return;
+      }
+    }
+    console.log("After ", data);
+    const bodyRequest = {
+      ...data,
+      userId: userId,
+      createdBy:parseInt(localStorage.getItem("userId")), // Current logged in user
+      contractStatus:data.contractStatus.id,
+    };
+    const res = await client.requestAPI({
+      method: "POST",
+      endpoint: "/users/add/contractUser",
+      data: bodyRequest,
+    });
+    if (!res.isError) {
+      setDataAlert({
+        severity: "success",
+        open: true,
+        message: res.data.meta.message,
+      });
+      reset();
+      setAddContract(false);
+      setIsContractAdded(!isContractAdded);
+    } else {
       setDataAlert({
         severity: "error",
         open: true,
-        message: "Max file size is 10 MB",
+        message: res.error.meta.message,
       });
-      return;
     }
+  };
 
-    // const formData = new FormData();
-    // formData.append("file", uploadedFile);
-    // const res = await client.requestAPI({
-    //   method: "POST",
-    //   endpoint: "/",
-    //   data: formData,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    // });
-
-    // if (!res.isError) {
-    //   setDataAlert({
-    //     severity: "success",
-    //     open: true,
-    //     message: res.meta.message,
-    //   });
-    //   setUploadedFile(null);
-    //   // getData();
-    //   setAddContract(false);
-    // } else {
-    //   setDataAlert({
-    //     severity: "error",
-    //     message: res.error.detail,
-    //     open: true,
-    //   });
-    // }
+  const getContractStatusOL = async () => {
+    const res = await client.requestAPI({
+      endpoint: "/ol/contractStatus?search=",
+      method: "GET",
+    });
+    const options = res.data.map((value) => ({
+      id: value.id,
+      name: value.attributes.name,
+    }));
+    if (!res.isError) {
+      setContractStatusOL(options);
+    }
   };
 
   const handleClickAddContract = () => {
@@ -192,6 +245,7 @@ const DetailEmployee = () => {
   const [open, setOpen] = useState(false);
   const handleCloseContract = () => {
     setAddContract(false);
+    reset();
   };
   const handleClose = () => {
     setOpen(false);
@@ -215,6 +269,10 @@ const DetailEmployee = () => {
   const clickEdit = () => {
     setIsEdit(true);
   };
+
+  useEffect(() => {
+    getContractStatusOL();
+  }, []);
 
   return (
     <>
@@ -263,7 +321,7 @@ const DetailEmployee = () => {
                   />
                 </Tabs>
               </Box>
-              {value === "one" && <StatusEmployeeTab id={userId} />}
+              {value === "one" && <StatusEmployeeTab id={userId} dataChange={isContractAdded}/>}
               {value === "two" && <ProjectHistoryTab id={userId} />}
 
               <Dialog
@@ -284,7 +342,11 @@ const DetailEmployee = () => {
                 >
                   {"Add Contract Status"}
                 </DialogTitle>
-                <form onSubmit={onSave} encType="multipart/formData">
+                <form
+                  onSubmit={handleSubmit(onSave)}
+                  encType="multipart/formData"
+                  noValidate
+                >
                   <DialogContent>
                     <DialogContentText
                       id="alert-dialog-description"
@@ -294,49 +356,120 @@ const DetailEmployee = () => {
                       management with ease by assigning and tracking various
                       contract statuses.
                     </DialogContentText>
-                    <Autocomplete
-                      disablePortal
-                      id="combo-box-demo"
-                      options={ContractStatus}
-                      sx={{ width: "100%", marginTop: "20px" }}
-                      renderInput={(params) => (
-                        <TextField
-                          required
-                          {...params}
-                          label="Contract Status"
+                    <Controller
+                      name="contractStatus"
+                      control={control}
+                      render={({ field }) => (
+                        <Autocomplete
+                          {...field}
+                          disablePortal
+                          id="combo-box-demo"
+                          options={contractStatusOL}
+                          getOptionLabel={(option) => option.name}
+                          sx={{ width: "100%", marginTop: "20px" }}
+                          value={contractOLValue}
+                          onChange={(_, newVal) => {
+                            setContractOLValue(newVal);
+                            field.onChange(newVal);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Contract Status"
+                              error={!!formState.errors.contractStatus}
+                            />
+                          )}
                         />
                       )}
                     />
+                    {formState.errors.contractStatus && (
+                      <Typography
+                        color="#d32f2f"
+                        textAlign={"left"}
+                        fontSize={12}
+                        fontStyle={"italic"}
+                      >
+                        {formState.errors.contractStatus.message}
+                      </Typography>
+                    )}
                     <Grid container direction="row" sx={{ marginTop: "20px" }}>
                       <Grid item xs={6}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DemoContainer components={["DatePicker"]}>
-                            <DatePicker
-                              label="Contract Start Date"
-                              sx={{ width: "100%", paddingRight: "20px" }}
-                              slotProps={{
-                                textField: {
-                                  required: true,
-                                },
-                              }}
-                            />
-                          </DemoContainer>
-                        </LocalizationProvider>
+                        <Controller
+                          name="startDate"
+                          control={control}
+                          render={({ field }) => (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DemoContainer components={["DatePicker"]}>
+                                <DatePicker
+                                  {...field}
+                                  label="Contract Start Date"
+                                  sx={{ width: "100%", paddingRight: "20px" }}
+                                  value={field.value}
+                                  onChange={(value) => {
+                                    field.onChange(
+                                      value ? value.format("YYYY-MM-DD") : null
+                                    );
+                                  }}
+                                  onAccept={field.onBlur}
+                                  slotProps={{
+                                    textField: {
+                                      error: !!formState.errors.startDate,
+                                    },
+                                  }}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          )}
+                        />
+                        {formState.errors.startDate && (
+                          <Typography
+                            color="#d32f2f"
+                            textAlign={"left"}
+                            fontSize={12}
+                            fontStyle={"italic"}
+                          >
+                            {formState.errors.startDate.message}
+                          </Typography>
+                        )}
                       </Grid>
                       <Grid item xs={6}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DemoContainer components={["DatePicker"]}>
-                            <DatePicker
-                              label="Contract End Date"
-                              sx={{ width: "100%" }}
-                              slotProps={{
-                                textField: {
-                                  required: true,
-                                },
-                              }}
-                            />
-                          </DemoContainer>
-                        </LocalizationProvider>
+                        <Controller
+                          name="endDate"
+                          control={control}
+                          render={({ field }) => (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DemoContainer components={["DatePicker"]}>
+                                <DatePicker
+                                  {...field}
+                                  label="Contract End Date"
+                                  sx={{ width: "100%" }}
+                                  value={field.value}
+                                  onChange={(value) => {
+                                    field.onChange(
+                                      value ? value.format("YYYY-MM-DD") : null
+                                    );
+                                  }}
+                                  onAccept={field.onBlur}
+                                  slotProps={{
+                                    textField: {
+                                      error: !!formState.errors.endDate,
+                                    },
+                                  }}
+                                />
+                              </DemoContainer>
+                            </LocalizationProvider>
+                          )}
+                        />
+                        {formState.errors.endDate && (
+                          <Typography
+                            color="#d32f2f"
+                            textAlign={"left"}
+                            fontSize={12}
+                            fontStyle={"italic"}
+                          >
+                            {formState.errors.endDate.message}
+                          </Typography>
+                        )}
                       </Grid>
                     </Grid>
                     <Grid container direction="row" sx={{ marginTop: "20px" }}>
@@ -402,7 +535,9 @@ const DetailEmployee = () => {
                       </Grid>
                     </Grid>
                   </DialogContent>
-                  <DialogActions sx={{ alignSelf: "center", justifyContent:"center" }}>
+                  <DialogActions
+                    sx={{ alignSelf: "center", justifyContent: "center" }}
+                  >
                     <Button
                       variant="outlined"
                       className="button-text"

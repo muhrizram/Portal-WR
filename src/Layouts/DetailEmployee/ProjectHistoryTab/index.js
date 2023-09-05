@@ -86,7 +86,7 @@ const ProjectHistoryTab = ({ id }) => {
   const getData = async (id) => {
     setLoading(true);
     const res = await client.requestAPI({
-      endpoint: `/userUtilization/detail?id=3&page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
+      endpoint: `/userUtilization/detail?id=${id}`,
       method: "GET",
     });
 
