@@ -30,7 +30,7 @@ import './calender.css'
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail, updateFilterDates }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -53,12 +53,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
    setCurrentMonthYear(formattedMonthYear);
   },[])  
   
-  const navigateNextMonth = () => {
+  const navigateNextMonth = () => {    
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
+    updateFilterDates(moment(activeMonth).add(1, "month").toDate(), true);
   };
   
-  const navigatePreviousMonth = () => {
+  const navigatePreviousMonth = () => {    
     setActiveMonth(moment(activeMonth).subtract(1, "month").toDate());
+    updateFilterDates(moment(activeMonth).subtract(1, "month").toDate(),false);
   };
 
   const CustomButton = styled(Button)(({ theme }) => ({
@@ -107,15 +109,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     setFullWidth(event.target.checked);
   }; 
 
-  const renderCalendar = (info) => {            
-    const currentDate = moment().startOf("day");
-
+  const renderCalendar = (info) => {
+    const currentDate = moment().startOf("day");    
     const isWeekend = (date) => {
       const dayOfWeek = moment(date).day();      
       return dayOfWeek === 0 || dayOfWeek === 6;
     };
        
-      const datalibur = moment(info.date).format("yyyy-MM-DD") 
+      const datalibur = moment(info.date).format("yyyy-MM-DD")      
       const data = events.filter(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );      
@@ -165,13 +166,33 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           )}
                         </Grid>
                         {isWeekend(info.date) ? (
+                          <>
+                          {moment(info.date).isSameOrBefore(currentDate) && (
+                            <CustomButton
+                            variant="outlined-warning"
+                            // onClick={
+                            //   data[0].overtime == true ?() => {
+                            //     setId(data[0].workingReportId)
+                            //     setWrIdDetail(data[0].workingReportId);
+                            //     setIsViewOvertime(true);
+                            //   }
+                            //   : () => {
+                            //     setOpenOvertime(true);
+                            //     setId(data[0].workingReportId)
+                            //   }
+                            //  }
+                          >Overtime
+                            {/* {data[0].overtime == true ? "View Overtime" : "Overtime"} */}
+                          </CustomButton>
+                          )}                          
                           <Grid justifyContent="left">
                               <Button variant="outlined-holiday">
                                 holiday
                               </Button>
-                          </Grid>                          
-                        ) : (
+                          </Grid>
                           
+                          </>
+                        ) : (                          
                           data.length > 0 && data[0].workingReportId ? (
 
                             <CustomButton variant="outlined-task" onClick={                              
@@ -182,8 +203,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   absenceId: data[0].absenceId,
                                 });
                                 setWrIdDetail(data[0].workingReportId);
-                                setIsViewTask(true);
-                                // setOpenTask(true);
+                                setIsViewTask(true);                                
                                 }
                               : () => {                          
                                 setOpenTask(true);
@@ -206,8 +226,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   )}
                 </Grid>   
             {data.length > 0 ? 
-            <> 
-
+              <> 
                 <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "4vh", marginTop: "0.8vh", flexDirection: "column" }}>                
                 {info.isToday && !data[0].workingReportId ? (
                   <Button                    
@@ -240,8 +259,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 ) : 
                 (
                   data[0].overtime === true && (
-                  <Button
-                    // sx={{marginTop: "5vh"}}
+                  <Button                    
                     variant="outlined-warning"
                     onClick={
                       () => {
@@ -290,8 +308,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   )              
                 }                
               </Grid>
-            </> : null
-          
+            </> : null          
             }
           </Grid>
         );
@@ -333,7 +350,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         // initialView={"dayGridMonth"}
         firstDay={1}
-        key={activeMonth.getTime()}
+        key={activeMonth.getTime()} 
         initialDate={activeMonth}
         dayCellContent={(info, create) => renderCalendar(info)}        
         // eventAdd={(info, create) => renderCalendar(info)}
