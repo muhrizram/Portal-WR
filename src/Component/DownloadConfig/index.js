@@ -19,8 +19,10 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
 
   const [dataApproval, setDataApprove] = useState([
     {
+      approvalHeader: '',
       approvalName: '',
-      approvalRole: ''
+      approvalRole: '',
+      signatureName: ''
     }
   ])
   console.log("approval : ", dataApproval);
@@ -70,9 +72,10 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
   const saveConfiguration = () => {
     const tempApproval = dataApproval.map(res => {
       return {
-        headerValue: "",
+        headerValue: res.approvalHeader,
         nameValue: res.approvalName,
-        roleValue: res.approvalRole
+        roleValue: res.approvalRole,
+        signatureName: res.signatureName
       }
     })
     localStorage.setItem(

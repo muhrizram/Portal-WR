@@ -43,7 +43,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [StartDate, setStartDate] = useState()
   const [EndDate, setEndDate] = useState()
   const [activeMonth, setActiveMonth] = useState(new Date());
-
+  const [wrDate, setWrDate] = useState(null)
 
   const navigate = useNavigate();
 
@@ -134,7 +134,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     datalibur[0].workingReportId == null ? (
                       <>
                         <Grid>                      
-                        {moment(info.date).isSameOrBefore(currentDate) && data.length > 0 && !data[0].workingReportId && !data.task ? (
+                        {moment(info.date).isSameOrBefore(currentDate) && data.length > 0 && !data[0].workingReportId && !data.task && !isWeekend(info.date) ? (
                           <Button
                             variant="outlined-attedance"
                             onClick={() => {
@@ -158,6 +158,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               : () => {
                                 setOpenOvertime(true);
                                 setId(data[0].workingReportId)
+                                setWrDate(data[0].tanggal)
                               }
                              }
                           >
@@ -166,31 +167,12 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           )}
                         </Grid>
                         {isWeekend(info.date) ? (
-                          <>
-                          {moment(info.date).isSameOrBefore(currentDate) && (
-                            <CustomButton
-                            variant="outlined-warning"
-                            // onClick={
-                            //   data[0].overtime == true ?() => {
-                            //     setId(data[0].workingReportId)
-                            //     setWrIdDetail(data[0].workingReportId);
-                            //     setIsViewOvertime(true);
-                            //   }
-                            //   : () => {
-                            //     setOpenOvertime(true);
-                            //     setId(data[0].workingReportId)
-                            //   }
-                            //  }
-                          >Overtime
-                            {/* {data[0].overtime == true ? "View Overtime" : "Overtime"} */}
-                          </CustomButton>
-                          )}                          
+                          <>                               
                           <Grid justifyContent="left">
                               <Button variant="outlined-holiday">
                                 holiday
                               </Button>
-                          </Grid>
-                          
+                          </Grid>                          
                           </>
                         ) : (                          
                           data.length > 0 && data[0].workingReportId ? (
@@ -251,6 +233,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       : () => {
                         setOpenOvertime(true);
                         setId(data[0].workingReportId)
+                        setWrDate(data[0].tanggal)
                       }
                     }
                   >
@@ -426,7 +409,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} />
+      <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} wrDate={wrDate} />
       <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
     </Grid>
   );

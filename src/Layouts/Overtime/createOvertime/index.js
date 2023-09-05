@@ -27,9 +27,6 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { duration } from "moment";
-
-
 
 const CreateOvertime = ({
   open,
@@ -37,7 +34,8 @@ const CreateOvertime = ({
   isEdit,
   closeOvertime,
   setSelectedWorkingReportId,
-  dataDetail
+  dataDetail,
+  wrDate
 }) => {
 
   const navigate = useNavigate()
@@ -56,6 +54,8 @@ const CreateOvertime = ({
   const selectedTask = optTask.find((item) => item.taskId);
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
+
+  const currentUserId = parseInt(localStorage.getItem("userId"))
 
   const clearProject = {
     projectId: '',
@@ -117,6 +117,8 @@ const CreateOvertime = ({
         listProject: temp,
         startTime:time.startTime,
         endTime: time.endTime,
+        createdBy: currentUserId,
+        updatedBy: currentUserId
       }))
     }
   }
@@ -154,7 +156,7 @@ const CreateOvertime = ({
       else if(name === 'taskName'){
         updateDataEditOvertime.listProject[idxProject].listTask[index].backlogId = backlogId
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = taskId
-        updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = 270
+        // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = 270
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = null
         console.log("HAHAHAYU BELOM",updateDataEditOvertime.listProject[0].listTask[0])
         // temp.listProject[0].listTask[0].backlogId = "35"
@@ -264,9 +266,10 @@ const onSave = async () => {
     const data = {
       startTime: startTime,
       endTime: endTime,
+      date: wrDate,
       ...dataOvertime,
-      createdBy: parseInt(localStorage.getItem("userId")),
-      updatedBy: parseInt(localStorage.getItem("userId"))
+      createdBy: currentUserId,
+      updatedBy: currentUserId
     }
     const res = await client.requestAPI({
       method: 'POST',
@@ -301,8 +304,8 @@ const onSave = async () => {
     const dataUpdate = {
       workingReportId : null,
       listProjectId : [],
-      createdBy: '',
-      updatedBy: ''
+      createdBy: currentUserId,
+      updatedBy: currentUserId
     }
 
     console.log("DATA EDIT", dataUpdate)

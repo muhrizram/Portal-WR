@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React, { lazy, useEffect } from "react";
 import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
@@ -9,6 +9,7 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
+import { useNavigate } from "react-router-dom";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -195,11 +196,24 @@ const closedRoutes = [
 
 // final routes with controll
 export const finalRoutes = () => {
+  const navigate = useNavigate();
   
   const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
   const userId = localStorage.getItem("userId") || null
+  const token = localStorage.getItem("token");
   // Comment if route user already exist
   // const tempRoute = ['master-holiday', 'master-company']
+  useEffect(() => {
+    if (!!token) {
+      if (window.location.pathname === "/login") {
+        navigate("/workingReport");
+      }
+    } else {
+      if (window.location.pathname !== "/login") {
+        navigate("/login");
+      }
+    }
+  }, [token, navigate]);
 
   // localStorage.setItem('privilage', JSON.stringify(tempRoute))
   const userRoutes = JSON.parse(localStorage.getItem("privilage") || '[]');
