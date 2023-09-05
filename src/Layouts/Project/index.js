@@ -16,6 +16,7 @@ export default function Project() {
       field: "no",
       headerName: "No",
       flex: 1,
+      sortable: false,
     },
     {
       field: "projectName",
@@ -41,7 +42,7 @@ export default function Project() {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: "projectName",
+    sortName: "projectType",
     sortType: "asc",
     search: "",
   });
@@ -53,7 +54,7 @@ export default function Project() {
       sortName:
         dataFilter.sorting.field !== ""
           ? dataFilter.sorting[0].field
-          : "projectName",
+          : "",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
       search: filter.search,

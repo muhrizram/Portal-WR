@@ -508,7 +508,7 @@ export default function WorkingReport() {
                     <Grid item xs={4}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
-                        {!selectedUserDetail.email ? "-" : selectedUserDetail.email}
+                        {selectedUserDetail == null ? "-" : selectedUserDetail.email}
                       </Typography>
                     </Grid>
                   </>
