@@ -20,7 +20,7 @@ import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 
-export default function CheckinTime({ setIsCheckin }) {
+export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -39,6 +39,7 @@ export default function CheckinTime({ setIsCheckin }) {
     const imageSrc = webcamRef.current.getScreenshot();
     setPicture(imageSrc);
   }, [webcamRef]);
+
   const checkIn = async () => {
     const blob = await fetch(picture).then((res) => res.blob());
     const file = new File([blob], "test_picture.jpg");
@@ -53,6 +54,7 @@ export default function CheckinTime({ setIsCheckin }) {
       endTime: endTime.format("HH:mm:ss"),
       file: result,
     };
+
     const res = await client.requestAPI({
       endpoint: "/workingReport/attendance/checkIn",
       method: "POST",
@@ -73,6 +75,30 @@ export default function CheckinTime({ setIsCheckin }) {
         open: true,
       });
     }
+
+    const resAttedance = await client.requestAPI({
+          endpoint: "/workingReport/notAttendance",
+          method: "POST",
+          data: dataReadyAttedance,
+        });
+        console.log("res: ", resAttedance);
+        if (!resAttedance.isError) {
+          setDataAlert({
+            severity: "success",
+            open: true,
+            message: res.data.meta.message,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
+        }
+        {
+          setDataAlert({
+            severity: "error",
+            message: resAttedance.error.detail,
+            open: true,
+          });
+        }
   };
 
   useEffect(() => {
@@ -180,6 +206,7 @@ export default function CheckinTime({ setIsCheckin }) {
                         Presence
                       </InputLabel>
                       <Select
+                        disabled
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Age"
