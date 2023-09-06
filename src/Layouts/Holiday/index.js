@@ -29,7 +29,7 @@ const MasterHoliday = () => {
       flex: 1
     },
     {
-      field: 'day',
+      field: 'weekday',
       headerName: 'Weekday',
       flex: 1,
     },
@@ -104,7 +104,7 @@ const MasterHoliday = () => {
         no: number + (index + 1),
         id: value.id,
         date: value.attributes.date,
-        day: value.attributes.weekdays,
+        weekday: value.attributes.weekday,
         notes: value.attributes.notes
       }
     })

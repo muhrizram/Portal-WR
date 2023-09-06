@@ -119,7 +119,6 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                         control={control}
                         defaultValue={null}
                         render={({ field, fieldState }) => {
-                          console.log("asd ", formState.errors.date);
                           return (
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <DatePicker
@@ -133,7 +132,7 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                                     value ? value.format("YYYY-MM-DD") : null
                                   )
                                 }
-                                onAccept={() => field.onBlur()}
+                                onAccept={field.onBlur}
                                 sx={{
                                   width: "100%",
                                 }}

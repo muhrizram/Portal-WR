@@ -35,7 +35,6 @@ import client from "../../global/client";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import schemacontract from "./schema";
-import dayjs from "dayjs";
 
 const DetailEmployee = () => {
   const dataBread = [
@@ -147,7 +146,7 @@ const DetailEmployee = () => {
     setUploadedFile(file);
   }, []);
 
-  const { formState, handleSubmit, reset, control, getValues, setError } =
+  const { formState, handleSubmit, reset, control } =
     useForm({
       resolver: yupResolver(schemacontract),
       mode: "onBlur",
@@ -212,6 +211,7 @@ const DetailEmployee = () => {
         message: res.data.meta.message,
       });
       setContractOLValue({id:null, name:""});
+      setUploadedFile(null);
       reset();
       setAddContract(false);
       setIsContractAdded(!isContractAdded);
@@ -245,6 +245,7 @@ const DetailEmployee = () => {
   const handleCloseContract = () => {
     setAddContract(false);
     setContractOLValue({id:null, name:""});
+    setUploadedFile(null);
     reset();
   };
   const handleClose = () => {
