@@ -133,10 +133,8 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
     navigator.geolocation.getCurrentPosition((position) => {
       setLat(position.coords.latitude);
       setLon(position.coords.longitude);
-    });
-    console.log("ini Start",startTime)
-    console.log("ini Start",endTime)
-  }, [startTime,endTime]);
+    });   
+  }, []);
 
   return (
     <Grid container>
