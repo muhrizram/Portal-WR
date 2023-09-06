@@ -46,6 +46,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [wrDate, setWrDate] = useState(null)
   const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
+  const [finalDateCalendar,setfinalDateCalendar] = useState()
 
   const navigate = useNavigate();
 
@@ -53,7 +54,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
    const currentDate = new Date();
    const formattedMonthYear = moment(currentDate).format("MMMM YYYY");
    setCurrentMonthYear(formattedMonthYear);
-  },[])  
+   console.log("INI START", EndDate)
+   tambahSatuHari()
+  },[EndDate])  
   
   const navigateNextMonth = () => {    
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
@@ -110,6 +113,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const handleFullWidthChange = (event) => {
     setFullWidth(event.target.checked);
   }; 
+
+  const tambahSatuHari = () => {
+    if(EndDate){
+      const tanggalAwal = new Date(EndDate);
+      tanggalAwal.setDate(tanggalAwal.getDate() + 1);
+        
+      const tanggalBaru = tanggalAwal.toISOString().split('T')[0];
+      setfinalDateCalendar(tanggalBaru);
+    }
+  };
 
   const renderCalendar = (info) => {
     const currentDate = moment().startOf("day");    
@@ -357,7 +370,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
           {events},
           {
             start: StartDate,
-            end: EndDate,
+            end: finalDateCalendar,
             display: 'background',
             color:'blue'
           },

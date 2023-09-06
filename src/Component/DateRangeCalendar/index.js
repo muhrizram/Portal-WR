@@ -10,7 +10,6 @@ import { AlertContext } from '../../context';
 export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [filterOn, setFilterOn] = React.useState(false);
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
   const { setDataAlert } = useContext(AlertContext);
 
@@ -37,8 +36,7 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
     return weekendDates;
   };
 
-  const ResetFilter = () => {
-    setFilterOn(false)
+  const ResetFilter = () => {    
     setStartDateCall(null)
     setStartDate(null)
     setEndDate(null)
@@ -61,8 +59,7 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
     const weekendDates = calculateWeekendDates(start, end);     
 
     console.log("Weekend Dates:", weekendDates);
-    setWeekendDates(weekendDates)
-    setFilterOn(true)
+    setWeekendDates(weekendDates)    
     setStartDateCall(startDate)
     setEndDateCall(endDate)
     }    
@@ -79,13 +76,13 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem >
-              <MobileDatePicker disabled={filterOn} value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
+              <MobileDatePicker value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
             </DemoItem>
           </Grid>
           <Grid item padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker disabled={filterOn} value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
+              <MobileDatePicker value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
           <Grid item sx={{marginTop:'2%'}}>

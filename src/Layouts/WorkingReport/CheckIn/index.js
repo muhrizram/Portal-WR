@@ -20,7 +20,7 @@ import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 
-export default function CheckinTime({ setIsCheckin }) {
+export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -39,6 +39,29 @@ export default function CheckinTime({ setIsCheckin }) {
     const imageSrc = webcamRef.current.getScreenshot();
     setPicture(imageSrc);
   }, [webcamRef]);
+
+  const cekRangeHour = () => {
+    if (!startTime || !endTime) {
+      console.log("Start time and end time must be selected.");
+    } else {
+      const startHour = startTime.getHours();
+      const endHour = endTime.getHours();
+      const startMinute = startTime.getMinutes();
+      const endMinute = endTime.getMinutes();
+  
+      const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
+  
+      if (totalMinutes >= 480) {
+        // setIsTakePicture(true);
+        console.log("Aman");
+      } else {
+        console.log("Rentang waktu harus minimal 8 jam.");
+      }
+    }
+  };
+  
+  
+
   const checkIn = async () => {
     const blob = await fetch(picture).then((res) => res.blob());
     const file = new File([blob], "test_picture.jpg");
@@ -53,6 +76,7 @@ export default function CheckinTime({ setIsCheckin }) {
       endTime: endTime.format("HH:mm:ss"),
       file: result,
     };
+
     const res = await client.requestAPI({
       endpoint: "/workingReport/attendance/checkIn",
       method: "POST",
@@ -73,6 +97,30 @@ export default function CheckinTime({ setIsCheckin }) {
         open: true,
       });
     }
+
+    const resAttedance = await client.requestAPI({
+          endpoint: "/workingReport/notAttendance",
+          method: "POST",
+          data: dataReadyAttedance,
+        });
+        console.log("res: ", resAttedance);
+        if (!resAttedance.isError) {
+          setDataAlert({
+            severity: "success",
+            open: true,
+            message: res.data.meta.message,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
+        }
+        {
+          setDataAlert({
+            severity: "error",
+            message: resAttedance.error.detail,
+            open: true,
+          });
+        }
   };
 
   useEffect(() => {
@@ -80,7 +128,9 @@ export default function CheckinTime({ setIsCheckin }) {
       setLat(position.coords.latitude);
       setLon(position.coords.longitude);
     });
-  }, []);
+    console.log("ini Start",startTime)
+    console.log("ini Start",endTime)
+  }, [startTime,endTime]);
 
   return (
     <Grid container>
@@ -180,6 +230,7 @@ export default function CheckinTime({ setIsCheckin }) {
                         Presence
                       </InputLabel>
                       <Select
+                        disabled
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         label="Age"
@@ -245,7 +296,7 @@ export default function CheckinTime({ setIsCheckin }) {
                       <Grid item xs={2} display="flex" alignItems="center">
                         <Button
                           variant="contained"
-                          onClick={() => setIsTakePicture(true)}
+                          onClick={() => cekRangeHour()}
                         >
                           Continue
                         </Button>

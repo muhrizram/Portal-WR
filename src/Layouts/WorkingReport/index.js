@@ -36,6 +36,7 @@ export default function WorkingReport() {
   const [isHr, setIsHr] = useState(false)  
   const [WrIdDetail, setWrIdDetail] = useState()
   const [dropMenu, setDropMenu] = useState(null)
+  const [dataReadyAttedance,setdataReadyAttedance] = useState()
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -88,7 +89,8 @@ export default function WorkingReport() {
       if(role.roleName == 'HRD') {
         setIsHr(true)
       }
-    }    
+    }
+    // console.log("INI DATA ABSEN",dataReadyAttedance)
   }, [filter]);
 
   const updateFilterDates = (newActiveMonth,value) => {
@@ -249,6 +251,7 @@ export default function WorkingReport() {
           setIsCheckin={(param) => {
             setIsCheckin(() => false);
           }}
+          dataReadyAttedance={dataReadyAttedance}
         />
       );
     } else if (dataAttandance.isAttandance) {
@@ -259,6 +262,7 @@ export default function WorkingReport() {
             setIsCheckin(true);
           }}
           beforeThanToday={dataAttandance.dataPeriod.isToday}
+          setdataReadyAttedance={setdataReadyAttedance}
         />
       );
     } else if (isCheckOut) {
