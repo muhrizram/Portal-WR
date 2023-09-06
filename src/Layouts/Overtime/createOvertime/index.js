@@ -34,6 +34,7 @@ const CreateOvertime = ({
   isEdit,
   closeOvertime,
   onSaveSuccess,
+  onEditSuccess,
   setSelectedWorkingReportId,
   dataDetail,
   wrDate
@@ -236,23 +237,25 @@ const CreateOvertime = ({
       setOpentask(true)
       console.log("DATA DETAIL", dataDetail)
     }
-    getDataTask()
+    if(selectedProjectId !== null) {
+      getDataTask()
+    }
     getDataProject()
     getDataStatus()
     console.log("DATA OVERTIME", dataOvertime)
   }, [dataOvertime, dataDetail, selectedProjectId])
 
   const getDataTask = async () => {
-    let endpointTask;
-    if(selectedProjectId != null) {
-      endpointTask = `/ol/taskProject?projectId=${selectedProjectId}&search`
-    } else {
-      endpointTask = `/ol/taskProject?projectId=1&search`
-    }
+    // let endpointTask;
+    // if(selectedProjectId != null) {
+    //   endpointTask = `/ol/taskProject?projectId=${selectedProjectId}&search`
+    // } else {
+    //   endpointTask = `/ol/taskProject?projectId=1&search`
+    // }
 
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: endpointTask
+      endpoint: `/ol/taskProject?projectId=${selectedProjectId}&search`
     })
 
     const data = res.data.map(item => ({backlogId : parseInt(item.id), taskName: item.attributes.taskName, actualEffort: item.attributes.actualEffort}));
@@ -299,10 +302,12 @@ const onSave = async () => {
         open: true,
         message: res.data.meta.message
       }) 
-      onSaveSuccess();
-      setTimeout(() => {
-        navigate('/workingReport')
-      }, 3000)  
+      // onSaveSuccess();
+        // navigate('/workingReport')
+        closeTask(false)
+        setOpentask(false)
+        window.location.href = '/workingReport';
+      
     }
     else {          
       setDataAlert({
@@ -311,8 +316,6 @@ const onSave = async () => {
         open: true
       })
     }
-    closeTask(false)
-    setOpentask(false)
   }
 
   const saveEdit = async () => {
@@ -360,7 +363,7 @@ const onSave = async () => {
         open: true,
         message: res.data.meta.message
       })
-      onSaveSuccess();
+      onEditSuccess();
       setTimeout(() => {
         navigate('/workingReport')
       }, 3000)
@@ -486,7 +489,7 @@ const onSave = async () => {
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
                             // value={selectedTask.taskId}
-                            defaultValue={optTask.find((option) => option.taskName == res.taskCode + ' - ' +  res.taskName) || null}
+                            defaultValue={{backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} || null}
                             options={optTask}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
@@ -854,7 +857,7 @@ const onSave = async () => {
             }}>
               {"Cancel without saving"}
             </Button>
-            <Button variant="contained" onClick={handleClose}>
+            <Button variant="contained" className="button-text" onClick={handleClose}>
               {"Back"}
             </Button>
           </DialogActions>
