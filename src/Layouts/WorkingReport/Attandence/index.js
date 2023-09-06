@@ -12,7 +12,7 @@ import UploaderFile from "../../../Component/UploaderFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
-const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance}) => {
+const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance, setAttendanceView}) => {
   const listLocation = [
     {
       label: "Work From Home",
@@ -134,73 +134,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
       };
       setdataReadyAttedance(body)   
       setIsCheckin(true)   
-    }
-    
-    // if (presence.value === "42") {
-    //   body = {
-    //     periodId: "7",
-    //     presenceId: parseInt(presence.value),
-    //     userId: parseInt(localStorage.getItem("userId")),
-    //     date: dataPeriod.tanggal,
-    //     workLocation: location,
-    //   };      
-    //   localStorage.setItem("presence", presence.value);
-    //   const res = await client.requestAPI({
-    //     endpoint: "/workingReport/attendance",
-    //     method: "POST",
-    //     data: body,
-    //   });
-    //   console.log("res: ", res);
-    //   if (!res.isError) {
-    //     console.log("apakah");
-    //     localStorage.setItem(
-    //       "workingReportId",
-    //       res.data.attributes.workingReportId
-    //     );      
-    //     if(!beforeThanToday){
-    //       setDataAlert({
-    //         severity: "success",
-    //         open: true,
-    //         message: res.data.meta.message,
-    //       });
-    //       setTimeout(() => {
-    //         window.location.reload();
-    //       }, 3000)
-    //     }else{
-    //       setIsCheckin(true);
-    //     }
-    //   } else {
-    //     setDataAlert({
-    //       severity: "error",
-    //       message: res.error.detail,
-    //       open: true,
-    //     });
-    //   }
-    // } else {      
-    //   body = {
-    //     periodId: dataPeriod.period,
-    //     presenceId: parseInt(presence.value),
-    //     userId: parseInt(localStorage.getItem("userId")),
-    //     date: dataPeriod.tanggal,
-    //     file: filePath,
-    //   };      
-    //   const res = await client.requestAPI({
-    //     endpoint: "/workingReport/notAttendance",
-    //     method: "POST",
-    //     data: body,
-    //   });
-    //   console.log("res: ", res);
-    //   if (!res.isError) {
-    //     workingReportId = res.data.attributes.workingReportId;
-    //   }
-    //   {
-    //     setDataAlert({
-    //       severity: "error",
-    //       message: res.error.detail,
-    //       open: true,
-    //     });
-    //   }
-    // }    
+    }    
   };
 
   const renderBottom = () => {
@@ -283,7 +217,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           textAlign="center"
           mt={presence.value === "42" ? 21 : 15}
         >
-          <Button style={{ marginRight: "16px" }} variant="outlined">
+          <Button style={{ marginRight: "16px" }} variant="outlined" onClick={() => setAttendanceView()}>
             Cancel
           </Button>
           <Button
