@@ -186,8 +186,9 @@ const CreateUserRole = () => {
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
-                                    label="User Name"
+                                    label="NIP & User *"
                                     placeholder="Select User"
+                                    focused
                                   />
                                 )}
                               />
@@ -196,7 +197,7 @@ const CreateUserRole = () => {
                         <Typography
                               sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
                             >
-                              Role
+                              Role *
                             </Typography>
                             <Grid container direction="row" sx={{ marginLeft: "25px" }}>
                             <Grid item xs={6}>

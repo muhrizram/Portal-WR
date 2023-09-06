@@ -105,7 +105,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
           <Button
             variant='cancelButton'
             color="error"
-            onClick={handleDelete}
+            onClick={taskData > 1 && handleDelete}
             startIcon={<DeleteOutline />}
             style={{ marginRight: "10px" }}
           >

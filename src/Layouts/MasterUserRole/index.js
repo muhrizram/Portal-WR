@@ -124,6 +124,11 @@ const RoleUser = () => {
       sortable: false
     },
     {
+      field: "nip",
+      headerName: "NIP",
+      flex: 0.7,
+    },   
+    {
       field: "name",
       headerName: "User",
       width: 200,
@@ -134,11 +139,6 @@ const RoleUser = () => {
         </Box>
       ),
     },
-    {
-      field: "nip",
-      headerName: "NIP",
-      flex: 0.7,
-    },   
     
     {
       field: "role",
