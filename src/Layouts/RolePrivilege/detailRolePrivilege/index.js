@@ -137,7 +137,7 @@ const DetailPrivilege = () => {
     
     const data = {      
       privilegeId: selectedPrivilege,
-      updateBy: parseInt(localStorage.getItem('userId'))
+      updatedBy: parseInt(localStorage.getItem('userId'))
     }
     const res = await client.requestAPI({
       method: 'PUT',

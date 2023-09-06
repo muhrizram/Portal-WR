@@ -63,9 +63,10 @@ export default function WorkingReport() {
   const [downloadConfiguration, setDownloadConf] = useState({
     open: false
   })
-  const [changePass, setChangePass] = useState({
-    open: false
-  })
+  // const [changePass, setChangePass] = useState({
+  //   open: false
+  // })
+  const [changePass, setChangePass] = useState(false)
 
   const [filteredNames, setFilteredNames] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null); 
@@ -395,11 +396,12 @@ export default function WorkingReport() {
     }
   };
 
-  const handleReset = (open) => {
+  const handleReset = () => {
     // navigate('/reset-password')
-    setChangePass({
-      open
-    })
+    // setChangePass({
+    //   open
+    // })
+    setChangePass(true)
   }
 
   return (
@@ -569,7 +571,7 @@ export default function WorkingReport() {
       {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
       <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
-      <Reset {...changePass} onClose={() => handleReset(false)} />
+      <Reset open={changePass} onClose={() => setChangePass(false)} />
     </SideBar>
   );
 }

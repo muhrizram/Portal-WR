@@ -36,11 +36,6 @@ import Box from "@mui/material/Box";
 import Allura from "../../../assets/Allura.png";
 
 const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
-  const ProjectName = [
-    { label: "Electronic Health Record" },
-    { label: "API Factory" },
-    { label: "Selection Exam" },
-  ];   
   const [AssignedTo, setAssignedTo] = useState([]);
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
@@ -52,6 +47,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   }
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
+  const [taskDataUpdate, setTaskDataUpdate] = useState(task);
 
   const getStatusBacklog = async () => {
     const res = await client.requestAPI({
@@ -66,12 +62,12 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   useEffect(() => {
     getAssignedTo()
     getStatusBacklog()
-    onUpdate(taskData);
-  }, [taskData]);
+    onUpdate(taskDataUpdate);
+  }, [taskDataUpdate]);
 
   const handleChange = (event) => {    
       const { name, value } = event.target;
-        setTaskData((prevData) => ({
+        setTaskDataUpdate((prevData) => ({
           ...prevData,
           [name]: value,
         }));
@@ -101,7 +97,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              Task {taskData.id} / {taskData.taskCode}
+              Task {taskData.id}
+              {/* / {taskData.taskCode} */}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -125,7 +122,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               style={{ paddingRight: "10px" }}
               focused
               name='taskName'
-              value={taskData.taskName}
+              value={taskDataUpdate.taskName}
               onChange={handleChange}
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
@@ -143,9 +140,9 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               <Rating
                 variant="outlined"
                 name="priority"
-                value={taskData.priority}
+                value={taskDataUpdate.priority}
                 onChange={(event, newValue) => {
-                  setTaskData((prevData) => ({
+                  setTaskDataUpdate((prevData) => ({
                     ...prevData,
                     priority: newValue.toString(),
                   }));
@@ -159,7 +156,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              value={taskData.taskDescription}
+              value={taskDataUpdate.taskDescription}
               onChange={handleChange}
               name='taskDescription'
               className='input-field-crud'
@@ -176,12 +173,21 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                   value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
                   onChange={(event, newValue) => {
                     if (newValue) {
+                      console.log("status", newValue)
                       setTaskData((prevData) => ({
+                        ...prevData,
+                        statusBacklog: newValue.id,
+                      }))
+                      setTaskDataUpdate((prevData) => ({
                         ...prevData,
                         statusBacklog: newValue.id,
                       }))
                     } else {
                       setTaskData((prevData) => ({
+                        ...prevData,
+                        statusBacklog: newValue.id,
+                      }))
+                      setTaskDataUpdate((prevData) => ({
                         ...prevData,
                         statusBacklog: null,
                       }))
@@ -208,7 +214,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              value={taskData.estimationTime}
+              value={taskDataUpdate.estimationTime}
               onChange={handleChange}
               name='estimationTime'
               className='input-field-crud'
@@ -225,10 +231,16 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
               getOptionLabel={(option) => option.fullName}
               onChange={(event, newValue) =>
-                setTaskData((prevData) => ({
+                {
+                  setTaskData((prevData) => ({
+                    ...prevData,
+                    assignedTo: newValue ? newValue.fullName : null, 
+                  }))
+                setTaskDataUpdate((prevData) => ({
                   ...prevData,
-                  assignedTo: newValue ? newValue.fullName : null, 
+                  userId: newValue ? newValue.id : null, 
                 }))
+              }
               }
               sx={{ width: "100%" }}
               renderInput={(params) => (
@@ -344,17 +356,18 @@ const CreateNewBacklog = () => {
       id: tasks.length + 1,
       projectId : valueproject,
       statusBacklog: null,
-      userId : parseInt(localStorage.getItem('userId')),
+      // userId : parseInt(localStorage.getItem('userId')),
+      userId: null,
       taskName: '',
       taskDescription: '',
       estimationTime: null,
-      actualTime: '',
+      // actualTime: 3,
       estimationDate: formattedDate,
       actualDate: formattedDate,
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      taskCode:`T-WR-00${tasks.length + 1}`,        
+      // taskCode:`T-WR-00${tasks.length + 1}`,        
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -416,7 +429,7 @@ const CreateNewBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })
-    const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));    
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name, projectInitial: item.attributes.projectInitial}));    
     setProjectName(data)
   }
 
@@ -446,7 +459,7 @@ useEffect(() => {
                     name="projectName"
                     options={ProjectName}
                     sx={{ width: "100%", marginTop: "8px" }}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {                                            
                       if (!newValue) {                    
                         setTasks([])
@@ -530,7 +543,7 @@ useEffect(() => {
                     <Button                    
                       disabled={tasks.length === 0}
                       variant='saveButton'
-                      type='button'
+                      type='submit'
                       onClick={handleClickOpenSave}
                     >
                       Save Data

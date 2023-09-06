@@ -19,6 +19,7 @@ const MasterCompany = () => {
     {
       field: "no",
       headerName: 'No',
+      sortable: false
       // flex: 1,
     },
     {
@@ -28,6 +29,14 @@ const MasterCompany = () => {
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
         console.log("minion",urlMinio)
+
+        // const companyNameStyle = {
+        //   overflow: "hidden",
+        //   whiteSpace: "nowrap",
+        //   textOverflow: "ellipsis",
+        //   maxWidth: "152px", 
+        // };
+
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
               <Avatar
@@ -36,7 +45,12 @@ const MasterCompany = () => {
                 src={urlMinio}
               />
             <div style={{ marginLeft: "0.5rem" }}>
-              <span className="text-name">{params.row.companyName}</span>
+              <span 
+                className="text-name" 
+                // style={companyNameStyle}
+                >
+                  {params.row.companyName}
+              </span>
             </div>
           </div>
         )
@@ -109,7 +123,7 @@ const MasterCompany = () => {
     setLoading(true)
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/company?page-${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
+      endpoint: `/company?page=${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}&size=${filter.size}`
     })
     console.log(res)
     if (!res.isError) {
