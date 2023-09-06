@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import { Button, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../Component/BreadCumb";
 import Header from "../../Component/Header";
@@ -81,83 +81,45 @@ const DetailEmployee = () => {
     id: null,
     name: "",
   });
-  const [dataFix, setDataFix] = useState({
-    jobTypeId: "",
-    nip: "12345555",
-    placementType: "Bandung",
-    ssoId: "",
-    group: "",
-    position: "",
-    statusOnsite: "",
-    userName: "",
-    email: "johndoe@mail.com",
-    lastContractStatus: "",
-    lastContractDate: "",
-    firstName: "Jhon",
-    lastName: "Doe",
-    joinDate: "",
-    endContractThisMonth: "",
-    photoProfile: "",
-    lastModifiedOn: "",
-    lastModifiedBy: "",
-    createdBy: "",
-    createdOn: "",
-    placeOfBirth: "",
-    dateOfBirth: "",
-    identityNumber1234567890: "",
-    postalCode: "",
-    familyRelationship: "",
-    familyRelationshipNumber: "",
-    school: "",
-    education: "",
-    bpjsKesehatan: "",
-    numberOfDependents: "",
-    bpjsClass: "",
-    carrerStartDate: "",
-    ptkpStatus: "",
-    npwp: "08.178.554.2-123.321",
-    no: "",
-    department: "",
-    isActive: "",
-  });
   const { setDataAlert } = useContext(AlertContext);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const userId = useLocation().state.userId;
-  const [dataEdit, setDataEdit] = useState(dataFix);
   const handleFileChange = useCallback((event) => {
     const file = event.target.files[0];
+    console.log("Is Uploaded File same", file === uploadedFile);
     setUploadedFile(file);
   }, []);
-
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
     setIsDraggingOver(true);
   }, []);
-
   const handleDragLeave = useCallback(() => {
     setIsDraggingOver(false);
   }, []);
-
   const handleDrop = useCallback((event) => {
     event.preventDefault();
     setIsDraggingOver(false);
     const file = event.dataTransfer.files[0];
+    console.log("Is Uploaded File same", file === uploadedFile);
     setUploadedFile(file);
   }, []);
 
-  const { formState, handleSubmit, reset, control } =
-    useForm({
-      resolver: yupResolver(schemacontract),
-      mode: "onBlur",
-      defaultValues: {
-        startDate: null,
-        endDate: null,
-        file: "",
-      },
-    });
+  useEffect(() => {
+    console.log("Uploaded file: ", uploadedFile);
+  }, [uploadedFile]);
 
-  const MAX_SIZE_FILE = 10485760;
+  const { formState, handleSubmit, reset, control } = useForm({
+    resolver: yupResolver(schemacontract),
+    mode: "onBlur",
+    defaultValues: {
+      startDate: null,
+      endDate: null,
+      file: "",
+    },
+  });
+
+  const MAX_SIZE_FILE = 3145728;
 
   const onSave = async (data) => {
     if (uploadedFile) {
@@ -165,7 +127,7 @@ const DetailEmployee = () => {
         setDataAlert({
           severity: "error",
           open: true,
-          message: "Max file size is 10 MB",
+          message: "Max file size is 3 MB",
         });
         return;
       }
@@ -181,14 +143,13 @@ const DetailEmployee = () => {
         },
       });
 
-      if(!res.isError){
+      if (!res.isError) {
         data.file = res.data.attributes.filePath;
-      }
-      else{
+      } else {
         setDataAlert({
-          severity:"error",
-          open:true,
-          message:res.error.meta.message
+          severity: "error",
+          open: true,
+          message: res.error.meta.message,
         });
         return;
       }
@@ -196,8 +157,8 @@ const DetailEmployee = () => {
     const bodyRequest = {
       ...data,
       userId: userId,
-      createdBy:parseInt(localStorage.getItem("userId")), // Current logged in user
-      contractStatus:data.contractStatus.id,
+      createdBy: parseInt(localStorage.getItem("userId")), // Current logged in user
+      contractStatus: data.contractStatus.id,
     };
     const res = await client.requestAPI({
       method: "POST",
@@ -210,7 +171,7 @@ const DetailEmployee = () => {
         open: true,
         message: res.data.meta.message,
       });
-      setContractOLValue({id:null, name:""});
+      setContractOLValue({ id: null, name: "" });
       setUploadedFile(null);
       reset();
       setAddContract(false);
@@ -241,34 +202,16 @@ const DetailEmployee = () => {
   const handleClickAddContract = () => {
     setAddContract(true);
   };
-  const [open, setOpen] = useState(false);
+
   const handleCloseContract = () => {
     setAddContract(false);
-    setContractOLValue({id:null, name:""});
+    setContractOLValue({ id: null, name: "" });
     setUploadedFile(null);
     reset();
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const SubmitSave = () => {
-    setOpen(false);
-    setIsEdit(false);
-    setDataFix(dataEdit);
   };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const [value1, setValue1] = React.useState("one");
-
-  const handleChange1 = (event1, newValue1) => {
-    setValue1(newValue1);
-  };
-  const clickEdit = () => {
-    setIsEdit(true);
   };
 
   useEffect(() => {
@@ -322,7 +265,9 @@ const DetailEmployee = () => {
                   />
                 </Tabs>
               </Box>
-              {value === "one" && <StatusEmployeeTab id={userId} dataChange={isContractAdded}/>}
+              {value === "one" && (
+                <StatusEmployeeTab id={userId} dataChange={isContractAdded} />
+              )}
               {value === "two" && <ProjectHistoryTab id={userId} />}
 
               <Dialog
@@ -378,6 +323,7 @@ const DetailEmployee = () => {
                               {...params}
                               label="Contract Status"
                               error={!!formState.errors.contractStatus}
+                              required
                             />
                           )}
                         />
@@ -403,6 +349,7 @@ const DetailEmployee = () => {
                               <DemoContainer components={["DatePicker"]}>
                                 <DatePicker
                                   {...field}
+                                  format="DD/MM/YYYY"
                                   label="Contract Start Date"
                                   sx={{ width: "100%", paddingRight: "20px" }}
                                   value={field.value}
@@ -415,6 +362,7 @@ const DetailEmployee = () => {
                                   slotProps={{
                                     textField: {
                                       error: !!formState.errors.startDate,
+                                      required: true,
                                     },
                                   }}
                                 />
@@ -442,6 +390,7 @@ const DetailEmployee = () => {
                               <DemoContainer components={["DatePicker"]}>
                                 <DatePicker
                                   {...field}
+                                  format="DD/MM/YYYY"
                                   label="Contract End Date"
                                   sx={{ width: "100%" }}
                                   value={field.value}
@@ -454,6 +403,7 @@ const DetailEmployee = () => {
                                   slotProps={{
                                     textField: {
                                       error: !!formState.errors.endDate,
+                                      required: true,
                                     },
                                   }}
                                 />
@@ -496,6 +446,7 @@ const DetailEmployee = () => {
                               name="file"
                               style={{ display: "none" }}
                               onChange={handleFileChange}
+                              inputProps={{ accept: ".doc, .docx, .pdf" }}
                             />
                             <UploadFileOutlined
                               fontSize="large"
@@ -528,7 +479,7 @@ const DetailEmployee = () => {
                             </Box>
                             {uploadedFile == null && (
                               <Typography color="textSecondary">
-                                e.g., DOCX or PDF &#40;max. 10MB&#41;
+                                e.g., DOCX or PDF &#40;max. 3MB&#41;
                               </Typography>
                             )}
                           </div>
@@ -551,8 +502,14 @@ const DetailEmployee = () => {
                       autoFocus
                       className="button-text"
                       type="submit"
+                      disabled={formState.isSubmitting}
                     >
-                      Save Data
+                      {formState.isSubmitting ?(
+                        <>
+                          <CircularProgress size={14} color="inherit" />
+                          <Typography marginLeft={1}>Saving...</Typography>
+                        </>
+                      ):"Save Data"}
                     </Button>
                   </DialogActions>
                 </form>
