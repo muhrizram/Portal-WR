@@ -18,9 +18,10 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import ReplayIcon from "@mui/icons-material/Replay";
 import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
+import moment from "moment";
 import { AlertContext } from "../../../context";
 
-export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
+export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod }) {
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -226,7 +227,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
               <Grid item xs={6}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} display="flex" justifyContent="center">
-                    <Typography variant="title">Tuesday, 2 May 2023</Typography>
+                    <Typography variant="title">{moment(dataPeriod.tanggal).format('dddd, DD MMMM YYYY')}</Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <FormControl fullWidth>

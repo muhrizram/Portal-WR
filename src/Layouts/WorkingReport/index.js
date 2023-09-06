@@ -248,6 +248,7 @@ export default function WorkingReport() {
     if (isCheckin) {
       dom = (
         <CheckinTime
+          dataPeriod={dataAttandance.dataPeriod}
           setIsCheckin={(param) => {
             setIsCheckin(() => false);
           }}

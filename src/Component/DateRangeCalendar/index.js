@@ -75,7 +75,7 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
         <Grid container justifyContent="flex-end" marginTop="-5vh">          
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
-            <DemoItem >
+            <DemoItem>
               <MobileDatePicker value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
             </DemoItem>
           </Grid>
