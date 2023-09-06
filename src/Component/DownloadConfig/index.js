@@ -25,20 +25,16 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
       signatureName: ''
     }
   ])
-  console.log("approval : ", dataApproval);
 
   const columnConfig = useRef(null);
-  console.log(columnConfig);
 
   const [state, setState] = useState(defaultConfiguration);
-  console.log("state", state);
 
   const [taskConfig, setTaskConfig] = useState({
     includeAbsenceType: true,
     includeProjectName: true,
     includeDuration: true,
   });
-  console.log("task configuration : ", taskConfig);
 
   const handleTaskConfigChange = (config) => {
     setTaskConfig(config);

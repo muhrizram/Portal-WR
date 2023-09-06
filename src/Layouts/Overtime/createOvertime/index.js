@@ -57,9 +57,6 @@ const CreateOvertime = ({
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState(null)
-  // console.log('selected project id : ', selectedProjectId);
-  // console.log('opt task : ', optTask);
-  // console.log('opt project : ', optProject);
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
@@ -90,10 +87,9 @@ const CreateOvertime = ({
   })
 
   const [dataEditOvertime, setDataEditOvertime] = useState({
-    workingReportId: null,
+    workingReportOvertimeId: null,
     listProject: [clearProject],
   })
-  // console.log('data edit overtime : ', dataEditOvertime);
 
   const onAddProject = () => {
     if(isEdit){
@@ -120,7 +116,7 @@ const CreateOvertime = ({
       temp.push(dataDetail.attributes.listProject[i])
       setDataEditOvertime((prevDataEditOvertime) => ({
         ...prevDataEditOvertime,
-        workingReportId: dataDetail.id,
+        workingReportOvertimeId: dataDetail.id,
         listProject: temp,
         startTime:time.startTime,
         endTime: time.endTime,
@@ -136,7 +132,6 @@ const CreateOvertime = ({
       temp.listProject[idxProject].listTask.push({
         ...clearTask
       })
-      console.log("CEK DATA EDIT", temp)
     setDataEditOvertime(temp)
     } else{
     const temp = {...dataOvertime}
@@ -152,7 +147,6 @@ const CreateOvertime = ({
       const { name, value } = event.target;
       const updateDataEditOvertime = {...dataEditOvertime}
       updateDataEditOvertime.listProject[idxProject].listTask[index][name] = value
-      console.log("VALUE", value)
       setDataEditOvertime(updateDataEditOvertime)
 
       if(name === 'duration'){
@@ -165,7 +159,6 @@ const CreateOvertime = ({
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = taskId
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = 270
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = null
-        console.log("HAHAHAYU BELOM",updateDataEditOvertime.listProject[0].listTask[0])
         // temp.listProject[0].listTask[0].backlogId = "35"
       }
 
@@ -187,9 +180,7 @@ const CreateOvertime = ({
         temp.listProject[idxProject].listTask[index][name]= value
         if(name === 'taskName'){
           temp.listProject[idxProject].listTask[index].backlogId = backlogId
-          console.log("HAHAHAYU BELOM",temp.listProject[0].listTask[0])
           // temp.listProject[0].listTask[0].backlogId = "35"
-          console.log("HAHAHAYU GAIS",temp.listProject[0].listTask[0])
         }
       setDataOvertime(temp)
       }
@@ -235,27 +226,15 @@ const CreateOvertime = ({
       setValueDetail(dataDetail)
       onEdit()
       setOpentask(true)
-      console.log("DATA DETAIL", dataDetail)
-    }
-    if(selectedProjectId !== null) {
-      getDataTask()
     }
     getDataProject()
     getDataStatus()
-    console.log("DATA OVERTIME", dataOvertime)
   }, [dataOvertime, dataDetail, selectedProjectId])
 
-  const getDataTask = async () => {
-    // let endpointTask;
-    // if(selectedProjectId != null) {
-    //   endpointTask = `/ol/taskProject?projectId=${selectedProjectId}&search`
-    // } else {
-    //   endpointTask = `/ol/taskProject?projectId=1&search`
-    // }
-
+  const getDataTask = async (id) => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/taskProject?projectId=${selectedProjectId}&search`
+      endpoint: `/ol/taskProject?projectId=${id}&search=`
     })
 
     const data = res.data.map(item => ({backlogId : parseInt(item.id), taskName: item.attributes.taskName, actualEffort: item.attributes.actualEffort}));
@@ -294,7 +273,6 @@ const onSave = async () => {
       endpoint: `/overtime/addOvertime`,
       data
     })
-    console.log("TAMBAH DATA OVERTIME", res)
 
     if(!res.isError){
       setDataAlert({
@@ -320,14 +298,12 @@ const onSave = async () => {
 
   const saveEdit = async () => {
     const dataUpdate = {
-      workingReportId : null,
+      workingReportOvertimeId : null,
       listProjectId : [],
       createdBy: currentUserId,
       updatedBy: currentUserId
     }
-
-    console.log("DATA EDIT", dataUpdate)
-    dataUpdate.workingReportId = dataEditOvertime.workingReportId
+    dataUpdate.workingReportOvertimeId = dataEditOvertime.workingReportOvertimeId
     for (const project of dataEditOvertime.listProject){
       const updateFilled = {
         projectId : project.projectId,
@@ -339,7 +315,7 @@ const onSave = async () => {
         }
         const updateTask = {
           taskId : task.taskId,
-          workingReportId : dataUpdate.workingReportId,
+          workingReportId : dataUpdate.workingReportOvertimeId,
           backlogId : task.backlogId,
           taskName : task.taskName,
           statusTaskId : task.statusTaskId,
@@ -356,7 +332,6 @@ const onSave = async () => {
       endpoint: `/overtime`,
       data: dataUpdate
     })
-    console.log("EDIT DATA OVERTIME", res)
     if(!res.isError){
       setDataAlert({
         severity: 'success',
@@ -443,6 +418,7 @@ const onSave = async () => {
                   sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                   onChange={(_event, newValue) => {
                     if(newValue){
+                    getDataTask(newValue.id)   
                     handleChangeProject(newValue.id, idxProject)
                     setOpentask(true)
                   } else {
@@ -633,6 +609,7 @@ const onSave = async () => {
                   sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                   onChange={(_event, newValue) => {
                     if(newValue){
+                    getDataTask(newValue.id)
                     handleChangeProject(newValue.id, idxProject)
                     setOpentask(true)
                   } else {

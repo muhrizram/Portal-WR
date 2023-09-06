@@ -88,7 +88,6 @@ const requestAPI = async ({
         const refreshTokennya = localStorage.getItem("refreshtoken");
         const refreshTokenSuccess = await refreshToken(refreshTokennya);
         clientState.refreshingToken = false;
-        console.log(refreshTokenSuccess)
         if (refreshTokenSuccess) {
           return await requestAPI({ method, endpoint, data, headers }); 
         }

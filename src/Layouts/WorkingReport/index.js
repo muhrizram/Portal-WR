@@ -80,13 +80,11 @@ export default function WorkingReport() {
     if(isHr == false) {
       getData();
     }
-    console.log("WrIdDetail: ", WrIdDetail);
     localStorage.removeItem("companyId");
     let listRoles = localStorage.getItem("roles");
     let roles = JSON.parse(listRoles)
     
     for(let role of roles) {
-      console.log(role.roleName);
       if(role.roleName == 'HRD') {
         setIsHr(true)
       }
@@ -114,13 +112,10 @@ export default function WorkingReport() {
     let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
 
     if(id !== null) {
-      console.log('selected user id : ', id);
       endpoint += `/${id}`
     }else if(isHr == false) {
       endpoint += `/${currentUserId}`
     }
-
-    console.log('this endpoint : ', endpoint);
     const res = await client.requestAPI({
       method: "GET",
       endpoint: endpoint,
@@ -163,7 +158,6 @@ export default function WorkingReport() {
       endpoint: `/users/employee/${id}`,
     });
     if (!res.isError) {
-      console.log('res detail users : ', res.data);
       const data = {
         id: res.data.id,
         name: res.data.attributes.fullName,
@@ -195,7 +189,6 @@ export default function WorkingReport() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    console.log(link.href);
   }
 
   const rebuildData = (resData) => {    
@@ -210,15 +203,19 @@ export default function WorkingReport() {
               "yyyy-MM-DD"
             ),
             period: value.attributes.period,
-            workingReportId: value.attributes.listDate.workingReportId,
+            workingReportOvertimeId: value.attributes.listDate.workingReportOvertimeId,
+            workingReportTaskId: value.attributes.listDate.workingReportTaskId,
             overtime: value.attributes.listDate.overtime,
+            holiday: value.attributes.listDate.holiday,
           }
         : {
             period: value.attributes.period,
+            holiday: value.attributes.listDate.holiday,
             tanggal: moment(value.attributes.listDate.date).format(
               "yyyy-MM-DD"
             ),
-            workingReportId: value.attributes.listDate.workingReportId,
+            workingReportOvertimeId: value.attributes.listDate.workingReportOvertimeId,
+            workingReportTaskId: value.attributes.listDate.workingReportTaskId,
             task: value.attributes.listDate.task,
             overtime: value.attributes.listDate.overtime,
             isToday: isToday
@@ -230,16 +227,14 @@ export default function WorkingReport() {
     setData([...temp]);
   };
 
-  const onAttendence = (value) => {    
-    console.log("attendance", value);
-    if (value[0].workingReportId !== null) {
+  const onAttendence = (value) => {
+    if (value.workingReportTaskId !== null && value.workingReportOvertimeId !== null) {
       setIsCheckin(true);
     }
     setAttandance({
-      dataPeriod: value[0],
+      dataPeriod: value,
       isAttandance: true,
     });
-    console.log(value[0]);
   };
 
   const renderCheckin = () => {
@@ -287,7 +282,6 @@ export default function WorkingReport() {
       )
     }
       else {
-        // console.log('data cal : ', data);
         {
           isHr ? (
             selectedUser == null ? (
@@ -314,7 +308,7 @@ export default function WorkingReport() {
             ) : (
               dom = (<Calendar
                 setOnClick={(param) => {
-                  const _data = data.filter(
+                  const _data = data.find(
                     (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
                   );
                   onAttendence(_data);
@@ -328,7 +322,7 @@ export default function WorkingReport() {
           ) : (
             dom = (<Calendar
               setOnClick={(param) => {
-                const _data = data.filter(
+                const _data = data.find(
                   (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
                 );
                 onAttendence(_data);
@@ -378,22 +372,17 @@ export default function WorkingReport() {
       method: "GET",
       endpoint: `/users/userList?search=${searchValue}`,
     });
-
-    console.log('response : ', res);
     
     const data = res.data.map(user => ({
       id: user.id,
       name: `${user.attributes.firstName} ${user.attributes.lastName}`,
       nip: user.attributes.nip
     }));
-    
-    console.log('data user search : ', data);
     setFilteredNames(data);
   };
 
   const handleOptionSelectUser = (event, value) => {
     const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === value));
-    console.log('value user :', value);
     if (user) {
       setSelectedUser(user)
       getDetailData(user.id)

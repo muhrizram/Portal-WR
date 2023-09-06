@@ -21,7 +21,7 @@ function TaskConfiguration({ taskConfig, setTaskConfig }) {
 
   return (
     <Grid container direction="row">
-      <Grid xs={6}>
+      <Grid item xs={6}>
         {checkboxes.map((checkbox) => (
           <FormControlLabel
             key={checkbox.name}

@@ -218,7 +218,7 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
       </Grid>
       <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} onEditSuccess={handleEditSuccess}/>
       </>) : (
-        <Grid container xs={12} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
+        <Grid container sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
           <CircularProgress size={50} />
         </Grid>
       )}
