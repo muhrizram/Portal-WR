@@ -33,6 +33,7 @@ const CreateOvertime = ({
   closeTask,
   isEdit,
   closeOvertime,
+  onSaveSuccess,
   setSelectedWorkingReportId,
   dataDetail,
   wrDate
@@ -54,6 +55,10 @@ const CreateOvertime = ({
   const selectedTask = optTask.find((item) => item.taskId);
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
+  const [selectedProjectId, setSelectedProjectId] = useState(null)
+  // console.log('selected project id : ', selectedProjectId);
+  // console.log('opt task : ', optTask);
+  // console.log('opt project : ', optProject);
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
@@ -87,6 +92,7 @@ const CreateOvertime = ({
     workingReportId: null,
     listProject: [clearProject],
   })
+  // console.log('data edit overtime : ', dataEditOvertime);
 
   const onAddProject = () => {
     if(isEdit){
@@ -192,6 +198,7 @@ const CreateOvertime = ({
 
   
   const handleChangeProject = (value, idxProject) => {
+    setSelectedProjectId(value)
     if(isEdit){
       const temp = {...dataEditOvertime}
       temp.listProject[idxProject].projectId = value
@@ -233,13 +240,21 @@ const CreateOvertime = ({
     getDataProject()
     getDataStatus()
     console.log("DATA OVERTIME", dataOvertime)
-  }, [dataOvertime, dataDetail])
+  }, [dataOvertime, dataDetail, selectedProjectId])
 
   const getDataTask = async () => {
+    let endpointTask;
+    if(selectedProjectId != null) {
+      endpointTask = `/ol/taskProject?projectId=${selectedProjectId}&search`
+    } else {
+      endpointTask = `/ol/taskProject?projectId=1&search`
+    }
+
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/taskProject?projectId=1&search`
+      endpoint: endpointTask
     })
+
     const data = res.data.map(item => ({backlogId : parseInt(item.id), taskName: item.attributes.taskName, actualEffort: item.attributes.actualEffort}));
     setOptTask(data)
   }
@@ -247,7 +262,7 @@ const CreateOvertime = ({
   const getDataProject = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/projectTypeList?userId=1&search=`
+      endpoint: `/ol/projectTypeList?userId=${currentUserId}&search=`
     })
     const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.projectName}));
     setOptProject(data)
@@ -284,10 +299,10 @@ const onSave = async () => {
         open: true,
         message: res.data.meta.message
       }) 
-      
+      onSaveSuccess();
       setTimeout(() => {
-        navigate('/workingReport');
-      }, 3000);
+        navigate('/workingReport')
+      }, 3000)  
     }
     else {          
       setDataAlert({
@@ -345,6 +360,7 @@ const onSave = async () => {
         open: true,
         message: res.data.meta.message
       })
+      onSaveSuccess();
       setTimeout(() => {
         navigate('/workingReport')
       }, 3000)
@@ -419,7 +435,7 @@ const onSave = async () => {
                   name= 'project'
                   className='autocomplete-input autocomplete-on-popup'
                   options={optProject}
-                  defaultValue={optProject.find((option) => option.name) || null}
+                  defaultValue={optProject.find((option) => option.id == resProject.projectId) || null}
                   getOptionLabel={(option) => option.name}
                   sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                   onChange={(_event, newValue) => {
@@ -470,7 +486,7 @@ const onSave = async () => {
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
                             // value={selectedTask.taskId}
-                            defaultValue={optTask.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName) || null}
+                            defaultValue={optTask.find((option) => option.taskName == res.taskCode + ' - ' +  res.taskName) || null}
                             options={optTask}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}

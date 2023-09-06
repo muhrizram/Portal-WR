@@ -386,7 +386,7 @@ const DetailProject = () => {
   const getOptDataUser = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
+      endpoint: `/ol/teamMember?page=0&size=&sort=nip,asc&search=`
     })
     const data = res.data.map(item => ({
       id : item.id,
