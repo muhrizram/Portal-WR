@@ -223,8 +223,7 @@ export default function WorkingReport() {
             overtime: value.attributes.listDate.overtime,
             isToday: isToday
           };
-    });
-    console.log('temp : ', temp);
+    });    
     if(selectedUser == null){
       setData([])
     }
@@ -248,6 +247,7 @@ export default function WorkingReport() {
     if (isCheckin) {
       dom = (
         <CheckinTime
+          dataPeriod={dataAttandance.dataPeriod}
           setIsCheckin={(param) => {
             setIsCheckin(() => false);
           }}
