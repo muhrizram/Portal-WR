@@ -255,7 +255,11 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             className="autocomplete-input"
             options={listPresence}
             sx={{ width: "100%", marginTop: "20px" }}
-            onChange={(_event, newValue) => handleChange(newValue)}
+            onChange={(_event, newValue) => 
+             {if(newValue){
+              handleChange(newValue)
+             }}
+            }
             renderInput={(params) => (
               <TextField
                 {...params}

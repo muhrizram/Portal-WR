@@ -40,6 +40,28 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
     setPicture(imageSrc);
   }, [webcamRef]);
 
+  const cekRangeHour = () => {
+    if (!startTime || !endTime) {
+      console.log("Start time and end time must be selected.");
+    } else {
+      const startHour = startTime.getHours();
+      const endHour = endTime.getHours();
+      const startMinute = startTime.getMinutes();
+      const endMinute = endTime.getMinutes();
+  
+      const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
+  
+      if (totalMinutes >= 480) {
+        // setIsTakePicture(true);
+        console.log("Aman");
+      } else {
+        console.log("Rentang waktu harus minimal 8 jam.");
+      }
+    }
+  };
+  
+  
+
   const checkIn = async () => {
     const blob = await fetch(picture).then((res) => res.blob());
     const file = new File([blob], "test_picture.jpg");
@@ -106,7 +128,9 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
       setLat(position.coords.latitude);
       setLon(position.coords.longitude);
     });
-  }, []);
+    console.log("ini Start",startTime)
+    console.log("ini Start",endTime)
+  }, [startTime,endTime]);
 
   return (
     <Grid container>
@@ -272,7 +296,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
                       <Grid item xs={2} display="flex" alignItems="center">
                         <Button
                           variant="contained"
-                          onClick={() => setIsTakePicture(true)}
+                          onClick={() => cekRangeHour()}
                         >
                           Continue
                         </Button>
