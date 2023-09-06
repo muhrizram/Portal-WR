@@ -102,7 +102,6 @@ const CreateRolePrivilege = () => {
         endpoint: '/rolePrivilege/addRolePrivilege',
         data
       })
-      console.log(res)
       if(!res.isError){
         setDataAlert({
           severity: 'success',

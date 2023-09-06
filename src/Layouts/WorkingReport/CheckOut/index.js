@@ -45,7 +45,6 @@ export default function CheckOut({ setIsCheckin }) {
       )}&fileName=${result}`,
       method: "PUT",
     });
-    console.log("res: ", res);
     if (!res.isError) {
       setIsCheckin(false);
       setDataAlert({

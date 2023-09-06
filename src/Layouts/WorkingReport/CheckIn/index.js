@@ -74,7 +74,6 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
     const file = new File([blob], "test_picture.jpg");
     // URL.createObjectURL(blob)
     const result = await uploadFile(file);
-    console.log("hasilUpload", result);
     const body = {
       workingReportId: localStorage.getItem("workingReportId"),
       latitude: lat,
@@ -89,7 +88,6 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
       method: "POST",
       data: body,
     });
-    console.log("res: ", res);
     if (!res.isError) {
       setIsCheckin(false);
       setDataAlert({
@@ -110,7 +108,6 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
           method: "POST",
           data: dataReadyAttedance,
         });
-        console.log("res: ", resAttedance);
         if (!resAttedance.isError) {
           setDataAlert({
             severity: "success",
@@ -269,7 +266,6 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                         <TimePicker
                           onChange={(value) => {
                             setStartTime(value);
-                            console.log(value.format("HH:mm:ss"));
                           }}
                           value={startTime}
                           label="Start Time"

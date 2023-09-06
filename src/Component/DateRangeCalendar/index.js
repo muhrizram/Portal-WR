@@ -46,7 +46,6 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
 
   const handleApplyFilter = () => {
     if (!startDate || !endDate) {
-      console.log("Incorrect date format")
       setDataAlert({
         severity: "error",
         message: "Incorrect date format",
@@ -57,8 +56,6 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
     const start = dayjs(startDate);
     const end = dayjs(endDate);
     const weekendDates = calculateWeekendDates(start, end);     
-
-    console.log("Weekend Dates:", weekendDates);
     setWeekendDates(weekendDates)    
     setStartDateCall(startDate)
     setEndDateCall(endDate)

@@ -182,7 +182,6 @@ const DetailProject = () => {
             headerName: "Role",
             flex: 1.5,
             renderCell: (params) => {
-              // console.log('params: ', params)
               return (
                 <Grid item xs={12}>
                   <Autocomplete
@@ -487,8 +486,6 @@ const DetailProject = () => {
         };
       })
     }
-
-    // console.log('data on save : ', data);
     
     const id = localStorage.getItem('projectId')  
     const res = await client.requestAPI({
@@ -496,7 +493,6 @@ const DetailProject = () => {
       endpoint: `/project/update-project/projectId=${id}`,
       data : data
     })
-    // console.log("res update", res)
     if (!res.isError) {
       setDataAlert({
         severity: 'success',

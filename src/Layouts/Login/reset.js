@@ -27,7 +27,6 @@ const Schemareset = Yup.object().shape({
   });
 
 const Reset = ({open, onClose}) => {
-  console.log("open", open)
   const [dataPassword, setDataPassword] = useState({})
   const [showPassword, setShowPassword] = React.useState(false);
   const [openReset, setOpen] = useState(false)
@@ -56,14 +55,13 @@ const Reset = ({open, onClose}) => {
   });
 
   const handleReset = async() => {
-    console.log("coba data reset", dataPassword)
+    
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/auth/changePassword`,
       data: dataPassword,
       // isLogin: true
-    })    
-    console.log("cek respon", res)
+    })
     if (!res.isError) {
       
       localStorage.removeItem('token')

@@ -115,7 +115,6 @@ const getDownloadConfig = () =>
       [];
 
     delete cfg.columnConfiguration;
-    console.log("config: ", cfg)
     return JSON.stringify(cfg);
   })(JSON.parse(localStorage.getItem('downloadConfiguration')));
 

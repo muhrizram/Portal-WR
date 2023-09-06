@@ -44,7 +44,6 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
       method: "GET",
       endpoint: `/ol/presence?search=`,
     });
-    console.log("res: ", res.data);
     const temp = res.data.map((value) => {
       return {
         value: value.id,
@@ -77,9 +76,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             method: "POST",
             data: body,
           });
-          console.log("res: ", res);
             if (!res.isError) {
-              console.log("apakah");
               localStorage.setItem(
                 "workingReportId",
                 res.data.attributes.workingReportId
@@ -112,7 +109,6 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             method: "POST",
             data: body,
           });
-          console.log("res: ", res);
           if (!res.isError) {
             workingReportId = res.data.attributes.workingReportId;
           }

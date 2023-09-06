@@ -173,7 +173,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                   value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
                   onChange={(event, newValue) => {
                     if (newValue) {
-                      console.log("status", newValue)
                       setTaskData((prevData) => ({
                         ...prevData,
                         statusBacklog: newValue.id,
@@ -396,7 +395,6 @@ const CreateNewBacklog = () => {
           endpoint: '/backlog/addBacklog',
           data: taskObject,
         });
-        console.log(taskObject)
     
         if(!res.isError){
           setDataAlert({

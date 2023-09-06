@@ -32,6 +32,7 @@ import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 // import { options } from "@fullcalendar/core/preact";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
+import debounce from "@mui/utils/debounce";
 
 const CreateProject = () => {
   const [open, setOpen] = useState(false);
@@ -84,10 +85,10 @@ const CreateProject = () => {
               alt="Profile Image"
             />
             <Grid container>
-              <Grid style={{ marginLeft: "0.5rem" }} xs={6}>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
                 <span className="text-name">{params.row.firstName}</span>
               </Grid>
-              <Grid style={{ marginLeft: "0.5rem" }} xs={6}>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
                 <span className="text-name">{params.row.position}</span>
               </Grid>
             </Grid>
@@ -158,7 +159,6 @@ const CreateProject = () => {
       headerName: "Role",
       flex: 1,
       renderCell: (params) => {
-        // console.log("params: ", params)
         return (
           <Grid item xs={12}>
           <Autocomplete
@@ -249,9 +249,8 @@ const CreateProject = () => {
   useEffect(() => {
     getProjectTypes()
     getOptRoles()
-    getOptDataUser()
     getOptCompany()
-
+    getOptDataUser('')
     if(valueUser.length > 0) {
       setIsInviteDisabled(false)
     }
@@ -260,10 +259,8 @@ const CreateProject = () => {
 
   const handleInvite = () => {
     const newMembers = [];
-    // console.log("VALUE USER", valueUser)
     for (const newUser of valueUser) {
       let exists = false;
-      // console.log("SELECTED MEMBER", selectedMember)
       for (const existingMember of selectedMember) {
         if (newUser.id === existingMember.id) {
           exists = true;
@@ -273,7 +270,6 @@ const CreateProject = () => {
         newMembers.push(newUser);
       }
     }
-    // console.log('new member: ', newMembers)
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
 
     const updatedListUser = [...sendData.listUser, ...newMembers.map(member => ({
@@ -323,10 +319,10 @@ const CreateProject = () => {
     setDataUser(updatedDataUser);
   };
 
-  const getOptDataUser = async () => {
+  const getOptDataUser = async (value) => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=`
+      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=${value}`
     })
     const data = res.data.map(item => ({
       id : parseInt(item.id),
@@ -417,11 +413,6 @@ const CreateProject = () => {
     setData(temp)
   }
 
-  const changeUser = (event, newValue) => {
-    console.log('event: ', event)
-    console.log(newValue)
-  }
-
   const onSave = async () => {
     const dataForm = methods.getValues()
     delete dataForm.userId
@@ -431,15 +422,11 @@ const CreateProject = () => {
       ...dataForm
     }
 
-    // console.log("DATA input : ==> ", data)
-
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: '/project/add-project',
       data
     })
-
-    // console.log('response : => ', res);
     
     if(!res.isError){
       setDataAlert({
@@ -475,6 +462,12 @@ const CreateProject = () => {
       })
     }
     setValueUser(temp)
+  }
+
+  const searchMember = (value) => {
+    // setTimeout(() => {
+    getOptDataUser(value)
+    // }, 200)
   }
   return (
     <SideBar>
@@ -635,6 +628,8 @@ const CreateProject = () => {
                             onChange={(_event, newValue) => {
                               setValueUser([...newValue])
                             }}
+                            // onKeyUpCapture
+                            onKeyUpCapture={debounce((event) => searchMember(event.target.value), 500)}
                             options={dataUser}
                             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                             className='auto-custom'

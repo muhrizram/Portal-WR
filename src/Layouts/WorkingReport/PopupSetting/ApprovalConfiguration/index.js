@@ -19,8 +19,6 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
   const [file, setFile] = useState('')
   const [filePath, setFilePath] = useState('')
 
-  console.log('file path : ', filePath);
-
   const addApproval = () => {
     setApprovalConfig((prevData) => [
       ...prevData, {...approvalConfig}

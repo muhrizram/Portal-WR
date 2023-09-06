@@ -87,7 +87,6 @@ const DetailEmployee = () => {
   const userId = useLocation().state.userId;
   const handleFileChange = useCallback((event) => {
     const file = event.target.files[0];
-    console.log("Is Uploaded File same", file === uploadedFile);
     setUploadedFile(file);
   }, []);
   const handleDragOver = useCallback((event) => {
@@ -101,7 +100,6 @@ const DetailEmployee = () => {
     event.preventDefault();
     setIsDraggingOver(false);
     const file = event.dataTransfer.files[0];
-    console.log("Is Uploaded File same", file === uploadedFile);
     setUploadedFile(file);
   }, []);
 
