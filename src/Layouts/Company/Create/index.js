@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid";
 import SideBar from '../../../Component/Sidebar';
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from '../../../Component/Header'
-import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Avatar } from '@mui/material';
+import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Avatar, IconButton } from '@mui/material';
 import '../../../App.css'
 import { useNavigate } from 'react-router';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -13,6 +13,7 @@ import schemacompany from '../shema';
 import client from '../../../global/client';
 import uploadFile from '../../../global/uploadFile';
 import { AlertContext } from '../../../context';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 
 const CreateCompany = () => {
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ const CreateCompany = () => {
   const [isSave, setIsSave] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const [file, setFile] = useState('')
-  const [filePath, setFilePath] = useState()
+  const [filePath, setFilePath] = useState('')
   const dataBread = [
     {
       href: "/dashboard",
@@ -54,7 +55,7 @@ const CreateCompany = () => {
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      companyProfile: '',
+      // companyProfile: '',
       companyName: '',
       companyEmail: '',
       npwp: '',
@@ -123,6 +124,10 @@ const CreateCompany = () => {
     }
   }
 
+  const clearPhoto = () => {
+    setFilePath()
+    setFile()
+  }
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -159,6 +164,12 @@ const CreateCompany = () => {
                             name='companyProfile'
                             onChange={handleChange}
                           />
+                          <IconButton
+                            onClick={clearPhoto}>
+                            <ClearOutlinedIcon  item xs={2} className='button-clear'
+                              // style={{marginLeft: '50px'}}
+                            />
+                          </IconButton>
                         </Grid>
                         <Grid item xs={12} mt={1}>
                           <Typography variant='titleTextWarningUpload'>

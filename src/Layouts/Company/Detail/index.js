@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid";
 import SideBar from '../../../Component/Sidebar';
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from '../../../Component/Header'
-import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Avatar } from '@mui/material';
+import { Dialog, Button, DialogTitle, DialogContent, DialogContentText, DialogActions, Typography, Avatar, IconButton } from '@mui/material';
 import '../../../App.css'
 import { useNavigate } from 'react-router';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,6 +15,7 @@ import uploadFile from '../../../global/uploadFile';
 import TableNative from '../../../Component/DataTable/Native';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { AlertContext } from '../../../context';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 
 const DetailCompany = () => {
   const [dataProject, setDataProject] = useState([]) 
@@ -40,10 +41,10 @@ const DetailCompany = () => {
   const [companyId, setCompanyId] = useState(null)
   const [isEdit, setIsEdit] = useState(false)
   const [dataDetail, setDataDetail] = useState({
-    companyName: '',
-    companyEmail: '',
-    npwp: '',
-    address: '',
+    // companyName: '',
+    // companyEmail: '',
+    // npwp: '',
+    // address: '',
   })
   const [filePath, setFilePath] = useState('')
   const dataBread = [
@@ -130,7 +131,9 @@ const DetailCompany = () => {
     } else{
       const data = {
         ...sendData,
-        companyProfile: filePath
+        companyProfile: filePath,
+        createdBy: parseInt(localStorage.getItem('userId')),
+        lastModifiedBy: parseInt(localStorage.getItem('userId')),
       }
       const res = await client.requestAPI({
         method: 'PUT',
@@ -165,6 +168,11 @@ const DetailCompany = () => {
 
   const handleProject = () => {
     navigate('/masterProject')
+  }
+
+  const clearPhoto = () => {
+    setFilePath()
+    setFile()
   }
 
   return (
@@ -215,6 +223,12 @@ const DetailCompany = () => {
                               className="custom-file-input"
                               onChange={handleChange}
                             />
+                            <IconButton
+                              onClick={clearPhoto}>
+                              <ClearOutlinedIcon  item xs={2} className='button-clear'
+                                // style={{marginLeft: '50px'}}
+                              />
+                            </IconButton>
                           </Grid>
                         }
                         {isEdit && 
