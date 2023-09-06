@@ -1,4 +1,4 @@
-import React, { useEffect,useContext } from 'react';
+import React, { useEffect,useContext,useState } from 'react';
 import dayjs from 'dayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,8 +8,9 @@ import { Button, Grid, Typography } from '@mui/material';
 import { AlertContext } from '../../context';
 
 export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);  
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [filterOn, setFilterOn] = React.useState(false);
   const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
   const { setDataAlert } = useContext(AlertContext);
 
@@ -37,7 +38,10 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
   };
 
   const ResetFilter = () => {
+    setFilterOn(false)
     setStartDateCall(null)
+    setStartDate(null)
+    setEndDate(null)
     setEndDateCall(null)
     setWeekendDates([])
   }
@@ -58,7 +62,7 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
 
     console.log("Weekend Dates:", weekendDates);
     setWeekendDates(weekendDates)
-
+    setFilterOn(true)
     setStartDateCall(startDate)
     setEndDateCall(endDate)
     }    
@@ -74,14 +78,14 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
         <Grid container justifyContent="flex-end" marginTop="-5vh">          
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
-            <DemoItem>
-              <MobileDatePicker value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
+            <DemoItem >
+              <MobileDatePicker disabled={filterOn} value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
             </DemoItem>
           </Grid>
           <Grid item padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
+              <MobileDatePicker disabled={filterOn} value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
           <Grid item sx={{marginTop:'2%'}}>

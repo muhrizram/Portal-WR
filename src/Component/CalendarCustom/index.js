@@ -26,7 +26,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import './calender.css'
-
+import HolidayDialog from "../DialogHoliday";
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
 
@@ -44,6 +44,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [EndDate, setEndDate] = useState()
   const [activeMonth, setActiveMonth] = useState(new Date());
   const [wrDate, setWrDate] = useState(null)
+  const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
+  const [tanggalHoliday, setTanggalHoliday] = useState(null);
 
   const navigate = useNavigate();
 
@@ -166,10 +168,15 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </CustomButton>
                           )}
                         </Grid>
-                        {isWeekend(info.date) ? (
+                        {isWeekend(info.date) && data.length > 0 ? (
                           <>                               
                           <Grid justifyContent="left">
-                              <Button variant="outlined-holiday">
+                              <Button variant="outlined-holiday" onClick={
+                                () => {
+                                setTanggalHoliday(data[0].tanggal);
+                                setDialogOpenHoliday(true);
+                                }}
+                              >
                                 holiday
                               </Button>
                           </Grid>                          
@@ -411,6 +418,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       </Dialog>
       <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} wrDate={wrDate} />
       <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
+      <HolidayDialog dialogOpen={dialogOpenHoliday} handleClose={() => setDialogOpenHoliday(false)} date={tanggalHoliday}/>
     </Grid>
   );
 }
