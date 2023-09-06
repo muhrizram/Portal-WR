@@ -30,7 +30,6 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteId, setDeletedId] = useState(null);
-  const [noDataMessage, setNoDataMessage] = useState("");
   const { setDataAlert } = useContext(AlertContext);
 
   const getData = async (id) => {
@@ -42,7 +41,10 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
     if (!res.isError) {
       setData(res.data);
     } else {
-      setNoDataMessage(res.error.message);
+      setDataAlert({
+        severity: "error",
+        open: true,
+      });
     }
     setLoading(false);
   };
@@ -188,8 +190,16 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
                     <Button
                       onClick={() => handleDelete(row.id)}
                       className="delete-button button-text"
+                      disabled={loadingDelete}
                     >
-                      Delete Data
+                      {loadingDelete ? (
+                        <>
+                          <CircularProgress size={14} color="inherit" />
+                          <Typography marginLeft={1}>Deleting...</Typography>
+                        </>
+                      ) : (
+                        "Delete Data"
+                      )}
                     </Button>
                   </DialogActions>
                 </Dialog>
@@ -214,7 +224,9 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
         <img src={blanktable} alt="blank-table" />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="noDataTable">{noDataMessage}</Typography>
+        <Typography variant="noDataTable">
+          Sorry, the data you are looking for could not be found.
+        </Typography>
       </Grid>
     </Grid>
   );

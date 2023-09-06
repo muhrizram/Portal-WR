@@ -57,7 +57,6 @@ const Employee = () => {
         let newData = synchroniseData.attributes
           ? synchroniseData.attributes.newSync.length > 0
             ? synchroniseData.attributes.newSync.some((data) => {
-                console.log("In data:", data);
                 return data.nip === params.row.nip;
               })
             : false
