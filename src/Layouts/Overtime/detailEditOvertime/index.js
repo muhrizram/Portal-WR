@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Button, Card, Divider, Grid, Rating, Typography } from "@mui/material";
+import { Button, Card, CircularProgress, Divider, Grid, Rating, Typography } from "@mui/material";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -12,7 +12,7 @@ import CreateOvertime from "../createOvertime";
 import client from '../../../global/client';
 
 
-export default function ViewOvertime({WrIdDetail}) {
+export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
   const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
 
@@ -62,7 +62,7 @@ export default function ViewOvertime({WrIdDetail}) {
     getDetailOvertime()
   }, [])
 
-  const handleSaveSuccess = () => {
+  const handleEditSuccess = () => {
     getDetailOvertime();
   };
 
@@ -129,13 +129,17 @@ export default function ViewOvertime({WrIdDetail}) {
                           sx={{
                             backgroundColor: getStatusColor(taskItem.statusTaskName),
                             color: getStatusFontColor(taskItem.statusTaskName),
+                            width: '100px',
                             padding: '5px 10px',
                             gap: '10px',
                             borderRadius: '4px',
                             fontSize: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                           }}
                         >
-                          {taskItem.statusTaskName}
+                          <span>{taskItem.statusTaskName}</span>
                         </Box>
                       </Grid>
                     </Grid>
@@ -190,6 +194,18 @@ export default function ViewOvertime({WrIdDetail}) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
+            <Button 
+              variant="outlined"
+              className="button-text"
+              color="error"
+              onClick={() => {
+                onCloseViewOvertime()
+              }
+                }>
+              Back
+            </Button>
+          </Grid>
+          <Grid item>
             <Button startIcon={<CreateIcon />} variant="outlined"
               onClick={() => {
                 setOpenOvertime(true)
@@ -200,8 +216,12 @@ export default function ViewOvertime({WrIdDetail}) {
           </Grid>
         </Grid>
       </Grid>
-      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} onSaveSuccess={handleSaveSuccess}/>
-      </>) : <><h1>DATA KOSONG</h1></>}
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} onEditSuccess={handleEditSuccess}/>
+      </>) : (
+        <Grid container xs={12} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: 20}}>
+          <CircularProgress size={50} />
+        </Grid>
+      )}
     </Grid>
   );
 }
