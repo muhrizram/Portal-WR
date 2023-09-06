@@ -105,7 +105,7 @@ const closedRoutes = [
   {
     path: "/masteruserrole",
     element: <MasterRoleUser />,
-    name: "Master User Role",
+    name: "User Role",
     key: "master user role",
     icon: <EmojiPeople />,
   },

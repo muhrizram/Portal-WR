@@ -54,6 +54,7 @@ const CreateCompany = () => {
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
+      companyProfile: '',
       companyName: '',
       companyEmail: '',
       npwp: '',
@@ -86,6 +87,7 @@ const CreateCompany = () => {
           createdBy: parseInt(localStorage.getItem('userId')),
           lastModifiedBy: parseInt(localStorage.getItem('userId'))
         }
+        console.log("ini data",data)
         const res = await client.requestAPI({
           method: 'POST',
           endpoint: '/company/addCompany',
@@ -154,6 +156,7 @@ const CreateCompany = () => {
                             type="file"
                             accept=".png, .jpg"
                             className="custom-file-input"
+                            name='companyProfile'
                             onChange={handleChange}
                           />
                         </Grid>
@@ -169,7 +172,7 @@ const CreateCompany = () => {
                           name='companyName'
                           className='input-field-crud'
                           placeholder='e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                          label='Company Name'
+                          label='Company Name *'
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -177,8 +180,8 @@ const CreateCompany = () => {
                           focused
                           name='companyEmail'
                           className='input-field-crud'
-                          placeholder='e.g PT. company@mail.com'
-                          label='Company Email'
+                          placeholder='e.g company@mail.com'
+                          label='Company Email *'
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -186,8 +189,8 @@ const CreateCompany = () => {
                           focused
                           name='npwp'
                           className='input-field-crud'
-                          placeholder='e.g PT. XX.XXX.XXX.X-XXX.XXX'
-                          label='Company NPWP'
+                          placeholder='e.g XX.XXX.XXX.X-XXX.XXX'
+                          label='Company NPWP *'
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -195,8 +198,8 @@ const CreateCompany = () => {
                           focused
                           name='address'
                           className='input-field-crud'
-                          placeholder='e.g PT. Jalan Gatot Subroto no 122'
-                          label='Company Address'
+                          placeholder='e.g Jalan Gatot Subroto no 122'
+                          label='Company Address *'
                         />
                       </Grid>
                     </Grid>

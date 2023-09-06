@@ -38,6 +38,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
+  const [taskDataUpdate, setTaskDataUpdate] = useState(task);
 
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
@@ -60,13 +61,13 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
   useEffect(() => {
     getAssignedTo()
     getStatusBacklog()
-    onUpdate(taskData);
-  }, [taskData]);
+    onUpdate(taskDataUpdate);
+  }, [taskDataUpdate]);
 
 
   const handleChange = (event) => {    
       const { name, value } = event.target;
-        setTaskData((prevData) => ({
+        setTaskDataUpdate((prevData) => ({
           ...prevData,
           [name]: value,
         }));
@@ -120,7 +121,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               style={{ paddingRight: "10px" }}
               focused
               name='taskName'
-              value={taskData.taskName}
+              value={taskDataUpdate.taskName}
               onChange={handleChange}
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
@@ -138,9 +139,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               <Rating
                 variant="outlined"
                 name="priority"
-                value={taskData.priority}
+                value={taskDataUpdate.priority}
                 onChange={(event, newValue) => {
-                  setTaskData((prevData) => ({
+                  setTaskDataUpdate((prevData) => ({
                     ...prevData,
                     priority: newValue.toString(),
                   }));
@@ -154,7 +155,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              value={taskData.taskDescription}
+              value={taskDataUpdate.taskDescription}
               onChange={handleChange}
               name='taskDescription'
               className='input-field-crud'
@@ -171,10 +172,16 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               value={StatusBacklog.find((option) => option.id === taskData.statusBacklog) || null}
               getOptionLabel={(option) => option.name}
               onChange={(event, newValue) =>
+                {
                 setTaskData((prevData) => ({
                   ...prevData,
                   statusBacklog: newValue ? newValue.id : null, 
                 }))
+                setTaskDataUpdate((prevData) => ({
+                  ...prevData,
+                  statusBacklog: newValue ? newValue.id : null, 
+                }))
+              }
               }
               sx={{ width: "100%" }}
               renderInput={(params) => (
@@ -197,7 +204,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              value={taskData.estimationTime}
+              value={taskDataUpdate.estimationTime}
               onChange={handleChange}
               name='estimationTime'
               className='input-field-crud'
@@ -210,7 +217,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               style={{ paddingRight: "10px" }}
               focused
               disabled
-              value={taskData.actualTime}
+              value={taskDataUpdate.actualTime}
               onChange={handleChange}
               name='actualTime'
               className='input-field-crud'
@@ -228,10 +235,16 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
               getOptionLabel={(option) => option.fullName}
               onChange={(event, newValue) =>
+                {
                 setTaskData((prevData) => ({
                   ...prevData,
                   assignedTo: newValue ? newValue.fullName : null, 
                 }))
+                setTaskDataUpdate((prevData) => ({
+                  ...prevData,
+                  userId: newValue ? newValue.id : null, 
+                }))
+              }
               }
               sx={{ width: "100%" }}
               renderInput={(params) => (
@@ -424,6 +437,8 @@ const DetailBacklog = () => {
   };
 
   const confirmSave = async () => {    
+    // setIsEdit(false)
+    // setIsSave(true)
     setOpen(true)    
   }  
 
@@ -441,7 +456,8 @@ const DetailBacklog = () => {
       id: tasks.length + 1,
       projectId : valueproject,
       statusBacklog: null,
-      userId : parseInt(localStorage.getItem('userId')),
+      // userId : parseInt(localStorage.getItem('userId')),
+      userId: null,
       taskName: '',
       taskDescription: '',
       estimationTime: null,
@@ -451,7 +467,7 @@ const DetailBacklog = () => {
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      taskCode:`T-WR-00${tasks.length + 1}`,
+      // taskCode:`T-WR-00${tasks.length + 1}`,
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -540,7 +556,7 @@ const DetailBacklog = () => {
                     options={ProjectName}      
                     defaultValue={ProjectName.find((option) => option.id === dataDetail.projectId) || null}
                     sx={{ width: "100%", marginTop: "8px" }}                    
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {             
                       setValueproject(parseInt(newValue.id));
                       if (!newValue) {                    

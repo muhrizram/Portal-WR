@@ -232,7 +232,7 @@ const DetailCompany = () => {
                             name='companyName'
                             className='input-field-crud'
                             placeholder='e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                            label='Company Name'
+                            label='Company Name *'
                           />
                         ) : (
                           <Grid container>
@@ -251,8 +251,8 @@ const DetailCompany = () => {
                             focused
                             name='companyEmail'
                             className='input-field-crud'
-                            placeholder='e.g PT. company@mail.com'
-                            label='Company Email'
+                            placeholder='e.g company@mail.com'
+                            label='Company Email *'
                           />
                         ) : (
                           <Grid container>
@@ -271,8 +271,8 @@ const DetailCompany = () => {
                             focused
                             name='npwp'
                             className='input-field-crud'
-                            placeholder='e.g PT. XX.XXX.XXX.X-XXX.XXX'
-                            label='Company NPWP'
+                            placeholder='e.g XX.XXX.XXX.X-XXX.XXX'
+                            label='Company NPWP *'
                           />
                         ) : (
                           <Grid container>
@@ -291,8 +291,8 @@ const DetailCompany = () => {
                             focused
                             name='address'
                             className='input-field-crud'
-                            placeholder='e.g PT. Jalan Gatot Subroto no 122'
-                            label='Company Address'
+                            placeholder='e.g Jalan Gatot Subroto no 122'
+                            label='Company Address *'
                           />
                         ) : (
                           <Grid container>
@@ -305,33 +305,6 @@ const DetailCompany = () => {
                           </Grid>
                         )}
                       </Grid>
-                      {/* <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picName'
-                          className='input-field-crud'
-                          placeholder='e.g Steven White'
-                          label='PIC Name'
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picPhone'
-                          className='input-field-crud'
-                          placeholder='e.g 08*********'
-                          label='PIC Phone'
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <FormInputText
-                          focused
-                          name='picEmail'
-                          className='input-field-crud'
-                          placeholder='e.g pic@mail.com'
-                          label='PIC Email'
-                        />
-                      </Grid> */}
                     </Grid>
                   {isEdit && (
                     <Grid
