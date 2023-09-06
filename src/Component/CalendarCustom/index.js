@@ -53,8 +53,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   useEffect(() => {    
    const currentDate = new Date();
    const formattedMonthYear = moment(currentDate).format("MMMM YYYY");
-   setCurrentMonthYear(formattedMonthYear);
-   console.log("INI START", EndDate)
+   setCurrentMonthYear(formattedMonthYear);   
    tambahSatuHari()
   },[EndDate])  
   

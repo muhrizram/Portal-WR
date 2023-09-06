@@ -223,8 +223,7 @@ export default function WorkingReport() {
             overtime: value.attributes.listDate.overtime,
             isToday: isToday
           };
-    });
-    console.log('temp : ', temp);
+    });    
     if(selectedUser == null){
       setData([])
     }
