@@ -259,6 +259,10 @@
   margin: 0 !important;
 }
 
+.delete-button:disabled{
+  background-color:#9E9E9E !important;
+}
+
 .custom-snackbar {
   width: 100%;
 }
