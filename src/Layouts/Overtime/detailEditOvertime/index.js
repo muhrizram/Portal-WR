@@ -62,6 +62,10 @@ export default function ViewOvertime({WrIdDetail}) {
     getDetailOvertime()
   }, [])
 
+  const handleSaveSuccess = () => {
+    getDetailOvertime();
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -196,7 +200,7 @@ export default function ViewOvertime({WrIdDetail}) {
           </Grid>
         </Grid>
       </Grid>
-      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail}/>
+      <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} onSaveSuccess={handleSaveSuccess}/>
       </>) : <><h1>DATA KOSONG</h1></>}
     </Grid>
   );

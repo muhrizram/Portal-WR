@@ -14,7 +14,7 @@ const ProjectHistoryTab = ({ id }) => {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: "startDate",
+    sortName: "projectName",
     sortType: "asc",
   });
 
@@ -48,10 +48,9 @@ const ProjectHistoryTab = ({ id }) => {
       page: dataFilter.page,
       size: dataFilter.pageSize,
       sortName:
-        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "startDate",
+        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "projectName",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
-      search: filter.search,
     });
   };
 
@@ -67,7 +66,7 @@ const ProjectHistoryTab = ({ id }) => {
       flex: 1,
     },
     {
-      field: "clientName",
+      field: "companyName",
       headerName: "Client Name",
       flex: 1,
     },
@@ -86,13 +85,12 @@ const ProjectHistoryTab = ({ id }) => {
   const getData = async (id) => {
     setLoading(true);
     const res = await client.requestAPI({
-      endpoint: `/userUtilization/detail?id=3&page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
+      endpoint: `/userUtilization/detail?id=${id}&page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
       method: "GET",
     });
 
     if (!res.isError) {
       rebuildData(res);
-    } else {
     }
     setLoading(false);
   };
@@ -107,7 +105,7 @@ const ProjectHistoryTab = ({ id }) => {
         no: number + (index + 1),
         id: value.id,
         projectName: value.attributes.projectName,
-        clientName: value.attributes.companyName,
+        companyName: value.attributes.companyName,
         startDate: intlDate.format(new Date(value.attributes.startDate)),
         endDate: intlDate.format(new Date(value.attributes.endDate)),
       };
@@ -119,10 +117,6 @@ const ProjectHistoryTab = ({ id }) => {
   useEffect(() => {
     getData(id);
   }, [filter]);
-
-  useEffect(()=>{
-    console.log("Data: ", data)
-  })
 
   return data.length > 0 ?
   (
@@ -139,6 +133,7 @@ const ProjectHistoryTab = ({ id }) => {
       onPaginationModelChange={(model) => changePagination(model)}
       onSortModelChange={(model) => changeSort(model)}
       loading={loading}
+      sortingMode="server"
       getRowId={(row) => row.id}
     />
   ):

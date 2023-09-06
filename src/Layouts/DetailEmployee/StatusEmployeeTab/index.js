@@ -1,27 +1,43 @@
-import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
+import React, { useEffect, useState, useContext } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CircularProgress, Grid, IconButton, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Link,
+} from "@mui/material";
 import client from "../../../global/client";
 import blanktable from "../../../assets/blanktable.png";
+import { AlertContext } from "../../../context";
 
-const StatusEmployeeTab = ({ id }) => {
+const StatusEmployeeTab = ({ id, dataChange }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteId, setDeletedId] = useState(null);
   const [noDataMessage, setNoDataMessage] = useState("");
+  const { setDataAlert } = useContext(AlertContext);
 
   const getData = async (id) => {
     setLoading(true);
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/contractHistory?id=${105}`,
+      endpoint: `/users/contractHistory?id=${id}`,
     });
     if (!res.isError) {
       setData(res.data);
@@ -33,13 +49,37 @@ const StatusEmployeeTab = ({ id }) => {
 
   useEffect(() => {
     getData(id);
-  }, []);
+  }, [dataChange]);
 
-  const handleDelete = (id) => {
-    // console.log("ID", id);
+  const handleDelete = async () => {
+    setLoadingDelete(true);
+    const res = await client.requestAPI({
+      method: "DELETE",
+      endpoint: `/users/contractHistory?id=${deleteId}`,
+    });
+    if (!res.isError) {
+      setDataAlert({
+        severity: "warning",
+        open: true,
+        message: res.meta.message,
+      });
+    } else {
+      setDataAlert({
+        severity: "error",
+        open: true,
+        message: res.error.meta.message,
+      });
+    }
+    setLoadingDelete(false);
+    setOpenDeleteDialog(false);
+    getData(id);
   };
 
-  const intlDate = Intl.DateTimeFormat("id", {day:'2-digit', month:'2-digit', year:'numeric'});
+  const intlDate = Intl.DateTimeFormat("id", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   return loading ? (
     <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
@@ -92,7 +132,16 @@ const StatusEmployeeTab = ({ id }) => {
                 sx={{ color: "text.secondary", fontSize: "14px" }}
                 align="left"
               >
-                <Link href="">preview pdf</Link>
+                {row.attributes.file ? (
+                  <Link
+                    href={`https://portalwr-dev.cloudias79.com/apis/minio/view?file=${row.attributes.file}`}
+                    target="_blank"
+                  >
+                    preview pdf
+                  </Link>
+                ) : (
+                  <Typography>-</Typography>
+                )}
               </TableCell>
               <TableCell
                 sx={{ color: "text.secondary", fontSize: "14px" }}
@@ -100,11 +149,50 @@ const StatusEmployeeTab = ({ id }) => {
               >
                 <IconButton
                   onClick={() => {
-                    handleDelete(row.id);
+                    setDeletedId(row.id);
+                    setOpenDeleteDialog(true);
                   }}
                 >
                   <DeleteIcon />
                 </IconButton>
+                <Dialog
+                  open={openDeleteDialog}
+                  onClose={() => setOpenDeleteDialog(false)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                  className="dialog-delete"
+                >
+                  <DialogTitle
+                    id="alert-dialog-title"
+                    className="dialog-delete-header"
+                  >
+                    {"Delete Data"}
+                  </DialogTitle>
+                  <DialogContent className="dialog-delete-content">
+                    <DialogContentText
+                      className="dialog-delete-text-content"
+                      id="alert-dialog-description"
+                    >
+                      Warning: Deleting this data is irreversible. Are you sure
+                      you want to proceed?
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions className="dialog-delete-actions">
+                    <Button
+                      onClick={() => setOpenDeleteDialog(false)}
+                      variant="outlined"
+                      className="button-text"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(row.id)}
+                      className="delete-button button-text"
+                    >
+                      Delete Data
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}

@@ -14,7 +14,7 @@ import DataTable from "../../Component/DataTable";
 import SideBar from "../../Component/Sidebar";
 import { AlertContext } from "../../context";
 import { useNavigate } from "react-router-dom";
-// import { ChipComponent } from "../../Component/Chip";
+import { ChipComponent } from "../../Component/Chip";
 import { convertBase64 } from "../../global/convertBase64";
 
 const Employee = () => {
@@ -54,18 +54,14 @@ const Employee = () => {
         const urlMinio = params.row.image
           ? convertBase64(params.row.image)
           : "";
-        // const [isNew, setIsNew] = useState(false);
-        // const newData = synchroniseData.some((data) => {
-        //   if (
-        //     params.row.id === data.id &&
-        //     data.attributes.status === "Syncronize Added"
-        //   )
-        //     setIsNew(true);
-        // });
-
-        // setTimeout(() => {
-        //   setIsNew(false)
-        // }, 5000);
+        let newData = synchroniseData.attributes
+          ? synchroniseData.attributes.newSync.length > 0
+            ? synchroniseData.attributes.newSync.some((data) => {
+                console.log("In data:", data);
+                return data.nip === params.row.nip;
+              })
+            : false
+          : false;
         return (
           <div
             style={{
@@ -83,15 +79,15 @@ const Employee = () => {
                 alt="Profile Image"
               />
               <div style={{ marginLeft: "0.5rem" }}>
-                <span className="text-name">{params.row.name}</span>
+                <span className="text-name">{params.row.firstName}</span>
                 <span className="text-position">{params.row.position}</span>
               </div>
             </div>
-            {/* {isNew && 
-              <div style={{ position: "absolute", right:0 }}>
-                {/* <ChipComponent label="New" sx={{ fontWeight: 500 }} /> */}
-              {/* </div> */}
-            {/* } */}
+            {newData && (
+              <div style={{ position: "absolute", right: 0 }}>
+                <ChipComponent label="New" sx={{ fontWeight: 500 }} />
+              </div>
+            )}
           </div>
         );
       },
@@ -186,7 +182,11 @@ const Employee = () => {
       setSynchroniseData(res.data);
       setSynchroniseLoading(false);
     } else {
-      console.error(res);
+      setDataAlert({
+        severity: "error",
+        message: res.error.detail,
+        open: true,
+      });
     }
   };
 
@@ -195,7 +195,9 @@ const Employee = () => {
       page: dataFilter.page,
       size: dataFilter.pageSize,
       sortName:
-        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "firstName",
+        dataFilter.sorting.field !== ""
+          ? dataFilter.sorting[0].field
+          : "firstName",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
       search: filter.search,
