@@ -256,9 +256,13 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             options={listPresence}
             sx={{ width: "100%", marginTop: "20px" }}
             onChange={(_event, newValue) => 
-             {if(newValue){
+             {
+              if(newValue){
               handleChange(newValue)
-             }}
+              }else{
+                setPresence({value:undefined})
+              }
+            }
             }
             renderInput={(params) => (
               <TextField

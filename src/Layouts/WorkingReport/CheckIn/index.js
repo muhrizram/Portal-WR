@@ -42,24 +42,30 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
 
   const cekRangeHour = () => {
     if (!startTime || !endTime) {
-      console.log("Start time and end time must be selected.");
+      setDataAlert({
+        severity: "error",
+        message: 'Rentang waktu Start dan End tidak boleh kosong',
+        open: true,
+      });
     } else {
-      const startHour = startTime.getHours();
-      const endHour = endTime.getHours();
-      const startMinute = startTime.getMinutes();
-      const endMinute = endTime.getMinutes();
+      const startHour = parseInt(startTime.format("HH"), 10);
+      const endHour = parseInt(endTime.format("HH"), 10);
+      const startMinute = parseInt(startTime.format("mm"), 10);
+      const endMinute = parseInt(endTime.format("mm"), 10);
   
       const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
   
-      if (totalMinutes >= 480) {
-        // setIsTakePicture(true);
-        console.log("Aman");
-      } else {
-        console.log("Rentang waktu harus minimal 8 jam.");
+      if (totalMinutes >= 480) {        
+        setIsTakePicture(true);        
+      } else {                
+        setDataAlert({
+          severity: "error",
+          message: 'Rentang waktu harus minimal 8 jam',
+          open: true,
+        });
       }
     }
   };
-  
   
 
   const checkIn = async () => {
@@ -295,6 +301,9 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance }) {
                       </Grid>
                       <Grid item xs={2} display="flex" alignItems="center">
                         <Button
+                          disabled={
+                            (startTime == null || endTime == null)
+                          }
                           variant="contained"
                           onClick={() => cekRangeHour()}
                         >
