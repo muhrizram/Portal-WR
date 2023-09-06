@@ -161,7 +161,6 @@ const DetailEmployee = () => {
   const MAX_SIZE_FILE = 10485760;
 
   const onSave = async (data) => {
-    console.log("Before ", data);
     if (uploadedFile) {
       if (uploadedFile.size >= MAX_SIZE_FILE) {
         setDataAlert({
@@ -195,7 +194,6 @@ const DetailEmployee = () => {
         return;
       }
     }
-    console.log("After ", data);
     const bodyRequest = {
       ...data,
       userId: userId,
@@ -213,6 +211,7 @@ const DetailEmployee = () => {
         open: true,
         message: res.data.meta.message,
       });
+      setContractOLValue({id:null, name:""});
       reset();
       setAddContract(false);
       setIsContractAdded(!isContractAdded);
@@ -245,6 +244,7 @@ const DetailEmployee = () => {
   const [open, setOpen] = useState(false);
   const handleCloseContract = () => {
     setAddContract(false);
+    setContractOLValue({id:null, name:""});
     reset();
   };
   const handleClose = () => {
