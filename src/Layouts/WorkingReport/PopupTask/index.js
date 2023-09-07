@@ -174,7 +174,7 @@ const PopupTask = ({
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/projectTypeList?userId=${localStorage.getItem('userId')}&search=`
-    })            
+    })
     const resabsen = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/absenceTask?search=`
@@ -377,10 +377,12 @@ const PopupTask = ({
               <div className={opentask ? 'card-project' : ''} key={`${idxProject + 1}-project`}>
                 <Grid container rowSpacing={2}>
                    <Grid item xs={12}>
+                    <Typography ></Typography>
                      <Autocomplete
                         disabled={addTaskinEdit && CekProjectEdit[idxProject-1] ? false : true}
                         disablePortal                    
                         name='project'
+                        defaultValue={resProject.absenceId ? { name: dataDetailnya[idxProject].attributes.absenceName  } : { name: dataDetailnya[idxProject].attributes.projectName }}
                         options={listProject}
                         getOptionLabel={(option) => option.name}
                         className='autocomplete-input autocomplete-on-popup'                       
@@ -413,9 +415,11 @@ const PopupTask = ({
                         }}
                         renderInput={(params) => (
                           <TextField
+                            focused
+                            required
                             {...params}
                             className='input-field-crud'
-                            label={addTaskinEdit == true && !CekProjectEdit[idxProject] ? "Project ": (resProject.absenceId ? dataDetailnya[idxProject].attributes.absenceName : dataDetailnya[idxProject].attributes.projectName) }
+                            label="Project"
                             placeholder='Select Project'
                           />
                         )}
@@ -429,6 +433,7 @@ const PopupTask = ({
                           <Grid item xs={12}>
                             <TextField
                               focused
+                              required
                               name='taskDuration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               value={res.taskDuration}
@@ -442,6 +447,7 @@ const PopupTask = ({
                           <Grid item xs={12}>
                             <TextField
                               focused
+                              required
                               name='taskItem'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               value={res.taskItem}
@@ -480,7 +486,7 @@ const PopupTask = ({
                                       disablePortal
                                       name='taskName'
                                       defaultValue={listTaskProject.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName) || null}
-                                      // value={res.taskName}
+                                      // value={listTaskProject.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName)}
                                       className='autocomplete-input autocomplete-on-popup'
                                       options={listTaskProject}
                                       getOptionLabel={(option) => option.taskName} 
@@ -502,6 +508,7 @@ const PopupTask = ({
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
+                                          required
                                           className='input-field-crud'
                                           label='Task Name'
                                           placeholder='e.g Create Login Screen'
@@ -519,15 +526,18 @@ const PopupTask = ({
                                       getOptionLabel={(option) => option.name} 
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       onChange={(_event, newValue) =>
-                                        handleChange(
-                                          { target: { name : 'statusTaskId', value : newValue.id } },
-                                          idxProject,
-                                          index
-                                          )
+                                        {if(newValue){
+                                          handleChange(
+                                            { target: { name : 'statusTaskId', value : newValue.id } },
+                                            idxProject,
+                                            index
+                                            )
+                                        }}
                                         }
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
+                                          required
                                           className='input-field-crud'
                                           label='Status Task'
                                           placeholder='e.g Create Login Screen'
@@ -538,6 +548,7 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
+                                      required
                                       name='taskDuration'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.taskDuration}
@@ -552,6 +563,7 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
+                                      required
                                       name='taskItem'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.taskItem}
@@ -601,7 +613,7 @@ const PopupTask = ({
               )
             }
           </>
-          ) : (
+        ) : (
           <>
             {dataProject.listProject.length > 0 && dataProject.listProject.map((resProject, idxProject) => (                   
               <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
@@ -615,7 +627,7 @@ const PopupTask = ({
                         getOptionLabel={(option) => option.name}
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {
-                        if (newValue) {         
+                        if (newValue) {                          
                           getlistTaskProject(newValue.id)               
                           handleChangeProject(newValue.id, idxProject, newValue.absen)                       
                           setCekabsen((prevCekAbsen) => {
@@ -643,6 +655,7 @@ const PopupTask = ({
                         renderInput={(params) => (
                           <TextField
                             {...params}
+                            required
                             className='input-field-crud'
                             label='Project'
                             placeholder='Select Project'
@@ -658,6 +671,7 @@ const PopupTask = ({
                           <Grid item xs={12}>
                             <TextField
                               focused
+                              required
                               name='duration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               onChange={(e) => handleChange(e,idxProject, index)}
@@ -670,6 +684,7 @@ const PopupTask = ({
                           <Grid item xs={12}>
                             <TextField
                               focused
+                              required
                               name='taskItem'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               onChange={(e) => handleChange(e,idxProject, index)}
@@ -727,6 +742,7 @@ const PopupTask = ({
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
+                                          required
                                           className='input-field-crud'
                                           label='Task Name'
                                           placeholder='e.g Create Login Screen'
@@ -752,6 +768,7 @@ const PopupTask = ({
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
+                                          required
                                           className='input-field-crud'
                                           label='Status Task'
                                           placeholder='e.g Create Login Screen'
@@ -762,6 +779,7 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
+                                      required
                                       name='duration'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
@@ -775,6 +793,7 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
+                                      required
                                       name='taskItem'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.detail}

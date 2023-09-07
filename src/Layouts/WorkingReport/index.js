@@ -191,8 +191,7 @@ export default function WorkingReport() {
     document.body.removeChild(link);
   }
 
-  const rebuildData = (resData) => {
-    console.log("DUAR",resData)    
+  const rebuildData = (resData) => {     
     let temp = [];    
     temp = resData.data.map((value, index) => {
       const isToday = moment( value.attributes.listDate.date).isSame(moment(), 'day');
