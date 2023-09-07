@@ -227,7 +227,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     <Typography variant="title">{moment(dataPeriod.tanggal).format('dddd, DD MMMM YYYY')}</Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth sx={{ backgroundColor: '#EDEDED',borderRadius:2 }}>
                       <InputLabel id="demo-simple-select-label">
                         Presence
                       </InputLabel>
@@ -244,7 +244,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth sx={{ backgroundColor: '#EDEDED', borderRadius:2 }}>
                       <InputLabel id="demo-simple-select-label">
                         Check In Location
                       </InputLabel>
@@ -264,6 +264,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["TimePicker"]}>
                         <TimePicker
+                          ampm={false}
                           onChange={(value) => {
                             setStartTime(value);
                           }}
@@ -277,6 +278,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["TimePicker"]}>
                         <TimePicker
+                          ampm={false}
                           onChange={(value) => setEndTime(value)}
                           value={endTime}
                           label="End Time"

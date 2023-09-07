@@ -27,6 +27,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import dayjs from "dayjs";
+import { Remove } from "@mui/icons-material";
 
 const CreateOvertime = ({
   open,
@@ -57,6 +59,8 @@ const CreateOvertime = ({
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState(null)
+  console.log('opt project : ', optProject);
+  console.log('opt Task : ', optTask);
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
@@ -90,6 +94,8 @@ const CreateOvertime = ({
     workingReportOvertimeId: null,
     listProject: [clearProject],
   })
+  
+  console.log('data overtime edit : ', dataEditOvertime);
 
   const onAddProject = () => {
     if(isEdit){
@@ -107,6 +113,19 @@ const CreateOvertime = ({
       setDataOvertime(temp)
     }
   }
+
+  const RemoveProject = (projectIndex) => {
+    if (isEdit) {
+      const temp = { ...dataEditOvertime };
+      temp.listProject.splice(projectIndex, 1);
+      setDataEditOvertime(temp);
+    } else {
+      const temp = { ...dataOvertime };
+      temp.listProject.splice(projectIndex, 1);
+      setDataOvertime(temp);
+    }
+  };
+  
 
   const onEdit = () => {
     let temp = []
@@ -152,6 +171,11 @@ const CreateOvertime = ({
       if(name === 'duration'){
         const updateDataEditOvertime = {...dataEditOvertime}
         updateDataEditOvertime.listProject[idxProject].listTask[index][name] = parseInt(value)
+
+        if (parseInt(value) < 0) {
+          handleChange({ target: { name: 'duration', value: 0 } }, idxProject, index);
+          return;
+        }
         setDataEditOvertime(updateDataEditOvertime)
       }
       else if(name === 'taskName'){
@@ -298,12 +322,14 @@ const onSave = async () => {
 
   const saveEdit = async () => {
     const dataUpdate = {
-      workingReportOvertimeId : null,
+      startTime: startTime,
+      endTime: endTime,
+      workingReportId : null,
       listProjectId : [],
       createdBy: currentUserId,
       updatedBy: currentUserId
     }
-    dataUpdate.workingReportOvertimeId = dataEditOvertime.workingReportOvertimeId
+    dataUpdate.workingReportId = dataEditOvertime.workingReportOvertimeId
     for (const project of dataEditOvertime.listProject){
       const updateFilled = {
         projectId : project.projectId,
@@ -354,14 +380,10 @@ const onSave = async () => {
   };
 
   const setTimeTo = (timeString) => {
-    let Ubah = String(timeString)
-    const [hours, minutes, seconds] = Ubah.split(":");
-    const currentDate = new Date();
-    currentDate.setHours(parseInt(hours));
-    currentDate.setMinutes(parseInt(minutes));
-    currentDate.setSeconds(parseInt(seconds));
-    return currentDate;
-  }
+    const currentDate = dayjs();
+    const formattedDate = currentDate.format("YYYY-MM-DD");
+    return timeString ? dayjs(`${formattedDate}T${timeString}`) : null;
+  };
 
   return (
     <>
@@ -388,18 +410,20 @@ const onSave = async () => {
         <>
         <Grid item xs={12}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={['TimePicker']}>
-                <TimePicker label="Start Time"      
-                defaultValue={setTimeTo(dataEditOvertime.startTime) || null}
-                onChange={(start) => setStartTime(start.format("HH:mm:ss"))} 
-                ampm={false}
-                />
-                <TimePicker label="End Time"
-                defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
-                onChange={(end) => {setEndTime(end.format("HH:mm:ss"))}}
-                 ampm={false}
-                />
-            </DemoContainer>
+          <DemoContainer components={['TimePicker']}>
+          <TimePicker
+            label="Start Time"
+            value={setTimeTo(dataEditOvertime.startTime) || null}
+            onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
+            ampm={false}
+          />
+          <TimePicker
+            label="End Time"
+            value={setTimeTo(dataEditOvertime.endTime) || null}
+            onChange={(end) => setEndTime(end.format("HH:mm:ss"))}
+            ampm={false}
+          />
+          </DemoContainer>
         </LocalizationProvider>
         </Grid>
 
@@ -559,7 +583,8 @@ const onSave = async () => {
                   }
                 </Grid>
                 {/* {dataOvertime.listProject[idxProject].projectId && ( */}
-                  <Grid item xs={12} textAlign='left'>
+                <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Grid item xs={6} textAlign='left'>
                     <Button
                       onClick={() => AddTask(idxProject)}
                       variant="outlined"
@@ -569,6 +594,21 @@ const onSave = async () => {
                       Add Task
                     </Button>
                   </Grid>
+                  {idxProject > 0 && (
+                    <Grid item xs={6} textAlign='right'>
+                      <Button
+                        onClick={() => RemoveProject(idxProject)}
+                        variant="outlined"
+                        color="error"
+                        className="button-text"
+                        startIcon={<Remove />}
+                      >
+                        Remove Project
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
+
                 {/* )} */}
               </Grid>
             </div>
@@ -739,7 +779,8 @@ const onSave = async () => {
                   }
                 </Grid>
                 {/* {dataOvertime.listProject[idxProject].projectId && ( */}
-                  <Grid item xs={12} textAlign='left'>
+                <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Grid item xs={6} textAlign='left'>
                     <Button
                       onClick={() => AddTask(idxProject)}
                       variant="outlined"
@@ -749,6 +790,20 @@ const onSave = async () => {
                       Add Task
                     </Button>
                   </Grid>
+                  {idxProject > 0 && (
+                    <Grid item xs={6} textAlign='right'>
+                      <Button
+                        onClick={() => RemoveProject(idxProject)}
+                        variant="outlined"
+                        color="error"
+                        className="button-text"
+                        startIcon={<Remove />}
+                      >
+                        Remove Project
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
                 {/* )} */}
               </Grid>
             </div>
