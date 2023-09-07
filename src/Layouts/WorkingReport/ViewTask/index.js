@@ -67,7 +67,8 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
       const res = await client.requestAPI({
         method: "GET",
         endpoint: `/task/detail?wrId=${WrIdDetail}`        
-      });      
+      });
+      console.log("res", res.data);
       setTaskData(res.data);
     } catch (error) {
       console.error("Error fetching task details:", error);
@@ -156,7 +157,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
                               // className="rating-outline"
                               variant="outlined"
                               name="rating"
-                              value={0}
+                              value={parseInt(taskItem.priority)}
                               readOnly
                               precision={0.5}
                             />
@@ -198,7 +199,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
       <Grid item xs={12}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            {beforeThanToday ? (
+            {/* {beforeThanToday ? ( */}
               <Button
               startIcon={<CreateIcon />}
               variant="outlined"
@@ -206,7 +207,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
               >
                 Edit Task
               </Button>
-            ) : null}            
+            {/* ) : null}             */}
           </Grid>
           <Grid item>
             <Button

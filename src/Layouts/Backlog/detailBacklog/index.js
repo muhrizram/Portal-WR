@@ -34,7 +34,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
+const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idProject }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
@@ -97,7 +97,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              Task {taskData.id} / {taskData.taskCode}
+              {/* Task {taskData.id} / {taskData.taskCode} */}
+              T - {initialProject} - 00{taskData.id}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -125,7 +126,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               onChange={handleChange}
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
-              label='Task Name'
+              label='Task Name *'
             />
           </Grid>
           <Grid item xs={6}>
@@ -134,7 +135,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
                 component="legend"
                 sx={{ color: "grey" }}
               >
-                Priority
+                Priority *
               </Typography>
               <Rating
                 variant="outlined"
@@ -187,7 +188,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Backlog Status"
+                  label="Backlog Status *"
                   placeholder="Select Status"
                 />
               )}
@@ -209,7 +210,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               name='estimationTime'
               className='input-field-crud'
               placeholder='e.g 1 Hour'
-              label='Estimation Duration'
+              label='Estimation Duration *'
             />
           </Grid>
           <Grid item xs={6}>
@@ -250,7 +251,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Assigned To"
+                  label="Assigned To *"
                   placeholder="Select Talent"
                 />
               )}
@@ -273,6 +274,7 @@ const DetailBacklog = () => {
   const [isSave, setIsSave] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate();  
+  const [initialProject, setInitialProject] = useState()
 
   const dataBreadDetailBacklog = [
     {
@@ -313,7 +315,7 @@ const DetailBacklog = () => {
   const getStatusColor = (status) => {
     const statusColors = {
       'to do': '#FDECEB',
-      'Backlog' : '#E6F2FB',
+      'Backlog' : '#7367F029',
       'In Progress': '#E6F2FB',
       'Completed' : '#EBF6EE', 
       'Done': '#EBF6EE'
@@ -324,7 +326,7 @@ const DetailBacklog = () => {
   const getStatusFontColor = (status) => {
     const statusFontColors = {
       'to do': '#EE695D',
-      'Backlog' : '#3393DF',
+      'Backlog' : '#4C4DDC',
       'In Progress': '#3393DF',
       'Completed' : '#5DB975',
       'Done': '#5DB975'
@@ -342,8 +344,9 @@ const DetailBacklog = () => {
 
   useEffect(() => {
     getProjectName()
-    getDataDetail()    
-  }, [])
+    getDataDetail()  
+    console.log("cek init", initialProject)  
+  }, [initialProject])
 
   const getDataDetail = async () => {
     const idDetail = localStorage.getItem("idBacklog")
@@ -478,8 +481,11 @@ const DetailBacklog = () => {
     resolver: yupResolver(shemabacklog),
     defaultValues: {    
       taskName:'',
-      taskDescription: '',
+      statusBacklog: '',
+      priority: '',
+      // taskDescription: '',
       estimationTime:'',
+      statusBacklog:''
     }
   })
 
@@ -559,12 +565,13 @@ const DetailBacklog = () => {
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {             
                       setValueproject(parseInt(newValue.id));
+                      setInitialProject(newValue.projectInitial)  
                       if (!newValue) {                    
                         setAddTask(false);
                       }
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Project Name" placeholder="Select Backlog" />
+                      <TextField {...params} label="Project Name *" placeholder="Select Backlog" />
                     )}
                   />
                   {addTask ? (
@@ -576,6 +583,7 @@ const DetailBacklog = () => {
                          onDelete={handleDeleteTask}
                          onUpdate={handleUpdateTask}
                          onUpdateTasks={handleUpdateTasks}
+                         initialProject={initialProject}
                        />
                     ))}
                     </>
@@ -734,7 +742,7 @@ const DetailBacklog = () => {
                                 id="panel1a-header"
                               >
                                   <Typography variant="backlogDetailText">
-                                    {dataDetail.taskName} :: {dataDetail.taskCode}                                
+                                    {dataDetail.taskName} :: {dataDetail.taskCode}
                                   </Typography>
                               </AccordionSummary> 
                             </Grid>

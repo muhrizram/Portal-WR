@@ -13,6 +13,7 @@ import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
 const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance, setAttendanceView}) => {
+  console.log('data period: ', dataPeriod)
   const listLocation = [
     {
       label: "Work From Home",
@@ -64,7 +65,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
       if(!beforeThanToday){       
           if (presence.value === "42") {
           body = {
-            periodId: "7",
+            periodId: dataPeriod.period,
             presenceId: parseInt(presence.value),
             userId: parseInt(localStorage.getItem("userId")),
             date: dataPeriod.tanggal,
