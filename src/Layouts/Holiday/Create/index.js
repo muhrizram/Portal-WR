@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -124,8 +124,8 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                               <DatePicker
                                 {...field}
                                 label="Holiday Date"
-                                placeholder="Select Date"
                                 className="input-field-crud"
+                                format="DD/MM/YYYY"
                                 value={field.value}
                                 onChange={(value) =>
                                   field.onChange(
@@ -138,6 +138,8 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                                 }}
                                 slotProps={{
                                   textField: {
+                                    focused:true,
+                                    placeholder:"Select Date",
                                     error: formState.errors.date !== undefined,
                                     required: true,
                                   },
