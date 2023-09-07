@@ -211,9 +211,9 @@ const DetailEmployee = () => {
   const validateUploadedFile = () => {
     if (uploadedFile) {
       if (
-        uploadFile.type !==
+        uploadedFile.type !==
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        uploadFile.type !== "application/msword" ||
+        uploadedFile.type !== "application/msword" ||
         uploadedFile.type !== "application/pdf"
       ) {
         setUploadedFile(null);
