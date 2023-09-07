@@ -281,6 +281,7 @@ export default function WorkingReport() {
       dom = (
         <ViewOvertime
         WrIdDetail = {WrIdDetail}
+        onCloseViewOvertime={() => setIsViewOvertime(false)}
         />
       )
     }
