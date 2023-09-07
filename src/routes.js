@@ -55,6 +55,18 @@ const closedRoutes = [
     element: <Dashboard />,
   },
   {
+    path: "/workingReport",
+    element: <WorkingReport />,
+    name: "Working Report",
+    key: "working report",
+    icon: <WorkOutlineIcon />,
+  },
+  {
+    path: "/overtime/detail-overtime",
+    element: <ViewOvertime />,
+    key: "working report",
+  },
+  {
     path: "/masteremployee",
     element: <Employee />,
     name: "Employee",
@@ -72,16 +84,21 @@ const closedRoutes = [
     key: "master employee",
   },
   {
-    path: "/workingReport",
-    element: <WorkingReport />,
-    name: "Working Report",
-    key: "working report",
-    icon: <WorkOutlineIcon />,
+    path: "/master-company",
+    element: <Company />,
+    name: "Company",
+    key: "master company",
+    icon: <BusinessOutlinedIcon />,
   },
   {
-    path: "/overtime/detail-overtime",
-    element: <ViewOvertime />,
-    key: "working report",
+    path: "/master-company/create",
+    element: <CreateCompany />,
+    key: "master company",
+  },
+  {
+    path: "/master-company/detail",
+    element: <DetailCompany />,
+    key: "master company",
   },
   {
     path: "/masterProject",
@@ -103,18 +120,6 @@ const closedRoutes = [
     key: "master project",
   },
   {
-    path: "/masteruserrole",
-    element: <MasterRoleUser />,
-    name: "User Role",
-    key: "master user role",
-    icon: <EmojiPeople />,
-  },
-  {
-    path: "/masteruserrole/create",
-    element: <CreateUserRole />,
-    key: "master user role",
-  },
-  {
     path: "/masterbacklog",
     element: <Backlog />,
     name: "Backlog",
@@ -132,12 +137,6 @@ const closedRoutes = [
     key: "master backlog",
   },
   {
-    path: "/masteruserrole/detail",
-    element: <DetailUserRole />,
-    key: "master backlog",
-  },
-
-  {
     path: "masterbacklog/create",
     element: <CreateNewBacklog />,
     key: "master backlog",
@@ -145,6 +144,23 @@ const closedRoutes = [
   {
     path: "masterbacklog/detail",
     element: <DetailBacklog />,
+    key: "master backlog",
+  },
+  {
+    path: "/masteruserrole",
+    element: <MasterRoleUser />,
+    name: "User Role",
+    key: "master user role",
+    icon: <EmojiPeople />,
+  },
+  {
+    path: "/masteruserrole/create",
+    element: <CreateUserRole />,
+    key: "master user role",
+  },
+  {
+    path: "/masteruserrole/detail",
+    element: <DetailUserRole />,
     key: "master backlog",
   },
   {
@@ -163,23 +179,6 @@ const closedRoutes = [
     path: "masterroleprivilege/detail",
     element: <DetailPrivilege />,
     key: "master role privilege",
-  },
-  {
-    path: "/master-company",
-    element: <Company />,
-    name: "Company",
-    key: "master company",
-    icon: <BusinessOutlinedIcon />,
-  },
-  {
-    path: "/master-company/create",
-    element: <CreateCompany />,
-    key: "master company",
-  },
-  {
-    path: "/master-company/detail",
-    element: <DetailCompany />,
-    key: "master company",
   },
   {
     path: "/master-holiday",

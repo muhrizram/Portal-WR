@@ -228,7 +228,7 @@ const DataTable = ({
               onClick={() => onAdd()}
               startIcon={<AddIcon />}
             >
-              {`NEW ${title}`}
+              {title}
             </Button>
             <Button
               variant="outlined"

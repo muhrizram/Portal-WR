@@ -16,7 +16,7 @@ const uploadFile = async (file, path) => {
     data.append("cancel", false);
     const res = await client.requestAPI({
       // endpoint: "/minio/uploadFile",
-      endpoint: "/minio/imageCompany",
+      endpoint: `/minio/uploadFile?path=${path}`,
       isAuth: false,
       method: "POST",
       data,

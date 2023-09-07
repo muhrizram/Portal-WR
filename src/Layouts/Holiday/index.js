@@ -4,7 +4,9 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
+  CircularProgress,
+  Typography
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import DataTable from "../../Component/DataTable";
@@ -50,6 +52,7 @@ const MasterHoliday = () => {
   const [idHoliday, setIdHoliday] = useState(null)
   const { setDataAlert } = useContext(AlertContext)
   const [loading, setLoading] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -171,6 +174,7 @@ const MasterHoliday = () => {
   }
 
   const onDelete = async () => {
+    setLoadingDelete(true);
     const res = await client.requestAPI({
       method: 'DELETE',
       endpoint: `/holiday/delete/${idHoliday}`
@@ -190,6 +194,7 @@ const MasterHoliday = () => {
       })
       setOpenDelete(false)
     }
+    setLoadingDelete(false);
   };
 
   return (
@@ -235,8 +240,16 @@ const MasterHoliday = () => {
             >
               Cancel
             </Button>
-            <Button onClick={onDelete} className="delete-button button-text">
-              Delete Data
+            <Button onClick={onDelete} className="delete-button button-text" disabled={loadingDelete}>
+              {loadingDelete?(
+                <>
+                  <CircularProgress size={14} color="inherit" />
+                  <Typography marginLeft={1}>Deleting...</Typography>
+                </>
+                ) : (
+                  "Delete Data"
+                )
+              }
             </Button>
           </DialogActions>
         </Dialog>
