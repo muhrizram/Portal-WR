@@ -116,7 +116,7 @@ const CreateCompany = () => {
 
   const handleChange = async (e) => {
     if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0])
+      const tempFilePath = await uploadFile(e.target.files[0], 'company')
       setFilePath(tempFilePath)
       setFile(URL.createObjectURL(e.target.files[0]));
     }

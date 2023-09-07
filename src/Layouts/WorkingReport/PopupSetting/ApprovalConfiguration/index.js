@@ -27,7 +27,7 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
 
   const handleChangeUpload = async (e, index) => {
     if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0])
+      const tempFilePath = await uploadFile(e.target.files[0], 'signature')
       const parts = tempFilePath.split('=')
       const fileName = parts[1];
 
