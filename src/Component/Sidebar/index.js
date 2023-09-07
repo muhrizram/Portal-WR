@@ -22,6 +22,7 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { finalRoutes } from "../../routes";
 import CustomAlert from "../Alert";
 import { convertBase64 } from "../../global/convertBase64";
+import { useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -94,7 +95,7 @@ export default function SideBar({ children }) {
 
   const handleLogout = () => {
     // auth.signoutSilent();
-    localStorage.clear()
+    localStorage.clear();
     navigate("/login");
   };
 
@@ -107,7 +108,11 @@ export default function SideBar({ children }) {
     setSelectedIndex(idx);
     navigate(path);
   };
+  const location = useLocation();
 
+  const currentLocation = dataRoute.find(
+    (res) => location.pathname.split("/")[1] === res.path.split("/")[1]
+  );
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
@@ -174,7 +179,9 @@ export default function SideBar({ children }) {
               sx={{ display: "block" }}
             >
               <ListItemButton
-                selected={selectedIndex === index}
+                selected={
+                  currentLocation ? currentLocation.name === res.name : false
+                }
                 onClick={() => handleDirectPath(res.path, index)}
                 sx={{
                   // minHeight: 48,
@@ -221,7 +228,11 @@ export default function SideBar({ children }) {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" className='drawer-main-children' sx={{ flexGrow: 1, px: 2.5, py: 5 }}>
+      <Box
+        component="main"
+        className="drawer-main-children"
+        sx={{ flexGrow: 1, px: 2.5, py: 5 }}
+      >
         <CustomAlert />
         {children}
       </Box>
