@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -22,6 +22,7 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { finalRoutes } from "../../routes";
 import CustomAlert from "../Alert";
 import { convertBase64 } from "../../global/convertBase64";
+import { useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -94,7 +95,7 @@ export default function SideBar({ children }) {
 
   const handleLogout = () => {
     // auth.signoutSilent();
-    localStorage.clear()
+    localStorage.clear();
     navigate("/login");
   };
 
@@ -103,11 +104,18 @@ export default function SideBar({ children }) {
       idx,
       open,
     };
+    console.log("This path: ", path);
     localStorage.setItem("currentMenu", JSON.stringify(obj));
     setSelectedIndex(idx);
-    navigate(path);
+    navigate(path.path);
   };
+  const location = useLocation();
 
+  const currentLocation = dataRoute.find(
+    (res) => location.pathname.split("/")[1] === res.path.split("/")[1]
+  );
+
+  console.log("Current name: ", currentLocation);
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
@@ -174,8 +182,8 @@ export default function SideBar({ children }) {
               sx={{ display: "block" }}
             >
               <ListItemButton
-                selected={selectedIndex === index}
-                onClick={() => handleDirectPath(res.path, index)}
+                selected={currentLocation.name === res.name}
+                onClick={() => handleDirectPath(res, index)}
                 sx={{
                   // minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -221,7 +229,11 @@ export default function SideBar({ children }) {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" className='drawer-main-children' sx={{ flexGrow: 1, px: 2.5, py: 5 }}>
+      <Box
+        component="main"
+        className="drawer-main-children"
+        sx={{ flexGrow: 1, px: 2.5, py: 5 }}
+      >
         <CustomAlert />
         {children}
       </Box>
