@@ -4,8 +4,9 @@ const textPlease = 'Please Input'
 
 const shemabacklog = yup.object({
     taskName: yup.string().matches(/^\s*\S+\s*$/, `${textPlease} Task Name`).required(`${textPlease} Task Name`),
-    taskDescription: yup.string().matches(/^\s*\S+\s*$/, `${textPlease} Task Description`).required(`${textPlease} Task Description`),
-    estimationTime: yup.number().positive().required(`${textPlease} Estimation Time`),
-    // statusBacklog: yup.string().required(`${textPlease} Status Backlog`),
+    statusBacklog: yup.string().required(`${textPlease} Status Backog`),
+    estimationTime: yup.string().matches(/^[0-9\[\]:;<>,.?~\\/-]+$/).required(`${textPlease} Estimation Time`),
+    statusBacklog: yup.string().required(`${textPlease} Status Backlog`),
+    priority:yup.string().required(`${textPlease} Priority`),
   })
 export default shemabacklog

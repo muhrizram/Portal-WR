@@ -183,13 +183,13 @@ const DetailPrivilege = () => {
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>    
-                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role" value={detail.roleName} variant="outlined" />
+                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role *" value={detail.roleName} variant="outlined" />
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
                               sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
                             >
-                              Privilege
+                              Privilege *
                             </Typography>
                             <Grid container direction="row" sx={{marginLeft:'30px'}}>
                               <Grid item xs={6}>

@@ -166,11 +166,11 @@ const CreateRolePrivilege = () => {
                       name="role"
                       options={optRole}
                       sx={{ width: "100%", marginTop: "8px" }}
-                      getOptionLabel={(option) => option.name}
+                      // getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => handleChangeRole(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
-                        <TextField {...params} focused label="Role" placeholder="Select Role" />
+                        <TextField {...params} focused label="Role *" placeholder="Select Role" />
                       )}
                     />      
                 </Grid>  
@@ -180,7 +180,7 @@ const CreateRolePrivilege = () => {
                 <Typography
                   sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
                 >
-                  Privilege
+                  Privilege *
                 </Typography>
 
                 <Grid container direction="row" sx={{marginLeft:'30px'}}>

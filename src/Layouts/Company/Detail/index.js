@@ -99,7 +99,8 @@ const DetailCompany = () => {
       endpoint: `/company/${id}`
     })
     if (res.data.attributes) {
-      setDataProject(res.data.attributes.projects)
+      // setDataProject(res.data.attributes.projects)
+      buildDataComp(res.data.attributes.projects)
       const temp = res.data.attributes
       delete temp.createdBy
       delete temp.createdOn
@@ -119,6 +120,18 @@ const DetailCompany = () => {
     }
   }
 
+  const buildDataComp = (dataCom) => {
+    let number = 0
+    const temp = dataCom.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.projectId,
+        ...value
+      }
+    })
+    setDataProject(temp)
+  }
+
   const handleClose = () => {
     if (!isSave) {
       navigate('/master-company')
@@ -135,6 +148,7 @@ const DetailCompany = () => {
         createdBy: parseInt(localStorage.getItem('userId')),
         lastModifiedBy: parseInt(localStorage.getItem('userId')),
       }
+      console.log(data)
       const res = await client.requestAPI({
         method: 'PUT',
         endpoint: `/company/${companyId}`,

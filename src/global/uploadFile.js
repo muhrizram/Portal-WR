@@ -12,6 +12,7 @@ const uploadFile = async (file, path) => {
 
     const data = new FormData();
     data.append("file", file);
+    // data.append("path", path);
     data.append("cancel", false);
     const res = await client.requestAPI({
       // endpoint: "/minio/uploadFile",

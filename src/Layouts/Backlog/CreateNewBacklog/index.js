@@ -35,14 +35,15 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
+const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idProject }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: '/ol/userList?search=',      
+      // endpoint: '/ol/userList?search=',   
+      endpoint: `/ol/backlogUser?search=${idProject}`
     })
-    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName, groupName: item.attributes.groupName}));    
+    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.userName}));    
     setAssignedTo(data)
   }
   const [StatusBacklog, setStatusBacklog] = useState([]);
@@ -52,7 +53,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   const getStatusBacklog = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: '/ol/status?search=',      
+      endpoint: '/ol/status?search=',  
+      // endpoint: `ol/backlogUser?search=${31}`    
     })
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));    
 
@@ -97,7 +99,9 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              Task {taskData.id}
+              {/* Task {taskData.id} */}
+              T - {initialProject} - 00{taskData.id}
+              {/*harusnya project initial  */}
               {/* / {taskData.taskCode} */}
             </Typography>
           </AccordionSummary>
@@ -126,7 +130,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               onChange={handleChange}
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
-              label='Task Name'
+              label='Task Name *'
             />
           </Grid>
           <Grid item xs={6}>
@@ -135,7 +139,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                 component="legend"
                 sx={{ color: "grey" }}
               >
-                Priority
+                Priority *
               </Typography>
               <Rating
                 variant="outlined"
@@ -196,8 +200,9 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
                   getOptionLabel={(option) => option.name}
                   renderInput={(params) => (
                     <TextField
-                      {...params}                             
-                      label="Backlog Status"
+                      {...params}         
+                      focused                    
+                      label="Backlog Status *"
                       placeholder="Select Status"
                     />
                   )}
@@ -218,7 +223,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               name='estimationTime'
               className='input-field-crud'
               placeholder='e.g 1 Hour'
-              label='Estimation Duration'
+              label='Estimation Duration *'
             />
           </Grid>
             <Grid item xs={6}>
@@ -245,7 +250,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Assigned To"
+                  focused
+                  label="Assigned To *"
                   placeholder="Select Talent"
                 />
               )}
@@ -257,6 +263,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks }) => {
   );
 };
 
+
+
 const CreateNewBacklog = () => {
   const { setDataAlert } = useContext(AlertContext)
   const [ProjectName, setProjectName] = useState([]);
@@ -265,6 +273,7 @@ const CreateNewBacklog = () => {
   const [tasks, setTasks] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [valueproject, setValueproject] = React.useState();
+  const [initialProject, setInitialProject] = useState()
 
   const navigate = useNavigate();  
 
@@ -377,8 +386,11 @@ const CreateNewBacklog = () => {
     resolver: yupResolver(shemabacklog),
     defaultValues: {
       taskName:'',
-      taskDescription: '',
+      statusBacklog: '',
+      priority: '',
+      // taskDescription: '',
       estimationTime:'',
+      statusBacklog:''
     }
   })
 
@@ -458,17 +470,19 @@ useEffect(() => {
                     options={ProjectName}
                     sx={{ width: "100%", marginTop: "8px" }}
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
-                    onChange={(event, newValue) => {                                            
-                      if (!newValue) {                    
+                    onChange={(event, newValue) => {            
+                      console.log("ini value", newValue)
+                      if (!newValue) {                                              
                         setTasks([])
                         setAddTask(false);
                         setValueproject(undefined);
                       }else{
                         setValueproject(parseInt(newValue.id));
+                        setInitialProject(newValue.projectInitial)  
                       }                      
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Project Name" />
+                      <TextField {...params} focused label="Project Name *" placeholder="Select Project" />
                     )}
                   />
                   
@@ -481,6 +495,8 @@ useEffect(() => {
                          onDelete={handleDeleteTask}
                          onUpdate={handleUpdateTask}
                          onUpdateTasks={handleUpdateTasks}
+                         initialProject={initialProject}
+                         idProject={valueproject}
                        />
                     ))}
                     </>

@@ -28,6 +28,8 @@ const MasterCompany = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
+        console.log("minion",urlMinio)
+
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
               <Avatar
@@ -36,11 +38,8 @@ const MasterCompany = () => {
                 src={urlMinio}
               />
             <div style={{ marginLeft: "0.5rem" }}>
-              <span 
-                className="text-name" 
-                // style={companyNameStyle}
-                >
-                  {params.row.companyName}
+              <span className="text-name" >
+                  {params.row.companyName.substring(20) ? params.row.companyName.substring(0, 20) + "..." : params.row.companyName}
               </span>
             </div>
           </div>
@@ -116,6 +115,7 @@ const MasterCompany = () => {
       method: 'GET',
       endpoint: `/company?page=${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}&size=${filter.size}`
     })
+    console.log(res)
     if (!res.isError) {
       rebuildData(res)
     } else {
