@@ -34,7 +34,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
+const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idProject }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
@@ -97,7 +97,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks }) => {
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              Task {taskData.id} / {taskData.taskCode}
+              {/* Task {taskData.id} / {taskData.taskCode} */}
+              T - {initialProject} - 00{taskData.id}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -273,6 +274,7 @@ const DetailBacklog = () => {
   const [isSave, setIsSave] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate();  
+  const [initialProject, setInitialProject] = useState()
 
   const dataBreadDetailBacklog = [
     {
@@ -342,8 +344,9 @@ const DetailBacklog = () => {
 
   useEffect(() => {
     getProjectName()
-    getDataDetail()    
-  }, [])
+    getDataDetail()  
+    console.log("cek init", initialProject)  
+  }, [initialProject])
 
   const getDataDetail = async () => {
     const idDetail = localStorage.getItem("idBacklog")
@@ -478,8 +481,11 @@ const DetailBacklog = () => {
     resolver: yupResolver(shemabacklog),
     defaultValues: {    
       taskName:'',
+      statusBacklog: '',
+      priority: '',
       // taskDescription: '',
       estimationTime:'',
+      statusBacklog:''
     }
   })
 
@@ -559,6 +565,7 @@ const DetailBacklog = () => {
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {             
                       setValueproject(parseInt(newValue.id));
+                      setInitialProject(newValue.projectInitial)  
                       if (!newValue) {                    
                         setAddTask(false);
                       }
@@ -576,6 +583,7 @@ const DetailBacklog = () => {
                          onDelete={handleDeleteTask}
                          onUpdate={handleUpdateTask}
                          onUpdateTasks={handleUpdateTasks}
+                         initialProject={initialProject}
                        />
                     ))}
                     </>

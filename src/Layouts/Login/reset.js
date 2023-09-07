@@ -24,6 +24,7 @@ const Reset = ({open, onClose}) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  const [responsePasswordNotMatch,setresponsePasswordNotMatch] = useState('')
 
   const textPlease = 'Please Input'
   const Schemareset = Yup.object().shape({
@@ -36,39 +37,47 @@ const Reset = ({open, onClose}) => {
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ).required(`${textPlease} Confirm Password`),
+      notmatchpassword: Yup.string().required("HOHOHOO")
   });
 
   const { handleSubmit, formState: { errors }, register } = useForm({
     resolver: yupResolver(Schemareset),
   });
 
-  const handleReset = async() => {
-    
-    const res = await client.requestAPI({
-      method: 'POST',
-      endpoint: `/auth/changePassword`,
-      data: dataPassword,
-      // isLogin: true
-    })
-    if (!res.isError) {
-      
-      localStorage.removeItem('token')
-      localStorage.removeItem('refreshtoken')
-      setDataAlert({
-        severity: 'success',
-        open: true,
-        message: res.data.meta.message
+  const handleReset = () => {
+    try {
+      const res = client.requestAPI({
+        method: 'POST',
+        endpoint: `/auth/changePassword`,
+        data: dataPassword,
+        // isLogin: true
       })
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
-    }else{
-      setDataAlert({
-        severity: 'error',
-        open: true,
-        message: res.error.meta.message
-      })       
+      console.log("INI RES", res)
+      if (!res.isError) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshtoken')
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.data.meta.message
+        })
+        setTimeout(() => {
+          navigate('/login')
+        }, 2000)
+      }else{
+        // localStorage.removeItem('refreshtoken')
+        // onClose
+        setDataAlert({
+          severity: 'error',
+          open: true,
+          message: res.error.meta.message
+        })       
+      }
+
+    }catch(error){
+      console.error(error)
     }
+   
   };
 
   useEffect(() => {
@@ -132,7 +141,7 @@ const Reset = ({open, onClose}) => {
               )
             }} 
             error={errors.password !== undefined}
-            helperText={errors.password ? errors.password.message : ''}
+            helperText={errors.notmatchpassword ? errors.notmatchpassword.message : ''}
           />
         </Grid>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>

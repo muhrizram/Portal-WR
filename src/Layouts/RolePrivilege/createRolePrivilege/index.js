@@ -166,7 +166,7 @@ const CreateRolePrivilege = () => {
                       name="role"
                       options={optRole}
                       sx={{ width: "100%", marginTop: "8px" }}
-                      getOptionLabel={(option) => option.name}
+                      // getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => handleChangeRole(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
