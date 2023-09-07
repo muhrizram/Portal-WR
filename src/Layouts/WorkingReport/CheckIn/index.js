@@ -70,12 +70,28 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
   
 
   const checkIn = async () => {
+    const resAttedance = await client.requestAPI({
+      endpoint: "/workingReport/notAttendance",
+      method: "POST",
+      data: dataReadyAttedance,
+    });
+    if (resAttedance.isError) {
+      setDataAlert({
+        severity: "error",
+        message: resAttedance.error.detail,
+        open: true,
+      });
+      return
+    }
+
+    console.log('res attandance: ', resAttedance)
+
     const blob = await fetch(picture).then((res) => res.blob());
     const file = new File([blob], "test_picture.jpg");
     // URL.createObjectURL(blob)
-    const result = await uploadFile(file);
+    const result = await uploadFile(file, 'absence');
     const body = {
-      workingReportId: localStorage.getItem("workingReportId"),
+      workingReportId: resAttedance.data.attributes.workingReportId,
       latitude: lat,
       longitude: lon,
       startTime: startTime.format("HH:mm:ss"),
@@ -102,29 +118,16 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
         open: true,
       });
     }
-
-    const resAttedance = await client.requestAPI({
-          endpoint: "/workingReport/notAttendance",
-          method: "POST",
-          data: dataReadyAttedance,
-        });
-        if (!resAttedance.isError) {
-          setDataAlert({
-            severity: "success",
-            open: true,
-            message: res.data.meta.message,
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000)
-        }
-        {
-          setDataAlert({
-            severity: "error",
-            message: resAttedance.error.detail,
-            open: true,
-          });
-        }
+    if (!resAttedance.isError) {
+      setDataAlert({
+        severity: "success",
+        open: true,
+        message: resAttedance.data.meta.message,
+      });
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 3000)
+    } 
   };
 
   useEffect(() => {

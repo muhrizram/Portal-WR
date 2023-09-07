@@ -38,7 +38,7 @@ export default function CheckOut({ setIsCheckin }) {
     const blob = await fetch(picture).then((res) => res.blob());
     const file = new File([blob], "test_picture.jpg");
     // URL.createObjectURL(blob)
-    const result = await uploadFile(file);
+    const result = await uploadFile(file, 'absence');
     const res = await client.requestAPI({
       endpoint: `/workingReport/checkOut?wrId=${localStorage.getItem(
         "workingReportId"
