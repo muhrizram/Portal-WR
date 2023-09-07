@@ -106,14 +106,13 @@ export default function SideBar({ children }) {
     };
     localStorage.setItem("currentMenu", JSON.stringify(obj));
     setSelectedIndex(idx);
-    navigate(path.path);
+    navigate(path);
   };
   const location = useLocation();
 
   const currentLocation = dataRoute.find(
     (res) => location.pathname.split("/")[1] === res.path.split("/")[1]
   );
-
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
@@ -180,8 +179,10 @@ export default function SideBar({ children }) {
               sx={{ display: "block" }}
             >
               <ListItemButton
-                selected={currentLocation.name === res.name}
-                onClick={() => handleDirectPath(res, index)}
+                selected={
+                  currentLocation ? currentLocation.name === res.name : false
+                }
+                onClick={() => handleDirectPath(res.path, index)}
                 sx={{
                   // minHeight: 48,
                   justifyContent: open ? "initial" : "center",
