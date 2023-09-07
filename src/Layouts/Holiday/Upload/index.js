@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -28,7 +28,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
 
   const onSave = async (event) => {
     event.preventDefault();
-    if(uploadedFile === null){
+    if (uploadedFile === null) {
       return;
     }
     if (uploadedFile.size >= MAX_SIZE_FILE) {
@@ -98,6 +98,21 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
     setOpenUpload(false);
   };
 
+  const validateUploadedFile = () => {
+    if (uploadedFile) {
+      if (
+        uploadedFile.type !==
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        uploadedFile.type !== "application/vnd.ms-excel"
+      ) {
+        setUploadedFile(null);
+      }
+    }
+  };
+  useEffect(() => {
+    validateUploadedFile();
+  }, [uploadedFile]);
+
   return (
     <div>
       <Dialog
@@ -150,6 +165,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                             type="file"
                             name="file"
                             style={{ display: "none" }}
+                            inputProps={{ accept: ".xlsx, .xls" }}
                             onChange={handleFileChange}
                           />
                           <UploadFileOutlined

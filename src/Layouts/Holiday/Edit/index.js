@@ -115,6 +115,7 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                               <DatePicker
                                 {...field}
                                 name="date"
+                                format="DD/MM/YYYY"
                                 label="Holiday Date"
                                 placeholder="Select Date"
                                 className="input-field-crud"

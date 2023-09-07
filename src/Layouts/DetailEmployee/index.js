@@ -35,6 +35,7 @@ import client from "../../global/client";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import schemacontract from "./schema";
+import uploadFile from "../../global/uploadFile";
 
 const DetailEmployee = () => {
   const dataBread = [
@@ -73,7 +74,6 @@ const DetailEmployee = () => {
   ];
   const [value, setValue] = useState("one");
   const [isEdit, setIsEdit] = useState(false);
-  const [loadingUpload, setLoadingUpload] = useState(false);
   const [AddContract, setAddContract] = useState(false);
   const [isContractAdded, setIsContractAdded] = useState(false);
   const [contractStatusOL, setContractStatusOL] = useState([]);
@@ -102,10 +102,6 @@ const DetailEmployee = () => {
     const file = event.dataTransfer.files[0];
     setUploadedFile(file);
   }, []);
-
-  useEffect(() => {
-    console.log("Uploaded file: ", uploadedFile);
-  }, [uploadedFile]);
 
   const { formState, handleSubmit, reset, control } = useForm({
     resolver: yupResolver(schemacontract),
@@ -211,6 +207,22 @@ const DetailEmployee = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const validateUploadedFile = () => {
+    if (uploadedFile) {
+      if (
+        uploadedFile.type !==
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        uploadedFile.type !== "application/msword" ||
+        uploadedFile.type !== "application/pdf"
+      ) {
+        setUploadedFile(null);
+      }
+    }
+  };
+  useEffect(() => {
+    validateUploadedFile();
+  }, [uploadedFile]);
 
   useEffect(() => {
     getContractStatusOL();
@@ -502,12 +514,14 @@ const DetailEmployee = () => {
                       type="submit"
                       disabled={formState.isSubmitting}
                     >
-                      {formState.isSubmitting ?(
+                      {formState.isSubmitting ? (
                         <>
                           <CircularProgress size={14} color="inherit" />
                           <Typography marginLeft={1}>Saving...</Typography>
                         </>
-                      ):"Save Data"}
+                      ) : (
+                        "Save Data"
+                      )}
                     </Button>
                   </DialogActions>
                 </form>
