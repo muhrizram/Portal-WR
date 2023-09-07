@@ -191,7 +191,8 @@ export default function WorkingReport() {
     document.body.removeChild(link);
   }
 
-  const rebuildData = (resData) => {    
+  const rebuildData = (resData) => {
+    console.log("DUAR",resData)    
     let temp = [];    
     temp = resData.data.map((value, index) => {
       const isToday = moment( value.attributes.listDate.date).isSame(moment(), 'day');
@@ -207,6 +208,7 @@ export default function WorkingReport() {
             workingReportTaskId: value.attributes.listDate.workingReportTaskId,
             overtime: value.attributes.listDate.overtime,
             holiday: value.attributes.listDate.holiday,
+            descHoliday: value.attributes.listDate.descHoliday,
           }
         : {
             period: value.attributes.period,
@@ -218,8 +220,9 @@ export default function WorkingReport() {
             workingReportTaskId: value.attributes.listDate.workingReportTaskId,
             task: value.attributes.listDate.task,
             overtime: value.attributes.listDate.overtime,
-            isToday: isToday
-          };
+            isToday: isToday,
+            presenceName: value.attributes.listDate.presenceName,
+          };      
     });    
     if(selectedUser == null){
       setData([])

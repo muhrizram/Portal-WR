@@ -9,7 +9,7 @@ import {
   } from "@mui/material";
 import moment from "moment";
 
-const HolidayDialog = ({dialogOpen, handleClose,date}) => {
+const HolidayDialog = ({dialogOpen, handleClose, date, titleHoliday}) => {
 
   return (
         <Dialog
@@ -27,7 +27,7 @@ const HolidayDialog = ({dialogOpen, handleClose,date}) => {
               {moment(date).format("DD MMMM YYYY")}              
             </DialogContentText>
             <DialogContentText>             
-              Weekend Holiday
+              {titleHoliday ? titleHoliday : "Weekend Holiday"}
             </DialogContentText>
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
