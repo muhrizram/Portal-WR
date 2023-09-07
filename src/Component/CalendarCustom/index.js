@@ -46,6 +46,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [wrDate, setWrDate] = useState(null)
   const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
+  const [descHoliday, setdescHoliday] = useState(null);
   const [finalDateCalendar,setfinalDateCalendar] = useState()
 
   const navigate = useNavigate();
@@ -122,41 +123,47 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     }
   };
 
-  const renderCalendar = (info) => {
+  const renderCalendar = (info) => {    
     const currentDate = moment().startOf("day");    
-    const isWeekend = (date) => {
+    const isWeekend = (date) => {      
       const dayOfWeek = moment(date).day();      
       return dayOfWeek === 0 || dayOfWeek === 6;
     };
        
-      const datalibur = events.find(val => val.tanggal === moment(info.date).format("yyyy-MM-DD"))
+      const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))      
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       ); 
-      if (!data && !datalibur) {
-        return
-      }
-      if (datalibur) {
+      if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
             <Grid item xs={12} display="flex" justifyContent="right" >            
               <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
             </Grid>            
             <Grid item >
-                {!info.isToday && (
-                    // !datalibur.workingReportTaskId && (
+                {!info.isToday && (                    
                       <>
                         <Grid>
-                        {moment(info.date).isSameOrBefore(currentDate) && !data.workingReportTaskId && !data.task && !isWeekend(info.date) && (
+                        {moment(info.date).isSameOrBefore(currentDate) && !data.workingReportTaskId && !data.task && !isWeekend(info.date) && !datalibur ? (
                           <Button
                             variant="outlined-attedance"
                             onClick={() => {
                               setOnClick(info)}  
                             }
                           >
-                            attedance
+                            Attendance
                           </Button>
-                        )}
+                          ) : !datalibur && !isWeekend(info.date) && data.presenceName && (
+                          <Button
+                            variant="outlined-attedance"
+                            // onClick={() => {
+                            //   setOnClick(info)}  
+                            // }
+                          >
+                            {data.presenceName}
+                          </Button>
+                          ) 
+                        }
                         </Grid>
                         <Grid>
                           {moment(info.date).isSameOrBefore(currentDate) && (
@@ -179,10 +186,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </CustomButton>
                           )}
                         </Grid>
-                        {isWeekend(info.date) ? (
+                        {isWeekend(info.date) || datalibur ? (
                           <Grid justifyContent="left">
                             <Button variant="outlined-holiday" onClick={
                               () => {
+                              setdescHoliday(data.descHoliday)
                               setTanggalHoliday(data.tanggal);
                               setDialogOpenHoliday(true);
                               }}
@@ -232,7 +240,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       setOnClick(info)}  
                     }
                   >
-                    attedance
+                    Attendance
                   </Button>
                 ) : null            
                 }
@@ -254,26 +262,12 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   >
                     {data.overtime == true ? "View Overtime" : "Overtime"}
                   </Button>
-                ) : (
-                  data.overtime === true && (
-                  <Button                    
-                    variant="outlined-warning"
-                    onClick={
-                      () => {
-                        setId(data.workingReportOvertimeId)
-                        setWrIdDetail(data.workingReportOvertimeId);
-                        setIsViewOvertime(true);
-                      }
-                    }
-                  >
-                    {"View Overtime"}
-                  </Button>
-                  )
-                )}
+                ): null}
                 {info.isToday ? (
-                  <Button
-                    disabled={!data.workingReportTaskId}
-                    variant={!data.workingReportTaskId ? "outlined" : "outlined-task"}
+                  <>
+                  {data.workingReportTaskId ? (
+                    <Button                    
+                    variant={"outlined-task"}
                     onClick={                      
                       data.task
                         ? () => {                         
@@ -283,7 +277,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           });
                           setWrIdDetail(data.workingReportTaskId);
                           setIsViewTask(true);
-                          // setOpenTask(true);
                           }
                         : () => {                          
                           setOpenTask(true);
@@ -292,10 +285,18 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               absenceId: data.absenceId,
                             });
                           }
-                    }
-                  >
+                      }
+                    >
                     task
-                  </Button>
+                    </Button>
+                  ) : (
+                    <CustomButton disabled variant="outlined" >
+                      task
+                    </CustomButton>
+                  )}
+                  </>
+                  
+                 
                   ) : (
                     data.overtime ? (
                     <CustomButtonDisabledovertime disabled variant="outlined" sx={{ width: "30%", marginRight: "8vh" }}>
@@ -425,7 +426,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       </Dialog>
       <CreateOvertime setSelectedWorkingReportId={wrId} open={openOvertime} closeTask={() => setOpenOvertime(false)} wrDate={wrDate} />
       <PopupTask selectedWrIdanAbsenceId={wrId} open={openTask} closeTask={() => setOpenTask(false)} />
-      <HolidayDialog dialogOpen={dialogOpenHoliday} handleClose={() => setDialogOpenHoliday(false)} date={tanggalHoliday}/>
+      <HolidayDialog dialogOpen={dialogOpenHoliday} handleClose={() => setDialogOpenHoliday(false)} date={tanggalHoliday} titleHoliday={descHoliday}/>
     </Grid>
   );
 }

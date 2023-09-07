@@ -789,6 +789,10 @@ color: #ED6C02;
   background-color: #E6F2FB;
 }
 
+.MuiSelect-select.MuiSelect-outlined.Mui-disabled.MuiInputBase-input.MuiOutlinedInput-input.Mui-disabled.Mui-readOnly.MuiInputBase-readOnly.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
+  background-color : '#9E9E9E'
+}
+
 /* .MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
   flex-direction: column-reverse;
   margin-top: -5px;

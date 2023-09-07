@@ -224,7 +224,7 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            width: "100%",
+            width: "80%",
             padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
@@ -297,7 +297,7 @@ let globalTheme = createTheme({
             marginTop:'-38px',
             position: "absolute",
             textTransform: "none",
-            width: "45%",
+            width: "55%",
             // padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
