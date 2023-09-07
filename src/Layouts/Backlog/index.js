@@ -95,10 +95,10 @@ const Backlog = () => {
   const getStatusColor = (status) => {
     const statusColors = {
       'to do': '#FDECEB',
-      'Backlog' : '#E6F2FB',
-      'In Progress': '#FFFACD',
+      'Backlog' : '#7367F029',
+      'In Progress': '#E6F2FB',
       'Completed' : '#EBF6EE', 
-      'Done': '#E6E6FA'
+      'Done': '#EBF6EE'
     };
     return statusColors[status] || '#ccc';
   };
@@ -106,10 +106,10 @@ const Backlog = () => {
   const getStatusFontColor = (status) => {
     const statusFontColors = {
       'to do': '#EE695D',
-      'Backlog' : '#3393DF',
-      'In Progress': '#000',
+      'Backlog' : '#4C4DDC',
+      'In Progress': '#3393DF',
       'Completed' : '#5DB975',
-      'Done': '#D8BFD8'
+      'Done': '#5DB975'
     };
     return statusFontColors[status] || '#fff';
   };

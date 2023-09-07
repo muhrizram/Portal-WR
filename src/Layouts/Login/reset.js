@@ -13,18 +13,6 @@ import * as Yup from 'yup';
 import { useNavigate } from "react-router";
 
 
-const textPlease = 'Please Input'
-const Schemareset = Yup.object().shape({
-    password: Yup.string().min(8, "Password must be at least 8 characters").required(`${textPlease} Current Password`),
-    newPassword: Yup.string().min(8, "Password must be at least 8 characters").matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
-      ).required(`${textPlease} New Password`),
-    confirmPassword: Yup.string().min(8, "Password must be at least 8 characters").matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
-      ).required(`${textPlease} Confirm Password`),
-  });
 
 const Reset = ({open, onClose}) => {
   const [dataPassword, setDataPassword] = useState({})

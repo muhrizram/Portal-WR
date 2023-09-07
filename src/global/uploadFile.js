@@ -3,7 +3,7 @@ const { default: client } = require("./client");
 const MAX_SIZE_IMAGE = 1048576; // bytes
 const MAX_SIZE_PROFILE_IMAGE = 3145728
 
-const uploadFile = async (file) => {
+const uploadFile = async (file, path) => {
   if (file.size >= MAX_SIZE_PROFILE_IMAGE) {
     return false
     // const error = new Error("Max Image Size is 1 MB");
@@ -12,6 +12,7 @@ const uploadFile = async (file) => {
 
     const data = new FormData();
     data.append("file", file);
+    // data.append("path", path);
     data.append("cancel", false);
     const res = await client.requestAPI({
       // endpoint: "/minio/uploadFile",
