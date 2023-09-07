@@ -143,7 +143,7 @@ const DetailEmployee = () => {
         setDataAlert({
           severity: "error",
           open: true,
-          message: res.error.meta.message,
+          message: res.error.detail,
         });
         return;
       }
@@ -208,21 +208,21 @@ const DetailEmployee = () => {
     setValue(newValue);
   };
 
-  const validateUploadedFile = () => {
-    if (uploadedFile) {
-      if (
-        uploadedFile.type !==
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        uploadedFile.type !== "application/msword" ||
-        uploadedFile.type !== "application/pdf"
-      ) {
-        setUploadedFile(null);
-      }
-    }
-  };
-  useEffect(() => {
-    validateUploadedFile();
-  }, [uploadedFile]);
+  // const validateUploadedFile = () => {
+  //   if (uploadedFile) {
+  //     if (
+  //       uploadedFile.type !==
+  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+  //       uploadedFile.type !== "application/msword" ||
+  //       uploadedFile.type !== "application/pdf"
+  //     ) {
+  //       setUploadedFile(null);
+  //     }
+  //   }
+  // };
+  // useEffect(() => {
+  //   validateUploadedFile();
+  // }, [uploadedFile]);
 
   useEffect(() => {
     getContractStatusOL();

@@ -57,7 +57,7 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
     setLoadingDelete(true);
     const res = await client.requestAPI({
       method: "DELETE",
-      endpoint: `/users/contractHistory?id=${deleteId}`,
+      endpoint: `/users/contractHistory?id=${999}`,
     });
     if (!res.isError) {
       setDataAlert({
@@ -69,7 +69,7 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
       setDataAlert({
         severity: "error",
         open: true,
-        message: res.error.meta.message,
+        message: res.error.detail,
       });
     }
     setLoadingDelete(false);

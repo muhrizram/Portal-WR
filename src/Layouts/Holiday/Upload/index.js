@@ -98,20 +98,20 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
     setOpenUpload(false);
   };
 
-  const validateUploadedFile = () => {
-    if (uploadedFile) {
-      if (
-        uploadedFile.type !==
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        uploadedFile.type !== "application/vnd.ms-excel"
-      ) {
-        setUploadedFile(null);
-      }
-    }
-  };
-  useEffect(() => {
-    validateUploadedFile();
-  }, [uploadedFile]);
+  // const validateUploadedFile = () => {
+  //   if (uploadedFile) {
+  //     if (
+  //       uploadedFile.type !==
+  //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+  //       uploadedFile.type !== "application/vnd.ms-excel"
+  //     ) {
+  //       setUploadedFile(null);
+  //     }
+  //   }
+  // };
+  // useEffect(() => {
+  //   validateUploadedFile();
+  // }, [uploadedFile]);
 
   return (
     <div>
