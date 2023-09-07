@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -104,7 +104,6 @@ export default function SideBar({ children }) {
       idx,
       open,
     };
-    console.log("This path: ", path);
     localStorage.setItem("currentMenu", JSON.stringify(obj));
     setSelectedIndex(idx);
     navigate(path.path);
@@ -115,7 +114,6 @@ export default function SideBar({ children }) {
     (res) => location.pathname.split("/")[1] === res.path.split("/")[1]
   );
 
-  console.log("Current name: ", currentLocation);
   return (
     <Box sx={{ display: "-webkit-box" }}>
       <CssBaseline />
