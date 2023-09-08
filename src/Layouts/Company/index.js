@@ -39,7 +39,7 @@ const MasterCompany = () => {
               />
             <div style={{ marginLeft: "0.5rem" }}>
               <span className="text-name" >
-                  {params.row.companyName.substring(20) ? params.row.companyName.substring(0, 20) + "..." : params.row.companyName}
+                  {params.row.companyName}
               </span>
             </div>
           </div>

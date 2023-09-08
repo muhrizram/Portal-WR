@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
-import { FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import client from '../../../global/client';
 import { AlertContext } from '../../../context';
 
@@ -23,6 +23,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 
 const CreateUserRole = () => {
@@ -33,6 +35,18 @@ const CreateUserRole = () => {
   const [selectedUser, setSelectedUser] = useState();
   const [getUsersdata, setgetUsers] = useState([]);
   const navigate = useNavigate();
+
+  const textPlease = 'Please Input'
+  const schemauserRole = Yup.object().shape({
+    nipUser: Yup.string()
+    .required(`${textPlease} NIP & User`),
+    role: Yup.string()
+      .required(`Please choose role`)
+  });
+
+  const { handleSubmit, formState: { errors }, register } = useForm({
+    resolver: yupResolver(schemauserRole),
+  });
 
   const [RoleCheck,setRoleCheck] = useState([])
   const dataBread = [
@@ -136,7 +150,7 @@ const CreateUserRole = () => {
         method: 'POST',
         endpoint: `/userRole/addUserRole/`,
         data
-      })    
+      })
       if(!res.isError){
         setDataAlert({
           severity: 'success',
@@ -172,7 +186,7 @@ const CreateUserRole = () => {
                 <Grid className="HeaderDetail">
                 <Grid item xs={12}>
                   <FormProvider>
-                    <form>              
+                    <form onSubmit={handleSubmit()}>              
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
@@ -189,6 +203,9 @@ const CreateUserRole = () => {
                                     label="NIP & User *"
                                     placeholder="Select User"
                                     focused
+                                    {...register('nipUser')}
+                                    error={errors.nipUser !== undefined}
+                                    helperText={errors.nipUser ? errors.nipUser.message : ''}
                                   />
                                 )}
                               />
@@ -196,6 +213,9 @@ const CreateUserRole = () => {
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
                               sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
+                              // {...register('nipUser')}
+                              //       error={errors.nipUser !== undefined}
+                              //       helperText={errors.nipUser ? errors.nipUser.message : ''}
                             >
                               Role *
                             </Typography>
@@ -219,7 +239,7 @@ const CreateUserRole = () => {
                       </Button>
                       <Button
                         variant='saveButton'
-                        type='button'
+                        type='submit'
                         onClick={handleClickOpenSave}
                       >
                         Save Data

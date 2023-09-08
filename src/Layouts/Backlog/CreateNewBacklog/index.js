@@ -364,7 +364,6 @@ const CreateNewBacklog = () => {
       id: tasks.length + 1,
       projectId : valueproject,
       statusBacklog: null,
-      // userId : parseInt(localStorage.getItem('userId')),
       userId: null,
       taskName: '',
       taskDescription: '',
@@ -375,7 +374,7 @@ const CreateNewBacklog = () => {
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      // taskCode:`T-WR-00${tasks.length + 1}`,        
+      taskCode:''  
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);

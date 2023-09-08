@@ -81,7 +81,7 @@ const RoleUser = () => {
     })
     if(!res.isError){      
       setDataAlert({
-        severity: 'success',
+        severity: 'warning',
         open: true,
         message: res.meta.message
       }) 
@@ -106,6 +106,13 @@ const RoleUser = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setFilter({
+      page: 0,
+      size: 10,
+      sortName: 'role',
+      sortType: 'asc',
+      search: ''
+    })
   };
 
   const handleDetail = async (userId) => {

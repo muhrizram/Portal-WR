@@ -43,9 +43,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: '/ol/userList?search=',      
+      endpoint: '/ol/userList?search=',   
     })
-    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName, groupName: item.attributes.groupName}));    
+    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName}));    
     setAssignedTo(data)
   }
 
@@ -106,7 +106,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
           <Button
             variant='cancelButton'
             color="error"
-            onClick={taskData > 1 && handleDelete}
+            onClick={handleDelete}
             startIcon={<DeleteOutline />}
             style={{ marginRight: "10px" }}
           >
@@ -270,7 +270,7 @@ const DetailBacklog = () => {
   const [dataDetail, setDataDetail] = useState({});  
   const [ProjectName, setProjectName] = useState([]); 
   const [tasks, setTasks] = useState([]);
-  const [valueproject, setValueproject] = React.useState("");
+  const [valueproject, setValueproject] = React.useState();
   const [isSave, setIsSave] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate();  
@@ -354,6 +354,7 @@ const DetailBacklog = () => {
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
     })    
+    console.log(res)
     rebuildDataDetail(res)
   };
 
@@ -376,9 +377,11 @@ const DetailBacklog = () => {
         createdOn: resData.data.attributes.createdOn,
         updatedOn: resData.data.attributes.updatedOn,
         priority: resData.data.attributes.priority,
-        taskCode: resData.data.attributes.taskCode,        
+        taskCode: resData.data.attributes.taskCode,    
+        projectInitial: resData.data.attributes.projectInitial    
       }        
     setDataDetail(tempDetail)
+    setInitialProject(resData.data.attributes.projectInitial)
     const newTasks = [tempDetail];
     setTasks(newTasks);
   }
@@ -459,7 +462,6 @@ const DetailBacklog = () => {
       id: tasks.length + 1,
       projectId : valueproject,
       statusBacklog: null,
-      // userId : parseInt(localStorage.getItem('userId')),
       userId: null,
       taskName: '',
       taskDescription: '',
@@ -470,7 +472,7 @@ const DetailBacklog = () => {
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      // taskCode:`T-WR-00${tasks.length + 1}`,
+      taskCode:'',
     };
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
@@ -501,6 +503,8 @@ const DetailBacklog = () => {
           endpoint: `/backlog/${taskObject.id}`,
           data: taskObject,
         });
+        console.log("data", taskObject)
+        console.log("res", res)
         if(!res.isError){
           setDataAlert({
             severity: 'success',
@@ -530,7 +534,7 @@ const DetailBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })    
-    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));        
+    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name, projectInitial: item.attributes.projectInitial}));        
     setProjectName(data)
     
   }
@@ -560,15 +564,17 @@ const DetailBacklog = () => {
                     id="combo-box-demo"
                     name="ProjectName"
                     options={ProjectName}      
-                    defaultValue={ProjectName.find((option) => option.id === dataDetail.projectId) || null}
+                    defaultValue={ProjectName.find((option) => option.id === (dataDetail.projectInitial && dataDetail.projectId)) || null}
                     sx={{ width: "100%", marginTop: "8px" }}                    
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {             
-                      setValueproject(parseInt(newValue.id));
-                      setInitialProject(newValue.projectInitial)  
                       if (!newValue) {                    
                         setAddTask(false);
+                        setValueproject(undefined)
                       }
+                      else{
+                        setValueproject(parseInt(newValue.id));
+                        setInitialProject(newValue.projectInitial)  }
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Project Name *" placeholder="Select Backlog" />
@@ -584,6 +590,7 @@ const DetailBacklog = () => {
                          onUpdate={handleUpdateTask}
                          onUpdateTasks={handleUpdateTasks}
                          initialProject={initialProject}
+                         idProject={valueproject}
                        />
                     ))}
                     </>
@@ -624,7 +631,7 @@ const DetailBacklog = () => {
                       sx={{ marginTop: "20px" }}
                     >
                       <Button
-                        disabled={!valueproject}
+                        // disabled={!valueproject}
                         color="success"
                         variant="contained"
                         onClick={handleClickTask}
@@ -724,7 +731,7 @@ const DetailBacklog = () => {
                         >
                           <Grid item xs={12}>
                             <Typography variant="backlogDetail">
-                              Project - {dataDetail.projectName}
+                              {dataDetail.projectInitial} - {dataDetail.projectName}
                             </Typography>
                           </Grid>
                         </Grid>

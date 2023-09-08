@@ -23,6 +23,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { FormProvider, useForm } from "react-hook-form";
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 
 const CreateRolePrivilege = () => {
@@ -36,6 +38,18 @@ const CreateRolePrivilege = () => {
   const [optRole, setOptRole] = useState([])
   const [getoptRoleId, setgetoptRoleId] = useState([])
   
+  const textPlease = 'Please Input'
+  const schemaRolePrivilege = Yup.object().shape({
+    // nipUser: Yup.string()
+    // .required(`${textPlease} NIP & User`),
+    role: Yup.string()
+      .required(`${textPlease} Role`)
+  });
+
+  const { handleSubmit, formState: { errors }, register } = useForm({
+    resolver: yupResolver(schemaRolePrivilege),
+  });
+
   const dataBread = [
     {
       href: "/dashboard",
@@ -157,7 +171,7 @@ const CreateRolePrivilege = () => {
 
         <Grid item xs container direction="column" spacing={2}>
           <FormProvider>
-            <form>  
+            <form onSubmit={handleSubmit()}>  
               <div>                        
                 <Grid style={{ padding: "30px" }}>  
                   <Autocomplete                    
@@ -166,11 +180,15 @@ const CreateRolePrivilege = () => {
                       name="role"
                       options={optRole}
                       sx={{ width: "100%", marginTop: "8px" }}
-                      // getOptionLabel={(option) => option.name}
+                      getOptionLabel={(option) => option.name}
                       onChange={(event, newValue) => handleChangeRole(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
-                        <TextField {...params} focused label="Role *" placeholder="Select Role" />
+                        <TextField {...params} focused label="Role *" placeholder="Select Role" 
+                        {...register('role')}
+                        error={errors.role !== undefined}
+                        helperText={errors.role ? errors.role.message : ''}
+                        />
                       )}
                     />      
                 </Grid>  
@@ -237,7 +255,7 @@ const CreateRolePrivilege = () => {
                     </Button>
                     <Button
                       variant='saveButton'
-                      type='button'
+                      type='submit'
                       onClick={confirmSave}
                     >
                       Save Data

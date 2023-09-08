@@ -191,7 +191,7 @@ const DetailUserRole = () => {
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
-                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="User Name *" value={detail.nip +  " " + detail.firstName + " " + detail.lastName} variant="outlined" />                                                                        
+                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="NIP & User *" value={detail.nip +  " " + detail.firstName + " " + detail.lastName} variant="outlined" />                                                                        
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
