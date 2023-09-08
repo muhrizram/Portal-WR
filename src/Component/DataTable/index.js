@@ -255,7 +255,7 @@ const DataTable = ({
               onClick={() => onAdd()}
               startIcon={<AddIcon />}
             >
-              {`NEW ${title}`}
+              {title}
             </Button>
           </Grid>
         )}

@@ -18,6 +18,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers";
 import "../../../App.css";
 import client from "../../../global/client";
+import moment from"moment";
 import { AlertContext } from "../../../context";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -28,7 +29,6 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
     control,
     handleSubmit,
     formState,
-    clearErrors,
     reset,
     setError,
     getValues,
@@ -39,8 +39,17 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
 
   const { setDataAlert } = useContext(AlertContext);
   const [loading, setLoading] = useState(false);
+  const cleanNotes = (string) =>{
+    return string.replace(/\s+/g, " ").trim();
+  }
+
   const onSave = async (data) => {
     setLoading(true);
+    data = {
+      ...data,
+      notes: cleanNotes(data.notes),
+      date: moment(data.date).format("YYYY-MM-DD"),
+    };
     const res = await client.requestAPI({
       method: "POST",
       endpoint: "/holiday/addHoliday",
@@ -129,7 +138,7 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                                 value={field.value}
                                 onChange={(value) =>
                                   field.onChange(
-                                    value ? value.format("YYYY-MM-DD") : null
+                                    value ? value : null
                                   )
                                 }
                                 onAccept={field.onBlur}
@@ -178,6 +187,7 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
                             error={formState.errors.notes !== undefined}
                             maxRows={4}
                             required
+                            inputProps={{maxLength:50}}
                           />
                         )}
                       />

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -11,21 +11,39 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  IconButton,
+  Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import "../../../App.css";
 import client from "../../../global/client";
-import { UploadFileOutlined } from "@mui/icons-material";
+import { Clear, UploadFileOutlined } from "@mui/icons-material";
 import { AlertContext } from "../../../context";
 const MAX_SIZE_FILE = 1048576; // bytes
+const convertBytesToString = (bytes) => {
+  const kb = bytes / 1024;
+  const mb = kb / 1024;
+  const gb = mb / 1024;
+
+  if (gb >= 1) {
+    return gb.toFixed(2) + " GB";
+  } else if (mb >= 1) {
+    return mb.toFixed(2) + " MB";
+  } else if (kb >= 1) {
+    return kb.toFixed(2) + " KB";
+  } else {
+    return bytes + " Bytes";
+  }
+};
+
 const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const downloadUrl = `${process.env.REACT_APP_BASE_API}/holiday/download?bucketName=workingreport-dev&objectName=template_import_holiday.xlsx`;
   const { setDataAlert } = useContext(AlertContext);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const fileInputRef = useRef(null);
   const onSave = async (event) => {
     event.preventDefault();
     if (uploadedFile === null) {
@@ -75,6 +93,8 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const handleFileChange = useCallback((event) => {
     const file = event.target.files[0];
     setUploadedFile(file);
+
+    event.target.value="";
   }, []);
 
   const handleDragOver = useCallback((event) => {
@@ -89,8 +109,14 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const handleDrop = useCallback((event) => {
     event.preventDefault();
     setIsDraggingOver(false);
-    const file = event.dataTransfer.files[0];
-    setUploadedFile(file);
+     if (event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      setUploadedFile(file);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   }, []);
 
   const handleClose = () => {
@@ -101,8 +127,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
   const validateUploadedFile = () => {
     if (uploadedFile) {
       if (
-        uploadedFile.type !==
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        uploadedFile.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
         uploadedFile.type !== "application/vnd.ms-excel"
       ) {
         setUploadedFile(null);
@@ -167,6 +192,7 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                             style={{ display: "none" }}
                             inputProps={{ accept: ".xlsx, .xls" }}
                             onChange={handleFileChange}
+                            ref={fileInputRef}
                           />
                           <UploadFileOutlined
                             fontSize="large"
@@ -184,14 +210,10 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                               variant="subtitle1"
                               sx={{ color: "#0078D7", marginRight: "3px" }}
                             >
-                              {uploadedFile != null
-                                ? uploadedFile.name
-                                : "Click to Upload"}
+                              Click to Upload
                             </Typography>
                             <Typography variant="subtitle1">
-                              {uploadedFile != null
-                                ? " - Selected"
-                                : "or Drag and Drop"}
+                              or Drag and Drop
                             </Typography>
                           </Box>
 
@@ -203,6 +225,31 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                         </div>
                       </label>
                     </Grid>
+                    {uploadedFile && (
+                      <Grid item xs={12} component={Paper} mt={1} display="flex" p={2}>
+                        <Box display="flex" flexDirection="column" textAlign="start" flex={1}>
+                          <Typography>{uploadedFile.name}</Typography>
+                          <Box display="flex" gap={1} alignItems="center">
+                          <Typography variant="subtitle2">
+                            {convertBytesToString(uploadedFile.size)}
+                          </Typography>
+                          <Box width="3px" height="3px" borderRadius="999px" backgroundColor="#00000099"/>
+                          <Typography variant="subtitle2">
+                            Completed
+                          </Typography>
+                          </Box>
+                        </Box>
+                        <Box display="flex" alignItems="center">
+                          <IconButton
+                            onClick={() => {
+                              setUploadedFile(null);
+                            }}
+                          >
+                            <Clear />
+                          </IconButton>
+                        </Box>
+                      </Grid>
+                    )}
                   </Grid>
                 </AccordionDetails>
               </Accordion>
