@@ -194,6 +194,7 @@ const EditHoliday = ({
                               multiline
                               maxRows={4}
                               value={currentData}
+                              inputProps={{maxLength:50}}
                               onChange={(newValue)=>{
                                 setCurrentData(newValue.target.value);
                                 field.onChange(newValue.target.value);
