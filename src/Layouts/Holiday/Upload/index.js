@@ -216,12 +216,9 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                               or Drag and Drop
                             </Typography>
                           </Box>
-
-                          {uploadedFile == null && (
-                            <Typography color="textSecondary">
-                              XLS or XSLX (max. 1MB)
-                            </Typography>
-                          )}
+                          <Typography color="textSecondary">
+                            XLS or XSLX (max. 1MB)
+                          </Typography>
                         </div>
                       </label>
                     </Grid>
