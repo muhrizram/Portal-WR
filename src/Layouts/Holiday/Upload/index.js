@@ -113,7 +113,6 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
       const file = event.dataTransfer.files[0];
       setUploadedFile(file);
 
-      // Reset the file input's value using the useRef reference
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
