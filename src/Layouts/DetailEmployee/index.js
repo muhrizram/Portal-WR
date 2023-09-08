@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useCallback, useContext, useEffect, useRef } from "react";
 import Grid from "@mui/material/Grid";
-import { Button, CircularProgress, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography, Paper,IconButton } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../Component/BreadCumb";
 import Header from "../../Component/Header";
@@ -30,12 +30,11 @@ import ProjectHistoryTab from "./ProjectHistoryTab";
 
 import { AlertContext } from "../../context";
 import { useLocation } from "react-router-dom";
-import { UploadFileOutlined } from "@mui/icons-material";
+import { Clear, UploadFileOutlined } from "@mui/icons-material";
 import client from "../../global/client";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import schemacontract from "./schema";
-import uploadFile from "../../global/uploadFile";
 
 const DetailEmployee = () => {
   const dataBread = [
@@ -85,9 +84,11 @@ const DetailEmployee = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const userId = useLocation().state.userId;
+  const fileInputRef = useRef(null);
   const handleFileChange = useCallback((event) => {
     const file = event.target.files[0];
     setUploadedFile(file);
+    event.target.value = "";
   }, []);
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
@@ -99,8 +100,14 @@ const DetailEmployee = () => {
   const handleDrop = useCallback((event) => {
     event.preventDefault();
     setIsDraggingOver(false);
-    const file = event.dataTransfer.files[0];
-    setUploadedFile(file);
+    if (event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      setUploadedFile(file);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   }, []);
 
   const { formState, handleSubmit, reset, control } = useForm({
@@ -114,7 +121,21 @@ const DetailEmployee = () => {
   });
 
   const MAX_SIZE_FILE = 3145728;
-
+  const convertBytesToString = (bytes) => {
+    const kb = bytes / 1024;
+    const mb = kb / 1024;
+    const gb = mb / 1024;
+  
+    if (gb >= 1) {
+      return gb.toFixed(2) + " GB";
+    } else if (mb >= 1) {
+      return mb.toFixed(2) + " MB";
+    } else if (kb >= 1) {
+      return kb.toFixed(2) + " KB";
+    } else {
+      return bytes + " Bytes";
+    }
+  };
   const onSave = async (data) => {
     if (uploadedFile) {
       if (uploadedFile.size >= MAX_SIZE_FILE) {
@@ -130,7 +151,7 @@ const DetailEmployee = () => {
       formData.append("file", uploadedFile);
       const res = await client.requestAPI({
         method: "POST",
-        endpoint: "/users/uploadFile",
+        endpoint: "/minio/uploadFile?path=contract",
         data: formData,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -174,7 +195,7 @@ const DetailEmployee = () => {
       setDataAlert({
         severity: "error",
         open: true,
-        message: res.error.meta.message,
+        message: res.error.detail,
       });
     }
   };
@@ -208,21 +229,21 @@ const DetailEmployee = () => {
     setValue(newValue);
   };
 
-  // const validateUploadedFile = () => {
-  //   if (uploadedFile) {
-  //     if (
-  //       uploadedFile.type !==
-  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-  //       uploadedFile.type !== "application/msword" ||
-  //       uploadedFile.type !== "application/pdf"
-  //     ) {
-  //       setUploadedFile(null);
-  //     }
-  //   }
-  // };
-  // useEffect(() => {
-  //   validateUploadedFile();
-  // }, [uploadedFile]);
+  const validateUploadedFile = () => {
+    if (uploadedFile) {
+      if (
+        uploadedFile.type !==
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+        uploadedFile.type !== "application/msword" &&
+        uploadedFile.type !== "application/pdf"
+      ) {
+        setUploadedFile(null);
+      }
+    }
+  };
+  useEffect(() => {
+    validateUploadedFile();
+  }, [uploadedFile]);
 
   useEffect(() => {
     getContractStatusOL();
@@ -457,6 +478,7 @@ const DetailEmployee = () => {
                               style={{ display: "none" }}
                               onChange={handleFileChange}
                               inputProps={{ accept: ".doc, .docx, .pdf" }}
+                              ref={fileInputRef}
                             />
                             <UploadFileOutlined
                               fontSize="large"
@@ -477,24 +499,43 @@ const DetailEmployee = () => {
                                   textDecoration: "underline",
                                 }}
                               >
-                                {uploadedFile != null
-                                  ? uploadedFile.name
-                                  : "Click to upload"}
+                                Click to upload
                               </Typography>
                               <Typography variant="subtitle1">
-                                {uploadedFile != null
-                                  ? " - Selected"
-                                  : "or drag and drop"}
+                                or drag and drop
                               </Typography>
                             </Box>
-                            {uploadedFile == null && (
-                              <Typography color="textSecondary">
-                                e.g., DOCX or PDF &#40;max. 3MB&#41;
-                              </Typography>
-                            )}
+                            <Typography color="textSecondary">
+                              e.g., DOCX or PDF &#40;max. 3MB&#41;
+                            </Typography>
                           </div>
                         </label>
                       </Grid>
+                      {uploadedFile && (
+                        <Grid item xs={12} component={Paper} mt={1} display="flex" p={2}>
+                          <Box display="flex" flexDirection="column" textAlign="start" flex={1}>
+                            <Typography>{uploadedFile.name}</Typography>
+                            <Box display="flex" gap={1} alignItems="center">
+                            <Typography variant="subtitle2">
+                              {convertBytesToString(uploadedFile.size)}
+                            </Typography>
+                            <Box width="3px" height="3px" borderRadius="999px" backgroundColor="#00000099"/>
+                            <Typography variant="subtitle2">
+                              Completed
+                            </Typography>
+                            </Box>
+                          </Box>
+                          <Box display="flex" alignItems="center">
+                            <IconButton
+                              onClick={() => {
+                                setUploadedFile(null);
+                              }}
+                            >
+                              <Clear />
+                            </IconButton>
+                          </Box>
+                        </Grid>
+                      )}
                     </Grid>
                   </DialogContent>
                   <DialogActions
