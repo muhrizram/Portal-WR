@@ -39,9 +39,17 @@ const CreateHoliday = ({ openAdd, setOpenAdd, onSaveSuccess }) => {
 
   const { setDataAlert } = useContext(AlertContext);
   const [loading, setLoading] = useState(false);
+  const cleanNotes = (string) =>{
+    return string.replace(/\s+/g, " ").trim();
+  }
+
   const onSave = async (data) => {
     setLoading(true);
-    data = {...data, date:moment(data.date).format("YYYY-MM-DD")}
+    data = {
+      ...data,
+      notes: cleanNotes(data.notes),
+      date: moment(data.date).format("YYYY-MM-DD"),
+    };
     const res = await client.requestAPI({
       method: "POST",
       endpoint: "/holiday/addHoliday",

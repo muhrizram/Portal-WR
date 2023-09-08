@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Accordion,
@@ -23,8 +23,15 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import moment from "moment";
 
-const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHoliday }) => {
+const EditHoliday = ({
+  openEdit,
+  setOpenEdit,
+  onEditSuccess,
+  idHoliday,
+  setIdHoliday,
+}) => {
   let methods = useForm({
     defaultValues: {
       date: null,
@@ -33,13 +40,17 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
     resolver: yupResolver(schemaholiday),
   });
 
-  const { control, handleSubmit, formState, setValue } = methods;
+  const { control, handleSubmit, formState, setValue, getValues } = methods;
 
   const { setDataAlert } = useContext(AlertContext);
 
   useEffect(() => {
     getDetailHoliday();
   }, [idHoliday]);
+
+  const [initialData, setInitialData] = useState("");
+  const [currentData, setCurrentData] = useState("");
+  const [isEdited, setIsEdited] = useState(false);
 
   const getDetailHoliday = async () => {
     const res = await client.requestAPI({
@@ -50,10 +61,27 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
       const temp = res.data.attributes;
       setValue("notes", temp.notes);
       setValue("date", dayjs(temp.date));
+      setInitialData(temp.notes);
+      setCurrentData(temp.notes);
     }
   };
 
+  const isDataStillTheSame = () => {
+    const isNotesChanged = initialData !== currentData.trim();
+    setIsEdited(isNotesChanged);
+  };
+
+  const cleanNotes = (value) =>{
+    return value.replace(/\s+/g, " ").trim();
+  }
+
   const onSave = async (data) => {
+    data = {
+      ...data,
+      notes: cleanNotes(data.notes),
+      date: moment(data.date).format("YYYY-MM-DD"),
+    };
+    
     const res = await client.requestAPI({
       method: "PUT",
       endpoint: `/holiday/update/${idHoliday}`,
@@ -66,6 +94,9 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
         open: true,
         message: res.data.meta.message,
       });
+      setIsEdited(false);
+      setInitialData(data.notes);
+      setCurrentData(data.notes);
       onEditSuccess();
       setOpenEdit(false);
     } else {
@@ -76,6 +107,9 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
       });
     }
   };
+  useEffect(() => {
+    isDataStillTheSame();
+  }, [currentData]);
 
   const handleClose = () => {
     setIdHoliday(null);
@@ -96,8 +130,12 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
           Select Holiday
         </DialogTitle>
         <DialogContent className="dialog-task-content">
-          <DialogContentText className="dialog-delete-text-content" id="alert-dialog-description">
-            Grant administrators the authority to manually select holidays for employees.
+          <DialogContentText
+            className="dialog-delete-text-content"
+            id="alert-dialog-description"
+          >
+            Grant administrators the authority to manually select holidays for
+            employees.
           </DialogContentText>
 
           <Grid item xs={12}>
@@ -114,6 +152,7 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                               <DatePicker
                                 {...field}
+                                readOnly
                                 name="date"
                                 format="DD/MM/YYYY"
                                 label="Holiday Date"
@@ -121,13 +160,20 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                                 className="input-field-crud"
                                 sx={{
                                   width: "100%",
+                                  backgroundColor:"#EAEAEA",
                                 }}
                               />
                             </LocalizationProvider>
                           )}
                         />
                         {formState.errors.date && (
-                          <Typography color="#d32f2f" textAlign={"left"} marginLeft={1} marginTop={1} fontSize={12}>
+                          <Typography
+                            color="#d32f2f"
+                            textAlign={"left"}
+                            marginLeft={1}
+                            marginTop={1}
+                            fontSize={12}
+                          >
                             {formState.errors.date.message}
                           </Typography>
                         )}
@@ -147,8 +193,17 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                               label="Notes"
                               multiline
                               maxRows={4}
+                              value={currentData}
+                              onChange={(newValue)=>{
+                                setCurrentData(newValue.target.value);
+                                field.onChange(newValue.target.value);
+                              }}
                               error={!!formState.errors.notes}
-                              helperText={formState.errors.notes ? formState.errors.notes.message : ""}
+                              helperText={
+                                formState.errors.notes
+                                  ? formState.errors.notes.message
+                                  : ""
+                              }
                             />
                           )}
                         />
@@ -156,9 +211,18 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                     </Grid>
 
                     <DialogActions>
-                      <Grid container justifyContent="center" spacing={2} marginTop={2}>
+                      <Grid
+                        container
+                        justifyContent="center"
+                        spacing={2}
+                        marginTop={2}
+                      >
                         <Grid item>
-                          <Button variant="outlined" className="button-text" onClick={handleClose}>
+                          <Button
+                            variant="outlined"
+                            className="button-text"
+                            onClick={handleClose}
+                          >
                             Back
                           </Button>
                         </Grid>
@@ -167,7 +231,7 @@ const EditHoliday = ({ openEdit, setOpenEdit, onEditSuccess, idHoliday, setIdHol
                             type="submit"
                             variant="contained"
                             className="button-text"
-                            disabled={formState.isSubmitting}
+                            disabled={formState.isSubmitting || !isEdited}
                           >
                             Edit Data
                           </Button>
