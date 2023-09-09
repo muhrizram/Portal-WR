@@ -4,7 +4,7 @@ import React from "react";
 const SearchBar = ({ placeholder, onChange, label }) => {
   return (
     <TextField
-      placeholder={`Search "${placeholder}"`}
+      placeholder={placeholder}
       className="customSearchBar"
       label={label}
       fullWidth
