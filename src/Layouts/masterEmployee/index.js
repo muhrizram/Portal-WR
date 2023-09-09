@@ -146,12 +146,14 @@ const Employee = () => {
 
   const handleCloseDialog = () => {
     setOpen(false);
+    setFilter({...filter, sortName:"userId", sortType:"desc"});
     getData();
   };
 
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,
+      page: event.target.value !== "" ? 0 : filter.page,
       search: event.target.value,
     });
   };
