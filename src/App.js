@@ -29,9 +29,9 @@ const App = () => {
     };
 
     if (isRememberMe === "false") {
-      window.addEventListener("beforeunload", clearLocalStorage);
+      window.addEventListener("unload", clearLocalStorage);
       return () => {
-        window.removeEventListener("beforeunload", clearLocalStorage);
+        window.removeEventListener("unload", clearLocalStorage);
       };
     }
   }, []);
@@ -51,8 +51,7 @@ const App = () => {
   const value = { dataAlert, setDataAlert, onCloseAlert };
 
   useEffect(() => {
-    onCloseAlert()
-
+    onCloseAlert();
   }, [location])
 
   return (
