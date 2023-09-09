@@ -21,6 +21,20 @@ const App = () => {
       navigate('/login')
     }
   }, [userId])
+  
+  const isRememberMe = localStorage.getItem("rememberMe");
+  useEffect(() => {
+    const clearLocalStorage = () => {
+      localStorage.clear();
+    };
+
+    if (isRememberMe === "false") {
+      window.addEventListener("beforeunload", clearLocalStorage);
+      return () => {
+        window.removeEventListener("beforeunload", clearLocalStorage);
+      };
+    }
+  }, [isRememberMe]);
 
   const [dataAlert, setDataAlert] = useState({
     severity: 'warning',

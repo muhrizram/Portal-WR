@@ -13,7 +13,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -32,10 +32,10 @@ const Login = ({ changeStat }) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const validationSchema = yup.object().shape({
-    email: yup.string().required("Email is required").email("Invalid email address"),
+    email: yup.string().required("Please input your email").email("Invalid email address"),
     password: yup
       .string()
-      .required("Password is required")
+      .required("Please input your password")
       .min(8, "Password must be at least 8 characters")
       .max(16, "Password must not exceed 16 characters")
       .matches(
@@ -64,6 +64,7 @@ const Login = ({ changeStat }) => {
       localStorage.setItem("userId", res.userId)      
       localStorage.setItem("employeeName", res.employeeName)
       localStorage.setItem("position", res.position)
+      localStorage.setItem("rememberMe", rememberMe)
       setDataAlert({
         severity: 'success',
         open: true,
@@ -87,6 +88,13 @@ const Login = ({ changeStat }) => {
       })   
       setIsLoading(false);    
     }   
+  };
+
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleRememberMe = (event) => {
+    const checked = event.target.checked;
+    setRememberMe(checked);
   };
 
 
@@ -150,7 +158,7 @@ const Login = ({ changeStat }) => {
       </Grid>
       <Grid item xs={6}>
         <FormGroup>
-          <FormControlLabel control={<Checkbox />} label="Remember Me" />
+          <FormControlLabel control={<Checkbox checked={rememberMe} onChange={handleRememberMe}/>} label="Remember Me" />
         </FormGroup>
       </Grid>
       <Grid item xs={6} textAlign="right" alignSelf="center">
