@@ -28,7 +28,6 @@ const MasterCompany = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
-        console.log("minion",urlMinio)
 
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -89,7 +88,7 @@ const MasterCompany = () => {
     })
     if (!res.isError) {
       setDataAlert({
-        severity: 'success',
+        severity: 'warning',
         open: true,
         message: res.meta.message
       })

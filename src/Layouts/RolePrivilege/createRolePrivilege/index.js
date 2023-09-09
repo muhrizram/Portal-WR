@@ -36,14 +36,16 @@ const CreateRolePrivilege = () => {
   const navigate = useNavigate();
   const [optPrivilege, setOptPrivilege] = useState([])
   const [optRole, setOptRole] = useState([])
-  const [getoptRoleId, setgetoptRoleId] = useState([])
+  const [getoptRoleId, setgetoptRoleId] = useState(null)
   
   const textPlease = 'Please Input'
   const schemaRolePrivilege = Yup.object().shape({
     // nipUser: Yup.string()
-    // .required(`${textPlease} NIP & User`),
+    // .required(`${textPlease} NIP & User`)
     role: Yup.string()
-      .required(`${textPlease} Role`)
+      .required(`${textPlease} Role`),
+    privilege: Yup.string()
+      .required(`${textPlease} Privilege`)
   });
 
   const { handleSubmit, formState: { errors }, register } = useForm({
@@ -107,7 +109,7 @@ const CreateRolePrivilege = () => {
       setOpen(false)
     } else{
       const data = {
-        roleId: getoptRoleId,
+        roleId: selectedRole ? selectedRole.id : null,
         listPrivilege: selectPrivilege,
         createdBy: parseInt(localStorage.getItem('userId'))
       }
@@ -154,6 +156,7 @@ const CreateRolePrivilege = () => {
     setOpen(false);
   };
 
+  const [selectedRole, setSelectedRoles] = useState()
   const handleChangeRole = (value) => {    
     if(value){
       setgetoptRoleId(value.id)
@@ -180,8 +183,10 @@ const CreateRolePrivilege = () => {
                       name="role"
                       options={optRole}
                       sx={{ width: "100%", marginTop: "8px" }}
+                      value={selectedRole}
                       getOptionLabel={(option) => option.name}
-                      onChange={(event, newValue) => handleChangeRole(newValue)}
+                      // onChange={(event, newValue) => handleChangeRole(newValue)}
+                      onChange={(event, newValue) => setSelectedRoles(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
                         <TextField {...params} focused label="Role *" placeholder="Select Role" 
@@ -201,7 +206,11 @@ const CreateRolePrivilege = () => {
                   Privilege *
                 </Typography>
 
-                <Grid container direction="row" sx={{marginLeft:'30px'}}>
+                <Grid container direction="row" sx={{marginLeft:'30px'}}
+                  // {...register('privilege')}
+                  error={errors.privilege !== undefined}
+                  // helperText= {errors.privilege && errors.privilege.message}
+                  >
                   <Grid item xs={6}>
                   <FormGroup>
                     {optPrivilege.slice(0, 5).map((privilege) => (
@@ -219,6 +228,7 @@ const CreateRolePrivilege = () => {
                   </FormGroup>
                   </Grid>
 
+
                   <Grid item xs={6}>
                   <FormGroup>
                     {optPrivilege.slice(5).map((privilege) => (
@@ -235,6 +245,9 @@ const CreateRolePrivilege = () => {
                     ))}
                   </FormGroup>
                   </Grid>
+
+                  {/* {errors.privilege ? (
+                    <div style={{ color: 'red', fontSize: '12px' }}>{errors.privilege.message}</div>) : ''} */}
                 </Grid>
 
                 <Grid

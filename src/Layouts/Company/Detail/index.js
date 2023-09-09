@@ -172,11 +172,36 @@ const DetailCompany = () => {
     }
   }
 
+  const MAX_SIZE_FILE = 3145728;
+
   const handleChange = async (e) => {
-    if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0], 'company')
-      setFilePath(tempFilePath)
-      setFile(URL.createObjectURL(e.target.files[0]));
+    if (e.target.files.length > 0) {
+      const uploadedFile = e.target.files[0];
+      if (uploadedFile.size <= MAX_SIZE_FILE) {
+        if (
+          uploadedFile.type === "image/jpg" ||
+          uploadedFile.type === "image/jpeg" ||
+          uploadedFile.type === "image/png"
+        ) {
+          const tempFilePath = await uploadFile(uploadedFile, 'company');
+          setFilePath(tempFilePath);
+          setFile(URL.createObjectURL(uploadedFile));
+        } else {
+          console.error("Tipe file tidak valid.");
+          setDataAlert({
+                severity: 'error',
+                message: "Invalid type file",
+                open: true
+              })
+        }
+      } else {
+        console.error("File terlalu besar.");
+        setDataAlert({
+          severity: 'error',
+          message: "Company Image can't more than 3MB",
+          open: true
+        })
+      }
     }
   }
 

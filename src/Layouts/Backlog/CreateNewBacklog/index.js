@@ -99,10 +99,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              {/* Task {taskData.id} */}
               T - {initialProject} - 00{taskData.id}
-              {/*harusnya project initial  */}
-              {/* / {taskData.taskCode} */}
             </Typography>
           </AccordionSummary>
         </Grid>
