@@ -53,11 +53,11 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
     getData(id);
   }, [dataChange]);
 
-  const handleDelete = async (contractId) => {
+  const handleDelete = async () => {
     setLoadingDelete(true);
     const res = await client.requestAPI({
       method: "DELETE",
-      endpoint: `/users/contractHistory?id=${contractId}`,
+      endpoint: `/users/contractHistory?id=${deleteId}`,
     });
     if (!res.isError) {
       setDataAlert({
@@ -188,7 +188,7 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
                       Cancel
                     </Button>
                     <Button
-                      onClick={() => handleDelete(row.id)}
+                      onClick={handleDelete}
                       className="delete-button button-text"
                       disabled={loadingDelete}
                     >
