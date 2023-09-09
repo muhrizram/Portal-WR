@@ -10,7 +10,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const CustomAlert = () => {
   const { dataAlert, onCloseAlert } = useContext(AlertContext)
   return (
-    <Snackbar className='custom-snackbar' autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center'}} autoHideDuration={6000} open={dataAlert.open} onClose={onCloseAlert}>
+    <Snackbar className='custom-snackbar' autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'center'}} open={dataAlert.open} onClose={onCloseAlert}>
       <Alert className="custom-alert" onClose={onCloseAlert} severity={dataAlert.severity}sx={{ width: '80%' }}>
         {dataAlert.message}
       </Alert>
