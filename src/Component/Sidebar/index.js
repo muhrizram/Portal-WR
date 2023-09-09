@@ -110,8 +110,11 @@ export default function SideBar({ children }) {
   };
   const location = useLocation();
 
+  const clearStringPath = (string) =>{
+    return string.split("/")[1].toLowerCase().replace(/[^A-Za-z0-9]/g,"");
+  }
   const currentLocation = dataRoute.find(
-    (res) => location.pathname.split("/")[1] === res.path.split("/")[1]
+    (res) => clearStringPath(location.pathname) === clearStringPath(res.path)
   );
   return (
     <Box sx={{ display: "-webkit-box" }}>
@@ -146,9 +149,9 @@ export default function SideBar({ children }) {
                     </Grid>
                     {open && (
                       <Grid item container xs={8}>
-                        <Grid item container xs={8}>
-                          <Grid item container xs={12}>
-                            <Typography variant="drawerNameUser">
+                        <Grid item container xs={8} overflow="hidden">
+                          <Grid item container xs={12} style={{maxWidth:"150px"}}>
+                            <Typography variant="drawerNameUser" textOverflow="ellipsis" noWrap overflow="hidden">
                               {username}
                             </Typography>
                           </Grid>

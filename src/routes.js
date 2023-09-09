@@ -4,9 +4,9 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
 import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import AccountBalanceOutlinedIcon from "@mui/icons-material/AccountBalanceOutlined";
+import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
+import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ const closedRoutes = [
     element: <WorkingReport />,
     name: "Working Report",
     key: "working report",
-    icon: <WorkOutlineIcon />,
+    icon: <SummarizeOutlinedIcon />,
   },
   {
     path: "/overtime/detail-overtime",
@@ -105,7 +105,7 @@ const closedRoutes = [
     element: <Project />,
     name: "Project",
     key: "master project",
-    icon: <AccountTreeIcon />,
+    icon: <AccountTreeOutlinedIcon />,
   },
   {
     path: "/master-project/detail",
@@ -185,7 +185,7 @@ const closedRoutes = [
     element: <Holiday />,
     name: "Holiday",
     key: "master holiday",
-    icon: <AccountBalanceOutlinedIcon />,
+    icon: <FestivalOutlinedIcon/>
   }, 
 ];
 

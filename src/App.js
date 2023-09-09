@@ -1,7 +1,7 @@
 import './App.css';
 import React, { Suspense, useEffect, useState} from 'react';
 import { ThemeProvider } from "@mui/material/styles";
-import { Route, Routes, useNavigate } from 'react-router';
+import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import globalTheme from './Theme';
 import { finalRoutes } from './routes';
 import { AlertContext } from './context';
@@ -14,6 +14,7 @@ const App = () => {
   //   setRoute(finalRoutes())
   // }, [])
   const navigate = useNavigate()
+  const location = useLocation()
   const userId = localStorage.getItem("userId") || null
   useEffect(() => {
     if (!userId) {
@@ -33,8 +34,12 @@ const App = () => {
       open: false,
     }))
   }
-  
-  const value = { dataAlert, setDataAlert, onCloseAlert };  
+  const value = { dataAlert, setDataAlert, onCloseAlert };
+
+  useEffect(() => {
+    onCloseAlert()
+    // console.log('history: ')
+  }, [location])
 
   return (
     <ThemeProvider theme={globalTheme}>
