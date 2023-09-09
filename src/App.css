@@ -500,7 +500,7 @@
 }
 
 .custom-file-input {
-  margin-left: 50px;
+  margin-left: 47px;
   opacity: 3;
   position: absolute;
   cursor: pointer;
@@ -509,6 +509,7 @@
 .button-clear{
   display: flex;
 padding: 4px;
+/* margin-left: 2px; */
 flex-direction: column;
 justify-content: center;
 align-items: center;

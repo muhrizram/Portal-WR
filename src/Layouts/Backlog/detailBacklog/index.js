@@ -43,9 +43,11 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: '/ol/userList?search=',   
+      // endpoint: '/ol/userList?search=',   
+      
+      endpoint: `/ol/backlogUser?search=${idProject}`
     })
-    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.fullName}));    
+    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.userName}));    
     setAssignedTo(data)
   }
 
@@ -97,7 +99,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              {/* Task {taskData.id} / {taskData.taskCode} */}
               T - {initialProject} - 00{taskData.id}
             </Typography>
           </AccordionSummary>
@@ -345,8 +346,8 @@ const DetailBacklog = () => {
   useEffect(() => {
     getProjectName()
     getDataDetail()  
-    console.log("cek init", initialProject)  
-  }, [initialProject])
+    console.log("cek init", valueproject)  
+  }, [valueproject])
 
   const getDataDetail = async () => {
     const idDetail = localStorage.getItem("idBacklog")
@@ -421,18 +422,9 @@ const DetailBacklog = () => {
   };
 
   const handleDeleteTask = (taskId) => {
-    if (tasks.length === 1) {
-      setDataAlert({
-        severity: 'error',
-        message: 'Cannot delete task.',
-        open: true,
-      });
-    }
-    else{
     handleUpdateTasks(taskId);
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
-    }
   };
 
   const handleUpdateTask = (updatedTask) => {    
@@ -565,16 +557,17 @@ const DetailBacklog = () => {
                     name="ProjectName"
                     options={ProjectName}      
                     defaultValue={ProjectName.find((option) => option.id === (dataDetail.projectInitial && dataDetail.projectId)) || null}
-                    sx={{ width: "100%", marginTop: "8px" }}                    
+                    sx={{ width: "100%", marginTop: "8px", backgroundColor: "#EDEDED" }}                    
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
                     onChange={(event, newValue) => {             
                       if (!newValue) {                    
                         setAddTask(false);
-                        setValueproject(undefined)
+                        setValueproject()
                       }
                       else{
                         setValueproject(parseInt(newValue.id));
                         setInitialProject(newValue.projectInitial)  }
+                        console.log("id project", setValueproject(parseInt(newValue.id)))
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Project Name *" placeholder="Select Backlog" />
@@ -590,7 +583,7 @@ const DetailBacklog = () => {
                          onUpdate={handleUpdateTask}
                          onUpdateTasks={handleUpdateTasks}
                          initialProject={initialProject}
-                         idProject={valueproject}
+                         idProject={dataDetail.projectId}
                        />
                     ))}
                     </>
@@ -631,7 +624,7 @@ const DetailBacklog = () => {
                       sx={{ marginTop: "20px" }}
                     >
                       <Button
-                        // disabled={!valueproject}
+                        disabled={!valueproject}
                         color="success"
                         variant="contained"
                         onClick={handleClickTask}

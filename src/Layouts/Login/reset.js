@@ -15,9 +15,12 @@ import { useNavigate } from "react-router";
 
 const Reset = ({open, onClose}) => {
   const [dataPassword, setDataPassword] = useState({})
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [openReset, setOpen] = useState(false)
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
+  const [showNewPassword, setShowNewPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const handleClickShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
+  const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate(); 
   const handleMouseDownPassword = (event) => {
@@ -68,8 +71,14 @@ const Reset = ({open, onClose}) => {
           data: dataPassword,
       })
       .then(function(response){
-        if(response.isError){
-          console.log("Invalid current password")
+        console.log("res", response)
+        if(response.isError){ 
+          console.error("Invalid current password")
+          // setDataAlert({
+          //   severity: 'error',
+          //   open: true,
+          //   message: response.error.meta.message
+          // })
         }
         else{
           localStorage.removeItem('token')
@@ -77,7 +86,7 @@ const Reset = ({open, onClose}) => {
           setDataAlert({
             severity: 'success',
             open: true,
-            message: response.data.meta.message
+            message: response.meta.message
           })
           setTimeout(() => {
             navigate('/login')
@@ -129,7 +138,7 @@ const Reset = ({open, onClose}) => {
             {...register('password')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your password"
-            type={showPassword ? 'text' : 'password'}
+            type={showCurrentPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -140,10 +149,10 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowCurrentPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showCurrentPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
@@ -160,7 +169,7 @@ const Reset = ({open, onClose}) => {
             {...register('newPassword')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your password"
-            type={showPassword ? 'text' : 'password'}
+            type={showNewPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -171,17 +180,18 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowNewPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
             }} 
             error={errors.newPassword !== undefined}
-            helperText={dataPassword.password === dataPassword.newPassword ? 
-              (errors.ifMatch ? errors.ifMatch.message : '')  : (errors.newPassword ? errors.newPassword.message : '')}
+            // helperText={dataPassword.password === dataPassword.newPassword ? 
+            //   (errors.ifMatch ? errors.ifMatch.message : '')  : (errors.newPassword ? errors.newPassword.message : '')}
+            helperText={errors.newPassword ? errors.newPassword.message : ''}
           />
         </Grid>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>
@@ -192,7 +202,7 @@ const Reset = ({open, onClose}) => {
             {...register('confirmPassword')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your pasword"
-            type={showPassword ? 'text' : 'password'}
+            type={showConfirmPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -203,10 +213,10 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowConfirmPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
