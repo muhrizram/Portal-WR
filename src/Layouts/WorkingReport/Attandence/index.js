@@ -55,7 +55,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
     setListPresence(temp);
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     getDatalist();
   }, []);
 

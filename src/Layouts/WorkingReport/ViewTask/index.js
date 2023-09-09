@@ -14,15 +14,15 @@ import client from "../../../global/client";
 
 import TabsMenuWR from "../tabMenu";
 
-export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
+export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask}) {
   const [openTask, setOpenTask] = useState(false);
   const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState([]);
-  const [beforeThanToday, setBeforeThanToday] = useState(false);
+  const [beforeThanToday, setBeforeThanToday] = useState(false);  
   
   useEffect(() => (
     getDetailTask(),
-    checkForMatch()
+    checkForMatch()    
   ),[])
 
   const checkForMatch = () => {
@@ -69,7 +69,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
         endpoint: `/task/detail?wrId=${WrIdDetail}`        
       });
       console.log("res", res.data);
-      setTaskData(res.data);
+      setTaskData(res.data);      
     } catch (error) {
       console.error("Error fetching task details:", error);
     } 
@@ -196,35 +196,54 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll}) {
           </Grid>          
         </React.Fragment>
       ))}
-      <Grid item xs={12}>
-        <Grid container justifyContent="center" spacing={2}>
+      
+        <Grid item xs={12}>
+          <Grid container justifyContent="center" spacing={2}>
           <Grid item>
-            {/* {beforeThanToday ? ( */}
-              <Button
-              startIcon={<CreateIcon />}
+            <Button 
               variant="outlined"
-              onClick={() => setOpenTask(true)}
-              >
-                Edit Task
-              </Button>
-            {/* ) : null}             */}
-          </Grid>
-          <Grid item>
-            <Button
-              startIcon={<AccessTimeIcon />}
-              className="delete-button button-text"
-              onClick={() => setIsCheckOut()}
-            >
-              Check Out
+              className="button-text"
+              color="error"
+              onClick={() => {
+                setIsViewTask()
+                setonOtherUser(false)
+              }
+                }>
+              Back
             </Button>
           </Grid>
-        </Grid>
-      </Grid>
+            {!onStatusHr 
+              && (       
+                <>
+              <Grid item>
+                {/* {beforeThanToday ? ( */}
+                  <Button
+                  startIcon={<CreateIcon />}
+                  variant="outlined"
+                  onClick={() => setOpenTask(true)}
+                  >
+                    Edit Task
+                  </Button>
+                {/* ) : null}             */}
+              </Grid>
+              <Grid item>
+                <Button
+                  startIcon={<AccessTimeIcon />}
+                  className="delete-button button-text"
+                  onClick={() => setIsCheckOut()}
+                >
+                  Check Out
+                </Button>
+              </Grid>
+              </>  
+            )}
+          </Grid>
+        </Grid>            
       <PopupTask
         isEdit={true}
         open={openTask}
         closeTask={() => setOpenTask(false)}
-        dataDetail={taskData}
+        dataDetail={taskData}        
       />    
       </>) : (<><h1>No DATA</h1> </>)        
     }    

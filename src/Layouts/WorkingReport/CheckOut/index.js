@@ -19,8 +19,12 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
+import moment from "moment";
 
-export default function CheckOut({ setIsCheckin }) {
+export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
+  const [lat, setLat] = useState();
+  const [lon, setLon] = useState();
+  const date = new Date();   
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -35,15 +39,22 @@ export default function CheckOut({ setIsCheckin }) {
     setPicture(imageSrc);
   }, [webcamRef]);
   const checkIn = async () => {
-    const blob = await fetch(picture).then((res) => res.blob());
-    const file = new File([blob], "test_picture.jpg");
+    const blob = await fetch(picture).then((res) => res.blob());    
+    const file = new File([blob],localStorage.getItem("employeeName") + moment(date).format("DD-MM-YYYY") +  "checkout.jpg");
     // URL.createObjectURL(blob)
     const result = await uploadFile(file, 'absence');
+    const body ={
+      workingReportId :workingReportTaskId ,
+      latitude : lat,
+      longitude : lon,
+      file : result
+    }    
     const res = await client.requestAPI({
       endpoint: `/workingReport/checkOut?wrId=${localStorage.getItem(
         "workingReportId"
       )}&fileName=${result}`,
       method: "PUT",
+      data : body
     });
     if (!res.isError) {
       setIsCheckin(false);
@@ -61,10 +72,24 @@ export default function CheckOut({ setIsCheckin }) {
     }
   };
 
+  useEffect(()=>{    
+    navigator.geolocation.getCurrentPosition((position) => {
+      setLat(position.coords.latitude);
+      setLon(position.coords.longitude);
+    });
+  },[])
+
   return (
     <Grid container>
       <Grid item xs={12}>
         <Card>
+          <Grid item p={4} xs={6}>
+                <Grid item xs={12} display="flex" justifyContent="center">
+                  <Typography variant="title">Geolocation</Typography>
+                </Grid>
+                <Typography>Latitude : {lat}</Typography>
+                <Typography>Longitude : {lon}</Typography>
+              </Grid>
           <Grid container p={4} spacing={2}>
             <Grid item xs={6}>
               <Grid item xs={12} display="flex" justifyContent="center">
@@ -128,7 +153,7 @@ export default function CheckOut({ setIsCheckin }) {
                       </Button>
                     </Grid>
                     <Grid item xs={2} display="flex" alignItems="center">
-                      <Button variant="contained" onClick={() => checkIn()}>
+                      <Button variant="contained" disabled={picture.length === 0} onClick={() => checkIn()}>
                         Check Out
                       </Button>
                     </Grid>

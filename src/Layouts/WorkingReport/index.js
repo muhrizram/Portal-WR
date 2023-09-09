@@ -38,6 +38,9 @@ export default function WorkingReport() {
   const [dropMenu, setDropMenu] = useState(null)
   const [dataReadyAttedance,setdataReadyAttedance] = useState()
   const [AttendanceView,setAttendanceView] = useState()
+  const [HrsetIdemployee,setHrsetIdemployee] = useState()
+  const [onStatusHr,setonStatusHr] = useState(false)
+  const [onOtherUser,setonOtherUser] = useState(false)
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -77,9 +80,11 @@ export default function WorkingReport() {
   const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
-    if(isHr == false) {
+    setonOtherUser(false)
+    if(!HrsetIdemployee) {
       getData();
     }
+    
     localStorage.removeItem("companyId");
     let listRoles = localStorage.getItem("roles");
     let roles = JSON.parse(listRoles)
@@ -89,7 +94,15 @@ export default function WorkingReport() {
         setIsHr(true)
       }
     }    
-  }, [filter]);
+  }, [filter,HrsetIdemployee]);
+
+  const updateStatusHr = (newValue) => {    
+    if(newValue === null){      
+      setonStatusHr(false)
+    }else{
+      setonStatusHr(true)
+    }
+  }
 
   const updateFilterDates = (newActiveMonth,value) => {
     if(value){      
@@ -105,10 +118,10 @@ export default function WorkingReport() {
         endDate: filter.endDate,
       });
     }    
-    getData();
+    getData(HrsetIdemployee);
   };
 
-  const getData = async (id = null) => {
+  const getData = async (id = null) => {    
     let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
 
     if(id !== null) {
@@ -264,7 +277,11 @@ export default function WorkingReport() {
         />
       );
     } else if (isCheckOut) {
-      dom = <CheckOut />;
+      dom = (
+        <CheckOut
+          workingReportTaskId={WrIdDetail}
+        />
+      );
     } else if (isViewTask) {      
       dom = (
         <ViewTask
@@ -274,6 +291,9 @@ export default function WorkingReport() {
           }}          
           WrIdDetail={WrIdDetail}
           dataAll={data}
+          onStatusHr={onStatusHr}
+          setonOtherUser={setonOtherUser}
+          setIsViewTask={() => setIsViewTask(false)}
         />
       );
     } else if (isViewOvertime) {
@@ -281,64 +301,81 @@ export default function WorkingReport() {
         <ViewOvertime
         WrIdDetail = {WrIdDetail}
         onCloseViewOvertime={() => setIsViewOvertime(false)}
+        onStatusHr={onStatusHr}
+        setonOtherUser={setonOtherUser}
         />
       )
     }
       else {
-        {
-          isHr ? (
-            selectedUser == null ? (
-              dom = (<Grid
-                container
-                item
-                xs={12}
-                minHeight="600px"
-                alignContent="center"
-                alignItems="center"
-                display="flex"
-                justifyContent="center"
-                textAlign="center"
-              >
-                <Grid item xs={12} pb={3.75}>
-                  <img src={blanktable} alt="blank-table" />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="noDataTable">
-                    Sorry, the data you are looking for could not be found.
-                  </Typography>
-                </Grid>
-              </Grid>)
-            ) : (
-              dom = (<Calendar
-                setOnClick={(param) => {
-                  const _data = data.find(
-                    (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-                  );
-                  onAttendence(_data);
-                }}
-                setIsViewTask={setIsViewTask}
-                setIsViewOvertime={setIsViewOvertime}
-                events={data}
-                setWrIdDetail={setWrIdDetail}
-              />)
-            )
-          ) : (
-            dom = (<Calendar
-              setOnClick={(param) => {
-                const _data = data.find(
-                  (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-                );
-                onAttendence(_data);
-              }}
-              setIsViewTask={setIsViewTask}
-              setIsViewOvertime={setIsViewOvertime}
-              events={data}
-              setWrIdDetail={setWrIdDetail}
-              updateFilterDates={updateFilterDates}
-            />)
-          )
-        }
-        
+        // {
+        //   isHr ? (
+        //     // selectedUser == null ? (
+        //     //   dom = (<Grid
+        //     //     container
+        //     //     item
+        //     //     xs={12}
+        //     //     minHeight="600px"
+        //     //     alignContent="center"
+        //     //     alignItems="center"
+        //     //     display="flex"
+        //     //     justifyContent="center"
+        //     //     textAlign="center"
+        //     //   >
+        //     //     <Grid item xs={12} pb={3.75}>
+        //     //       <img src={blanktable} alt="blank-table" />
+        //     //     </Grid>
+        //     //     <Grid item xs={12}>
+        //     //       <Typography variant="noDataTable">
+        //     //         Sorry, the data you are looking for could not be found.
+        //     //       </Typography>
+        //     //     </Grid>
+        //     //   </Grid>)
+        //     // ) : (nge
+        //       dom = (<Calendar
+        //         setOnClick={(param) => {
+        //           const _data = data.find(
+        //             (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+        //           );
+        //           onAttendence(_data);
+        //         }}
+        //         setIsViewTask={setIsViewTask}
+        //         setIsViewOvertime={setIsViewOvertime}
+        //         events={data}
+        //         setWrIdDetail={setWrIdDetail}
+        //         updateFilterDates={updateFilterDates}
+        //       />)
+        //     // )
+        //   ) : (
+        //     dom = (<Calendar
+        //       setOnClick={(param) => {
+        //         const _data = data.find(
+        //           (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+        //         );
+        //         onAttendence(_data);
+        //       }}
+        //       setIsViewTask={setIsViewTask}
+        //       setIsViewOvertime={setIsViewOvertime}
+        //       events={data}
+        //       setWrIdDetail={setWrIdDetail}
+        //       updateFilterDates={updateFilterDates}
+        //     />)
+        //   )
+        // }
+        dom = <Calendar
+          setOnClick={(param) => {
+            const _data = data.find(
+              (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+            );
+            onAttendence(_data);
+          }}
+          setIsViewTask={setIsViewTask}
+          setIsViewOvertime={setIsViewOvertime}
+          events={data}
+          setWrIdDetail={setWrIdDetail}
+          updateFilterDates={updateFilterDates}
+          onStatusHr={onStatusHr}
+          setonOtherUser={setonOtherUser}
+        />
       }
     return dom;
   };
@@ -370,10 +407,15 @@ export default function WorkingReport() {
   }
 
   const handleSearchChange = async (searchValue) => {
-
+    let idvalue;
+    if(searchValue != null){
+      idvalue = searchValue
+    }else{
+      idvalue = userProfile.id
+    }
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/userList?search=${searchValue}`,
+      endpoint: `/users/userList?search=${idvalue}`,
     });
     
     const data = res.data.map(user => ({
@@ -384,14 +426,15 @@ export default function WorkingReport() {
     setFilteredNames(data);
   };
 
-  const handleOptionSelectUser = (event, value) => {
+  const handleOptionSelectUser = (event, value) => {    
     const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === value));
     if (user) {
       setSelectedUser(user)
       getDetailData(user.id)
       getData(user.id);
+      setHrsetIdemployee(user.id)
     }
-  };
+  };  
 
   const handleReset = () => {
     // navigate('/reset-password')
@@ -455,14 +498,23 @@ export default function WorkingReport() {
               <> 
               <Grid item xs={4}>
                 <Autocomplete
+                  disabled={onOtherUser}
                   freeSolo
                   options={filteredNames.map(option => (`${option.name} - ${option.nip}`))}
+                  onChange={(_event, newValue) => {
+                    updateStatusHr(newValue)
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       placeholder="Name, NIP, etc"
                       label="Search By"
-                      onChange={(e) => handleSearchChange(e.target.value)}
+                      onChange={(e) => {                        
+                        handleSearchChange(e.target.value)
+                      }}
+                      onSelect={(e) => {                        
+                        handleOptionSelectUser('' ,e.target.value)
+                      }}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
@@ -514,18 +566,18 @@ export default function WorkingReport() {
                     <Grid item xs={4}>
                       <Typography>Name</Typography>
                       <Typography variant="drawerNameUser">
-                        {selectedUserDetail == null ? "-" : selectedUserDetail.name}
+                        {userProfile == null ? "-" : userProfile.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography>Role</Typography>
-                      <Typography variant="drawerNameUser">{selectedUserDetail == null ? "-" : selectedUserDetail.role}</Typography>
+                      <Typography variant="drawerNameUser">{userProfile == null ? "-" : userProfile.role}</Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
-                        {selectedUserDetail ? (
-                          selectedUserDetail.email ? "-" : selectedUserDetail.email
+                        {userProfile ? (
+                          userProfile.email ? userProfile.email : '-'
                         ):'-'}
                       </Typography>
                     </Grid>

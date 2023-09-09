@@ -87,7 +87,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
     console.log('res attandance: ', resAttedance)
 
     const blob = await fetch(picture).then((res) => res.blob());
-    const file = new File([blob], "test_picture.jpg");
+    const file = new File([blob], localStorage.getItem("employeeName") + dataPeriod.tanggal + "checkin.jpg");
     // URL.createObjectURL(blob)
     const result = await uploadFile(file, 'absence');
     const body = {
@@ -124,9 +124,9 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
         open: true,
         message: resAttedance.data.meta.message,
       });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 3000)
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000)
     } 
   };
 
@@ -134,7 +134,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
     navigator.geolocation.getCurrentPosition((position) => {
       setLat(position.coords.latitude);
       setLon(position.coords.longitude);
-    });   
+    });
   }, []);
 
   return (
@@ -206,7 +206,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                         </Button>
                       </Grid>
                       <Grid item xs={2} display="flex" alignItems="center">
-                        <Button variant="contained" onClick={() => checkIn()}>
+                        <Button disabled={picture.length === 0} variant="contained" onClick={() => checkIn()}>
                           Check In
                         </Button>
                       </Grid>
