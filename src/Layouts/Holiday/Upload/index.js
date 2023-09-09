@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import "../../../App.css";
+import "../../../index.css";
 import client from "../../../global/client";
 import { Clear, UploadFileOutlined } from "@mui/icons-material";
 import { AlertContext } from "../../../context";
@@ -225,19 +226,20 @@ const UploadHoliday = ({ openUpload, setOpenUpload, onSaveSuccess }) => {
                     {uploadedFile && (
                       <Grid item xs={12} component={Paper} mt={1} display="flex" p={2}>
                         <Box display="flex" flexDirection="column" textAlign="start" flex={1}>
-                          <Typography>{uploadedFile.name}</Typography>
+                          <span className='text-files-name'>{uploadedFile.name}</span>
                           <Box display="flex" gap={1} alignItems="center">
-                          <Typography variant="subtitle2">
+                          <span className='text-files-sizes'>
                             {convertBytesToString(uploadedFile.size)}
-                          </Typography>
+                          </span>
                           <Box width="3px" height="3px" borderRadius="999px" backgroundColor="#00000099"/>
-                          <Typography variant="subtitle2">
+                          <span className='text-files-sizes'>
                             Completed
-                          </Typography>
+                          </span>
                           </Box>
                         </Box>
                         <Box display="flex" alignItems="center">
                           <IconButton
+                            disabled={loading}
                             onClick={() => {
                               setUploadedFile(null);
                             }}
