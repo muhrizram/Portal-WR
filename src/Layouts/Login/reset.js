@@ -13,7 +13,6 @@ import * as Yup from 'yup';
 import { useNavigate } from "react-router";
 
 
-
 const Reset = ({open, onClose}) => {
   const [dataPassword, setDataPassword] = useState({})
   const [showPassword, setShowPassword] = React.useState(false);
@@ -24,20 +23,37 @@ const Reset = ({open, onClose}) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  const [responsePasswordNotMatch,setresponsePasswordNotMatch] = useState('')
 
   const textPlease = 'Please Input'
   const Schemareset = Yup.object().shape({
-    password: Yup.string().min(8, "Password must be at least 8 characters").required(`${textPlease} Current Password`),
-    newPassword: Yup.string().min(8, "Password must be at least 8 characters").matches(
+    password: Yup.string()
+    .required(`${textPlease} Current Password`)
+    .min(8, "Password must be at least 8 characters")
+    .max(16, "Password must not exceed 16 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
+    ),
+    newPassword: Yup.string()
+      .required(`${textPlease} New Password`)
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must not exceed 16 characters")
+      .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
-      ).required(`${textPlease} New Password`),
-    confirmPassword: Yup.string().min(8, "Password must be at least 8 characters").matches(
+      ),
+    confirmPassword: Yup.string()
+      .required(`${textPlease} Confirm Password`)
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must not exceed 16 characters")
+      .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
-      ).required(`${textPlease} Confirm Password`),
-      notmatchpassword: Yup.string().required("HOHOHOO")
+      ),
+    notMatch: Yup.string()
+      .required(`New Password and Confirm Password doesn't match`),
+    ifMatch: Yup.string()
+      .required(`Current Password and New Password can't be match`)
   });
 
   const { handleSubmit, formState: { errors }, register } = useForm({
@@ -46,38 +62,31 @@ const Reset = ({open, onClose}) => {
 
   const handleReset = () => {
     try {
-      const res = client.requestAPI({
-        method: 'POST',
-        endpoint: `/auth/changePassword`,
-        data: dataPassword,
-        // isLogin: true
+      client.requestAPI({
+          method: 'POST',
+          endpoint: `/auth/changePassword`,
+          data: dataPassword,
       })
-      console.log("INI RES", res)
-      if (!res.isError) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshtoken')
-        setDataAlert({
-          severity: 'success',
-          open: true,
-          message: res.data.meta.message
-        })
-        setTimeout(() => {
-          navigate('/login')
-        }, 2000)
-      }else{
-        // localStorage.removeItem('refreshtoken')
-        // onClose
-        setDataAlert({
-          severity: 'error',
-          open: true,
-          message: res.error.meta.message
-        })       
-      }
-
+      .then(function(response){
+        if(response.isError){
+          console.log("Invalid current password")
+        }
+        else{
+          localStorage.removeItem('token')
+          localStorage.removeItem('refreshtoken')
+          setDataAlert({
+            severity: 'success',
+            open: true,
+            message: response.data.meta.message
+          })
+          setTimeout(() => {
+            navigate('/login')
+          }, 2000)
+        }
+    })
     }catch(error){
       console.error(error)
     }
-   
   };
 
   useEffect(() => {
@@ -110,7 +119,6 @@ const Reset = ({open, onClose}) => {
       </DialogContent>
 
       <DialogContent>
-      {/* <FormProvider {...methods}> */}
         <form onSubmit={handleSubmit()}>
           <div>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>
@@ -141,7 +149,7 @@ const Reset = ({open, onClose}) => {
               )
             }} 
             error={errors.password !== undefined}
-            helperText={errors.notmatchpassword ? errors.notmatchpassword.message : ''}
+            helperText={errors.password ? errors.password.message : ''}
           />
         </Grid>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>
@@ -172,7 +180,8 @@ const Reset = ({open, onClose}) => {
               )
             }} 
             error={errors.newPassword !== undefined}
-            helperText={errors.newPassword ? errors.newPassword.message : ''}
+            helperText={dataPassword.password === dataPassword.newPassword ? 
+              (errors.ifMatch ? errors.ifMatch.message : '')  : (errors.newPassword ? errors.newPassword.message : '')}
           />
         </Grid>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>
@@ -203,7 +212,9 @@ const Reset = ({open, onClose}) => {
               )
             }} 
             error={errors.confirmPassword !== undefined}
-            helperText={errors.confirmPassword ? errors.confirmPassword.message : ''}
+            helperText={
+              dataPassword.newPassword !== dataPassword.confirmPassword ? 
+              (errors.notMatch ? errors.notMatch.message : '')  : (errors.confirmPassword ? errors.confirmPassword.message : '')}
           />
         </Grid>
         
@@ -216,7 +227,6 @@ const Reset = ({open, onClose}) => {
       
         </div>
         </form>
-        {/* </FormProvider> */}
       </DialogContent>
 
     </Dialog>
