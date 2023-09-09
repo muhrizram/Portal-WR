@@ -22,8 +22,8 @@ const App = () => {
     }
   }, [userId])
   
-  const isRememberMe = localStorage.getItem("rememberMe");
   useEffect(() => {
+    const isRememberMe = localStorage.getItem("rememberMe");
     const clearLocalStorage = () => {
       localStorage.clear();
     };
@@ -34,7 +34,7 @@ const App = () => {
         window.removeEventListener("beforeunload", clearLocalStorage);
       };
     }
-  }, [isRememberMe]);
+  }, []);
 
   const [dataAlert, setDataAlert] = useState({
     severity: 'warning',
@@ -52,7 +52,7 @@ const App = () => {
 
   useEffect(() => {
     onCloseAlert()
-    // console.log('history: ')
+
   }, [location])
 
   return (
