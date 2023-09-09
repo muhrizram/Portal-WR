@@ -22,19 +22,19 @@ const App = () => {
     }
   }, [userId])
   
-  const isRememberMe = localStorage.getItem("rememberMe");
   useEffect(() => {
+    const isRememberMe = localStorage.getItem("rememberMe");
     const clearLocalStorage = () => {
       localStorage.clear();
     };
 
     if (isRememberMe === "false") {
-      window.addEventListener("beforeunload", clearLocalStorage);
+      window.addEventListener("unload", clearLocalStorage);
       return () => {
-        window.removeEventListener("beforeunload", clearLocalStorage);
+        window.removeEventListener("unload", clearLocalStorage);
       };
     }
-  }, [isRememberMe]);
+  }, []);
 
   const [dataAlert, setDataAlert] = useState({
     severity: 'warning',
@@ -51,8 +51,7 @@ const App = () => {
   const value = { dataAlert, setDataAlert, onCloseAlert };
 
   useEffect(() => {
-    onCloseAlert()
-    // console.log('history: ')
+    onCloseAlert();
   }, [location])
 
   return (
