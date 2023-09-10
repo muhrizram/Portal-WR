@@ -158,6 +158,7 @@ const MasterCompany = () => {
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,
+      page: event.target.value != "" ? 0 : filter.page,
       search: event.target.value
     })
   };
