@@ -34,7 +34,7 @@ const Reset = ({open, onClose}) => {
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password must not exceed 16 characters")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
       'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
     ),
     newPassword: Yup.string()
@@ -42,7 +42,7 @@ const Reset = ({open, onClose}) => {
       .min(8, "Password must be at least 8 characters")
       .max(16, "Password must not exceed 16 characters")
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ),
     confirmPassword: Yup.string()
@@ -50,7 +50,7 @@ const Reset = ({open, onClose}) => {
       .min(8, "Password must be at least 8 characters")
       .max(16, "Password must not exceed 16 characters")
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ),
     notMatch: Yup.string()
@@ -87,7 +87,7 @@ const Reset = ({open, onClose}) => {
         })
         setTimeout(() => {
           navigate('/login')
-        }, 2000)
+        }, 3000)
       }
   };
 
@@ -224,8 +224,8 @@ const Reset = ({open, onClose}) => {
       <DialogActions className="dialog-delete-actions">
         <Button onClick={onClose} variant='outlined' className='button-text'>Back</Button>
         <Button type= 'submit' 
-        onClick={handleReset} 
-        variant='contained' className='button-text'>Save Data</Button>
+          onClick={handleReset} 
+          variant='contained' className='button-text'>Save Data</Button>
       </DialogActions>
       
         </div>

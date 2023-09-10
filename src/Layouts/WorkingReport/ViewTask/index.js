@@ -12,11 +12,8 @@ import CreateIcon from "@mui/icons-material/Create";
 import PopupTask from "../PopupTask";
 import client from "../../../global/client";
 
-import TabsMenuWR from "../tabMenu";
-
 export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask}) {
   const [openTask, setOpenTask] = useState(false);
-  const [value, setValue] = React.useState("one");
   const [taskData, setTaskData] = useState([]);
   const [beforeThanToday, setBeforeThanToday] = useState(false);  
   
@@ -34,10 +31,6 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
         setBeforeThanToday(false)        
       }
     }
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
   };
 
   const getStatusColor = (status) => {
@@ -68,7 +61,6 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
         method: "GET",
         endpoint: `/task/detail?wrId=${WrIdDetail}`        
       });
-      console.log("res", res.data);
       setTaskData(res.data);      
     } catch (error) {
       console.error("Error fetching task details:", error);
@@ -78,16 +70,16 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
   return (
     <>
      <Grid container spacing={2}>      
-          <Grid item xs={12}>
-            <Box sx={{ width: "100%" }}>
-              <Tabs value={value} onChange={handleChange}>
-                <Tab value="one" label="Regular Task" />
-                <Tab value="two" label="Overtime Task" />
-              </Tabs>
-            </Box>
-          </Grid>
+      {/* <Grid item xs={12}>
+        <Box sx={{ width: "100%" }}>
+          <Tabs value={value} onChange={handleChange}>
+            <Tab value="one" label="Regular Task" />
+            <Tab value="two" label="Overtime Task" />
+          </Tabs>
+        </Box>
+      </Grid> */}
       {taskData ? (<>      
-          {taskData.map((task) => (
+        {taskData.map((task) => (
         <React.Fragment key={task.id}>
           <Grid item xs={12}>
             <Card>

@@ -148,7 +148,6 @@ const DetailCompany = () => {
         createdBy: parseInt(localStorage.getItem('userId')),
         lastModifiedBy: parseInt(localStorage.getItem('userId')),
       }
-      console.log(data)
       const res = await client.requestAPI({
         method: 'PUT',
         endpoint: `/company/${companyId}`,

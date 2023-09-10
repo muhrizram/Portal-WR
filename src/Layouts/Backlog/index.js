@@ -129,7 +129,6 @@ const Backlog = () => {
       method: 'GET',
       endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
-    console.log(res)
     rebuildData(res)
   }
 

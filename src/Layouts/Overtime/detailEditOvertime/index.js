@@ -68,13 +68,13 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusH
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
             <Tab value="one" label="Overtime Task" />
           </Tabs>
         </Box>
-      </Grid>
+      </Grid> */}
 
       {detail.attributes ? (<>
         {detail.attributes.listProject.map((item) => (

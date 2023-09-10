@@ -114,7 +114,6 @@ const MasterCompany = () => {
       method: 'GET',
       endpoint: `/company?page=${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}&size=${filter.size}`
     })
-    console.log(res)
     if (!res.isError) {
       rebuildData(res)
     } else {
