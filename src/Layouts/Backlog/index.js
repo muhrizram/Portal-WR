@@ -129,7 +129,6 @@ const Backlog = () => {
       method: 'GET',
       endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
-    console.log(res)
     rebuildData(res)
   }
 
@@ -193,6 +192,7 @@ const Backlog = () => {
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,
+      page: event.target.value != "" ? 0 : filter.page,
       search: event.target.value
     });
   }

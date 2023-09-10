@@ -81,10 +81,6 @@ export default function WorkingReport() {
 
   useEffect(() => {
     setonOtherUser(false)
-    if(!HrsetIdemployee) {
-      getData();
-    }
-    
     localStorage.removeItem("companyId");
     let listRoles = localStorage.getItem("roles");
     let roles = JSON.parse(listRoles)
@@ -93,42 +89,40 @@ export default function WorkingReport() {
       if(role.roleName == 'HRD') {
         setIsHr(true)
       }
-    }    
-  }, [filter,HrsetIdemployee]);
+    }
+    getData();    
+  }, [filter, JSON.stringify(selectedUser)]);
 
-  const updateStatusHr = (newValue) => {    
+  const updateStatusHr = (newValue) => {  
     if(newValue === null){      
       setonStatusHr(false)
+      setSelectedUser(null)
+      setHrsetIdemployee(null)
     }else{
-      setonStatusHr(true)
+      const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === newValue));
+      if (user) {
+        setonStatusHr(true)
+        setSelectedUser(user)
+        getDetailData(user.id)
+        setHrsetIdemployee(user.id)
+      }
     }
   }
 
-  const updateFilterDates = (newActiveMonth,value) => {
-    if(value){      
-      const newEndDate = moment(newActiveMonth).endOf("month").toDate();
-      setFilter({
-        startDate: filter.startDate,
-        endDate: newEndDate,
-      });
-    }else{
-      const newStartDate = moment(newActiveMonth).startOf("month").toDate();      
-      setFilter({
-        startDate: newStartDate,
-        endDate: filter.endDate,
-      });
-    }    
-    getData(HrsetIdemployee);
+  const updateFilterDates = (newActiveMonth) => {
+    const newEndDate = moment(newActiveMonth).endOf("month").toDate();
+    const newStartDate = moment(newActiveMonth).startOf("month").toDate();    
+    setFilter({
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
+    getData();
   };
 
-  const getData = async (id = null) => {    
+  const getData = async () => {    
     let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
-
-    if(id !== null) {
-      endpoint += `/${id}`
-    }else if(isHr == false) {
-      endpoint += `/${currentUserId}`
-    }
+    const idUser = selectedUser ? selectedUser.id : currentUserId
+    endpoint += `/${idUser}`
     const res = await client.requestAPI({
       method: "GET",
       endpoint: endpoint,
@@ -145,7 +139,7 @@ export default function WorkingReport() {
 
     const resUser = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/employee/${currentUserId}`,
+      endpoint: `/users/employee/${idUser}`,
     });
     if (!resUser.isError) {            
       const data = {
@@ -154,7 +148,7 @@ export default function WorkingReport() {
         role: resUser.data.attributes.role.join(', '),
         email: resUser.data.attributes.email,        
       };
-      setUserProfile(data)
+      setUserProfile({...data})
     } else {
       setDataAlert({
         severity: "error",
@@ -236,9 +230,9 @@ export default function WorkingReport() {
             presenceName: value.attributes.listDate.presenceName,
           };      
     });    
-    if(selectedUser == null){
-      setData([])
-    }
+    // if(selectedUser == null){
+    //   setData([])
+    // }
     setData([...temp]);
   };
 
@@ -288,7 +282,7 @@ export default function WorkingReport() {
           setIsCheckOut={() => {
             setIsViewTask(false);
             setIsCheckOut(true);
-          }}          
+          }}
           WrIdDetail={WrIdDetail}
           dataAll={data}
           onStatusHr={onStatusHr}
@@ -305,62 +299,7 @@ export default function WorkingReport() {
         setonOtherUser={setonOtherUser}
         />
       )
-    }
-      else {
-        // {
-        //   isHr ? (
-        //     // selectedUser == null ? (
-        //     //   dom = (<Grid
-        //     //     container
-        //     //     item
-        //     //     xs={12}
-        //     //     minHeight="600px"
-        //     //     alignContent="center"
-        //     //     alignItems="center"
-        //     //     display="flex"
-        //     //     justifyContent="center"
-        //     //     textAlign="center"
-        //     //   >
-        //     //     <Grid item xs={12} pb={3.75}>
-        //     //       <img src={blanktable} alt="blank-table" />
-        //     //     </Grid>
-        //     //     <Grid item xs={12}>
-        //     //       <Typography variant="noDataTable">
-        //     //         Sorry, the data you are looking for could not be found.
-        //     //       </Typography>
-        //     //     </Grid>
-        //     //   </Grid>)
-        //     // ) : (nge
-        //       dom = (<Calendar
-        //         setOnClick={(param) => {
-        //           const _data = data.find(
-        //             (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-        //           );
-        //           onAttendence(_data);
-        //         }}
-        //         setIsViewTask={setIsViewTask}
-        //         setIsViewOvertime={setIsViewOvertime}
-        //         events={data}
-        //         setWrIdDetail={setWrIdDetail}
-        //         updateFilterDates={updateFilterDates}
-        //       />)
-        //     // )
-        //   ) : (
-        //     dom = (<Calendar
-        //       setOnClick={(param) => {
-        //         const _data = data.find(
-        //           (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-        //         );
-        //         onAttendence(_data);
-        //       }}
-        //       setIsViewTask={setIsViewTask}
-        //       setIsViewOvertime={setIsViewOvertime}
-        //       events={data}
-        //       setWrIdDetail={setWrIdDetail}
-        //       updateFilterDates={updateFilterDates}
-        //     />)
-        //   )
-        // }
+    } else {
         dom = <Calendar
           setOnClick={(param) => {
             const _data = data.find(
@@ -425,16 +364,6 @@ export default function WorkingReport() {
     }));
     setFilteredNames(data);
   };
-
-  const handleOptionSelectUser = (event, value) => {    
-    const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === value));
-    if (user) {
-      setSelectedUser(user)
-      getDetailData(user.id)
-      getData(user.id);
-      setHrsetIdemployee(user.id)
-    }
-  };  
 
   const handleReset = () => {
     // navigate('/reset-password')
@@ -512,9 +441,6 @@ export default function WorkingReport() {
                       onChange={(e) => {                        
                         handleSearchChange(e.target.value)
                       }}
-                      onSelect={(e) => {                        
-                        handleOptionSelectUser('' ,e.target.value)
-                      }}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
@@ -526,9 +452,7 @@ export default function WorkingReport() {
                     />
                   )}
                   renderOption={(props, option) => (
-                    <Box
-                      onClick={(event) => handleOptionSelectUser(event, option)}
-                    >
+                    <Box key={`${option}-auto-user`}>
                       <Typography variant="body1" {...props} style={{ padding: '8px', marginLeft: '8px' }}>
                         {option}
                       </Typography>

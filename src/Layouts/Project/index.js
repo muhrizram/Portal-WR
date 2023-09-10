@@ -165,7 +165,6 @@ export default function Project() {
         loading={loading}
         placeSearch="Project Name"
         searchTitle="Search By"
-        onButtonClick={() => console.log("on click")}
         handleChangeSearch={handleChangeSearch}
         onDetail={(id) => redirectDetail(id)}
         onFilter={(dataFilter => onFilter(dataFilter))}

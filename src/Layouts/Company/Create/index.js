@@ -88,7 +88,6 @@ const CreateCompany = () => {
           createdBy: parseInt(localStorage.getItem('userId')),
           lastModifiedBy: parseInt(localStorage.getItem('userId'))
         }
-        console.log("data", data)
         const res = await client.requestAPI({
           method: 'POST',
           endpoint: '/company/addCompany',
@@ -187,11 +186,13 @@ const CreateCompany = () => {
                             name='companyProfile'
                             onChange={handleChange}
                           />
+                          {file !== '' ?
                           <IconButton
                             onClick={clearPhoto}>
                             <ClearOutlinedIcon  item xs={2} className='button-clear'
                             />
                           </IconButton>
+                          : ''}
                         </Grid>
                         <Grid item xs={12} mt={1}>
                           <Typography variant='titleTextWarningUpload'>

@@ -148,7 +148,6 @@ const DetailCompany = () => {
         createdBy: parseInt(localStorage.getItem('userId')),
         lastModifiedBy: parseInt(localStorage.getItem('userId')),
       }
-      console.log(data)
       const res = await client.requestAPI({
         method: 'PUT',
         endpoint: `/company/${companyId}`,
@@ -262,12 +261,14 @@ const DetailCompany = () => {
                               className="custom-file-input"
                               onChange={handleChange}
                             />
+                            {file !== '' ?
                             <IconButton
                               onClick={clearPhoto}>
                               <ClearOutlinedIcon  item xs={2} className='button-clear'
                                 // style={{marginLeft: '50px'}}
                               />
                             </IconButton>
+                            : ''}
                           </Grid>
                         }
                         {isEdit && 
