@@ -130,9 +130,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );
-      console.log('data: ', info.date)
-      console.log('data libur: ', datalibur)
-      console.log('event: ', events)
       if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>

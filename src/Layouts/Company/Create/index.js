@@ -88,7 +88,6 @@ const CreateCompany = () => {
           createdBy: parseInt(localStorage.getItem('userId')),
           lastModifiedBy: parseInt(localStorage.getItem('userId'))
         }
-        console.log("data", data)
         const res = await client.requestAPI({
           method: 'POST',
           endpoint: '/company/addCompany',

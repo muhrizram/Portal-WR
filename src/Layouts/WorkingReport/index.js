@@ -93,8 +93,7 @@ export default function WorkingReport() {
     getData();    
   }, [filter, JSON.stringify(selectedUser)]);
 
-  const updateStatusHr = (newValue) => { 
-    console.log('new value: ',newValue)   
+  const updateStatusHr = (newValue) => {  
     if(newValue === null){      
       setonStatusHr(false)
       setSelectedUser(null)

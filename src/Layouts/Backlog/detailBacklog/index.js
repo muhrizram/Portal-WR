@@ -345,8 +345,7 @@ const DetailBacklog = () => {
 
   useEffect(() => {
     getProjectName()
-    getDataDetail()  
-    console.log("cek init", valueproject)  
+    getDataDetail()
   }, [valueproject])
 
   const getDataDetail = async () => {
@@ -354,8 +353,7 @@ const DetailBacklog = () => {
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/backlog/${idDetail}`
-    })    
-    console.log(res)
+    })
     rebuildDataDetail(res)
   };
 
@@ -495,8 +493,6 @@ const DetailBacklog = () => {
           endpoint: `/backlog/${taskObject.id}`,
           data: taskObject,
         });
-        console.log("data", taskObject)
-        console.log("res", res)
         if(!res.isError){
           setDataAlert({
             severity: 'success',
@@ -563,11 +559,10 @@ const DetailBacklog = () => {
                       if (!newValue) {                    
                         setAddTask(false);
                         setValueproject()
-                      }
-                      else{
+                      }else{
                         setValueproject(parseInt(newValue.id));
-                        setInitialProject(newValue.projectInitial)  }
-                        console.log("id project", setValueproject(parseInt(newValue.id)))
+                        setInitialProject(newValue.projectInitial)
+                      }
                     }}
                     renderInput={(params) => (
                       <TextField {...params} label="Project Name *" placeholder="Select Backlog" />

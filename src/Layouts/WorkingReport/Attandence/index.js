@@ -13,7 +13,6 @@ import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
 const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance, setAttendanceView}) => {
-  console.log('data period: ', dataPeriod)
   const listLocation = [
     {
       label: "Work From Home",

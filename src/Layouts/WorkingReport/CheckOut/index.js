@@ -22,8 +22,8 @@ import { AlertContext } from "../../../context";
 import moment from "moment";
 
 export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
-  const [lat, setLat] = useState();
-  const [lon, setLon] = useState();
+  const [lat, setLat] = useState('');
+  const [lon, setLon] = useState('');
   const date = new Date();   
   const videoConstraints = {
     width: 622,
@@ -31,7 +31,7 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
     facingMode: "user",
   };
   const webcamRef = React.useRef(null);
-  const [picture, setPicture] = useState("");
+  const [picture, setPicture] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
 
   const capture = React.useCallback(() => {
@@ -44,25 +44,26 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
     // URL.createObjectURL(blob)
     const result = await uploadFile(file, 'absence');
     const body ={
-      workingReportId :workingReportTaskId ,
-      latitude : lat,
-      longitude : lon,
-      file : result
-    }    
+      workingReportId: workingReportTaskId ,
+      latitude: lat,
+      longitude: lon,
+      file: result,
+      // startTime: '08:00:00',
+      // endTime: '17:00:00',
+    }
     const res = await client.requestAPI({
-      endpoint: `/workingReport/checkOut?wrId=${localStorage.getItem(
-        "workingReportId"
-      )}&fileName=${result}`,
+      endpoint: `/workingReport/checkOut?wrId=${workingReportTaskId}&fileName=${result}&latitude=${lat}&longitude=${lon}`,
       method: "PUT",
-      data : body
     });
     if (!res.isError) {
-      setIsCheckin(false);
       setDataAlert({
         severity: "success",
         open: true,
-        message: res.data.meta.message,
+        message: res.meta.message,
       });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000)
     } else {
       setDataAlert({
         severity: "error",
@@ -74,8 +75,8 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
 
   useEffect(()=>{    
     navigator.geolocation.getCurrentPosition((position) => {
-      setLat(position.coords.latitude);
-      setLon(position.coords.longitude);
+      setLat(position.coords.latitude.toString());
+      setLon(position.coords.longitude.toString());
     });
   },[])
 
@@ -98,7 +99,7 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
               <Grid item xs={12} display="flex" justifyContent="center">
                 <Typography>Snap a photo to record attendance</Typography>
               </Grid>
-              {picture !== "" ? (
+              {picture ? (
                 <Avatar
                   src={picture}
                   variant="square"
@@ -121,7 +122,7 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
                 <Grid item xs={12} display="flex" justifyContent="center">
                   <Button
                     onClick={() => {
-                      if (picture === "") capture();
+                      if (!picture) capture();
                     }}
                     variant="contained"
                     startIcon={<PhotoCameraIcon />}
@@ -133,7 +134,7 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      setPicture("");
+                      setPicture(null);
                     }}
                     startIcon={<ReplayIcon />}
                   >
@@ -146,14 +147,14 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
                       <Button
                         variant="outlined"
                         onClick={() => {
-                          setPicture("");
+                          setPicture(null);
                         }}
                       >
                         Back
                       </Button>
                     </Grid>
                     <Grid item xs={2} display="flex" alignItems="center">
-                      <Button variant="contained" disabled={picture.length === 0} onClick={() => checkIn()}>
+                      <Button variant="contained" disabled={!picture} onClick={() => checkIn()}>
                         Check Out
                       </Button>
                     </Grid>

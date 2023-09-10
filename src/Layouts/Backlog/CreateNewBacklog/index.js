@@ -466,8 +466,7 @@ useEffect(() => {
                     options={ProjectName}
                     sx={{ width: "100%", marginTop: "8px" }}
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
-                    onChange={(event, newValue) => {            
-                      console.log("ini value", newValue)
+                    onChange={(event, newValue) => {
                       if (!newValue) {                                              
                         setTasks([])
                         setAddTask(false);
