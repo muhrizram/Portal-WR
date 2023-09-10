@@ -60,13 +60,19 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   
   const navigateNextMonth = () => {    
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
-    updateFilterDates(moment(activeMonth).add(1, "month").toDate(), true);
+    updateFilterDates(moment(activeMonth).add(1, "month").toDate());
   };
   
   const navigatePreviousMonth = () => {    
     setActiveMonth(moment(activeMonth).subtract(1, "month").toDate());
-    updateFilterDates(moment(activeMonth).subtract(1, "month").toDate(),false);
+    updateFilterDates(moment(activeMonth).subtract(1, "month").toDate());
   };
+
+  const navigateCurrent = () => {
+    const currentDate = new Date()
+    setActiveMonth(currentDate)
+    updateFilterDates(moment(currentDate).toDate());
+  }
 
   const CustomButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
@@ -74,19 +80,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   fontSize: '14px',
   lineHeight: '100%',
   borderColor: 'black', 
-  marginRight: '10vh',
-  marginTop: '2vh',  
+  marginRight: '4vh',
+  marginTop: '0.8vh',  
   borderRadius:6
-  }));
-
-  const CustomButtonDisabledovertime = styled(Button)(({ theme }) => ({
-    textTransform: "none",
-    width: "40%",
-    padding: "6px 16px",
-    fontSize: "14px",
-    lineHeight: "125%",
-    borderRadius: "6px",
-    borderColor: "black",
   }));
 
   function handleClose() {
@@ -134,6 +130,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );
+      console.log('data: ', info.date)
+      console.log('data libur: ', datalibur)
+      console.log('event: ', events)
       if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
@@ -340,7 +339,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
               <IconButton color="primary" onClick={navigatePreviousMonth}>
                 <KeyboardArrowLeftIcon />
               </IconButton>
-              <Button onClick={() => setActiveMonth(new Date())}>
+              <Button onClick={() => navigateCurrent()}>
                 Today
               </Button>
               <IconButton color="primary" onClick={navigateNextMonth}>

@@ -63,39 +63,32 @@ const Reset = ({open, onClose}) => {
     resolver: yupResolver(Schemareset),
   });
 
-  const handleReset = () => {
-    try {
-      client.requestAPI({
-          method: 'POST',
-          endpoint: `/auth/changePassword`,
-          data: dataPassword,
-      })
-      .then(function(response){
-        console.log("res", response)
-        if(response.isError){ 
-          console.error("Invalid current password")
-          // setDataAlert({
-          //   severity: 'error',
-          //   open: true,
-          //   message: response.error.meta.message
-          // })
-        }
-        else{
-          localStorage.removeItem('token')
-          localStorage.removeItem('refreshtoken')
-          setDataAlert({
-            severity: 'success',
-            open: true,
-            message: response.meta.message
-          })
-          setTimeout(() => {
-            navigate('/login')
-          }, 2000)
-        }
+  const handleReset = async () => {
+    const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: `/auth/changePassword`,
+        data: dataPassword,
     })
-    }catch(error){
-      console.error(error)
-    }
+      if(res.isError){ 
+        console.error("Invalid current password")
+        setDataAlert({
+          severity: 'error',
+          open: true,
+          message: res.error.meta.message
+        })
+      }
+      else{
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshtoken')
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.meta.message
+        })
+        setTimeout(() => {
+          navigate('/login')
+        }, 2000)
+      }
   };
 
   useEffect(() => {
