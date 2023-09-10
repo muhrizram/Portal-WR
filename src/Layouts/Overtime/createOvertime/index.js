@@ -681,8 +681,10 @@ const onSave = async () => {
             <TimePicker
               label="End Time"
               value={endTime}
-              onChange={(end) => {setEndTime(end.format("HH:mm"))
-                setIsLocalizationFilled(true)}}
+              onChange={(end) => {
+                setEndTime(end.format("HH:mm:ss"))
+                setIsLocalizationFilled(true)
+              }}
               ampm={false}
             />
             </DemoContainer>
