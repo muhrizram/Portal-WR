@@ -261,12 +261,14 @@ const DetailCompany = () => {
                               className="custom-file-input"
                               onChange={handleChange}
                             />
+                            {file !== '' ?
                             <IconButton
                               onClick={clearPhoto}>
                               <ClearOutlinedIcon  item xs={2} className='button-clear'
                                 // style={{marginLeft: '50px'}}
                               />
                             </IconButton>
+                            : ''}
                           </Grid>
                         }
                         {isEdit && 
