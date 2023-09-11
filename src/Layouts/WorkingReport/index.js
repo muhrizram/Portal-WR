@@ -282,7 +282,7 @@ export default function WorkingReport() {
           setIsCheckOut={() => {
             setIsViewTask(false);
             setIsCheckOut(true);
-          }}          
+          }}
           WrIdDetail={WrIdDetail}
           dataAll={data}
           onStatusHr={onStatusHr}

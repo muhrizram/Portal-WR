@@ -75,15 +75,46 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   }
 
   const CustomButton = styled(Button)(({ theme }) => ({
-  textTransform: 'none',
-  padding: '6px 16px',
-  fontSize: '14px',
-  lineHeight: '100%',
-  borderColor: 'black', 
-  marginRight: '4vh',
-  marginTop: '0.8vh',  
-  borderRadius:6
-  }));
+    textTransform: 'none',
+    padding: '6px 16px',
+    fontSize: '14px',
+    lineHeight: '100%',
+    borderColor: 'black', 
+    // marginRight: '10vh',
+    marginTop: '2vh',  
+    borderRadius:6
+    }));
+  
+    const CustomButtonDisabledTask = styled(Button)(({ theme }) => ({
+      textTransform: 'none',
+      padding: '6px 16px',
+      fontSize: '14px',
+      lineHeight: '100%',
+      borderColor: 'black', 
+      marginRight: '3vh',
+      marginTop: '10vh',  
+      borderRadius:6
+      }));
+  
+      const CustomButtonHoliday = styled(Button)(({ theme }) => ({
+        textTransform: "none",
+        fontSize: "14px",
+        color: "#CB3A31",            
+        background: "#FFF4F2",
+        borderColor: "black",
+        marginTop: "9vh",
+        }));
+  
+    const CustomButtonDisabledovertime = styled(Button)(({ theme }) => ({
+      textTransform: "none",
+      width: "40%",
+      padding: "6px 16px",
+      fontSize: "14px",
+      lineHeight: "125%",
+      borderRadius: "6px",
+      borderColor: "black",
+    }));
+  
 
   function handleClose() {
     setOpen(false);
@@ -129,7 +160,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))      
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-      );
+      );      
       if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
@@ -151,10 +182,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </Button>
                           ) : !datalibur && !isWeekend(info.date) && data.presenceName && (
                           <Button
-                            variant="outlined-attedance"
-                            // onClick={() => {
-                            //   setOnClick(info)}  
-                            // }
+                            variant="outlined-attedance"    
                           >
                             {data.presenceName}
                           </Button>
@@ -162,11 +190,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         }
                         </Grid>
                         <Grid>
-                          {moment(info.date).isSameOrBefore(currentDate) && (
+                          {moment(info.date).isSameOrBefore(currentDate) && !onStatusHr ? (
                           <CustomButton
                             variant="outlined-warning"
                             onClick={
-                              data.overtime == true || onStatusHr ? () => {
+                              data.overtime == true ? () => {
                                 setId(data.workingReportOvertimeId)
                                 setWrIdDetail(data.workingReportOvertimeId);
                                 setIsViewOvertime(true);
@@ -179,24 +207,51 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               }
                              }
                           >
-                            {data.overtime == true || onStatusHr ? "View Overtime" : "Overtime"}
+                            {data.overtime == true ? "View Overtime" : "Overtime"}
+                          </CustomButton>
+                          ) : moment(info.date).isSameOrBefore(currentDate) && onStatusHr && data.overtime && (
+                            <CustomButton
+                            variant="outlined-warning"
+                            onClick={() => {
+                              setId(data.workingReportOvertimeId)
+                              setWrIdDetail(data.workingReportOvertimeId);
+                              setIsViewOvertime(true);
+                              setonOtherUser(true)
+                              }
+                             }
+                          >
+                            {"View Overtime" }
                           </CustomButton>
                           )}
                         </Grid>
                         {isWeekend(info.date) || datalibur ? (
                           <Grid justifyContent="left">
-                            <Button variant="outlined-holiday" onClick={
-                              () => {
-                              setdescHoliday(data.descHoliday)
-                              setTanggalHoliday(data.tanggal);
-                              setDialogOpenHoliday(true);
-                              }}
-                            >
-                              holiday
-                            </Button>
+                            {moment(info.date).isSameOrBefore(currentDate) ? (
+                                <Button variant="outlined-holiday" onClick={
+                                  () => {
+                                  setdescHoliday(data.descHoliday)
+                                  setTanggalHoliday(data.tanggal);
+                                  setDialogOpenHoliday(true);
+                                  }}
+                                >
+                                  holiday
+                                </Button>
+                              ) : (
+                                <CustomButtonHoliday variant="outlined-holiday" onClick={
+                                  () => {
+                                  setdescHoliday(data.descHoliday)
+                                  setTanggalHoliday(data.tanggal);
+                                  setDialogOpenHoliday(true);
+                                  }}
+                                >
+                                  holiday
+                                </CustomButtonHoliday>
+                              )
+                            }
+
                           </Grid>
                         ) : (
-                          data.workingReportTaskId ? (
+                          data.workingReportTaskId && !onStatusHr ? (
                             <CustomButton variant="outlined-task" onClick={
                               data.task
                               ? () => {
@@ -220,9 +275,29 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               task
                             </CustomButton>
                           ) : (
-                            <CustomButton disabled variant="outlined" >
+                            data.task ? (
+                              <CustomButton variant="outlined-task" onClick={
+                                () => {
+                                  setId({
+                                    workingReportTaskId: data.workingReportTaskId,
+                                    absenceId: data.absenceId,
+                                  });
+                                  setWrIdDetail(data.workingReportTaskId);
+                                  setIsViewTask(true);
+                                  setonOtherUser(true)
+                                }
+                              }>
+                                task
+                              </CustomButton>
+                            ) : moment(info.date).isSameOrBefore(currentDate) ? (                            
+                              <CustomButton disabled variant="outlined" >
+                                task
+                              </CustomButton>
+                            ) : (
+                            <CustomButtonDisabledTask disabled variant="outlined" >
                               task
-                            </CustomButton>
+                             </CustomButtonDisabledTask>  
+                            )
                           )
                         )}
                       </>
@@ -231,10 +306,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 </Grid>   
             {data ? 
               <> 
-                <Grid item xs={12} display="flex" justifyContent="left" sx={{ marginRight: "4vh", marginTop: "0.8vh", flexDirection: "column" }}>                
+                <Grid item display="flex" justifyContent="left" sx={{ marginTop: "0.8vh", flexDirection: "column" }}>
                 {info.isToday && !data.workingReportTaskId && !isWeekend(info.date) && !onStatusHr ? (
                   <Button                    
-                    variant="outlined-attedance-today"
+                    variant="outlined-attedance"
                     onClick={() => {
                       setOnClick(info)}  
                     }
@@ -243,8 +318,8 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   </Button>
                 ) : null            
                 }
-                {info.isToday ? (
-                  <Button                  
+                {info.isToday && !onStatusHr ? (
+                  <CustomButton                  
                     variant="outlined-warning"
                     onClick={
                       data.overtime == true ?() => {
@@ -260,12 +335,12 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     }
                   >
                     {data.overtime == true ? "View Overtime" : "Overtime"}
-                  </Button>
+                  </CustomButton>
                 ): null}
                 {info.isToday && !isWeekend(info.date) ? (
                   <>
                   {data.workingReportTaskId ? (
-                    <Button                    
+                    <CustomButton                    
                     variant={"outlined-task"}
                     onClick={                      
                       data.task || onStatusHr
@@ -287,24 +362,43 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                       }
                     >
                     task
-                    </Button>
-                   ) : (
-                    <CustomButton disabled variant="outlined" >
-                      task
                     </CustomButton>
-                    )}
+                    ) : moment(info.date).isSameOrBefore(currentDate) ? (                            
+                      <CustomButton disabled variant="outlined" >
+                        task
+                      </CustomButton>
+                      ) : (
+                      <CustomButtonDisabledTask disabled variant="outlined" >
+                        task
+                      </CustomButtonDisabledTask>  
+                      )
+                    }
                   </>                                   
                 ) : (info.isToday && isWeekend(info.date) && (
                     <Grid justifyContent="left">
-                      <Button variant="outlined-holiday" onClick={
-                        () => {
-                        setdescHoliday(data.descHoliday)
-                        setTanggalHoliday(data.tanggal);
-                        setDialogOpenHoliday(true);
-                        }}
-                      >
-                        holiday
-                      </Button>
+                      {moment(info.date).isSameOrBefore(currentDate) ? (
+                        <Button variant="outlined-holiday" onClick={
+                          () => {
+                          setdescHoliday(data.descHoliday)
+                          setTanggalHoliday(data.tanggal);
+                          setDialogOpenHoliday(true);
+                          }}
+                        >
+                          holiday
+                        </Button>
+                      ) : (
+                        <CustomButtonHoliday variant="outlined-holiday" onClick={
+                          () => {
+                          setdescHoliday(data.descHoliday)
+                          setTanggalHoliday(data.tanggal);
+                          setDialogOpenHoliday(true);
+                          }}
+                        >
+                          holiday
+                        </CustomButtonHoliday>
+                      )
+                    }
+
                     </Grid>
                     )                                     
                   )

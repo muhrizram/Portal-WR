@@ -204,7 +204,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
               Back
             </Button>
           </Grid>
-            {!onStatusHr 
+            {!onStatusHr && beforeThanToday
               && (       
                 <>
               <Grid item>
@@ -237,7 +237,26 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
         closeTask={() => setOpenTask(false)}
         dataDetail={taskData}        
       />    
-      </>) : (<><h1>No DATA</h1> </>)        
+      </>) : (<><h1>No DATA</h1> 
+      
+      <Grid item xs={12}>
+          <Grid container justifyContent="center" spacing={2}>
+            <Grid item>
+              <Button 
+                variant="outlined"
+                className="button-text"
+                color="error"
+                onClick={() => {
+                  setIsViewTask()
+                  setonOtherUser(false)
+                }
+                  }>
+                Back
+              </Button>
+            </Grid>          
+          </Grid>
+        </Grid>       
+      </>)        
     }    
       </Grid>
     </>

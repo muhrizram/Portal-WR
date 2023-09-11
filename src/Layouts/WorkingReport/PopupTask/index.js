@@ -387,7 +387,7 @@ const PopupTask = ({
                         className='autocomplete-input autocomplete-on-popup'                       
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {
-                        if (newValue) {
+                        if (newValue) {                          
                           getlistTaskProject(newValue.id)                  
                           handleChangeProject(newValue, idxProject, newValue.absen)                       
                           setCekabsen((prevCekAbsen) => {
@@ -463,7 +463,10 @@ const PopupTask = ({
                         </> ) : (
                         <>
                           {resProject.listTask.map((res, index) => (
-                            <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                            <Accordion
+                             key={res.id}
+                             onChange={() => getlistTaskProject(resProject.projectId)} 
+                             sx={{ boxShadow: 'none', width: '100%' }}>
                               <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 className='header-accordion'
