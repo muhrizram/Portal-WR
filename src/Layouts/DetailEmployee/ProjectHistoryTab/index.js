@@ -7,7 +7,6 @@ import blanktable from "../../../assets/blanktable.png";
 const ProjectHistoryTab = ({ id }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
-  const [dataColumns, setDataColumns] = useState([]);
   const [data, setData] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [loading, setLoading] = useState(false);
