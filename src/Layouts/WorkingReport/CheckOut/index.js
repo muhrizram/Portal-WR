@@ -21,7 +21,7 @@ import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
 
-export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
+export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTaskId}) {
   const [lat, setLat] = useState('');
   const [lon, setLon] = useState('');
   const date = new Date();   
@@ -148,6 +148,7 @@ export default function CheckOut({ setIsCheckin , workingReportTaskId}) {
                         variant="outlined"
                         onClick={() => {
                           setPicture(null);
+                          setIsCheckOut()
                         }}
                       >
                         Back

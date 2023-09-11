@@ -41,6 +41,7 @@ export default function WorkingReport() {
   const [HrsetIdemployee,setHrsetIdemployee] = useState()
   const [onStatusHr,setonStatusHr] = useState(false)
   const [onOtherUser,setonOtherUser] = useState(false)
+  const [StatusSearch,setStatusSearch] = useState(false)
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -90,7 +91,7 @@ export default function WorkingReport() {
         setIsHr(true)
       }
     }
-    getData();    
+    getData();
   }, [filter, JSON.stringify(selectedUser)]);
 
   const updateStatusHr = (newValue) => {  
@@ -274,6 +275,10 @@ export default function WorkingReport() {
       dom = (
         <CheckOut
           workingReportTaskId={WrIdDetail}
+          setIsCheckOut={() => {
+            setIsViewTask(true);
+            setIsCheckOut(false);
+          }}
         />
       );
     } else if (isViewTask) {      
@@ -288,6 +293,7 @@ export default function WorkingReport() {
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
           setIsViewTask={() => setIsViewTask(false)}
+          StatusSearch={StatusSearch}
         />
       );
     } else if (isViewOvertime) {
@@ -345,11 +351,13 @@ export default function WorkingReport() {
     downloadFormatFile(id, true, "/workingReport/download/toExcel?userId=")
   }
 
-  const handleSearchChange = async (searchValue) => {
+  const handleSearchChange = async (searchValue) => {    
     let idvalue;
     if(searchValue != null){
+      setStatusSearch(true)
       idvalue = searchValue
     }else{
+      setStatusSearch(false)
       idvalue = userProfile.id
     }
     const res = await client.requestAPI({

@@ -316,7 +316,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   >
                     Attendance
                   </Button>
-                ) : null            
+                ) : info.isToday && !datalibur && !isWeekend(info.date) && data.presenceName && (
+                  <Button
+                    variant="outlined-attedance"    
+                  >
+                    {data.presenceName}
+                  </Button>
+                  )             
                 }
                 {info.isToday && !onStatusHr ? (
                   <CustomButton                  
