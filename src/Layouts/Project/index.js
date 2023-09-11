@@ -39,6 +39,8 @@ export default function Project() {
   const { setDataAlert } = useContext(AlertContext);
   const [dataId, setDataId] = useState();
   const [data,setData] = useState([])
+  const [totalData, setTotalData] = useState()
+  const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -78,6 +80,7 @@ export default function Project() {
       method: 'GET',
       endpoint: `/project?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
     })
+    setLoading(true)
     if(!res.isError){      
       rebuildData(res)          
     }else {      
@@ -86,7 +89,8 @@ export default function Project() {
         message: res.error.meta.message,
         open: true
       })
-    }    
+    }  
+    setLoading(false)  
   }
 
   const rebuildData = (resData) => {
@@ -101,7 +105,8 @@ export default function Project() {
         clientName: value.attributes.clientName,  
       }
     })    
-    setData([...temp])    
+    setData([...temp]) 
+    setTotalData(resData.meta.page.totalElements)   
   }  
 
   const handleAdd = () => {
@@ -156,9 +161,10 @@ export default function Project() {
         title="Project"
         data={data}
         columns={columns}
+        totalData={totalData}
+        loading={loading}
         placeSearch="Project Name"
         searchTitle="Search By"
-        onButtonClick={() => console.log("on click")}
         handleChangeSearch={handleChangeSearch}
         onDetail={(id) => redirectDetail(id)}
         onFilter={(dataFilter => onFilter(dataFilter))}

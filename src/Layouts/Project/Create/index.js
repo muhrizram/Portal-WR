@@ -16,6 +16,7 @@ import {
   Autocomplete,
   TextField,
   IconButton,
+  InputLabel,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -33,6 +34,7 @@ import { AlertContext } from "../../../context";
 // import { options } from "@fullcalendar/core/preact";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
 import debounce from "@mui/utils/debounce";
+import dayjs from "dayjs";
 
 const CreateProject = () => {
   const [open, setOpen] = useState(false);
@@ -44,6 +46,7 @@ const CreateProject = () => {
   const [projectTypes, setOptProjectType] = useState([])
   // const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
+  const [isSelectRole, setIsSelectRole] = useState(false)
   const [selectedMember, setSelectedMember] = useState([])
   const [dataProject, setDataProject] = useState([]);
   const [startProject, setStartProject] = useState()
@@ -116,7 +119,7 @@ const CreateProject = () => {
                       }
                       return u;
                     });
-  
+
                     setData(prevData => ({
                       ...prevData,
                       listUser: updatedListUser
@@ -251,10 +254,10 @@ const CreateProject = () => {
     getOptRoles()
     getOptCompany()
     getOptDataUser('')
-    if(valueUser.length > 0) {
+    if(isSelectRole) {
       setIsInviteDisabled(false)
     }
-  }, [valueUser])
+  }, [isSelectRole])
 
 
   const handleInvite = () => {
@@ -322,7 +325,7 @@ const CreateProject = () => {
   const getOptDataUser = async (value) => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/teamMember?page=0&size=5&sort=nip,asc&search=${value}`
+      endpoint: `/ol/teamMember?page=0&size=&sort=nip,asc&search=${value}`
     })
     const data = res.data.map(item => ({
       id : parseInt(item.id),
@@ -462,6 +465,7 @@ const CreateProject = () => {
       })
     }
     setValueUser(temp)
+    setIsSelectRole(true)
   }
 
   const searchMember = (value) => {
@@ -492,37 +496,43 @@ const CreateProject = () => {
                       focused
                       name="projectName"
                       className="input-field-crud"
-                      placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                      placeholder="e.g Project Internal 79"
                       label="Project Name"
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <FormControl fullWidth>
-                      <Autocomplete
-                        disablePortal
-                        name="companyId"
-                        id="combo-box-demo"
-                        options={company}
-                        getOptionLabel={(option) => option.name}
-                        sx={{ width: "100%" }}
-                        onChange={(_event, newValue) => {
-                          if (newValue) {
-                            handleChange({ target: { name: 'companyId', value: newValue.companyId } }, newValue);
-                          }
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}                      
-                        renderInput={(params) => (
-                          <TextField {...params} label="Company Name" />
-                        )}
-                      />
-                    </FormControl>
+                  <FormControl fullWidth>
+                    <Autocomplete
+                      disablePortal
+                      name="companyId"
+                      id="combo-box-demo"
+                      options={company}
+                      getOptionLabel={(option) => option.name}
+                      sx={{ width: "100%" }}
+                      onChange={(_event, newValue) => {
+                        if (newValue) {
+                          handleChange({ target: { name: 'companyId', value: newValue.companyId } }, newValue);
+                        }
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}                      
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Company Name"
+                          placeholder="Select Company"
+                          InputLabelProps={{ shrink: true }}
+                        />
+                      )}
+                    />
+                  </FormControl>
+
                   </Grid>
                   <Grid item xs={6}>
                     <FormInputText
                       focused
                       name="picProjectName"
                       className="input-field-crud"
-                      placeholder="e.g Selfi Muji Lestari"
+                      placeholder="e.g John Doe"
                       label="PIC Project Name"
                     />
                   </Grid>
@@ -531,7 +541,7 @@ const CreateProject = () => {
                       focused
                       name="picProjectPhone"
                       className="input-field-crud"
-                      placeholder="e.g PT. Jalan Gatot Subroto no 122"
+                      placeholder="e.g 08123456789"
                       label="PIC Project Phone"
                     />
                   </Grid>
@@ -574,7 +584,7 @@ const CreateProject = () => {
                       focused
                       name="initialProject"
                       className="input-field-crud"
-                      placeholder="e.g Selfi Muji Lestari"
+                      placeholder="e.g T-PR-WR-001"
                       label="Initial Project"
                     />
                   </Grid>
@@ -583,7 +593,7 @@ const CreateProject = () => {
                       <Autocomplete
                         disablePortal
                         name="projectType"
-                        id="combo-box-demo"
+                        id="combo-box-demo" 
                         options={projectTypes}
                         getOptionLabel={(option) => option.name}
                         sx={{ width: "100%" }}
@@ -594,7 +604,11 @@ const CreateProject = () => {
                         }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         renderInput={(params) => (
-                          <TextField {...params} label="Project Type" />
+                          <TextField 
+                          {...params}
+                          label="Project Type"
+                          placeholder="Select Project Type"
+                          InputLabelProps={{ shrink: true }} />
                         )}
                       />
                     </FormControl>
@@ -604,7 +618,7 @@ const CreateProject = () => {
                       focused
                       name="projectDescription"
                       className="input-field-crud"
-                      placeholder="e.g PT. Jalan Gatot Subroto no 122"
+                      placeholder="e.g Project internal for Working Reports Employee"
                       label="Project Description"
                     />
                   </Grid>

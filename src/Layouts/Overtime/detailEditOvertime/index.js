@@ -12,7 +12,7 @@ import CreateOvertime from "../createOvertime";
 import client from '../../../global/client';
 
 
-export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
+export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusHr, setonOtherUser}) {
   const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
 
@@ -68,13 +68,13 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Box sx={{ width: "100%" }}>
           <Tabs value={value} onChange={handleChange}>
             <Tab value="one" label="Overtime Task" />
           </Tabs>
         </Box>
-      </Grid>
+      </Grid> */}
 
       {detail.attributes ? (<>
         {detail.attributes.listProject.map((item) => (
@@ -200,11 +200,13 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
               color="error"
               onClick={() => {
                 onCloseViewOvertime()
+                setonOtherUser(false)
               }
                 }>
               Back
             </Button>
           </Grid>
+          {!onStatusHr && (
           <Grid item>
             <Button startIcon={<CreateIcon />} variant="outlined"
               onClick={() => {
@@ -214,6 +216,7 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime}) {
               Edit Task
             </Button>
           </Grid>
+          )}          
         </Grid>
       </Grid>
       <CreateOvertime isEdit={true} open={openOvertime} closeOvertime={() => setOpenOvertime(false)} dataDetail={detail} onEditSuccess={handleEditSuccess}/>

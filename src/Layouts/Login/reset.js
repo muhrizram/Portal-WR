@@ -15,9 +15,12 @@ import { useNavigate } from "react-router";
 
 const Reset = ({open, onClose}) => {
   const [dataPassword, setDataPassword] = useState({})
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [openReset, setOpen] = useState(false)
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
+  const [showNewPassword, setShowNewPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const handleClickShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
+  const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate(); 
   const handleMouseDownPassword = (event) => {
@@ -31,7 +34,7 @@ const Reset = ({open, onClose}) => {
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password must not exceed 16 characters")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
       'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
     ),
     newPassword: Yup.string()
@@ -39,7 +42,7 @@ const Reset = ({open, onClose}) => {
       .min(8, "Password must be at least 8 characters")
       .max(16, "Password must not exceed 16 characters")
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ),
     confirmPassword: Yup.string()
@@ -47,7 +50,7 @@ const Reset = ({open, onClose}) => {
       .min(8, "Password must be at least 8 characters")
       .max(16, "Password must not exceed 16 characters")
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?& #^_\-+=()<>,./|\[\]{}~])[A-Za-z\d@$!%*?& #^_\-+=()<>,./|\[\]{}~]*$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ),
     notMatch: Yup.string()
@@ -60,33 +63,32 @@ const Reset = ({open, onClose}) => {
     resolver: yupResolver(Schemareset),
   });
 
-  const handleReset = () => {
-    try {
-      client.requestAPI({
-          method: 'POST',
-          endpoint: `/auth/changePassword`,
-          data: dataPassword,
-      })
-      .then(function(response){
-        if(response.isError){
-          console.log("Invalid current password")
-        }
-        else{
-          localStorage.removeItem('token')
-          localStorage.removeItem('refreshtoken')
-          setDataAlert({
-            severity: 'success',
-            open: true,
-            message: response.data.meta.message
-          })
-          setTimeout(() => {
-            navigate('/login')
-          }, 2000)
-        }
+  const handleReset = async () => {
+    const res = await client.requestAPI({
+        method: 'POST',
+        endpoint: `/auth/changePassword`,
+        data: dataPassword,
     })
-    }catch(error){
-      console.error(error)
-    }
+      if(res.isError){ 
+        console.error("Invalid current password")
+        setDataAlert({
+          severity: 'error',
+          open: true,
+          message: res.error.meta.message
+        })
+      }
+      else{
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshtoken')
+        setDataAlert({
+          severity: 'success',
+          open: true,
+          message: res.meta.message
+        })
+        setTimeout(() => {
+          navigate('/login')
+        }, 3000)
+      }
   };
 
   useEffect(() => {
@@ -129,7 +131,7 @@ const Reset = ({open, onClose}) => {
             {...register('password')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your password"
-            type={showPassword ? 'text' : 'password'}
+            type={showCurrentPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -140,10 +142,10 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowCurrentPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showCurrentPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
@@ -160,7 +162,7 @@ const Reset = ({open, onClose}) => {
             {...register('newPassword')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your password"
-            type={showPassword ? 'text' : 'password'}
+            type={showNewPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -171,17 +173,18 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowNewPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
             }} 
             error={errors.newPassword !== undefined}
-            helperText={dataPassword.password === dataPassword.newPassword ? 
-              (errors.ifMatch ? errors.ifMatch.message : '')  : (errors.newPassword ? errors.newPassword.message : '')}
+            // helperText={dataPassword.password === dataPassword.newPassword ? 
+            //   (errors.ifMatch ? errors.ifMatch.message : '')  : (errors.newPassword ? errors.newPassword.message : '')}
+            helperText={errors.newPassword ? errors.newPassword.message : ''}
           />
         </Grid>
         <Grid item xs={12} paddingBottom={2} paddingTop={1}>
@@ -192,7 +195,7 @@ const Reset = ({open, onClose}) => {
             {...register('confirmPassword')}
             onChange={(e) => handleChange(e)}
             placeholder="Input your pasword"
-            type={showPassword ? 'text' : 'password'}
+            type={showConfirmPassword ? 'text' : 'password'}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -203,10 +206,10 @@ const Reset = ({open, onClose}) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
+                    onClick={handleClickShowConfirmPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
+                    {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />  }
                   </IconButton>
                 </InputAdornment>
               )
@@ -221,8 +224,8 @@ const Reset = ({open, onClose}) => {
       <DialogActions className="dialog-delete-actions">
         <Button onClick={onClose} variant='outlined' className='button-text'>Back</Button>
         <Button type= 'submit' 
-        onClick={handleReset} 
-        variant='contained' className='button-text'>Save Data</Button>
+          onClick={handleReset} 
+          variant='contained' className='button-text'>Save Data</Button>
       </DialogActions>
       
         </div>

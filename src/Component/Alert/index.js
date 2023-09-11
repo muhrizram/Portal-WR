@@ -11,7 +11,7 @@ const CustomAlert = () => {
   const { dataAlert, onCloseAlert } = useContext(AlertContext)
   return (
     <Snackbar className='custom-snackbar' autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'center'}} open={dataAlert.open} onClose={onCloseAlert}>
-      <Alert className="custom-alert" onClose={onCloseAlert} severity={dataAlert.severity}sx={{ width: '80%' }}>
+      <Alert className="custom-alert" onClose={onCloseAlert} severity={dataAlert.severity} sx={{ width: '80%' }}>
         {dataAlert.message}
       </Alert>
     </Snackbar>

@@ -28,7 +28,7 @@ const PopupTask = ({
   closeTask,
   isEdit,
   selectedWrIdanAbsenceId,
-  dataDetail
+  dataDetail,  
 }) => {
   const { setDataAlert } = useContext(AlertContext)
   const [listTaskProject, setlistTaskProject] = useState([])
@@ -88,10 +88,10 @@ const PopupTask = ({
   }
 
   useEffect(() => {
-    if(isEdit){
+    if(isEdit){     
       setdataDetailnya(dataDetail)
-      refreshdataDetail()          
-      setOpentask(true)      
+      refreshdataDetail()
+      setOpentask(true)
     }
     getlistProject()
     getstatusTask()
@@ -205,15 +205,15 @@ const PopupTask = ({
   };
 
   const onRemoveProject = (idxProject) => {
-  if (isEdit) {
-    const updatedListProject = firstEditTask.listProject.filter(
+  // if (isEdit) {    
+    const updatedListProject = dataProject.listProject.filter(
       (_project, index) => index !== idxProject
-    );
-    setfirstEditTask((prevState) => ({
+    );    
+    setProject((prevState) => ({
       ...prevState,
       listProject: updatedListProject,
     }));
-    }
+    // }
   };
 
   const AddTask = (idxProject) => {        
@@ -376,19 +376,18 @@ const PopupTask = ({
             {firstEditTask.listProject.length > 0 && firstEditTask.listProject.map((resProject, idxProject) => (
               <div className={opentask ? 'card-project' : ''} key={`${idxProject + 1}-project`}>
                 <Grid container rowSpacing={2}>
-                   <Grid item xs={12}>
-                    <Typography ></Typography>
+                   <Grid item xs={12}>                    
                      <Autocomplete
                         disabled={addTaskinEdit && CekProjectEdit[idxProject-1] ? false : true}
                         disablePortal                    
-                        name='project'
+                        name='project'                        
                         defaultValue={resProject.absenceId ? { name: dataDetailnya[idxProject].attributes.absenceName  } : { name: dataDetailnya[idxProject].attributes.projectName }}
                         options={listProject}
                         getOptionLabel={(option) => option.name}
                         className='autocomplete-input autocomplete-on-popup'                       
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {
-                        if (newValue) {
+                        if (newValue) {                          
                           getlistTaskProject(newValue.id)                  
                           handleChangeProject(newValue, idxProject, newValue.absen)                       
                           setCekabsen((prevCekAbsen) => {
@@ -464,7 +463,10 @@ const PopupTask = ({
                         </> ) : (
                         <>
                           {resProject.listTask.map((res, index) => (
-                            <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                            <Accordion
+                             key={res.id}
+                             onChange={() => getlistTaskProject(resProject.projectId)} 
+                             sx={{ boxShadow: 'none', width: '100%' }}>
                               <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 className='header-accordion'
@@ -484,34 +486,33 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <Autocomplete
                                       disablePortal
+                                      // disabled                                      
                                       name='taskName'
-                                      defaultValue={listTaskProject.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName) || null}
-                                      // value={listTaskProject.find((option) => option.taskName === res.taskCode + ' - ' +  res.taskName)}
                                       className='autocomplete-input autocomplete-on-popup'
+                                      // value={selectedTask.taskId}
+                                      defaultValue={{backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} || null}
                                       options={listTaskProject}
-                                      getOptionLabel={(option) => option.taskName} 
-                                      sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      getOptionLabel={(option) => option.taskName}
+                                      sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                                       onChange={(_event, newValue) => {
-                                        if (newValue) {
-                                        handleChange(
-                                          {target : { name : 'taskName', value: newValue.taskName}},                                    
+                                        if(newValue) {
+                                          handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                           idxProject,
                                           index,
-                                          newValue.backlogId
-                                          )                                  
-                                        setideffortTask(newValue.backlogId)
-                                        }else{
+                                          newValue.backlogId,)
+                                          // newValue.taskId)
+                                          setideffortTask(newValue.backlogId)
+                                        } else {
                                           setideffortTask('')
                                         }
-                                      }
-                                      }
+                                      }}
+                                      isOptionEqualToValue={(option, value) => option.value === value.value}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
-                                          required
                                           className='input-field-crud'
+                                          placeholder='e.g Create Login Screen"'
                                           label='Task Name'
-                                          placeholder='e.g Create Login Screen'
                                         />
                                       )}
                                     />
@@ -722,7 +723,7 @@ const PopupTask = ({
                                       disablePortal
                                       name='taskName'
                                       className='autocomplete-input autocomplete-on-popup'
-                                      options={listTaskProject}
+                                      options={listTaskProject}                                      
                                       getOptionLabel={(option) => option.taskName} 
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       onChange={(_event, newValue) => {

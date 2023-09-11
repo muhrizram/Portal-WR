@@ -47,7 +47,7 @@ const CreateOvertime = ({
   const [dialogCancel, setDialogCancel] = useState(false)
   const [startTime, setStartTime] = useState()
   const [endTime, setEndTime] = useState()
-  const [isLocalizationFilled, setIsLocalizationFilled] = useState(true)
+  const [isLocalizationFilled, setIsLocalizationFilled] = useState(false)
   const [optProject, setOptProject] = useState([])
   const [optTask, setOptTask] = useState([])
   const [optStatus, setOptStatus] = useState([])
@@ -59,8 +59,6 @@ const CreateOvertime = ({
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState(null)
-  console.log('opt project : ', optProject);
-  console.log('opt Task : ', optTask);
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
@@ -95,7 +93,6 @@ const CreateOvertime = ({
     listProject: [clearProject],
   })
   
-  console.log('data overtime edit : ', dataEditOvertime);
 
   const onAddProject = () => {
     if(isEdit){
@@ -161,6 +158,30 @@ const CreateOvertime = ({
     }
   }
 
+  const calculateTimeDifference = (startTime, endTime) => {
+    const startTimeParts = startTime.split(":").map(Number);
+    const endTimeParts = endTime.split(":").map(Number);
+  
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+  
+    const startTimeDate = new Date(currentYear, currentMonth, currentDay, startTimeParts[0], startTimeParts[1], startTimeParts[2]);
+  
+    const endTimeDate = new Date(currentYear, currentMonth, currentDay, endTimeParts[0], endTimeParts[1], endTimeParts[2]);
+  
+    if (endTimeDate < startTimeDate) {
+      endTimeDate.setDate(endTimeDate.getDate() + 1);
+    }
+  
+    const timeDifference = endTimeDate - startTimeDate;
+  
+    const hours = timeDifference / (1000 * 60 * 60);
+  
+    return hours;
+  };
+
   const handleChange = (event, idxProject, index, backlogId, taskId) => {   
     if(isEdit){
       const { name, value } = event.target;
@@ -176,7 +197,17 @@ const CreateOvertime = ({
           handleChange({ target: { name: 'duration', value: 0 } }, idxProject, index);
           return;
         }
-        setDataEditOvertime(updateDataEditOvertime)
+
+        const startTimes = startTime ? startTime : dataEditOvertime.startTime;
+        const endTimes = endTime ? endTime : dataEditOvertime.endTime;
+    
+        const hours = calculateTimeDifference(startTimes, endTimes);
+    
+        if (parseInt(value) > hours) {
+          handleChange({ target: { name: 'duration', value: hours } }, idxProject, index);
+          return;
+        }
+
       }
       else if(name === 'taskName'){
         updateDataEditOvertime.listProject[idxProject].listTask[index].backlogId = backlogId
@@ -185,14 +216,28 @@ const CreateOvertime = ({
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = null
         // temp.listProject[0].listTask[0].backlogId = "35"
       }
+      setDataEditOvertime(updateDataEditOvertime)
 
     } else{
       const { name, value } = event.target;
         if(name === 'duration'){
-          setIdEffortTask(parseInt(value))
           const temp = {...dataOvertime}
           temp.listProject[idxProject].listTask[index][name]= parseInt(value)
+          setIdEffortTask(parseInt(value))
           setDataOvertime(temp)
+          
+          if (parseInt(value) < 0) {
+            handleChange({ target: { name: 'duration', value: 0 } }, idxProject, index);
+            return;
+          }
+
+          const hours = calculateTimeDifference(startTime, endTime);
+      
+          if (parseInt(value) > hours) {
+            handleChange({ target: { name: 'duration', value: hours } }, idxProject, index);
+            return;
+          }
+          
           setTaskDurations((prevDurations) =>
             prevDurations.map((durationItem, i) => ({
               ...durationItem,
@@ -256,6 +301,7 @@ const CreateOvertime = ({
   }, [dataOvertime, dataDetail, selectedProjectId])
 
   const getDataTask = async (id) => {
+
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/taskProject?projectId=${id}&search=`
@@ -322,8 +368,8 @@ const onSave = async () => {
 
   const saveEdit = async () => {
     const dataUpdate = {
-      startTime: startTime,
-      endTime: endTime,
+      startTime: startTime ? startTime : dataEditOvertime.startTime,
+      endTime: endTime ? endTime : dataEditOvertime.endTime,
       workingReportId : null,
       listProjectId : [],
       createdBy: currentUserId,
@@ -384,6 +430,7 @@ const onSave = async () => {
     const formattedDate = currentDate.format("YYYY-MM-DD");
     return timeString ? dayjs(`${formattedDate}T${timeString}`) : null;
   };
+  
 
   return (
     <>
@@ -413,13 +460,13 @@ const onSave = async () => {
           <DemoContainer components={['TimePicker']}>
           <TimePicker
             label="Start Time"
-            value={setTimeTo(dataEditOvertime.startTime) || null}
+            defaultValue={setTimeTo(dataEditOvertime.startTime) || null}
             onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
             ampm={false}
           />
           <TimePicker
             label="End Time"
-            value={setTimeTo(dataEditOvertime.endTime) || null}
+            defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
             onChange={(end) => setEndTime(end.format("HH:mm:ss"))}
             ampm={false}
           />
@@ -433,7 +480,7 @@ const onSave = async () => {
               <Grid item xs={12}>
                 <Autocomplete
                   disablePortal
-                  // disabled={openEditTask ? false : true}
+                  disabled={!!optProject.find((option) => option.id == resProject.projectId)}
                   name= 'project'
                   className='autocomplete-input autocomplete-on-popup'
                   options={optProject}
@@ -466,7 +513,11 @@ const onSave = async () => {
                 
                 {resProject.listTask.map((res, index) => (
                   <>
-                    <Accordion key={res.id} sx={{ boxShadow: 'none', width: '100%' }}>
+                    <Accordion
+                      onChange={() => getDataTask(resProject.projectId)}
+                      key={res.id}
+                      sx={{ boxShadow: 'none', width: '100%' }}
+                    >
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         className='header-accordion'
@@ -485,11 +536,11 @@ const onSave = async () => {
                           <Autocomplete
                             disablePortal
                             // disabled
-                            disabled={res.taskName ? true : false}
+                            // disabled={res.taskName ? true : false}
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
                             // value={selectedTask.taskId}
-                            defaultValue={{backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} || null}
+                            defaultValue={res ? {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} : null}
                             options={optTask}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
@@ -621,17 +672,21 @@ const onSave = async () => {
         <Grid item xs={12}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['TimePicker']}>
-                <TimePicker label="Start Time"
-                value={startTime} 
-                onChange={(start) => setStartTime(start.format("HH:mm"))} 
-                ampm={false}
-                />
-                <TimePicker label="End Time" 
-                value={endTime}
-                onChange={(end) => {setEndTime(end.format("HH:mm"))
-                setIsLocalizationFilled(true)}}
-                 ampm={false}
-                />
+            <TimePicker
+              label="Start Time"
+              value={startTime}
+              onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
+              ampm={false}
+            />
+            <TimePicker
+              label="End Time"
+              value={endTime}
+              onChange={(end) => {
+                setEndTime(end.format("HH:mm:ss"))
+                setIsLocalizationFilled(true)
+              }}
+              ampm={false}
+            />
             </DemoContainer>
         </LocalizationProvider>
         </Grid>
@@ -749,7 +804,7 @@ const onSave = async () => {
                             <TextField
                               focused
                               name='duration'
-                              // value={selectedTask ? selectedTask.actualEffort : ''}
+                              value={dataOvertime.listProject[idxProject].listTask[index]['duration'] || ''}
                               onChange={(e) => handleChange(e, idxProject, index)}
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen"'

@@ -28,7 +28,6 @@ const MasterCompany = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
-        console.log("minion",urlMinio)
 
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -89,7 +88,7 @@ const MasterCompany = () => {
     })
     if (!res.isError) {
       setDataAlert({
-        severity: 'success',
+        severity: 'warning',
         open: true,
         message: res.meta.message
       })
@@ -115,7 +114,6 @@ const MasterCompany = () => {
       method: 'GET',
       endpoint: `/company?page=${filter.page}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}&size=${filter.size}`
     })
-    console.log(res)
     if (!res.isError) {
       rebuildData(res)
     } else {
@@ -160,6 +158,7 @@ const MasterCompany = () => {
   const handleChangeSearch = (event) => {
     setFilter({
       ...filter,
+      page: event.target.value != "" ? 0 : filter.page,
       search: event.target.value
     })
   };

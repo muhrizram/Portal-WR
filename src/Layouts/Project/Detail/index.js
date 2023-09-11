@@ -379,7 +379,7 @@ const DetailProject = () => {
       id: parseInt(row.roleId),
       role: row.role
     },
-    joinandEndDate: (dayjs(row.joinDate).format('YYYY-MM-DD')) + '   -   ' + (dayjs(row.endDate).format('YYYY-MM-DD')),
+    joinandEndDate: (dayjs(row.joinDate).format('DD-MM-YYYY')) + '   -   ' + (dayjs(row.endDate).format('DD-MM-YYYY')),
   }))]
 
   const getOptDataUser = async () => {
@@ -531,7 +531,7 @@ const DetailProject = () => {
     const id = localStorage.getItem('projectId')    
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/project/detail-project/projectId=${id}?size=5&page=0&sort=name,asc`
+      endpoint: `/project/detail-project/projectId=${id}?search=&sort=role,asc`
     })
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
       id: member.userId.toString(),
@@ -762,7 +762,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dayjs(dataDetail.startDateProject).format('YYYY-MM-DD')}
+                            {dayjs(dataDetail.startDateProject).format('DD-MM-YYYY')}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -794,7 +794,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dayjs(dataDetail.endDateProject).format('YYYY-MM-DD')}
+                            {dayjs(dataDetail.endDateProject).format('DD-MM-YYYY')}
                           </Typography>
                         </Grid>
                       </Grid>

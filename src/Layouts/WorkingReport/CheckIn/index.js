@@ -27,11 +27,11 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
     height: 417,
     facingMode: "user",
   };
-  const [lat, setLat] = useState();
-  const [lon, setLon] = useState();
+  const [lat, setLat] = useState('');
+  const [lon, setLon] = useState('');
   const [isTakePicture, setIsTakePicture] = useState(false);
   const webcamRef = React.useRef(null);
-  const [picture, setPicture] = useState("");
+  const [picture, setPicture] = useState(null);
   const [startTime, setStartTime] = React.useState(null);
   const [endTime, setEndTime] = React.useState(null);
   const { setDataAlert } = useContext(AlertContext);
@@ -84,16 +84,14 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
       return
     }
 
-    console.log('res attandance: ', resAttedance)
-
     const blob = await fetch(picture).then((res) => res.blob());
-    const file = new File([blob], "test_picture.jpg");
+    const file = new File([blob], localStorage.getItem("employeeName") + dataPeriod.tanggal + "checkin.jpg");
     // URL.createObjectURL(blob)
     const result = await uploadFile(file, 'absence');
     const body = {
       workingReportId: resAttedance.data.attributes.workingReportId,
-      latitude: lat,
-      longitude: lon,
+      latitude : lat,
+      longitude : lon,
       startTime: startTime.format("HH:mm:ss"),
       endTime: endTime.format("HH:mm:ss"),
       file: result,
@@ -124,17 +122,17 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
         open: true,
         message: resAttedance.data.meta.message,
       });
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 3000)
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000)
     } 
   };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
-      setLat(position.coords.latitude);
-      setLon(position.coords.longitude);
-    });   
+      setLat(position.coords.latitude.toString());
+      setLon(position.coords.longitude.toString());
+    });
   }, []);
 
   return (
@@ -150,7 +148,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                 <Grid item xs={12} display="flex" justifyContent="center">
                   <Typography>Snap a photo to record attendance</Typography>
                 </Grid>
-                {picture !== "" ? (
+                {picture ? (
                   <Avatar
                     src={picture}
                     variant="square"
@@ -173,7 +171,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                   <Grid item xs={12} display="flex" justifyContent="center">
                     <Button
                       onClick={() => {
-                        if (picture === "") capture();
+                        if (!picture) capture();
                       }}
                       variant="contained"
                       startIcon={<PhotoCameraIcon />}
@@ -185,7 +183,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     <Button
                       variant="outlined"
                       onClick={() => {
-                        setPicture("");
+                        setPicture(null);
                       }}
                       startIcon={<ReplayIcon />}
                     >
@@ -199,14 +197,14 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                           variant="outlined"
                           onClick={() => {
                             setIsTakePicture(false);
-                            setPicture("");
+                            setPicture(null);
                           }}
                         >
                           Back
                         </Button>
                       </Grid>
                       <Grid item xs={2} display="flex" alignItems="center">
-                        <Button variant="contained" onClick={() => checkIn()}>
+                        <Button disabled={!picture} variant="contained" onClick={() => checkIn()}>
                           Check In
                         </Button>
                       </Grid>

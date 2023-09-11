@@ -99,10 +99,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              {/* Task {taskData.id} */}
               T - {initialProject} - 00{taskData.id}
-              {/*harusnya project initial  */}
-              {/* / {taskData.taskCode} */}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -469,8 +466,7 @@ useEffect(() => {
                     options={ProjectName}
                     sx={{ width: "100%", marginTop: "8px" }}
                     getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
-                    onChange={(event, newValue) => {            
-                      console.log("ini value", newValue)
+                    onChange={(event, newValue) => {
                       if (!newValue) {                                              
                         setTasks([])
                         setAddTask(false);

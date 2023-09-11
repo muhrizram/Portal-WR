@@ -38,6 +38,9 @@ export default function WorkingReport() {
   const [dropMenu, setDropMenu] = useState(null)
   const [dataReadyAttedance,setdataReadyAttedance] = useState()
   const [AttendanceView,setAttendanceView] = useState()
+  const [HrsetIdemployee,setHrsetIdemployee] = useState()
+  const [onStatusHr,setonStatusHr] = useState(false)
+  const [onOtherUser,setonOtherUser] = useState(false)
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -77,9 +80,7 @@ export default function WorkingReport() {
   const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
-    if(isHr == false) {
-      getData();
-    }
+    setonOtherUser(false)
     localStorage.removeItem("companyId");
     let listRoles = localStorage.getItem("roles");
     let roles = JSON.parse(listRoles)
@@ -88,34 +89,40 @@ export default function WorkingReport() {
       if(role.roleName == 'HRD') {
         setIsHr(true)
       }
-    }    
-  }, [filter]);
+    }
+    getData();    
+  }, [filter, JSON.stringify(selectedUser)]);
 
-  const updateFilterDates = (newActiveMonth,value) => {
-    if(value){      
-      const newEndDate = moment(newActiveMonth).endOf("month").toDate();
-      setFilter({
-        startDate: filter.startDate,
-        endDate: newEndDate,
-      });
+  const updateStatusHr = (newValue) => {  
+    if(newValue === null){      
+      setonStatusHr(false)
+      setSelectedUser(null)
+      setHrsetIdemployee(null)
     }else{
-      const newStartDate = moment(newActiveMonth).startOf("month").toDate();      
-      setFilter({
-        startDate: newStartDate,
-        endDate: filter.endDate,
-      });
-    }    
+      const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === newValue));
+      if (user) {
+        setonStatusHr(true)
+        setSelectedUser(user)
+        getDetailData(user.id)
+        setHrsetIdemployee(user.id)
+      }
+    }
+  }
+
+  const updateFilterDates = (newActiveMonth) => {
+    const newEndDate = moment(newActiveMonth).endOf("month").toDate();
+    const newStartDate = moment(newActiveMonth).startOf("month").toDate();    
+    setFilter({
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
     getData();
   };
 
-  const getData = async (id = null) => {
+  const getData = async () => {    
     let endpoint = `/workingReport/${moment(filter.startDate).format("yyyy-MM-DD")}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
-
-    if(id !== null) {
-      endpoint += `/${id}`
-    }else if(isHr == false) {
-      endpoint += `/${currentUserId}`
-    }
+    const idUser = selectedUser ? selectedUser.id : currentUserId
+    endpoint += `/${idUser}`
     const res = await client.requestAPI({
       method: "GET",
       endpoint: endpoint,
@@ -132,7 +139,7 @@ export default function WorkingReport() {
 
     const resUser = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/employee/${currentUserId}`,
+      endpoint: `/users/employee/${idUser}`,
     });
     if (!resUser.isError) {            
       const data = {
@@ -141,7 +148,7 @@ export default function WorkingReport() {
         role: resUser.data.attributes.role.join(', '),
         email: resUser.data.attributes.email,        
       };
-      setUserProfile(data)
+      setUserProfile({...data})
     } else {
       setDataAlert({
         severity: "error",
@@ -223,9 +230,9 @@ export default function WorkingReport() {
             presenceName: value.attributes.listDate.presenceName,
           };      
     });    
-    if(selectedUser == null){
-      setData([])
-    }
+    // if(selectedUser == null){
+    //   setData([])
+    // }
     setData([...temp]);
   };
 
@@ -264,16 +271,23 @@ export default function WorkingReport() {
         />
       );
     } else if (isCheckOut) {
-      dom = <CheckOut />;
+      dom = (
+        <CheckOut
+          workingReportTaskId={WrIdDetail}
+        />
+      );
     } else if (isViewTask) {      
       dom = (
         <ViewTask
           setIsCheckOut={() => {
             setIsViewTask(false);
             setIsCheckOut(true);
-          }}          
+          }}
           WrIdDetail={WrIdDetail}
           dataAll={data}
+          onStatusHr={onStatusHr}
+          setonOtherUser={setonOtherUser}
+          setIsViewTask={() => setIsViewTask(false)}
         />
       );
     } else if (isViewOvertime) {
@@ -281,64 +295,26 @@ export default function WorkingReport() {
         <ViewOvertime
         WrIdDetail = {WrIdDetail}
         onCloseViewOvertime={() => setIsViewOvertime(false)}
+        onStatusHr={onStatusHr}
+        setonOtherUser={setonOtherUser}
         />
       )
-    }
-      else {
-        {
-          isHr ? (
-            selectedUser == null ? (
-              dom = (<Grid
-                container
-                item
-                xs={12}
-                minHeight="600px"
-                alignContent="center"
-                alignItems="center"
-                display="flex"
-                justifyContent="center"
-                textAlign="center"
-              >
-                <Grid item xs={12} pb={3.75}>
-                  <img src={blanktable} alt="blank-table" />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="noDataTable">
-                    Sorry, the data you are looking for could not be found.
-                  </Typography>
-                </Grid>
-              </Grid>)
-            ) : (
-              dom = (<Calendar
-                setOnClick={(param) => {
-                  const _data = data.find(
-                    (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-                  );
-                  onAttendence(_data);
-                }}
-                setIsViewTask={setIsViewTask}
-                setIsViewOvertime={setIsViewOvertime}
-                events={data}
-                setWrIdDetail={setWrIdDetail}
-              />)
-            )
-          ) : (
-            dom = (<Calendar
-              setOnClick={(param) => {
-                const _data = data.find(
-                  (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
-                );
-                onAttendence(_data);
-              }}
-              setIsViewTask={setIsViewTask}
-              setIsViewOvertime={setIsViewOvertime}
-              events={data}
-              setWrIdDetail={setWrIdDetail}
-              updateFilterDates={updateFilterDates}
-            />)
-          )
-        }
-        
+    } else {
+        dom = <Calendar
+          setOnClick={(param) => {
+            const _data = data.find(
+              (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+            );
+            onAttendence(_data);
+          }}
+          setIsViewTask={setIsViewTask}
+          setIsViewOvertime={setIsViewOvertime}
+          events={data}
+          setWrIdDetail={setWrIdDetail}
+          updateFilterDates={updateFilterDates}
+          onStatusHr={onStatusHr}
+          setonOtherUser={setonOtherUser}
+        />
       }
     return dom;
   };
@@ -370,10 +346,15 @@ export default function WorkingReport() {
   }
 
   const handleSearchChange = async (searchValue) => {
-
+    let idvalue;
+    if(searchValue != null){
+      idvalue = searchValue
+    }else{
+      idvalue = userProfile.id
+    }
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/userList?search=${searchValue}`,
+      endpoint: `/users/userList?search=${idvalue}`,
     });
     
     const data = res.data.map(user => ({
@@ -382,15 +363,6 @@ export default function WorkingReport() {
       nip: user.attributes.nip
     }));
     setFilteredNames(data);
-  };
-
-  const handleOptionSelectUser = (event, value) => {
-    const user = filteredNames.find(user => (`${user.name} - ${user.nip}` === value));
-    if (user) {
-      setSelectedUser(user)
-      getDetailData(user.id)
-      getData(user.id);
-    }
   };
 
   const handleReset = () => {
@@ -455,14 +427,20 @@ export default function WorkingReport() {
               <> 
               <Grid item xs={4}>
                 <Autocomplete
+                  disabled={onOtherUser}
                   freeSolo
                   options={filteredNames.map(option => (`${option.name} - ${option.nip}`))}
+                  onChange={(_event, newValue) => {
+                    updateStatusHr(newValue)
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       placeholder="Name, NIP, etc"
                       label="Search By"
-                      onChange={(e) => handleSearchChange(e.target.value)}
+                      onChange={(e) => {                        
+                        handleSearchChange(e.target.value)
+                      }}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (
@@ -474,9 +452,7 @@ export default function WorkingReport() {
                     />
                   )}
                   renderOption={(props, option) => (
-                    <Box
-                      onClick={(event) => handleOptionSelectUser(event, option)}
-                    >
+                    <Box key={`${option}-auto-user`}>
                       <Typography variant="body1" {...props} style={{ padding: '8px', marginLeft: '8px' }}>
                         {option}
                       </Typography>
@@ -514,18 +490,18 @@ export default function WorkingReport() {
                     <Grid item xs={4}>
                       <Typography>Name</Typography>
                       <Typography variant="drawerNameUser">
-                        {selectedUserDetail == null ? "-" : selectedUserDetail.name}
+                        {userProfile == null ? "-" : userProfile.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography>Role</Typography>
-                      <Typography variant="drawerNameUser">{selectedUserDetail == null ? "-" : selectedUserDetail.role}</Typography>
+                      <Typography variant="drawerNameUser">{userProfile == null ? "-" : userProfile.role}</Typography>
                     </Grid>
                     <Grid item xs={4}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
-                        {selectedUserDetail ? (
-                          selectedUserDetail.email ? "-" : selectedUserDetail.email
+                        {userProfile ? (
+                          userProfile.email ? userProfile.email : '-'
                         ):'-'}
                       </Typography>
                     </Grid>

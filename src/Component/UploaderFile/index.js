@@ -8,7 +8,16 @@ const UploaderFile = ({onCompleteUpload}) => {
   const [status, setStatus] = useState('Loading')
 
   // specify upload params and url for your files
-  const getUploadParams = ({ meta }) => { return { url: 'https://portalwr-dev.cloudias79.com/apis/minio/uploadFile' } }
+  const getUploadParams = ({ meta }) => { 
+    const token = localStorage.getItem("token");
+    return { 
+      url: 'https://portalwr-dev.cloudias79.com/apis/minio/uploadFile?path=absence',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      method: 'POST'
+    } 
+  }
   
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file, xhr }, status) => { 
@@ -113,7 +122,6 @@ const UploaderFile = ({onCompleteUpload}) => {
       getUploadParams={getUploadParams}
       onChangeStatus={handleChangeStatus}
       onSubmit={handleSubmit}
-      multiple={false}
       maxSizeBytes={3145728}
       accept="image/*"
       LayoutComponent={props => renderDom(props)}

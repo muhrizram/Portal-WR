@@ -13,7 +13,6 @@ import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
 const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance, setAttendanceView}) => {
-  console.log('data period: ', dataPeriod)
   const listLocation = [
     {
       label: "Work From Home",
@@ -55,7 +54,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
     setListPresence(temp);
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     getDatalist();
   }, []);
 
@@ -111,9 +110,20 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             data: body,
           });
           if (!res.isError) {
-            workingReportId = res.data.attributes.workingReportId;
-          }
-          {
+            // workingReportId = res.data.attributes.workingReportId;
+            localStorage.setItem(
+              "workingReportId",
+              res.data.attributes.workingReportId
+            );      
+            setDataAlert({
+              severity: "success",
+              open: true,
+              message: res.data.meta.message,
+            });
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000)  
+          } else {
             setDataAlert({
               severity: "error",
               message: res.error.detail,
