@@ -204,7 +204,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                         </Button>
                       </Grid>
                       <Grid item xs={2} display="flex" alignItems="center">
-                        <Button disabled={picture.length === 0} variant="contained" onClick={() => checkIn()}>
+                        <Button disabled={!picture} variant="contained" onClick={() => checkIn()}>
                           Check In
                         </Button>
                       </Grid>
