@@ -1,25 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Grid,
-  IconButton,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Link,
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import client from "../../../global/client";
 import blanktable from "../../../assets/blanktable.png";
 import { AlertContext } from "../../../context";
@@ -27,23 +12,109 @@ import { AlertContext } from "../../../context";
 const StatusEmployeeTab = ({ id, dataChange }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [deleteId, setDeletedId] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
+  const [totalData, setTotalData] = useState(0);
+  const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
+  const [sorting, setSort] = useState([]);
+  const [filter, setFilter] = useState({
+    page: 0,
+    size: 10,
+    sortName: "startDate",
+    sortType: "asc",
+  });
+
+  const columns = [
+    {
+      field: "no",
+      headerName: "No",
+      flex: 0.3,
+      sortable: false,
+    },
+    {
+      field: "codeName",
+      headerName: "Contract Status",
+      flex: 1,
+    },
+    {
+      field: "startDate",
+      headerName: "Start Date",
+      flex: 1,
+    },
+    {
+      field: "endDate",
+      headerName: "End Date",
+      flex: 1,
+    },
+    {
+      field: "file",
+      headerName: "Contract File",
+      sortable:false,
+      flex: 1,
+      renderCell: (params) => {
+        return params.row.file !== "" ? (
+          <Link
+            sx={{ fontSize: "14px" }}
+            href={`https://portalwr-dev.cloudias79.com/apis/minio/view?file=${params.row.file}`}
+            target="_blank"
+          >
+            preview pdf
+          </Link>
+        ) : (
+          <Typography>-</Typography>
+        );
+      },
+    },
+  ];
+
+  const changePagination = (model) => {
+    setPagination({ ...model });
+  };
+
+  const changeSort = (model) => {
+    if (model.length > 0) {
+      setSort([{ ...model }]);
+    } else {
+      setSort([
+        {
+          field: "",
+          sort: "",
+        },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    const filter = {
+      sorting: sorting.length > 0 ? { ...sorting[0] } : { field: "", sort: "" },
+      ...pagination,
+    };
+    handleBuildList(filter);
+  }, [sorting, pagination]);
+
+  const handleBuildList = (dataFilter) => {
+    setFilter({
+      page: dataFilter.page,
+      size: dataFilter.pageSize,
+      sortName:
+        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "startDate",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
+    });
+  };
 
   const getData = async (id) => {
     setLoading(true);
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/users/contractHistory?id=${id}`,
+      endpoint: `/users/contractHistory?id=${id}&page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
     });
     if (!res.isError) {
-      setData(res.data);
+      rebuildData(res);
     } else {
       setDataAlert({
         severity: "error",
         open: true,
+        message:res.error.detail
       });
     }
     setLoading(false);
@@ -51,30 +122,23 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
 
   useEffect(() => {
     getData(id);
-  }, [dataChange]);
+  }, [dataChange, filter]);
 
-  const handleDelete = async () => {
-    setLoadingDelete(true);
-    const res = await client.requestAPI({
-      method: "DELETE",
-      endpoint: `/users/contractHistory?id=${deleteId}`,
+  const rebuildData = (resData) => {
+    let temp = [];
+    let number = filter.page * filter.size;
+    temp = resData.data.map((value, index) => {
+      return {
+        no: number + (index + 1),
+        id: value.id,
+        codeName: value.attributes.codeName,
+        startDate: intlDate.format(new Date(value.attributes.startDate)),
+        endDate: intlDate.format(new Date(value.attributes.endDate)),
+        file: value.attributes.file,
+      };
     });
-    if (!res.isError) {
-      setDataAlert({
-        severity: "warning",
-        open: true,
-        message: res.meta.message,
-      });
-    } else {
-      setDataAlert({
-        severity: "error",
-        open: true,
-        message: res.error.detail,
-      });
-    }
-    setLoadingDelete(false);
-    setOpenDeleteDialog(false);
-    getData(id);
+    setData([...temp]);
+    setTotalData(resData.meta.page.totalElements);
   };
 
   const intlDate = Intl.DateTimeFormat("id", {
@@ -83,132 +147,23 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
     year: "numeric",
   });
 
-  return loading ? (
-    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-      <CircularProgress />
-    </div>
-  ) : data.length > 0 ? (
-    <TableContainer component={Paper}>
-      <Table aria-label="caption table">
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ color: "#004881", fontSize: "14px" }}>
-              Contract Status
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "14px" }}>
-              Contract Start Date
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "14px" }}>
-              Contract End Date
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "14px" }}>
-              Contract File
-            </TableCell>
-            <TableCell align="left" sx={{ color: "#004881", fontSize: "14px" }}>
-              Action
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                scope="row"
-              >
-                {row.attributes.codeName}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                {intlDate.format(new Date(row.attributes.startDate))}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                {intlDate.format(new Date(row.attributes.endDate))}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                {row.attributes.file ? (
-                  <Link
-                    href={`https://portalwr-dev.cloudias79.com/apis/minio/view?file=${row.attributes.file}`}
-                    target="_blank"
-                  >
-                    preview pdf
-                  </Link>
-                ) : (
-                  <Typography>-</Typography>
-                )}
-              </TableCell>
-              <TableCell
-                sx={{ color: "text.secondary", fontSize: "14px" }}
-                align="left"
-              >
-                <IconButton
-                  onClick={() => {
-                    setDeletedId(row.id);
-                    setOpenDeleteDialog(true);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-                <Dialog
-                  open={openDeleteDialog}
-                  onClose={() => setOpenDeleteDialog(false)}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  className="dialog-delete"
-                >
-                  <DialogTitle
-                    id="alert-dialog-title"
-                    className="dialog-delete-header"
-                  >
-                    {"Delete Data"}
-                  </DialogTitle>
-                  <DialogContent className="dialog-delete-content">
-                    <DialogContentText
-                      className="dialog-delete-text-content"
-                      id="alert-dialog-description"
-                    >
-                      Warning: Deleting this data is irreversible. Are you sure
-                      you want to proceed?
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions className="dialog-delete-actions">
-                    <Button
-                      onClick={() => setOpenDeleteDialog(false)}
-                      variant="outlined"
-                      className="button-text"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleDelete}
-                      className="delete-button button-text"
-                      disabled={loadingDelete}
-                    >
-                      {loadingDelete ? (
-                        <>
-                          <CircularProgress size={14} color="inherit" />
-                          <Typography marginLeft={1}>Deleting...</Typography>
-                        </>
-                      ) : (
-                        "Delete Data"
-                      )}
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  return data.length > 0 ? (
+    <DataGrid
+      rows={data}
+      columns={columns}
+      disableRowSelectionOnClick
+      pageSizeOptions={[10, 25, 50, 100]}
+      paginationMode="server"
+      disableColumnFilter
+      disableColumnMenu
+      rowCount={totalData}
+      paginationModel={{ ...pagination }}
+      onPaginationModelChange={(model) => changePagination(model)}
+      onSortModelChange={(model) => changeSort(model)}
+      loading={loading}
+      sortingMode="server"
+      getRowId={(row) => row.id}
+    />    
   ) : (
     <Grid
       container
