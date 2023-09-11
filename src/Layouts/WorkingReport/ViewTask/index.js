@@ -12,19 +12,19 @@ import CreateIcon from "@mui/icons-material/Create";
 import PopupTask from "../PopupTask";
 import client from "../../../global/client";
 
-export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask}) {
+export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask, StatusSearch}) {
   const [openTask, setOpenTask] = useState(false);
   const [taskData, setTaskData] = useState([]);
   const [beforeThanToday, setBeforeThanToday] = useState(false);  
   
   useEffect(() => (
     getDetailTask(),
-    checkForMatch()    
+    checkForMatch()      
   ),[])
 
   const checkForMatch = () => {
-    for (const item of dataAll) {
-      if (item.workingReportId === WrIdDetail) {      
+    for (const item of dataAll) {      
+      if (item.workingReportTaskId === WrIdDetail) {      
         setBeforeThanToday(item.isToday);        
         break;
       }else{
@@ -204,31 +204,52 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
               Back
             </Button>
           </Grid>
-            {!onStatusHr && beforeThanToday
-              && (       
-                <>
-              <Grid item>
-                {/* {beforeThanToday ? ( */}
-                  <Button
-                  startIcon={<CreateIcon />}
-                  variant="outlined"
-                  onClick={() => setOpenTask(true)}
-                  >
-                    Edit Task
-                  </Button>
-                {/* ) : null}             */}
-              </Grid>
-              <Grid item>
-                <Button
-                  startIcon={<AccessTimeIcon />}
-                  className="delete-button button-text"
-                  onClick={() => setIsCheckOut()}
-                >
-                  Check Out
-                </Button>
-              </Grid>
-              </>  
-            )}
+            {beforeThanToday
+              ? (
+                !StatusSearch && onStatusHr ? (
+                  <>
+                  <Grid item>
+                      <Button
+                      startIcon={<CreateIcon />}
+                      variant="outlined"
+                      onClick={() => setOpenTask(true)}
+                      >
+                        Edit Task
+                      </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      startIcon={<AccessTimeIcon />}
+                      className="delete-button button-text"
+                      onClick={() => setIsCheckOut()}
+                    >
+                      Check Out
+                    </Button>
+                  </Grid>
+                  </>  
+                ) : StatusSearch && onStatusHr ? null
+                  : <>
+                  <Grid item>                    
+                      <Button
+                      startIcon={<CreateIcon />}
+                      variant="outlined"
+                      onClick={() => setOpenTask(true)}
+                      >
+                        Edit Task
+                      </Button>                    
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      startIcon={<AccessTimeIcon />}
+                      className="delete-button button-text"
+                      onClick={() => setIsCheckOut()}
+                    >
+                      Check Out
+                    </Button>
+                  </Grid>
+                  </>             
+              ) : null
+            }
           </Grid>
         </Grid>            
       <PopupTask
