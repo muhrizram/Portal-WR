@@ -35,7 +35,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idProject }) => {
+const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idProject, taskCode }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
@@ -53,7 +53,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: '/ol/status?search=',  
-      // endpoint: `ol/backlogUser?search=${31}`    
     })
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));    
 
@@ -78,6 +77,17 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
     onDelete(taskData.id);
     onUpdateTasks(taskData.id);
   };
+
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode < 48 || charCode > 57) && 
+      charCode !== 46
+    ) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <Accordion key={taskData.id} sx={{ boxShadow: 'none', width: '100%' }}>
       <Grid
@@ -98,6 +108,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
           >
             <Typography sx={{ fontSize: "24px" }}>
               T - {initialProject} - 00{taskData.id}
+              {/* {taskCode} */}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -215,6 +226,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               focused
               value={taskDataUpdate.estimationTime}
               onChange={handleChange}
+              onKeyPress={handleKeyPress}
               name='estimationTime'
               className='input-field-crud'
               placeholder='e.g 1 Hour'
@@ -269,6 +281,7 @@ const CreateNewBacklog = () => {
   const [open, setOpen] = React.useState(false);
   const [valueproject, setValueproject] = React.useState();
   const [initialProject, setInitialProject] = useState()
+  const [taskCode, setTaskCode] = useState()
 
   const navigate = useNavigate();  
 
@@ -330,7 +343,6 @@ const CreateNewBacklog = () => {
 
   const handleDeleteTask = (taskId) => {
     handleUpdateTasks(taskId);
-    // const updatedTasks = tasks.splice(taskId, 1)
     const updatedTasks = tasks.filter((task) => task.id !== taskId)
     .map((task, index) => ({
       ...task,
@@ -369,7 +381,6 @@ const CreateNewBacklog = () => {
       taskName: '',
       taskDescription: '',
       estimationTime: null,
-      // actualTime: 3,
       estimationDate: formattedDate,
       actualDate: formattedDate,
       createdBy: parseInt(localStorage.getItem('userId')),
@@ -388,7 +399,6 @@ const CreateNewBacklog = () => {
       taskName:'',
       statusBacklog: '',
       priority: '',
-      // taskDescription: '',
       estimationTime:'',
       statusBacklog:''
     }
@@ -440,7 +450,7 @@ const CreateNewBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })
-    const data = res.data.map(item => ({id : item.id, name: item.attributes.name, projectInitial: item.attributes.projectInitial}));    
+    const data = res.data.map(item => ({id : item.id, name: item.attributes.name, projectInitial: item.attributes.projectInitial, taskCode: item.attributes.taskCode}));    
     setProjectName(data)
   }
 
@@ -478,7 +488,8 @@ useEffect(() => {
                         setValueproject(undefined);
                       }else{
                         setValueproject(parseInt(newValue.id));
-                        setInitialProject(newValue.projectInitial)  
+                        setInitialProject(newValue.projectInitial)
+                        setTaskCode(newValue.taskCode)
                       }                      
                     }}
                     renderInput={(params) => (
@@ -497,6 +508,7 @@ useEffect(() => {
                          onUpdateTasks={handleUpdateTasks}
                          initialProject={initialProject}
                          idProject={valueproject}
+                         taskCode={taskCode}
                        />
                     ))}
                     </>

@@ -206,16 +206,16 @@ const DetailPrivilege = () => {
                             </Typography>
                             <Grid container direction="row" sx={{marginLeft:'30px'}}>
                               <Grid item xs={6}>
-                            <FormGroup>
-                              {privilegeCheckboxes.slice(0,5)}
-                            </FormGroup>
-                            </Grid>
-                            <Grid item xs={6}>
-                            <FormGroup>
-                            {privilegeCheckboxes.slice(5)}
-                            </FormGroup>
-                            </Grid>
-                            {privilegeCheckboxes.length === 0 && (
+                                <FormGroup>
+                                  {privilegeCheckboxes.slice(0,5)}
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <FormGroup>
+                                  {privilegeCheckboxes.slice(5)}
+                                </FormGroup>
+                              </Grid>
+                            {selectedPrivilege.length === 0 && (
                               <Typography
                                 variant="caption"
                                 sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}

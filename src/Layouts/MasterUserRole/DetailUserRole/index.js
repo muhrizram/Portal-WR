@@ -7,7 +7,7 @@ import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import TextField from "@mui/material/TextField";
 import Divider from '@mui/material/Divider';
-import { FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import client from '../../../global/client';
 import { useNavigate } from "react-router-dom";
 import { AlertContext } from '../../../context';
@@ -28,6 +28,8 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const DetailUserRole = () => {
   const { setDataAlert } = useContext(AlertContext)
@@ -60,6 +62,16 @@ const DetailUserRole = () => {
   ];
 
   const navigate = useNavigate();  
+
+  const textPlease = 'Please Select'
+  const schemaUserRole = Yup.object().shape({
+    role: Yup.string()
+      .required(`${textPlease} Role`)
+  });
+
+  const { handleSubmit, formState: { errors }, register } = useForm({
+    resolver: yupResolver(schemaUserRole),
+  });
 
   const handleRoleChange = (id) => {
     if (selectedRoles.includes(id)) {
@@ -187,11 +199,11 @@ const DetailUserRole = () => {
                 <Grid className="HeaderDetail">
                 <Grid item xs={12}>
                   <FormProvider>
-                    <form>
+                    <form onSubmit={handleSubmit()}>
                     <Grid container spacing={2}>
                       <Grid item xs container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
-                          <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="NIP & User *" value={detail.nip +  " " + detail.firstName + " " + detail.lastName} variant="outlined" />                                                                        
+                          <TextField sx={{width:"100%", backgroundColor: "#EDEDED" }} disabled id="outlined-basic" label="NIP & User *" value={detail.nip +  " " + detail.firstName + " " + detail.lastName} variant="outlined" />                                                                        
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography
@@ -206,6 +218,14 @@ const DetailUserRole = () => {
                             <Grid item xs={6}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
+                            {roleCheckboxes.length === 0 && (
+                              <Typography
+                                variant="caption"
+                                sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
+                              >
+                                {errors.privilege ? errors.privilege.message : ''}
+                              </Typography>
+                            )}
                           </Grid>
                       </Grid>
                     </Grid>
@@ -218,7 +238,8 @@ const DetailUserRole = () => {
                         Cancel Data
                       </Button>
                       <Button
-                        variant='saveButton'                        
+                        variant='saveButton'    
+                        type='submit'                    
                         onClick={handleClickOpenSave}
                       >
                         Save Data
