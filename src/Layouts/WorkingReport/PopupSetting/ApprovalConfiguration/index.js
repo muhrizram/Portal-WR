@@ -121,6 +121,7 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                   type="file"
                   accept=".png, .jpg"
                   className="custom-file-input"
+                  hidden
                   onChange={(e) => handleChangeUpload(e, index)}
                 />
               </Button>

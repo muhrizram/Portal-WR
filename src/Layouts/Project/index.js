@@ -15,7 +15,7 @@ export default function Project() {
     {
       field: "no",
       headerName: "No",
-      flex: 1,
+      flex: 0.3,
       sortable: false,
     },
     {
@@ -66,6 +66,7 @@ export default function Project() {
   const handleChangeSearch = (event) => {    
     setFilter({
       ...filter,
+      page: event.target.value !== "" ? 0 : filter.page,
       search: event.target.value.toLowerCase()
     });
   }
@@ -163,7 +164,7 @@ export default function Project() {
         columns={columns}
         totalData={totalData}
         loading={loading}
-        placeSearch="Project Name"
+        placeSearch="Project Name, client name, etc"
         searchTitle="Search By"
         handleChangeSearch={handleChangeSearch}
         onDetail={(id) => redirectDetail(id)}

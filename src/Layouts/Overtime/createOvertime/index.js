@@ -67,11 +67,11 @@ const CreateOvertime = ({
     listTask: []
   }
   const clearTask = {
-    backlogId: '',
-    taskName: '',
-    statusTaskId: '',
-    duration: '',
-    taskItem: ''
+    backlogId: null,
+    taskName: null,
+    statusTaskId: null,
+    duration: null,
+    taskItem: null
   }
 
   const [dataOvertime, setDataOvertime] = useState({
@@ -259,7 +259,6 @@ const CreateOvertime = ({
 
   
   const handleChangeProject = (value, idxProject) => {
-    setSelectedProjectId(value)
     if(isEdit){
       const temp = {...dataEditOvertime}
       temp.listProject[idxProject].projectId = value
@@ -459,13 +458,13 @@ const onSave = async () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DemoContainer components={['TimePicker']}>
           <TimePicker
-            label="Start Time"
+            label="Start Time *"
             defaultValue={setTimeTo(dataEditOvertime.startTime) || null}
             onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
             ampm={false}
           />
           <TimePicker
-            label="End Time"
+            label="End Time *"
             defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
             onChange={(end) => setEndTime(end.format("HH:mm:ss"))}
             ampm={false}
@@ -503,7 +502,8 @@ const onSave = async () => {
                     <TextField
                       {...params}
                       className='input-field-crud'
-                      label='Project'
+                      label='Project *'
+                      InputLabelProps={{ shrink: true }}
                       placeholder='Select Project'
                     />
                   )}
@@ -539,9 +539,9 @@ const onSave = async () => {
                             // disabled={res.taskName ? true : false}
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
-                            // value={selectedTask.taskId}
-                            defaultValue={res ? {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} : null}
                             options={optTask}
+                            // value={selectedTask.taskId}
+                            defaultValue={!!resProject.projectId ? {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} : null}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                             onChange={(_event, newValue) => {
@@ -562,7 +562,8 @@ const onSave = async () => {
                                 {...params}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
-                                label='Task Name'
+                                label='Task Name *'
+                                InputLabelProps={{ shrink: true }}
                               />
                             )}
                           />
@@ -591,7 +592,8 @@ const onSave = async () => {
                                 {...params}
                                 className='input-field-crud'
                                 placeholder='e.g In Progress'
-                                label='Status Task'
+                                label='Status Task *'
+                                InputLabelProps={{ shrink: true }}
                               />
                             )}  
                           />
@@ -607,7 +609,7 @@ const onSave = async () => {
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen"'
                               type="number"
-                              label='Actual Effort'
+                              label='Actual Effort *'
                               sx={{width: "100%", backgroundColor: "white" }}
                             />
                           </Grid>
@@ -673,13 +675,13 @@ const onSave = async () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['TimePicker']}>
             <TimePicker
-              label="Start Time"
+              label="Start Time *"
               value={startTime}
               onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
               ampm={false}
             />
             <TimePicker
-              label="End Time"
+              label="End Time *"
               value={endTime}
               onChange={(end) => {
                 setEndTime(end.format("HH:mm:ss"))
@@ -718,7 +720,8 @@ const onSave = async () => {
                     <TextField
                       {...params}
                       className='input-field-crud'
-                      label='Project'
+                      label='Project *'
+                      InputLabelProps={{ shrink: true }}
                       placeholder='Select Project'
                     />
                   )}
@@ -766,7 +769,8 @@ const onSave = async () => {
                                 {...params}
                                 className='input-field-crud'
                                 placeholder='e.g Create Login Screen"'
-                                label='Task Name'
+                                label='Task Name *'
+                                InputLabelProps={{ shrink: true }}
                               />
                             )}
                           />
@@ -794,7 +798,8 @@ const onSave = async () => {
                                 {...params}
                                 className='input-field-crud'
                                 placeholder='e.g In Progress'
-                                label='Status Task'
+                                label='Status Task *'
+                                InputLabelProps={{ shrink: true }}
                               />
                             )}  
                           />
@@ -809,7 +814,7 @@ const onSave = async () => {
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen"'
                               type="number"
-                              label='Actual Effort'
+                              label='Actual Effort *'
                               sx={{width: "100%", backgroundColor: "white" }}
                             />
                           </Grid>

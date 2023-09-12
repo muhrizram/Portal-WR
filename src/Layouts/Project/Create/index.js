@@ -17,11 +17,12 @@ import {
   TextField,
   IconButton,
   InputLabel,
+  InputAdornment,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import FormInputText from "../../../Component/FormInputText";
 import schemacompany from "../shema";
 // import CustomAlert from "../../../Component/Alert";
@@ -44,9 +45,8 @@ const CreateProject = () => {
   const [valueUser, setValueUser] = useState([]);
   const [company, setOptCompany] = useState([])
   const [projectTypes, setOptProjectType] = useState([])
-  // const { setDataAlert } = useContext(AlertContext)
   const [isEdit, setIsEdit] = useState(false);
-  const [isSelectRole, setIsSelectRole] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [selectedMember, setSelectedMember] = useState([])
   const [dataProject, setDataProject] = useState([]);
   const [startProject, setStartProject] = useState()
@@ -60,12 +60,13 @@ const CreateProject = () => {
   });
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const currentUserId = localStorage.getItem("userId");
-
+  
   const columnsProject = [
     {
       field: "no",
       headerName: "No",
       flex: 0.2,
+      sortable: false
     },
     {
       field: "nip",
@@ -103,6 +104,7 @@ const CreateProject = () => {
       field: "joinDate",
       headerName: "Join-End Date",
       flex: 2.5,
+      cellClassName: "joinDate-cell",
       renderCell: (params) => {
         return (
           <Grid container columnSpacing={1}>
@@ -110,11 +112,11 @@ const CreateProject = () => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   className="date-input-table"
-                  placeholder="Join Date"
+                  format="DD/MM/YYYY"
                   onChange={(startJoinProject) => {
                     const newJoinDate = startJoinProject.format("YYYY-MM-DD");
                     const updatedListUser = sendData.listUser.map(u => {
-                      if (u.userId === params.row.userId) {
+                      if (u.userId === params.row.userId || currentUserId == params.row.userId) {
                         return { ...u, joinDate: newJoinDate };
                       }
                       return u;
@@ -135,11 +137,11 @@ const CreateProject = () => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   className="date-input-table"
-                  placeholder="End Date"
+                  format="DD/MM/YYYY"
                   onChange={(endJoinProject) => {
                     const newEndDate = endJoinProject.format("YYYY-MM-DD");
                     const updatedListUser = sendData.listUser.map(u => {
-                      if (u.userId === params.row.userId) {
+                      if (u.userId === params.row.userId || currentUserId == params.row.userId) {
                         return { ...u, endDate: newEndDate };
                       }
                       return u;
@@ -185,26 +187,20 @@ const CreateProject = () => {
                 }));
               }
             }}
+            className="date-input-table"
             renderInput={(paramsInput) => (
               <TextField
                 {...paramsInput}
-                name="roleProjectId"
-                label="Select Role"
+                placeholder="Select Role"
                 inputProps={{
                   ...paramsInput.inputProps,
                   style: {
                     height: '8px',
                   }
                 }}
-                InputLabelProps={{
-                  ...paramsInput.InputLabelProps,
-                  style: {
-                    marginTop: '-8px',
-                  },
-                }}
               />
-              )}
-              />
+            )}
+            />
             </Grid>
         );
       }
@@ -226,6 +222,23 @@ const CreateProject = () => {
     },
   ];
   
+  const [filter, setFilter] = useState({
+    sortName: "role",
+    sortType: "desc",
+    search: "",
+  });
+
+  const onFilter = (dataFilter) => {
+    setFilter({
+      sortName:
+        dataFilter.sorting.field !== ""
+          ? dataFilter.sorting[0].field
+          : "nip",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "desc",
+      search: filter.search,
+    });
+  };
 
   const navigate = useNavigate();
   const { setDataAlert } = useContext(AlertContext);
@@ -243,8 +256,8 @@ const CreateProject = () => {
       current: false,
     },
     {
-      href: "/masterProject/detail",
-      title: isEdit ? "Edit Project" : "Create New Project",
+      href: "/master-project/create",
+      title: "Create Project",
       current: true,
     },
   ];
@@ -254,10 +267,7 @@ const CreateProject = () => {
     getOptRoles()
     getOptCompany()
     getOptDataUser('')
-    if(isSelectRole) {
-      setIsInviteDisabled(false)
-    }
-  }, [isSelectRole])
+  }, [filter])
 
 
   const handleInvite = () => {
@@ -265,9 +275,15 @@ const CreateProject = () => {
     for (const newUser of valueUser) {
       let exists = false;
       for (const existingMember of selectedMember) {
-        if (newUser.id === existingMember.id) {
-          exists = true;
+        if(existingMember.id == currentUserId) {
+          setSelectedMember([])
         }
+        if(existingMember.id != currentUserId) {
+          if (newUser.id === existingMember.id) {
+            exists = true;
+          }
+        }
+
       }
       if (!exists) {
         newMembers.push(newUser);
@@ -287,6 +303,7 @@ const CreateProject = () => {
       listUser: updatedListUser
     }));
     
+    setIsInviteDisabled(true)
   }
   const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
 
@@ -323,6 +340,7 @@ const CreateProject = () => {
   };
 
   const getOptDataUser = async (value) => {
+    setLoading(true)
     const res = await client.requestAPI({
       method: 'GET',
       endpoint: `/ol/teamMember?page=0&size=&sort=nip,asc&search=${value}`
@@ -341,6 +359,18 @@ const CreateProject = () => {
       active: item.attributes.active
     }));
     setDataUser(data)
+
+    const dataForm = methods.getValues()
+    const newMembers = data.filter((newUser) => newUser.id == currentUserId);
+    newMembers.forEach((user) => {
+      user.roleSelect = {
+        id: 70,
+        role: 'Master'
+      }
+    });
+    setSelectedMember(newMembers)
+    setValueUser(newMembers)
+    setLoading(false)
   }
 
   const getOptRoles = async () => {
@@ -378,12 +408,6 @@ const CreateProject = () => {
     setOpen(true);
   };
 
-  const confirmSave = async (e) => {
-    e.preventDefault()
-    setIsSave(true);
-    setOpen(true);
-  };
-
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
@@ -397,6 +421,12 @@ const CreateProject = () => {
     },
   });
 
+  const {
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = methods
+  
   const handleClose = () => {
     if (!isSave) {
       setIsEdit(false);
@@ -416,10 +446,19 @@ const CreateProject = () => {
     setData(temp)
   }
 
+  const onSaveSubmit = (data) => {
+    if (Object.keys(methods.formState.errors).length == 0) {
+      setIsSave(true);
+      setOpen(true);
+    }
+  };
+
   const onSave = async () => {
     const dataForm = methods.getValues()
     delete dataForm.userId
     
+    console.log('data form : ', dataForm)
+    console.log('data send : ', sendData)
     const data = {
       ...sendData,
       ...dataForm
@@ -465,7 +504,7 @@ const CreateProject = () => {
       })
     }
     setValueUser(temp)
-    setIsSelectRole(true)
+    setIsInviteDisabled(false)
   }
 
   const searchMember = (value) => {
@@ -476,32 +515,29 @@ const CreateProject = () => {
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
-      <Grid container>
-        <Grid item xs={8} pb={2}>
+      <Grid container columnSpacing={2} rowSpacing={2}>
+        <Grid item xs={12} sm={8} pb={2}>
           <Header judul={"Create Project"} />
         </Grid>
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit()}>
+            <form onSubmit={handleSubmit(onSaveSubmit)}>
               <div className="card-container-detail">
-                <Grid
-                  item
-                  container
-                  columnSpacing={3.79}
-                  rowSpacing={3.79}
-                  xs={12}
-                >
-                  <Grid item xs={6}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
                     <FormInputText
                       focused
                       name="projectName"
                       className="input-field-crud"
                       placeholder="e.g Project Internal 79"
-                      label="Project Name"
+                      label="Project Name *"
                     />
                   </Grid>
-                  <Grid item xs={6}>
-                  <FormControl fullWidth>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="companyId"
+                      control={control}
+                      render={({ field }) => (
                     <Autocomplete
                       disablePortal
                       name="companyId"
@@ -512,88 +548,132 @@ const CreateProject = () => {
                       onChange={(_event, newValue) => {
                         if (newValue) {
                           handleChange({ target: { name: 'companyId', value: newValue.companyId } }, newValue);
+                          field.onChange(newValue.companyId);
                         }
                       }}
                       isOptionEqualToValue={(option, value) => option.id === value.id}                      
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Company Name"
+                          label="Company Name *"
                           placeholder="Select Company"
                           InputLabelProps={{ shrink: true }}
-                        />
+                          error={!!errors.companyId}
+                          helperText={errors.companyId ? errors.companyId.message : ''}/>
                       )}
                     />
-                  </FormControl>
-
+                    )}
+                    />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <FormInputText
                       focused
                       name="picProjectName"
                       className="input-field-crud"
                       placeholder="e.g John Doe"
-                      label="PIC Project Name"
+                      label="PIC Project Name *"
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <FormInputText
                       focused
                       name="picProjectPhone"
+                      type="number"
                       className="input-field-crud"
                       placeholder="e.g 08123456789"
-                      label="PIC Project Phone"
+                      label="PIC Project Phone *"
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          name="startDate"
-                          label="Start Date Project"
-                          format="DD/MM/YYYY"
-                          sx={{ width: "100%", paddingRight: "20px" }}
-                          value={startProject}
-                          onChange={(startProjectData) => {
-                            setStartProject(startProjectData.format("YYYY-MM-DD"));
-                            setData((prevData) => ({
-                              ...prevData,
-                              startDate: startProjectData.format("YYYY-MM-DD")
-                            }));
-                          }}
-                          slotProps={{textField:{placeholder:"Select date"}}}
-                        />
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            label="Start Date Project *"
+                            format="DD/MM/YYYY"
+                            name={field.name}
+                            sx={{ width: "100%" }}
+                            value={field.value}
+                            onChange={(startProjectDate) => {
+                              field.onChange(startProjectDate.format("YYYY-MM-DD"));
+                              setStartProject(startProjectDate.format("YYYY-MM-DD"));
+                            }}
+                            onAccept={field.onBlur}
+                            slotProps={{
+                              textField: {
+                                error: !!errors.startDate,
+                              },
+                            }}
+                          />
+                        )}
+                      />
+                      {errors.startDate && (
+                        <Typography
+                          color="#d32f2f"
+                          textAlign={"left"}
+                          fontSize={12}
+                          paddingY={'3px'}
+                          paddingX={'13px'}
+                        >
+                          {errors.startDate.message}
+                        </Typography>
+                      )}
                     </LocalizationProvider>
                   </Grid>
-                  <Grid item xs={6}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          name="endDate"
-                          label="End Date Project"
-                          format="DD/MM/YYYY"
-                          sx={{ width: "100%", paddingRight: "20px" }}
-                          value={endProject}
-                          onChange={(endProjectDate) => {
-                            setEndProject(endProjectDate.format("YYYY-MM-DD"));
-                            setData((prevData) => ({
-                              ...prevData,
-                              endDate: endProjectDate.format("YYYY-MM-DD")
-                            }));
-                          }}
-                          slotProps={{textField:{placeholder:"Select date"}}}
-                        />
+                  <Grid item xs={12} sm={6}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            label="End Date Project *"
+                            format="DD/MM/YYYY"
+                            name={field.name}
+                            sx={{ width: "100%" }}
+                            value={field.value}
+                            onChange={(endProjectDate) => {
+                              field.onChange(endProjectDate.format("YYYY-MM-DD"));
+                              setEndProject(endProjectDate.format("YYYY-MM-DD"));
+                            }}
+                            onAccept={field.onBlur}
+                            slotProps={{
+                              textField: {
+                                error: !!errors.endDate,
+                              },
+                            }}
+                          />
+                        )}
+                      />
+                      {errors.endDate && (
+                        <Typography
+                          color="#d32f2f"
+                          textAlign={"left"}
+                          fontSize={12}
+                          paddingY={'3px'}
+                          paddingX={'13px'}
+                        >
+                          {errors.endDate.message}
+                        </Typography>
+                      )}
                     </LocalizationProvider>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <FormInputText
                       focused
                       name="initialProject"
                       className="input-field-crud"
                       placeholder="e.g T-PR-WR-001"
-                      label="Initial Project"
+                      label="Initial Project *"
                     />
                   </Grid>
-                  <Grid item xs={6}>
-                    <FormControl fullWidth>
+                  <Grid item xs={12} sm={6}>
+                    <Controller
+                      name="projectType"
+                      control={control}
+                      render={({ field }) => (
                       <Autocomplete
                         disablePortal
                         name="projectType"
@@ -604,30 +684,50 @@ const CreateProject = () => {
                         onChange={(_event, newValue) => {
                           if(newValue){
                             handleChange({target : { name : 'projectType', value: newValue.id }}, newValue)
+                            field.onChange(newValue.id);
                           }
                         }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         renderInput={(params) => (
                           <TextField 
                           {...params}
-                          label="Project Type"
+                          label="Project Type *"
                           placeholder="Select Project Type"
-                          InputLabelProps={{ shrink: true }} />
+                          InputLabelProps={{ shrink: true }} 
+                          error={!!errors.projectType}
+                          helperText={errors.projectType ? errors.projectType.message : ''}/>
                         )}
-                      />
-                    </FormControl>
+                        />
+                      )}
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <FormInputText
-                      focused
+                    <Controller 
+                      control={control}
                       name="projectDescription"
-                      className="input-field-crud"
-                      placeholder="e.g Project internal for Working Reports Employee"
-                      label="Project Description"
+                      defaultValue=""
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          fullWidth
+                          focused
+                          className="input-field-crud"
+                          placeholder="e.g Project internal for Working Reports Employee"
+                          label="Project Description"
+                          InputProps={{
+                            maxLength: 255,
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                {field.value.length}/255
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>
-                <Grid item container mt={4} xs={12}>
+                <Grid item container mt={4} spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="inputDetail" sx={{fontWeight: 'bold', fontSize: 20}}>Teams Member</Typography>
                   </Grid>
@@ -637,58 +737,66 @@ const CreateProject = () => {
                         <Grid item xs={12}>
                           <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
                         </Grid>
-                        <Grid item xs={7}>
-                          <Autocomplete
-                            multiple
-                            name="userId"
-                            value={valueUser}
-                            limitTags={2}
-                            onChange={(_event, newValue) => {
-                              setValueUser([...newValue])
-                            }}
-                            // onKeyUpCapture
-                            onKeyUpCapture={debounce((event) => searchMember(event.target.value), 500)}
-                            options={dataUser}
-                            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-                            className='auto-custom'
-                            isOptionEqualToValue={(option, value) => option.id === value.id}
-                            renderInput={(params) => (
-                              <TextField 
-                                {...params}
-                                focused
-                                label="Invite by name" 
-                                placeholder="Search name"
-                                className='input-field-crud bg-white auto-chips'
-                              />
-                            )}
-                          >
-                          </Autocomplete>
+                        <Grid item xs={12} sm={7}>
+                        <Controller
+                          name="userId"
+                          control={control}
+                          render={({ field }) => (
+                            <Autocomplete
+                              {...field}
+                              name="userId"
+                              multiple
+                              limitTags={2}
+                              onChange={(_event, newValue) => {
+                                setValueUser((prevUser) => [...prevUser, ...newValue])
+                              }}
+                              className="input-field-crud bg-white auto-chips"
+                              onKeyUpCapture={debounce((event) => searchMember(event.target.value), 500)}
+                              options={dataUser}
+                              getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                              isOptionEqualToValue={(option, value) => option.id === value.id}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  InputLabelProps={{ shrink: true }} 
+                                  label="Invite by name"
+                                  placeholder="Search name"/>
+                                
+                              )}
+                            />
+                          )}
+                        />
+                          
                         </Grid>
-                        <Grid item xs={2.5}>
-                          <Autocomplete
-                            disablePortal
-                            name="roleProjectId"
-                            options={roles}
-                            getOptionLabel={(option) => option.role}
-                            onChange={(_event, newValue) => {
-                              onChangeRole(newValue)
-                            }}
-                            sx={{ width: "100%" }}
-                            renderInput={(params) => (
-                              <TextField
-                                focused
-                                {...params} 
-                                label="Select Role"
-                                placeholder="Search Role" 
-                                className='blue-outline input-field-crud'
-                              />
-                            )}
-                          />
+                        <Grid item xs={12} sm={2.5}>
+                            <Autocomplete
+                              disablePortal
+                              name="roleProjectId"
+                              options={roles}
+                              getOptionLabel={(option) => option.role}
+                              onChange={(_event, newValue) => {
+                                onChangeRole(newValue)
+                              }}
+                              sx={{ width: "100%" }}
+                              className="blue-outline input-field-crud"
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  InputLabelProps={{ shrink: true }} 
+                                  label="Select Role *"
+                                  placeholder="Search Role"
+                                />
+                              )}
+                            />
+                          
                         </Grid>
-                        <Grid item xs={2.5}>
+                        <Grid item xs={12} sm={2.5}>
                           <Button 
                             fullWidth
-                            style={{ minHeight: '72px'}}
+                            sx={{ minHeight: {
+                              xs: '48px',
+                              sm: '72px'
+                            }}}
                             variant="saveButton"
                             onClick={handleInvite}
                             disabled={isInviteDisabled}
@@ -703,28 +811,31 @@ const CreateProject = () => {
                     <TableNative
                       data={updateData}
                       columns={columnsProject}
-                      getRowId={(row) => row.id}
+                      onFilter={(dataFilter => onFilter(dataFilter))}
+                      loading={loading}
                     />
                   </Grid>
                 </Grid>
-                <Grid item container xs={12} justifyContent="end" mt={3.5}>
-                  <Grid item xs textAlign="right">
-                    <Button
-                      style={{ marginRight: "16px" }}
-                      variant="cancelButton"
-                      onClick={() => cancelData()}
-                    >
-                      Cancel Data
-                    </Button>
-                    <Button 
-                      variant="saveButton"
-                      type="submit"
-                      onClick={confirmSave}
-                      >
-                      Save Data
-                    </Button>
-                  </Grid>
+                <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                <Grid item xs={12} sm={2} textAlign="right">
+                  <Button
+                    fullWidth
+                    variant="cancelButton"
+                    onClick={() => cancelData()}
+                  >
+                    Cancel Data
+                  </Button>
                 </Grid>
+                <Grid item xs={12} sm={2} textAlign="right">
+                  <Button 
+                    fullWidth
+                    variant="saveButton"
+                    type="submit"
+                  >
+                    Save Data
+                  </Button>
+                </Grid>
+              </Grid>
               </div>
             </form>
           </FormProvider>

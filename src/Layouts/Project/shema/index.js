@@ -4,23 +4,35 @@ const textPlease = "Please Input";
 
 const schemacompany = yup.object({
   projectName: yup.string().max(30).required(`${textPlease} Project Name`),
-  companyName: yup.string().max(30).required(`${textPlease} Company Name`),
+  companyId: yup.string().max(30).required(`Please Select Company`),
   picProjectName: yup.string().max(30).required(`${textPlease} PIC Project Name`),
   picProjectPhone: yup.string().max(14).required(`${textPlease} PIC Project Phone`),
-  projectType: yup.string().max(30).required(`${textPlease} Project Type`),
-  projectDescription: yup.string().max(30).required(`${textPlease} Project Description`),
+  projectType: yup.string().max(30).required(`Please Select Project Type`),
   initialProject: yup.string().max(50).required(`${textPlease} Initial Project`),
-  npwp: yup
-    .string()
-    .matches(
-      /^(\d{2})[.](\d{3})[.](\d{3})[.](\d-)(\d{3})[.](\d{3})$/g,
-      "NPWP must be XX.XXX.XXX.X-XXX.XXX"
-    )
-    .required(`${textPlease} NPWP`),
-  address: yup.string().required(`${textPlease} Adress`),
-  // picName: yup.string().required(`${textPlease} PIC Name`),
-  // picPhone: yup.number().positive().required(`${textPlease} PIC Name`),
-  // picEmail: yup.string().email(`${textPlease} Valid Email`).required(`${textPlease} PIC Email`)
+  startDate: yup
+    .date()
+    .typeError("Invalid Date")
+    .required("Please Select Project Start Date")
+    .test(
+      "start-date",
+      "Start Date must be before Project End Date",
+      function (startDate) {
+        const endDate = this.parent.endDate;
+        if (!startDate || !endDate) return true;
+
+        return new Date(startDate) <= new Date(endDate);
+      }
+    ),
+  endDate: yup
+    .date()
+    .typeError("Invalid Date")
+    .required("Please Select Project End Date")
+    .test("end-date", "End Date must be after Project Start Date", function (endDate) {
+      const startDate = this.parent.startDate;
+      if (!startDate || !endDate) return true;
+
+      return new Date(endDate) >= new Date(startDate);
+    }),
 });
 
 export default schemacompany;

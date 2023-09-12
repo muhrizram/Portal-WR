@@ -33,6 +33,7 @@ import dayjs from "dayjs";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
 import { AlertContext } from "../../../context";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../../Component/Searchbar";
 
 const DetailProject = () => {
   
@@ -48,7 +49,8 @@ const DetailProject = () => {
   const [dataDetail, setDataDetail] = useState({});
   const [editData, setEditData] = useState({});
   const [columnsProject, setColumns] = useState([])
-
+  const [isInviteDisabled, setIsInviteDisabled] = useState(true);
+  const [loading, setLoading] = useState(false)
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
   useEffect(() => {
@@ -80,7 +82,8 @@ const DetailProject = () => {
     {
       field: "no",
       headerName: "No",
-      flex: 0.3,
+      flex: 0.2,
+      sortable: false,
     },
     {
       field: "nip",
@@ -90,7 +93,7 @@ const DetailProject = () => {
     {
       field: "name",
       headerName: "Name",
-      flex: 1.5,
+      flex: 2,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -103,10 +106,10 @@ const DetailProject = () => {
               alt="Profile Image"
             />
             <Grid container>
-              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
-                <span className="text-name">{params.row.name}</span>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
+              <span className="text-name">{params.row.name}</span>
               </Grid>
-              <Grid style={{ marginLeft: "0.5rem" }} item xs={6}>
+              <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
                 <span className="text-name">{params.row.assignment}</span>
               </Grid>
             </Grid>
@@ -119,7 +122,7 @@ const DetailProject = () => {
           {
             field: "joinDate",
             headerName: "Join-End Date",
-            flex: 3,
+            flex: 3.5,
             renderCell: (params) => {
               return (
                 <Grid container>
@@ -210,19 +213,14 @@ const DetailProject = () => {
                       <TextField
                         {...paramsInput}
                         name="roleProjectId"
-                        label="Select Role"
+                        placeholder="Select Role"
                         inputProps={{
                           ...paramsInput.inputProps,
                           style: {
                             height: '8px',
                           },
                         }}
-                        InputLabelProps={{
-                          ...paramsInput.InputLabelProps,
-                          style: {
-                            marginTop: '-8px',
-                          },
-                        }}
+                       
                       />
                     )}
                   />
@@ -249,14 +247,14 @@ const DetailProject = () => {
         ]
       : [
           {
-            field: "joinandEndDate",
+            field: "joinDate",
             headerName: "Join-End Date",
             flex: 2,
           },
           {
             field: "role",
             headerName: "Role",
-            flex: 1.5,
+            flex: 1,
           },
         ]
       ),
@@ -264,6 +262,30 @@ const DetailProject = () => {
     )
   }, [isEdit, editData])
 
+  const [filter, setFilter] = useState({
+    sortName: "role",
+    sortType: "desc",
+    search: "",
+  });
+
+  const onFilter = (dataFilter) => {
+    setFilter({
+      sortName:
+        dataFilter.sorting.field !== ""
+          ? dataFilter.sorting[0].field
+          : "nip",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "desc",
+      search: filter.search,
+    });
+  };
+
+  const handleChangeSearch = (event) => {    
+    setFilter({
+      ...filter,
+      search: event.target.value.toLowerCase()
+    });
+  }
 
   const dataBread = [
     {
@@ -288,8 +310,8 @@ const DetailProject = () => {
     getOptRoles()
     getOptDataUser()
     getOptCompany()
-    getDetailProject()    
-  }, [])
+    getDetailProject()
+  }, [filter])
 
   const navigate = useNavigate();
   const { setDataAlert } = useContext(AlertContext);
@@ -365,7 +387,9 @@ const DetailProject = () => {
       teamMember: updatedListUser
     }));
   }
-
+  
+  
+  
   const updateData = [...dataMember, ...selectedMember.map((row, index) => ({
     ...row,
     no: dataMember.length + index +1,
@@ -381,7 +405,7 @@ const DetailProject = () => {
       id: parseInt(row.roleId),
       role: row.role
     },
-    joinandEndDate: (dayjs(row.joinDate).format('DD/MM/YYYY')) + '   -   ' + (dayjs(row.endDate).format('DD/MM/YYYY')),
+    joinDate: (dayjs(row.joinDate).format('DD/MM/YYYY')) + '   -   ' + (dayjs(row.endDate).format('DD/MM/YYYY')),
   }))]
 
   const getOptDataUser = async () => {
@@ -445,6 +469,7 @@ const DetailProject = () => {
     setEditData(editData)
   };
 
+
   let methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
@@ -457,6 +482,8 @@ const DetailProject = () => {
       initialProject: ''
     },
   });
+
+  let {control, formState: {errors}, handleSubmit} = methods;
 
   const handleClose = () => {
     if (!isSave) {
@@ -530,10 +557,11 @@ const DetailProject = () => {
   }
 
   const getDetailProject = async () => {
+    setLoading(true)
     const id = localStorage.getItem('projectId')    
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/project/detail-project/projectId=${id}?search=&sort=role,asc`
+      endpoint: `/project/detail-project/projectId=${id}?search=${filter.search}&sort=${filter.sortName},${filter.sortType}`
     })
     const formattedData = res.data.attributes.teamMember.map((member,index )=> ({
       id: member.userId.toString(),
@@ -557,6 +585,7 @@ const DetailProject = () => {
     setdataMember(formattedData);
     if (res) {
       setDataDetail(res.data.attributes)
+      setLoading(false)
     }    
   }
 
@@ -591,17 +620,24 @@ const DetailProject = () => {
       })
     }
     setValueUser(temp)
+    setIsInviteDisabled(false)
+    
   }
 
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
-      <Grid container>
-        <Grid item xs={8} pb={2}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={8}>
           <Header judul={isEdit ? "Edit Project" : "Detail Project"} />
         </Grid>
         {!isEdit && (
-          <Grid item xs={4} alignSelf="center" textAlign="end">
+          <Grid item xs={12} sm={4} alignSelf="center" sx={{
+            textAlign: {
+              xs: 'start',
+              sm: 'end'  
+            }
+          }}>
             <Button
               variant="outlined"
               className="button-text"
@@ -614,16 +650,11 @@ const DetailProject = () => {
         )}
         <Grid item xs={12}>
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit()}>
+            <form onSubmit={handleSubmit()}>
               <div className="card-container-detail">
-                <Grid
-                  item
-                  container
-                  columnSpacing={3.79}
-                  rowSpacing={3.79}
-                  xs={12}
-                >
-                  <Grid item xs={6}>
+                <Grid container columnSpacing={1}
+                  rowSpacing={3.79}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormInputText
                         focused
@@ -631,8 +662,8 @@ const DetailProject = () => {
                         value={editData.projectName || ""}
                         onChange={(e) => handleEditChange(e, "projectName")}
                         className="input-field-crud"
-                        placeholder="e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                        label="Project Name"
+                        placeholder="e.g Project Internal 79"
+                        label="Project Name *"
                       />
                     ) : (
                       <Grid container>
@@ -649,7 +680,7 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormControl fullWidth>
                         <Autocomplete
@@ -667,7 +698,7 @@ const DetailProject = () => {
                           
                           isOptionEqualToValue={(option, value) => option.value === value.value}
                           renderInput={(params) => (
-                            <TextField {...params} label="Company Name" />
+                            <TextField {...params} label="Company Name *" />
                           )}
                         />
                       </FormControl>
@@ -686,7 +717,7 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormInputText
                         focused
@@ -694,8 +725,8 @@ const DetailProject = () => {
                         value={editData.picProjectName || ""}
                         onChange={(e) => handleEditChange(e, "picProjectName")}
                         className="input-field-crud"
-                        placeholder="e.g Selfi Muji Lestari"
-                        label="PIC Project Name"
+                        placeholder="e.g John Doe"
+                        label="PIC Project Name *"
                       />
                     ) : (
                       <Grid container>
@@ -712,16 +743,17 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormInputText
                         focused
                         name="picProjectPhone"
+                        type="number"
                         value={editData.picProjectPhone || ""}
                         onChange={(e) => handleEditChange(e, "picProjectPhone")}
                         className="input-field-crud"
-                        placeholder="e.g PT. Jalan Gatot Subroto no 122"
-                        label="PIC Project Phone"
+                        placeholder="e.g 08123456789"
+                        label="PIC Project Phone *"
                       />
                     ) : (
                       <Grid container>
@@ -738,12 +770,12 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
-                            label="Start Date Project"
+                            label="Start Date Project *"
                             format="DD/MM/YYYY"
                             defaultValue={dayjs(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
@@ -752,7 +784,7 @@ const DetailProject = () => {
                                 startDateProject: startProjectData.format("YYYY-MM-DD")
                               });
                             }}
-                            sx={{ width: "100%", paddingRight: "20px" }}
+                            sx={{ width: "100%" }}
                           />
                         </DemoContainer>
                       </LocalizationProvider>
@@ -771,12 +803,12 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
-                            label="End Date Project"
+                            label="End Date Project *"
                             format="DD/MM/YYYY"
                             defaultValue={dayjs(dataDetail.endDateProject) || null}
                             onChange={(endProjectDate) => {
@@ -785,7 +817,7 @@ const DetailProject = () => {
                                 endDateProject: endProjectDate.format("YYYY-MM-DD")
                               });
                             }}
-                            sx={{ width: "100%", paddingRight: "20px" }}
+                            sx={{ width: "100%" }}
                           />
                         </DemoContainer>
                       </LocalizationProvider>
@@ -804,14 +836,14 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormInputText
                         focused
                         name="initialProject"
                         className="input-field-crud"
-                        placeholder="e.g Selfi Muji Lestari"
-                        label="PIC Project Name"
+                        placeholder="e.g T-PR-WR-001"
+                        label="Initial Project *"
                         value={editData.initialProject || ""}
                         onChange={(e) => handleEditChange(e, "initialProject")}
                       />
@@ -830,7 +862,7 @@ const DetailProject = () => {
                       </Grid>
                     )}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     {isEdit ? (
                       <FormControl fullWidth>
                         <Autocomplete
@@ -847,7 +879,7 @@ const DetailProject = () => {
                           }}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
                           renderInput={(params) => (
-                            <TextField {...params} label="Project Type" />
+                            <TextField {...params} label="Project Type *" />
                           )}
                         />
                       </FormControl>
@@ -872,7 +904,7 @@ const DetailProject = () => {
                         value={editData.projectDescription}
                         onChange={(e) => handleEditChange(e, "projectDescription")}
                         className="input-field-crud"
-                        placeholder="e.g PT. Jalan Gatot Subroto no 122"
+                        placeholder="e.g Project internal for Working Reports Employee"
                         label="Project Description"
                       />
                     ) : (
@@ -892,17 +924,22 @@ const DetailProject = () => {
                   </Grid>
                 </Grid>
                 {isEdit && (
-                  <Grid item container xs={12} justifyContent="end" mt={3.5}>
-                    <Grid item textAlign="right">
+                  <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                    <Grid item xs={12} sm={2} textAlign="right">
                       <Button
-                        style={{ marginRight: "16px" }}
+                        fullWidth
                         variant="cancelButton"
                         onClick={() => cancelData()}
                       >
                         Cancel Data
                       </Button>
-                      <Button variant="saveButton" type="submit"
-                        onClick={confirmSave}>
+                    </Grid>
+                    <Grid item xs={12} sm={2} textAlign="right">
+                      <Button 
+                        fullWidth
+                        variant="saveButton"
+                        onClick={confirmSave}
+                      >
                         Save Data
                       </Button>
                     </Grid>
@@ -914,9 +951,25 @@ const DetailProject = () => {
         </Grid>
         <Grid item container mt={2} xs={12}>
           <div className="card-container-detail">
-            <Grid item xs={12} mb={3}>
-              <Typography variant="inputDetail">Teams Member</Typography>
+          <Grid container alignItems="center" justifyContent="space-between" marginBottom={2}>
+            <Grid item sx={{
+              marginBottom: {
+                xs : '20px',
+                sm: '0px'
+              }}}>
+              <Typography variant="inputDetail" fontSize={20}>Teams Member</Typography>
             </Grid>
+            {!isEdit && (
+              <Grid item style={{ marginLeft: "auto" }}>
+                <SearchBar
+                  placeholder="Nip, name, etc"
+                  label="Search By"
+                  onChange={handleChangeSearch}
+                />
+              </Grid>
+            )}
+          </Grid>
+
             {isEdit && (
               <Grid item xs={12} mb={2}>
                 <div className='card-project' >
@@ -924,7 +977,7 @@ const DetailProject = () => {
                     <Grid item xs={12}>
                       <Typography variant="inputDetail" fontWeight="600">Member Invite</Typography>
                     </Grid>
-                    <Grid item xs={7}>
+                    <Grid item xs={12} sm={7}>
                       <Autocomplete
                         multiple
                         name="userId"
@@ -952,7 +1005,7 @@ const DetailProject = () => {
                       >
                       </Autocomplete>
                     </Grid>
-                    <Grid item xs={2.5}>
+                    <Grid item xs={12} sm={2.5}>
                       <Autocomplete
                         disablePortal
                         name="roleProjectId"
@@ -968,19 +1021,23 @@ const DetailProject = () => {
                           <TextField
                             focused
                             {...params} 
-                            label="Select Role"
+                            label="Select Role *"
                             placeholder="Search Role" 
                             className='blue-outline input-field-crud'
                           />
                         )}
                       />
                     </Grid>
-                    <Grid item xs={2.5}>
+                    <Grid item xs={12} sm={2.5}>
                       <Button 
                         fullWidth
-                        style={{ minHeight: '72px'}}
+                        sx={{ minHeight: {
+                          xs: '48px',
+                          sm: '72px'
+                        }}}
                         variant="saveButton"
                         onClick={handleInvite}
+                        disabled={isInviteDisabled}
                       >
                         INVITE
                       </Button>
@@ -993,7 +1050,8 @@ const DetailProject = () => {
               <TableNative
                 data={isEdit ? updateData : DetailMemberData}
                 columns={columnsProject}
-                getRowId={(params) => { return params.id }}
+                onFilter={(dataFilter => onFilter(dataFilter))}
+                loading={loading}
               />
             </Grid>
           </div>
