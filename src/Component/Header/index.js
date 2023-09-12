@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography } from "@mui/material";
+import { Hidden, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 const Index = (props) => {
   const { judul } = props;
@@ -7,9 +7,21 @@ const Index = (props) => {
     <Grid container rowSpacing={3}>
       <Grid item xs={12}>
         <Grid container className="containerHeader">
-          <div className="dividerHeader" />
-          <Grid item xs={11.9}>
-            <Typography variant="headerCardMenu">{`${judul}`}</Typography>
+          <Grid item>
+            <div className="dividerHeader" />
+          </Grid>
+          <Grid item xs={11}>
+          <Hidden mdDown>
+            <Typography variant="headerCardMenu" padding={2}>
+              {`${judul}`}
+            </Typography>
+          </Hidden>
+
+          <Hidden mdUp>
+            <Typography variant="body2" padding={1} marginTop={1.5}>
+              {`${judul}`}
+            </Typography>
+          </Hidden>
           </Grid>
         </Grid>
       </Grid>

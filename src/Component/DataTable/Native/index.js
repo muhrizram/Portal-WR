@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { DataGrid } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
@@ -10,7 +10,37 @@ const TableNative = ({
   columns,
   disableRowSelectionOnClick = false,
   checkboxSelection = false,
+  onFilter,
+  loading = false,
 }) => {
+  const [sorting, setSort] = useState([]);
+
+  const changeSort = (model) => {
+    console.log('model table : ', model);
+    if (model.length > 0) {
+      setSort([{ ...model }]);
+    } else {
+      setSort([
+        {
+          field: "",
+          sort: "",
+        },
+      ]);
+    }
+  };
+
+  const handleBuildList = (filter) => {
+    onFilter(filter);
+  };
+
+  useEffect(() => {
+    const filter = {
+      sorting: sorting.length > 0 ? { ...sorting[0] } : { field: "", sort: "" },
+    };
+    handleBuildList(filter);
+  }, [sorting]);
+
+
   return (
     <Grid container>
       {data.length > 0 ? (
@@ -19,12 +49,16 @@ const TableNative = ({
             rows={data}
             columns={columns}
             disableRowSelectionOnClick={disableRowSelectionOnClick}
+            onSortModelChange={(model) => changeSort(model)}
             hideFooterPagination
             disableColumnFilter
             disableColumnMenu
             hideFooter
+            loading={loading}
             checkboxSelection={checkboxSelection}
             getRowId={(row) => row.id}
+            sortingMode="server"
+            rowHeight={80}
           />
         </Grid>
       ) : (
@@ -40,7 +74,7 @@ const TableNative = ({
           textAlign="center"
         >
           <Grid item xs={12} pb={3.75}>
-            <img src={blanktable} alt="blank-table" />
+            <img src={blanktable} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }} />
           </Grid>
           <Grid item xs={12}>
             <Typography variant="noDataTable">
