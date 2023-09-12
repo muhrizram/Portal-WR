@@ -127,6 +127,7 @@ const DetailProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         className="date-input-table"
+                        format="DD/MM/YYYY"
                         defaultValue={dayjs(params.row.joinDate)}
                         onChange={(startJoinProject) => {
                           const newStartDate = startJoinProject.format("YYYY-MM-DD");
@@ -154,6 +155,7 @@ const DetailProject = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         className="date-input-table"
+                        format="DD/MM/YYYY"
                         defaultValue={dayjs(params.row.endDate)}
                         onChange={(endJoinProject) => {
                           const newEndDate = endJoinProject.format("YYYY-MM-DD");
@@ -379,7 +381,7 @@ const DetailProject = () => {
       id: parseInt(row.roleId),
       role: row.role
     },
-    joinandEndDate: (dayjs(row.joinDate).format('DD-MM-YYYY')) + '   -   ' + (dayjs(row.endDate).format('DD-MM-YYYY')),
+    joinandEndDate: (dayjs(row.joinDate).format('DD/MM/YYYY')) + '   -   ' + (dayjs(row.endDate).format('DD/MM/YYYY')),
   }))]
 
   const getOptDataUser = async () => {
@@ -742,6 +744,7 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="Start Date Project"
+                            format="DD/MM/YYYY"
                             defaultValue={dayjs(dataDetail.startDateProject) || null}
                             onChange={(startProjectData) => {
                               setEditData({
@@ -762,7 +765,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dayjs(dataDetail.startDateProject).format('DD-MM-YYYY')}
+                            {dayjs(dataDetail.startDateProject).format('DD/MM/YYYY')}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -774,6 +777,7 @@ const DetailProject = () => {
                         <DemoContainer components={["DatePicker"]}>
                           <DatePicker
                             label="End Date Project"
+                            format="DD/MM/YYYY"
                             defaultValue={dayjs(dataDetail.endDateProject) || null}
                             onChange={(endProjectDate) => {
                               setEditData({
@@ -794,7 +798,7 @@ const DetailProject = () => {
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="inputDetail">
-                            {dayjs(dataDetail.endDateProject).format('DD-MM-YYYY')}
+                            {dayjs(dataDetail.endDateProject).format('DD/MM/YYYY')}
                           </Typography>
                         </Grid>
                       </Grid>
