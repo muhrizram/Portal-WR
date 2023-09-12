@@ -303,7 +303,7 @@ const CreateOvertime = ({
 
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/taskProject?projectId=${id}&search=`
+      endpoint: `/ol/taskProject?projectId=${id}&userId=${currentUserId}&search=`
     })
 
     const data = res.data.map(item => ({backlogId : parseInt(item.id), taskName: item.attributes.taskName, actualEffort: item.attributes.actualEffort}));
@@ -351,9 +351,9 @@ const onSave = async () => {
       }) 
       // onSaveSuccess();
         // navigate('/workingReport')
+        window.location.href = '/workingReport';
         closeTask(false)
         setOpentask(false)
-        window.location.href = '/workingReport';
       
     }
     else {          
