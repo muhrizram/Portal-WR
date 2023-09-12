@@ -60,8 +60,8 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
 
   const onContinue = async () => {
     let body = {};
-    let workingReportId = null;
-      if(!beforeThanToday){       
+    let workingReportId = null;    
+      if(!beforeThanToday){
           if (presence.value === "42") {
           body = {
             periodId: dataPeriod.period,
