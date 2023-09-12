@@ -506,13 +506,6 @@
   cursor: pointer;
 }
 
-.custom-file-input-null {
-  margin-left: 47px;
-  opacity: 0;
-  position: absolute;
-  cursor: pointer;
-}
-
 .button-clear{
   display: flex;
 padding: 4px;

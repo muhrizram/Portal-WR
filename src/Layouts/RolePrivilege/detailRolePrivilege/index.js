@@ -27,6 +27,9 @@ import TimelineDot from "@mui/lab/TimelineDot";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { FormProvider, useForm } from "react-hook-form";
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 
 const DetailPrivilege = () => {
@@ -57,6 +60,16 @@ const DetailPrivilege = () => {
     getDetailRolePrivilege()
     getDataPrivilege()
   }, [])
+
+  const textPlease = 'Please Input'
+  const schemaRolePrivilege = Yup.object().shape({
+    privilege: Yup.string()
+      .required(`${textPlease} Privilege`)
+  });
+
+  const { handleSubmit, formState: { errors }, register } = useForm({
+    resolver: yupResolver(schemaRolePrivilege),
+  });
 
   const [detail, setDetail] = useState({});
   const [idDetail,setIdDetail] = useState()
@@ -202,6 +215,14 @@ const DetailPrivilege = () => {
                             {privilegeCheckboxes.slice(5)}
                             </FormGroup>
                             </Grid>
+                            {privilegeCheckboxes.length === 0 && (
+                              <Typography
+                                variant="caption"
+                                sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
+                              >
+                                {errors.privilege ? errors.privilege.message : ''}
+                              </Typography>
+                            )}
                             </Grid>
                       </Grid>
                     </Grid>

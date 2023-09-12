@@ -211,12 +211,7 @@ const CreateUserRole = () => {
                               />
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
-                        <Typography
-                              sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}
-                              // {...register('nipUser')}
-                              //       error={errors.nipUser !== undefined}
-                              //       helperText={errors.nipUser ? errors.nipUser.message : ''}
-                            >
+                        <Typography sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}>
                               Role *
                             </Typography>
                             <Grid container direction="row" sx={{ marginLeft: "25px" }}>
@@ -226,6 +221,14 @@ const CreateUserRole = () => {
                             <Grid item xs={6}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
+                            {roleCheckboxes.length === 0 && (
+                              <Typography
+                                variant="caption"
+                                sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
+                              >
+                                {errors.role ? errors.role.message : ''}
+                              </Typography>
+                            )}
                           </Grid>
                       </Grid>
                     </Grid>
