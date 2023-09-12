@@ -91,7 +91,7 @@ export default function WorkingReport() {
         setIsHr(true)
       }
     }
-    getData();
+    getData();    
   }, [filter, JSON.stringify(selectedUser)]);
 
   const updateStatusHr = (newValue) => {  
@@ -157,7 +157,6 @@ export default function WorkingReport() {
         open: true,
       });
     }
-
   };
 
   const getDetailData = async (id) => {
@@ -201,7 +200,7 @@ export default function WorkingReport() {
 
   const rebuildData = (resData) => {     
     let temp = [];    
-    temp = resData.data.map((value, index) => {
+    temp = resData.data.map((value, index) => {      
       const isToday = moment( value.attributes.listDate.date).isSame(moment(), 'day');
       return value.attributes.listDate.holiday
         ? {
@@ -215,6 +214,7 @@ export default function WorkingReport() {
             workingReportTaskId: value.attributes.listDate.workingReportTaskId,
             overtime: value.attributes.listDate.overtime,
             holiday: value.attributes.listDate.holiday,
+            isToday: isToday,
             descHoliday: value.attributes.listDate.descHoliday,
           }
         : {
@@ -230,7 +230,7 @@ export default function WorkingReport() {
             isToday: isToday,
             presenceName: value.attributes.listDate.presenceName,
           };      
-    });    
+    });
     // if(selectedUser == null){
     //   setData([])
     // }
@@ -287,7 +287,7 @@ export default function WorkingReport() {
           setIsCheckOut={() => {
             setIsViewTask(false);
             setIsCheckOut(true);
-          }}
+          }}          
           WrIdDetail={WrIdDetail}
           dataAll={data}
           onStatusHr={onStatusHr}

@@ -78,32 +78,33 @@ const DataTable = ({
 
   useEffect(() => {
     const temp = [...columns];
-    temp.push({
-      field: "actions",
-      headerName: "Action",
-      width: 200,
-      sortable: false,
-      renderCell: (data) => {
-        return (
-          <div>
-            {onEdit ? (
-              <IconButton onClick={() => onEdit(data.id)}>
-                <EditOutlined />
-              </IconButton>
-            ) : (
-              <IconButton onClick={() => onDetail(data.id)}>
-                <PreviewIcon />
-              </IconButton>
-            )}
-            {onDelete && (
-              <IconButton onClick={() => onDelete(data.id)}>
-                <DeleteIcon />
-              </IconButton>
-            )}
-          </div>
-        );
-      },
-    });
+    if (onEdit || onDelete || onDetail)
+      temp.push({
+        field: "actions",
+        headerName: "Action",
+        width: 200,
+        sortable: false,
+        renderCell: (data) => {
+          return (
+            <div>
+              {onEdit ? (
+                <IconButton onClick={() => onEdit(data.id)}>
+                  <EditOutlined />
+                </IconButton>
+              ) : (
+                <IconButton onClick={() => onDetail(data.id)}>
+                  <PreviewIcon />
+                </IconButton>
+              )}
+              {onDelete && (
+                <IconButton onClick={() => onDelete(data.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </div>
+          );
+        },
+      });
     setDataColumns(temp);
   }, [columns]);
 

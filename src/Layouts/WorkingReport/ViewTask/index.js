@@ -18,14 +18,15 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
   const [beforeThanToday, setBeforeThanToday] = useState(false);  
   
   useEffect(() => (
+    console.log('dataAll',dataAll),
     getDetailTask(),
     checkForMatch()      
   ),[])
 
   const checkForMatch = () => {
     for (const item of dataAll) {      
-      if (item.workingReportTaskId === WrIdDetail) {      
-        setBeforeThanToday(item.isToday);        
+      if (item.workingReportId === WrIdDetail) {      
+        setBeforeThanToday(item.isToday);
         break;
       }else{
         setBeforeThanToday(false)        
@@ -233,7 +234,9 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
                       <Button
                       startIcon={<CreateIcon />}
                       variant="outlined"
-                      onClick={() => setOpenTask(true)}
+                      onClick={() => {
+                        setOpenTask(true)                        
+                      }}
                       >
                         Edit Task
                       </Button>                    
@@ -269,7 +272,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
                 color="error"
                 onClick={() => {
                   setIsViewTask()
-                  setonOtherUser(false)
+                  setonOtherUser(false)                  
                 }
                   }>
                 Back
