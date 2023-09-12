@@ -31,6 +31,7 @@ const Forgot = ({ changeStat }) => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     const { email } = data;
+    setResendEmail(data);
 
     const res = await client.requestAPI({
       method: 'POST',
@@ -58,8 +59,14 @@ const Forgot = ({ changeStat }) => {
     }
   };
 
+  const [resendWaiting, setResendWaiting] = useState(false);
+  const [resendEmail, setResendEmail] = useState({});
   const handleResend = () => {
-    setSentEmail(false);
+    onSubmit(resendEmail);
+    setResendWaiting(true);
+    setTimeout(()=>{
+      setResendWaiting(false);
+    }, 60000)
   };
 
   return (
@@ -75,7 +82,7 @@ const Forgot = ({ changeStat }) => {
             <Typography variant='body4'>Boom! We've sent an activation link to your email at employee@mail.com. Just click it and let the magic begin!</Typography>
           </Grid>
           <Grid item xs={12} paddingTop={2}>
-            <Typography variant='body4'>Didn't get the mail?  <span style={{ cursor: 'pointer', color: '#0078D7' }} onClick={handleResend}>Resend</span></Typography>
+            <Typography variant='body4'>Didn't get the mail?  <span style={{ cursor: resendWaiting?'unset':'pointer', color: resendWaiting? '#8a8a8a' : '#0078D7' }} onClick={resendWaiting ? ()=>{}: handleResend}>Resend</span></Typography>
           </Grid>
         </Grid>
       ) : (
