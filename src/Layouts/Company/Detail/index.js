@@ -64,8 +64,8 @@ const DetailCompany = () => {
       current: false,
     },
     {
-      href: "/master-company/create",
-      title: "Create New Company",
+      href: "/master-company/detail",
+      title: "Detail Company",
       current: true,
     },
   ];
@@ -92,9 +92,27 @@ const DetailCompany = () => {
     }
   })
 
+  const [filter, setFilter] = useState({
+    sortName: "projectName",
+    sortType: "desc",
+    search: "",
+  });
+
+  const onFilter = (dataFilter) => {
+    setFilter({
+      sortName:
+        dataFilter.sorting.field !== ""
+          ? dataFilter.sorting[0].field
+          : "",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "desc",
+      search: "",
+    });
+  };
+
   useEffect(() => {
     getDataDetail()
-  }, [])
+  }, [filter])
 
   const getDataDetail = async () => {
     const id = localStorage.getItem('companyId')
@@ -409,7 +427,7 @@ const DetailCompany = () => {
                 </Button>
               </Grid>
               <Grid item xs={12}>
-                <TableNative data={dataProject} columns={columnsProject} />
+                <TableNative data={dataProject} columns={columnsProject} onFilter={(dataFilter => onFilter(dataFilter))} />
               </Grid>
             </div>
           </Grid>
