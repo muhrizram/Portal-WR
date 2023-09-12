@@ -18,14 +18,14 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
 
   const [file, setFile] = useState('')
   const [filePath, setFilePath] = useState('')
-
+  const [uploadIndex, setUploadIndex] = useState(0);
   const addApproval = () => {
     setApprovalConfig((prevData) => [
       ...prevData, {...approvalConfig}
     ])
   }
 
-  const handleChangeUpload = async (e, index) => {
+  const handleChangeUpload = async (e) => {
     if (e.target.files) {
       const tempFilePath = await uploadFile(e.target.files[0], 'signature')
       const parts = tempFilePath.split('=')
@@ -35,8 +35,8 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
       setFile(URL.createObjectURL(e.target.files[0]));
 
       const tempApproval = [...approvalConfig];
-      tempApproval[index] = {
-        ...tempApproval[index],
+      tempApproval[uploadIndex] = {
+        ...tempApproval[uploadIndex],
         signatureName: fileName
       };
       setApprovalConfig(tempApproval);
@@ -115,14 +115,15 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                 />
               </Grid>
               <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
-              <Button className="button-text" variant="contained" sx={{marginBottom:'10px'}}>
-                <label>Upload Signature</label>
+              <Button className="button-text" variant="contained" sx={{marginBottom:'10px'}} >
+                <label htmlFor='fileInput' style={{cursor:'pointer'}} onClick={()=>setUploadIndex(index)}>Upload Signature</label>
                 <input
+                  id="fileInput"
                   type="file"
                   accept=".png, .jpg"
                   className="custom-file-input"
-                  hidden
-                  onChange={(e) => handleChangeUpload(e, index)}
+                  style={{display:'none'}}
+                  onChange={handleChangeUpload}
                 />
               </Button>
               <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
