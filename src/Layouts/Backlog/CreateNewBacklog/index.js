@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import { yupResolver } from '@hookform/resolvers/yup';
 import FormInputText from '../../../Component/FormInputText';
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import client from '../../../global/client';
 import shemabacklog from '../shema';
 import { AlertContext } from '../../../context';
@@ -35,7 +35,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idProject, taskCode }) => {
+const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idProject, taskCode, errors, control }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
@@ -140,6 +140,11 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
             />
           </Grid>
           <Grid item xs={6}>
+            
+          <Controller
+                      name="statusBacklog"
+                      control={control}
+                      render={({ field }) => (
             <Box sx={{ width: "100%", paddingLeft: "10px" }}>
               <Typography
                 component="legend"
@@ -157,8 +162,12 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                     priority: newValue.toString(),
                   }));
                 }}
+                error={!!errors.priority}
+                helperText={errors.priority ? errors.priority.message : ''}
               />
             </Box>
+                )}
+                />
           </Grid>
         </Grid>
         <Grid container direction="row" style={{ marginTop: "30px" }}>
@@ -175,6 +184,10 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
             />                   
           </Grid>
           <Grid item xs={6}>
+          <Controller
+                      name="statusBacklog"
+                      control={control}
+                      render={({ field }) => (
             <Autocomplete                                
                   disablePortal
                   id="combo-box-demo"
@@ -191,6 +204,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                         ...prevData,
                         statusBacklog: newValue.id,
                       }))
+                      field.onChange(newValue.id)
                     } else {
                       setTaskData((prevData) => ({
                         ...prevData,
@@ -200,6 +214,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                         ...prevData,
                         statusBacklog: null,
                       }))
+                      field.onChange(newValue.id)
                     }
                   }}
                   sx={{ width: "100%" }}
@@ -207,12 +222,16 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   renderInput={(params) => (
                     <TextField
                       {...params}         
-                      focused                    
+                      InputLabelProps={{ shrink: true }}                    
                       label="Backlog Status *"
                       placeholder="Select Status"
+                      error={!!errors.statusBacklog}
+                      helperText={errors.statusBacklog ? errors.statusBacklog.message : ''}
                     />
                   )}
-                />           
+                />  
+                )}
+                />         
           </Grid>
         </Grid>
         <Grid
@@ -234,10 +253,14 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
             />
           </Grid>
             <Grid item xs={6}>
+            <Controller
+              name="assignedTo"
+              control={control}
+              render={({ field }) => (
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              name="statusBacklog"
+              name="assignedTo"
               options={AssignedTo}
               value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
               getOptionLabel={(option) => option.fullName}
@@ -251,18 +274,23 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   ...prevData,
                   userId: newValue ? newValue.id : null, 
                 }))
+                field.onChange(newValue.id)
               }
               }
               sx={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  focused
+                  InputLabelProps={{ shrink: true }}      
                   label="Assigned To *"
                   placeholder="Select Talent"
+                  error={!!errors.assignedTo}
+                  helperText={errors.assignedTo ? errors.assignedTo.message : ''}
                 />
               )}
-            />     
+            />
+            )}
+          />      
             </Grid>
           </Grid>
       </AccordionDetails>
@@ -404,6 +432,11 @@ const CreateNewBacklog = () => {
     }
   })
   
+  const {
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = methods
 
   const SubmitSave = async () => {
     if (!isSave){
@@ -473,7 +506,7 @@ useEffect(() => {
             <Grid className="HeaderDetail" >
               <Grid item xs={12}>
               <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(confirmSave)}>
+                <form onSubmit={handleSubmit(confirmSave)}>
                   <Autocomplete                    
                     disablePortal
                     id="combo-box-demo"
@@ -493,7 +526,12 @@ useEffect(() => {
                       }                      
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} focused label="Project Name *" placeholder="Select Project" />
+                      <TextField 
+                        {...params} 
+                        InputLabelProps={{ shrink: true }}
+                        label="Project Name *" 
+                        placeholder="Select Project" 
+                      />
                     )}
                   />
                   
@@ -509,6 +547,8 @@ useEffect(() => {
                          initialProject={initialProject}
                          idProject={valueproject}
                          taskCode={taskCode}
+                         control={control}
+                         errors={errors}
                        />
                     ))}
                     </>

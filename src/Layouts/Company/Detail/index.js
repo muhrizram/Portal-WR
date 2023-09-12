@@ -60,7 +60,7 @@ const DetailCompany = () => {
     },
     {
       href: "/master-company/detail",
-      title: "Detail Company",
+      title: isEdit ? "Edit Company" : "Detail Company",
       current: true,
     },
   ];

@@ -8,7 +8,7 @@ import SideBar from "../../../Component/Sidebar";
 import { DeleteOutline } from "@mui/icons-material";
 import client from "../../../global/client";
 import FormInputText from '../../../Component/FormInputText';
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { AlertContext } from '../../../context';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -34,7 +34,7 @@ import Box from "@mui/material/Box";
 //assets
 import Allura from "../../../assets/Allura.png";
 
-const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idProject }) => {
+const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idProject, errors, control }) => {
   const [AssignedTo, setAssignedTo] = useState([]);
   const [StatusBacklog, setStatusBacklog] = useState([]);
   const [taskData, setTaskData] = useState(task);
@@ -73,11 +73,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
         }));
   }; 
 
-  const handleDelete = () => {
-    onDelete(taskData.id);
-    onUpdateTasks(taskData.id);
-  };
-
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
     if (
@@ -107,7 +102,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              {/* T - {initialProject} - 00{taskData.id} */}
               {taskData.taskCode}
             </Typography>
           </AccordionSummary>
@@ -117,7 +111,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
       <AccordionDetails>
         <Grid container direction="row">
           <Grid item xs={6}>
-            <TextField
+            <FormInputText
               style={{ paddingRight: "10px" }}
               focused
               name='taskName'
@@ -164,6 +158,10 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             />                   
           </Grid>
           <Grid item xs={6}>
+            <Controller
+              name="statusBacklog"
+              control={control}
+              render={({ field }) => (
           <Autocomplete
               disablePortal
               id="combo-box-demo"
@@ -181,6 +179,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
                   ...prevData,
                   statusBacklog: newValue ? newValue.id : null, 
                 }))
+                field.onChange(newValue.id)
+                
               }
               }
               sx={{ width: "100%" }}
@@ -189,9 +189,13 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
                   {...params}
                   label="Backlog Status *"
                   placeholder="Select Status"
+                  error={!!errors.statusBacklog}
+                  helperText={errors.statusBacklog ? errors.statusBacklog.message : ''}
                 />
               )}
             />
+            )}
+          />
     
           </Grid>
         </Grid>
@@ -227,6 +231,10 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             />
           </Grid>
             <Grid item xs={12}>
+            <Controller
+              name="assignedTo"
+              control={control}
+              render={({ field }) => (
             <Autocomplete
               disablePortal
               style={{marginTop: "30px"}}
@@ -235,8 +243,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               options={AssignedTo}
               value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
               getOptionLabel={(option) => option.fullName}
-              onChange={(event, newValue) =>
-                {
+              onChange={(event, newValue) => {
+                if(newValue){
                 setTaskData((prevData) => ({
                   ...prevData,
                   assignedTo: newValue ? newValue.fullName : null, 
@@ -245,6 +253,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
                   ...prevData,
                   userId: newValue ? newValue.id : null, 
                 }))
+                field.onChange(newValue.id)
+              }
               }
               }
               sx={{ width: "100%" }}
@@ -253,9 +263,13 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
                   {...params}
                   label="Assigned To *"
                   placeholder="Select Talent"
+                  error={!!errors.assignedTo}
+                  helperText={errors.assignedTo ? errors.assignedTo.message : ''}
                 />
               )}
-            />            
+            />         
+            )}
+          />            
             </Grid>
           </Grid>
       </AccordionDetails>
@@ -431,9 +445,7 @@ const DetailBacklog = () => {
     setTasks(updatedTasks);
   };
 
-  const confirmSave = async () => {    
-    // setIsEdit(false)
-    // setIsSave(true)
+  const confirmSave = async () => {
     setOpen(true)    
   }  
 
@@ -474,11 +486,16 @@ const DetailBacklog = () => {
       taskName:'',
       statusBacklog: '',
       priority: '',
-      // taskDescription: '',
       estimationTime:'',
       statusBacklog:''
     }
   })
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors }
+  } = methods
 
   const SubmitSave = async () => {
     if (!isSave){
@@ -544,7 +561,7 @@ const DetailBacklog = () => {
             <Grid className="HeaderDetail" >
               <Grid item xs={12}>
               <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(confirmSave)}>
+                <form onSubmit={handleSubmit(confirmSave)}>
                   <Autocomplete                    
                     disablePortal
                     disabled
@@ -578,6 +595,8 @@ const DetailBacklog = () => {
                          onUpdateTasks={handleUpdateTasks}
                          initialProject={initialProject}
                          idProject={dataDetail.projectId}
+                         control={control}
+                         errors={errors}
                        />
                     ))}
                     </>

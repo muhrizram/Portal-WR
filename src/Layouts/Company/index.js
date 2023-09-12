@@ -28,6 +28,13 @@ const MasterCompany = () => {
       flex: 1,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
+        const maxCharacters = 20
+        let truncatedCompanyName
+        if(!!params.row.companyName) {
+          truncatedCompanyName = params.row.companyName.length > maxCharacters
+          ? params.row.companyName.substring(0, maxCharacters - 3) + "..."
+          : params.row.companyName
+        }
 
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -38,7 +45,7 @@ const MasterCompany = () => {
               />
             <div style={{ marginLeft: "0.5rem" }}>
               <span className="text-name" >
-                  {params.row.companyName}
+                  {truncatedCompanyName}
               </span>
             </div>
           </div>
