@@ -30,6 +30,11 @@ const DetailCompany = () => {
       headerName: "Project Type",
       flex: 1,
     },
+    {
+      field: "projectDesc",
+      headerName: "Detail Project",
+      flex: 1,
+    },
   ]
 
   const navigate = useNavigate()
@@ -205,7 +210,8 @@ const DetailCompany = () => {
   }
 
   const handleProject = () => {
-    navigate('/masterProject')
+    // navigate('/masterProject')
+    navigate('/master-project/create')
   }
 
   const clearPhoto = () => {

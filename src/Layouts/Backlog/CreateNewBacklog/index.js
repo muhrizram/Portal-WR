@@ -40,7 +40,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      // endpoint: '/ol/userList?search=',   
       endpoint: `/ol/backlogUser?search=${idProject}`
     })
     const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.userName}));    
@@ -79,7 +78,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
     onDelete(taskData.id);
     onUpdateTasks(taskData.id);
   };
-
   return (
     <Accordion key={taskData.id} sx={{ boxShadow: 'none', width: '100%' }}>
       <Grid
@@ -119,7 +117,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
       <AccordionDetails>
         <Grid container direction="row">
           <Grid item xs={6}>
-            <TextField
+            <FormInputText
               style={{ paddingRight: "10px" }}
               focused
               name='taskName'
@@ -321,7 +319,7 @@ const CreateNewBacklog = () => {
       if (task.id > deletedTaskId) {
         return {
           ...task,
-          id: task.id - 1,
+          id: task.id,
         };
       }
       return task;
@@ -332,7 +330,13 @@ const CreateNewBacklog = () => {
 
   const handleDeleteTask = (taskId) => {
     handleUpdateTasks(taskId);
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    // const updatedTasks = tasks.splice(taskId, 1)
+    const updatedTasks = tasks.filter((task) => task.id !== taskId)
+    .map((task, index) => ({
+      ...task,
+      id: index + 1, 
+    }));
+    console.log("data update", updatedTasks)
     setTasks(updatedTasks);
   };
 
@@ -389,26 +393,26 @@ const CreateNewBacklog = () => {
       statusBacklog:''
     }
   })
+  
 
   const SubmitSave = async () => {
     if (!isSave){
       setOpen(false);
     }
     else {
-      try {      
-        for (let i = 0; i < tasks.length; i++) {
-          const taskObject = tasks[i];        
+      try {
         const res = await client.requestAPI({
           method: 'POST',
           endpoint: '/backlog/addBacklog',
-          data: taskObject,
+          data: tasks,
         });
     
+        console.log("data", res)
         if(!res.isError){
           setDataAlert({
             severity: 'success',
             open: true,
-            message: res.data.meta.message
+            message: res.meta.message
           }) 
     
           setTimeout(() => {
@@ -424,7 +428,8 @@ const CreateNewBacklog = () => {
           setOpen(false);
         }
         setOpen(false);
-      }} catch (error) {
+      // }
+    } catch (error) {
         console.error('Error:', error);
       }
     }

@@ -38,10 +38,8 @@ const CreateRolePrivilege = () => {
   const [optRole, setOptRole] = useState([])
   const [getoptRoleId, setgetoptRoleId] = useState(null)
   
-  const textPlease = 'Please Input'
+  const textPlease = 'Please Select'
   const schemaRolePrivilege = Yup.object().shape({
-    // nipUser: Yup.string()
-    // .required(`${textPlease} NIP & User`)
     role: Yup.string()
       .required(`${textPlease} Role`),
     privilege: Yup.string()
@@ -162,7 +160,6 @@ const CreateRolePrivilege = () => {
       setgetoptRoleId(value.id)
     }
   }
-  // const options = Array.isArray(optRole) ? optRole : [];
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -185,7 +182,6 @@ const CreateRolePrivilege = () => {
                       sx={{ width: "100%", marginTop: "8px" }}
                       value={selectedRole}
                       getOptionLabel={(option) => option.name}
-                      // onChange={(event, newValue) => handleChangeRole(newValue)}
                       onChange={(event, newValue) => setSelectedRoles(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
@@ -207,9 +203,7 @@ const CreateRolePrivilege = () => {
                 </Typography>
 
                 <Grid container direction="row" sx={{marginLeft:'30px'}}
-                  // {...register('privilege')}
                   error={errors.privilege !== undefined}
-                  // helperText= {errors.privilege && errors.privilege.message}
                   >
                   <Grid item xs={6}>
                   <FormGroup>
@@ -245,9 +239,14 @@ const CreateRolePrivilege = () => {
                     ))}
                   </FormGroup>
                   </Grid>
-
-                  {/* {errors.privilege ? (
-                    <div style={{ color: 'red', fontSize: '12px' }}>{errors.privilege.message}</div>) : ''} */}
+                  {selectPrivilege.length === 0 && (
+                    <Typography
+                      variant="caption"
+                      sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
+                    >
+                      {errors.privilege ? errors.privilege.message : ''}
+                    </Typography>
+                  )}
                 </Grid>
 
                 <Grid

@@ -191,7 +191,7 @@ const MasterCompany = () => {
           totalData={totalData}
           columns={columns}
           onFilter={(dataFilter => onFilter(dataFilter))}
-          placeSearch="company"
+          placeSearch="Company name, etc"
           searchTitle="Search By"
           onAdd={() => handleAdd()}
           handleChangeSearch={handleChangeSearch}
