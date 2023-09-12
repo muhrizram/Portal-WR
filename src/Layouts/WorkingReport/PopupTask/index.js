@@ -596,7 +596,7 @@ const PopupTask = ({
                           }
                         </>)
                       }
-                      </Grid>                                          
+                      </Grid>
                         <Grid container>
                           <Grid item xs={6} textAlign='left'>
                             <Button
@@ -827,7 +827,7 @@ const PopupTask = ({
                         </>)
                       }
                       </Grid>                  
-                          {dataProject.workingReportId !== undefined &&                           
+                          {(!cekAbsen[idxProject]) && dataProject.workingReportId !== undefined &&                           
                           <Grid container>
                             <Grid item xs={6} textAlign='left'>
                               <Button
