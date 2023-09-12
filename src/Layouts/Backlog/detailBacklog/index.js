@@ -43,8 +43,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      // endpoint: '/ol/userList?search=',   
-      
       endpoint: `/ol/backlogUser?search=${idProject}`
     })
     const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.userName}));    
@@ -113,17 +111,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               {taskData.taskCode}
             </Typography>
           </AccordionSummary>
-        </Grid>
-        <Grid item>
-          <Button
-            variant='cancelButton'
-            color="error"
-            onClick={handleDelete}
-            startIcon={<DeleteOutline />}
-            style={{ marginRight: "10px" }}
-          >
-            Delete Task
-          </Button>
         </Grid>
       </Grid>
 
