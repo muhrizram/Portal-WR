@@ -41,7 +41,7 @@ const CreateUserRole = () => {
     nipUser: Yup.string()
     .required(`${textPlease} NIP & User`),
     role: Yup.string()
-      .required(`Please choose role`)
+      .required(`Please select role`)
   });
 
   const { handleSubmit, formState: { errors }, register } = useForm({
@@ -221,7 +221,7 @@ const CreateUserRole = () => {
                             <Grid item xs={6}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
-                            {roleCheckboxes.length === 0 && (
+                            {selectedRoles.length === 0 && (
                               <Typography
                                 variant="caption"
                                 sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}

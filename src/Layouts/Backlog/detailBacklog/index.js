@@ -80,6 +80,16 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
     onUpdateTasks(taskData.id);
   };
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode < 48 || charCode > 57) && 
+      charCode !== 46
+    ) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <Accordion key={taskData.id} sx={{ boxShadow: 'none', width: '100%' }}>
       <Grid
@@ -99,7 +109,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             id="panel1a-header"
           >
             <Typography sx={{ fontSize: "24px" }}>
-              T - {initialProject} - 00{taskData.id}
+              {/* T - {initialProject} - 00{taskData.id} */}
+              {taskData.taskCode}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -208,6 +219,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               focused
               value={taskDataUpdate.estimationTime}
               onChange={handleChange}
+              onKeyPress={handleKeyPress}
               name='estimationTime'
               className='input-field-crud'
               placeholder='e.g 1 Hour'
