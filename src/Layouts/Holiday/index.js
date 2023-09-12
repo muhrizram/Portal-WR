@@ -52,7 +52,6 @@ const MasterHoliday = () => {
   const [idHoliday, setIdHoliday] = useState(null)
   const { setDataAlert } = useContext(AlertContext)
   const [loading, setLoading] = useState(false)
-  const [loadingDelete, setLoadingDelete] = useState(false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
@@ -61,11 +60,6 @@ const MasterHoliday = () => {
     month: null,
     year: CURRENT_YEAR,
   })
-
-  const handleClickOpen = (id) => {
-    setOpenDelete(true)
-    setIdHoliday(id)
-  };
 
   useEffect(() => {
     getData()
@@ -115,11 +109,6 @@ const MasterHoliday = () => {
     setTotalData(resData.meta.page.totalElements)
   }
 
-  const handleClose = () => {
-    setOpenDelete(false);
-    getData()
-  };
-
   const handleAdd = () => {
     setOpenAdd(true)
   };
@@ -142,11 +131,6 @@ const MasterHoliday = () => {
     setOpenEdit(false);
     getData();
   };
-
-  const handleEdit = (id) => {
-    setIdHoliday(id)
-    setOpenEdit(true)
-  }
 
   const handleMonthFilter = (month) => {
     setFilter({
@@ -173,30 +157,6 @@ const MasterHoliday = () => {
     })
   }
 
-  const onDelete = async () => {
-    setLoadingDelete(true);
-    const res = await client.requestAPI({
-      method: 'DELETE',
-      endpoint: `/holiday/delete/${idHoliday}`
-    })
-    if (!res.isError) {
-      setDataAlert({
-        severity: 'warning',
-        open: true,
-        message: res.meta.message
-      })
-      handleClose();
-    } else {
-      setDataAlert({
-        severity: 'error',
-        message: res.error.detail,
-        open: true
-      })
-      setOpenDelete(false)
-    }
-    setLoadingDelete(false);
-  };
-
   return (
     <div>
       <SideBar>
@@ -211,48 +171,7 @@ const MasterHoliday = () => {
           handleChangeYearFilter={(value) => value ? handleYearFilter(value.format("YYYY")) : handleYearFilter(null)}
           onAdd={() => handleAdd()}
           onUpload={() => handleUpload()}
-          onEdit={(id) => handleEdit(id)}
-          onDelete={(id) => handleClickOpen(id)}
         />
-        <Dialog
-          open={openDelete}
-          onClose={() => setOpenDelete(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          className="dialog-delete"
-        >
-          <DialogTitle id="alert-dialog-title" className="dialog-delete-header">
-            {"Delete Data"}
-          </DialogTitle>
-          <DialogContent className="dialog-delete-content">
-            <DialogContentText
-              className="dialog-delete-text-content"
-              id="alert-dialog-description"
-            >
-              Warning: Deleting this data is irreversible. Are you sure you want to proceed?
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions className="dialog-delete-actions">
-            <Button
-              onClick={() => setOpenDelete(false)}
-              variant="outlined"
-              className="button-text"
-            >
-              Cancel
-            </Button>
-            <Button onClick={onDelete} className="delete-button button-text" disabled={loadingDelete}>
-              {loadingDelete?(
-                <>
-                  <CircularProgress size={14} color="inherit" />
-                  <Typography marginLeft={1}>Deleting...</Typography>
-                </>
-                ) : (
-                  "Delete Data"
-                )
-              }
-            </Button>
-          </DialogActions>
-        </Dialog>
       </SideBar>
       <CreateHoliday openAdd={openAdd} setOpenAdd={setOpenAdd} onSaveSuccess={handleSaveSuccess} />
       <UploadHoliday openUpload={openUpload} setOpenUpload={setOpenUpload} onSaveSuccess={handleUploadSuccess} />
