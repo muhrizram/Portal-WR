@@ -102,7 +102,7 @@ const Login = ({ changeStat }) => {
     <>
     <CustomAlert />
     <form onSubmit={handleSubmit(handleLogin)}>
-    <Grid container paddingTop={20}>
+    <Grid container paddingTop={14}>
       <Grid item xs={12}>
         <Typography variant="body2">Welcome to</Typography>
         <Typography variant="body2">Working Report 79 👋</Typography>

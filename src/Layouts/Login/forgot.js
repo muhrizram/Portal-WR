@@ -65,7 +65,7 @@ const Forgot = ({ changeStat }) => {
   return (
     <>
     <CustomAlert />
-    <Grid container paddingTop={22}>
+    <Grid container paddingTop={14}>
       {sentEmail ? (
         <Grid spacing={2} sx={{ textAlign: 'center' }}>
           <Grid item xs={12}>
@@ -81,7 +81,7 @@ const Forgot = ({ changeStat }) => {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid item xs={12}>
-            <Typography variant='body2'>Forget Password 🔒</Typography>
+            <Typography variant='body2'>Forgot Password 🔒</Typography>
           </Grid>
           <Grid item xs={12} paddingTop={2}>
             <Typography variant='body4'>Forgot your password? We've got you covered! Just give us your email and we'll send a reset link straight to your inbox. Easy-peasy!</Typography>
@@ -111,7 +111,7 @@ const Forgot = ({ changeStat }) => {
                 <Typography marginLeft={1}>Loading...</Typography>
               </>
             ) : (
-              "SEND"
+              "SEND TO EMAIL"
             )}
             </Button>
           </Grid>
