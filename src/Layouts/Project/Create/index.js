@@ -244,7 +244,7 @@ const CreateProject = () => {
     },
     {
       href: "/masterProject/detail",
-      title: isEdit ? "Edit Project" : "Detail Project",
+      title: isEdit ? "Edit Project" : "Create New Project",
       current: true,
     },
   ];
@@ -550,6 +550,7 @@ const CreateProject = () => {
                         <DatePicker
                           name="startDate"
                           label="Start Date Project"
+                          format="DD/MM/YYYY"
                           sx={{ width: "100%", paddingRight: "20px" }}
                           value={startProject}
                           onChange={(startProjectData) => {
@@ -559,6 +560,7 @@ const CreateProject = () => {
                               startDate: startProjectData.format("YYYY-MM-DD")
                             }));
                           }}
+                          slotProps={{textField:{placeholder:"Select date"}}}
                         />
                     </LocalizationProvider>
                   </Grid>
@@ -567,6 +569,7 @@ const CreateProject = () => {
                         <DatePicker
                           name="endDate"
                           label="End Date Project"
+                          format="DD/MM/YYYY"
                           sx={{ width: "100%", paddingRight: "20px" }}
                           value={endProject}
                           onChange={(endProjectDate) => {
@@ -576,6 +579,7 @@ const CreateProject = () => {
                               endDate: endProjectDate.format("YYYY-MM-DD")
                             }));
                           }}
+                          slotProps={{textField:{placeholder:"Select date"}}}
                         />
                     </LocalizationProvider>
                   </Grid>

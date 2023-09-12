@@ -73,13 +73,13 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={startDate} onChange={(date) => handleDateChange(date.$d, true)} />
+              <MobileDatePicker value={startDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, true)} />
             </DemoItem>
           </Grid>
           <Grid item padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={endDate} onChange={(date) => handleDateChange(date.$d, false)} />
+              <MobileDatePicker value={endDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
           <Grid item sx={{marginTop:'2%'}}>

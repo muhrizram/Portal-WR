@@ -24,25 +24,27 @@ const LoginScreen = () => {
   }
   return(
       <Grid container height="100vh">
-        <Grid container xs={6} height="100%" display="flex">
-          <Grid item xs={12} paddingTop={4} paddingLeft={6}>
-            <img alt="leftImage" src={logo} />
+        <Grid container height="100%">
+          <Grid item xs={6} height="100%" display="flex" flexDirection="column">
+            <Grid item xs={12} paddingTop={4} paddingLeft={6}>
+              <img alt="leftImage" src={logo} />
+            </Grid>
+            <Grid item xs={12} paddingLeft={{xs:3, md:12, lg:25}} paddingRight={{xs:3, md:12, lg:25}}>
+              {renderComponent(currentStat)}
+            </Grid>
+            <Grid item xs={12} paddingLeft={1.875} paddingBottom={2} display="flex" alignItems="flex-end">
+              <Typography className='text-files-sizes' color='#8a8a8a' fontSize="0.875rem">&copy; {new Date().getFullYear()} PT Padepokan Tujuh Sembilan. All Rights Reserved</Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12} paddingLeft={{xs:3, md:12, lg:25}} paddingRight={{xs:3, md:12, lg:25}}>
-            {renderComponent(currentStat)}
+          <Grid item xs={6} height="100%">
+            <img alt="rightimage" src={rightBackground} style={
+              { 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover'
+              }
+            }/>
           </Grid>
-          <Grid item xs={12} paddingLeft={1.875} paddingBottom={2} display="flex" alignItems="flex-end">
-            <Typography className='text-files-sizes' color='#8a8a8a' fontSize="0.875rem">&copy; {new Date().getFullYear()} PT Padepokan Tujuh Sembilan. All Rights Reserved</Typography>
-          </Grid>
-        </Grid>
-        <Grid item xs={6} height="100%">
-          <img alt="rightimage" src={rightBackground} style={
-            { 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover'
-            }
-          }/>
         </Grid>
       </Grid>
   )
