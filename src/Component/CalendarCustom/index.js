@@ -160,7 +160,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))      
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-      );      
+      );            
       if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
@@ -307,7 +307,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             {data ? 
               <> 
                 <Grid item display="flex" justifyContent="left" sx={{ marginTop: "0.8vh", flexDirection: "column" }}>
-                {info.isToday && !data.workingReportTaskId && !isWeekend(info.date) && !onStatusHr ? (
+                {info.isToday && !data.workingReportTaskId && !isWeekend(info.date) && !onStatusHr && !datalibur? (
                   <Button                    
                     variant="outlined-attedance"
                     onClick={() => {
@@ -369,11 +369,21 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     >
                     task
                     </CustomButton>
-                    ) : moment(info.date).isSameOrBefore(currentDate) ? (                            
+                    ) : moment(info.date).isSameOrBefore(currentDate) && !datalibur ? (                            
                       <CustomButton disabled variant="outlined" >
                         task
                       </CustomButton>
-                      ) : (
+                      ) : datalibur ? (
+                        <Button variant="outlined-holiday" onClick={
+                          () => {
+                          setdescHoliday(data.descHoliday)
+                          setTanggalHoliday(data.tanggal);
+                          setDialogOpenHoliday(true);
+                          }}
+                        >
+                          holiday
+                        </Button>
+                        ) : (
                       <CustomButtonDisabledTask disabled variant="outlined" >
                         task
                       </CustomButtonDisabledTask>  
