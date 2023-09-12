@@ -45,12 +45,7 @@ const DetailCompany = () => {
   const [file, setFile] = useState('')
   const [companyId, setCompanyId] = useState(null)
   const [isEdit, setIsEdit] = useState(false)
-  const [dataDetail, setDataDetail] = useState({
-    // companyName: '',
-    // companyEmail: '',
-    // npwp: '',
-    // address: '',
-  })
+  const [dataDetail, setDataDetail] = useState({})
   const [filePath, setFilePath] = useState('')
   const dataBread = [
     {
