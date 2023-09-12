@@ -114,17 +114,6 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             </Typography>
           </AccordionSummary>
         </Grid>
-        <Grid item>
-          <Button
-            variant='cancelButton'
-            color="error"
-            onClick={handleDelete}
-            startIcon={<DeleteOutline />}
-            style={{ marginRight: "10px" }}
-          >
-            Delete Task
-          </Button>
-        </Grid>
       </Grid>
 
       <AccordionDetails>
