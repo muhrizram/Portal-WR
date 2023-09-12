@@ -61,7 +61,7 @@ const DetailPrivilege = () => {
     getDataPrivilege()
   }, [])
 
-  const textPlease = 'Please Input'
+  const textPlease = 'Please Select'
   const schemaRolePrivilege = Yup.object().shape({
     privilege: Yup.string()
       .required(`${textPlease} Privilege`)
@@ -192,9 +192,12 @@ const DetailPrivilege = () => {
                 </Grid>
 
                 <Grid container className="HeaderDetail">
-                  <>
+                <Grid item xs={12}>
+                  
+                  <FormProvider>
+                        <form onSubmit={handleSubmit()}>  
                     <Grid container spacing={2}>
-                      <Grid item xs container direction="column" spacing={2}>                                              
+                      <Grid item xs container direction="column" spacing={2}>                                            
                         <Grid style={{ padding: "30px" }}>    
                           <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role *" value={detail.roleName} variant="outlined" />
                         </Grid>  
@@ -204,7 +207,9 @@ const DetailPrivilege = () => {
                             >
                               Privilege *
                             </Typography>
-                            <Grid container direction="row" sx={{marginLeft:'30px'}}>
+                            <Grid container direction="row" sx={{marginLeft:'30px'}}
+                              error={errors.privilege !== undefined}
+                              >
                               <Grid item xs={6}>
                                 <FormGroup>
                                   {privilegeCheckboxes.slice(0,5)}
@@ -215,7 +220,7 @@ const DetailPrivilege = () => {
                                   {privilegeCheckboxes.slice(5)}
                                 </FormGroup>
                               </Grid>
-                            {selectedPrivilege.length === 0 && (
+                              {selectedPrivilege.length === 0 && (
                               <Typography
                                 variant="caption"
                                 sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
@@ -236,7 +241,6 @@ const DetailPrivilege = () => {
                     onClick={handleClickCancel}
                     variant='cancelButton'
                     style={{ marginRight: "10px" }}
-                    // color="error"
                   >
                     Cancel Data
                   </Button>
@@ -244,6 +248,7 @@ const DetailPrivilege = () => {
                     variant="contained"
                     className="button-text"
                     onClick={handleClickOpen}
+                    type="submit"
                     style={{ marginRight: "10px" }}
                   >
                     Save Data
@@ -310,7 +315,6 @@ const DetailPrivilege = () => {
                     <DialogActions className="dialog-delete-actions">
                       <Button
                         className="button-text"
-                        // style={{ marginRight: '16px' }}
                         variant="outlined"
                         onClick={handleCloseOpenCancelData}
                       >
@@ -325,7 +329,9 @@ const DetailPrivilege = () => {
                       </Button>
                     </DialogActions>
                   </Dialog>
-                  </>
+                  </form>
+                  </FormProvider>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>            

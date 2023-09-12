@@ -211,19 +211,20 @@ const DetailUserRole = () => {
                             >
                               Role *
                             </Typography>
-                          <Grid container direction="row" sx={{ marginLeft: "25px" }}>
+                          <Grid container direction="row" sx={{ marginLeft: "25px" }}
+                          errors= {errors.role !== undefined}>
                             <Grid item xs={6}>
                               <FormGroup>{roleCheckboxes.slice(0, 3)}</FormGroup>
                             </Grid>
                             <Grid item xs={6}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
-                            {roleCheckboxes.length === 0 && (
+                            {selectedRoles.length === 0 && (
                               <Typography
                                 variant="caption"
                                 sx={{ marginLeft: '30px', color: '#D32F2F', marginTop: '15px' }}
                               >
-                                {errors.privilege ? errors.privilege.message : ''}
+                                {errors.role ? errors.role.message : ''}
                               </Typography>
                             )}
                           </Grid>
