@@ -84,8 +84,8 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
           </Grid>
           <Grid item sx={{marginTop:'2%'}}>
             <Grid display='flex'>
-            <Button onClick={handleApplyFilter}>Filters</Button>
-            <Button onClick={ResetFilter}>Reset</Button>
+            <Button onClick={handleApplyFilter} sx={{textTransform:'none'}}>Filters</Button>
+            <Button onClick={ResetFilter} sx={{textTransform:'none'}}>Reset</Button>
             </Grid>
           </Grid>
         </Grid>

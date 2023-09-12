@@ -428,7 +428,7 @@ export default function WorkingReport() {
                   startIcon={<SettingsIcon />}
                   sx={{ paddingY: 1 }}
                 >
-                  Settings
+                  SETTINGS
                 </Button>
               </Grid>
               {isHr && (
