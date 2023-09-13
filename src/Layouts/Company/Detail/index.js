@@ -16,6 +16,7 @@ import TableNative from '../../../Component/DataTable/Native';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { AlertContext } from '../../../context';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import PreviewIcon from "@mui/icons-material/Preview";  
 
 const DetailCompany = () => {
   const [dataProject, setDataProject] = useState([]) 
@@ -34,6 +35,15 @@ const DetailCompany = () => {
       field: "projectDesc",
       headerName: "Detail Project",
       flex: 1,
+      renderCell: (data) => {
+        return(
+          <div>
+            <IconButton>
+              <PreviewIcon />
+            </IconButton>
+          </div>
+        )
+      }
     },
   ]
 
