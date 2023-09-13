@@ -137,14 +137,17 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
               label='Task Name *'
+              inputProps={{
+                maxLength: 100,
+              }}
             />
           </Grid>
           <Grid item xs={6}>
             
           <Controller
-                      name="statusBacklog"
-                      control={control}
-                      render={({ field }) => (
+            name="statusBacklog"
+            control={control}
+            render={({ field }) => (
             <Box sx={{ width: "100%", paddingLeft: "10px" }}>
               <Typography
                 component="legend"
@@ -157,14 +160,24 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                 name="priority"
                 value={taskDataUpdate.priority}
                 onChange={(event, newValue) => {
+                  field.onChange(newValue)
                   setTaskDataUpdate((prevData) => ({
                     ...prevData,
                     priority: newValue.toString(),
                   }));
                 }}
-                error={!!errors.priority}
-                helperText={errors.priority ? errors.priority.message : ''}
               />
+              {(errors.priority !== undefined) && (
+                <Typography
+                  color="#d32f2f"
+                  textAlign={"left"}
+                  fontSize={12}
+                  paddingY={'3px'}
+                  paddingX={'6px'}
+                >
+                  {errors.priority ? errors.priority.message : ''}
+                </Typography>
+              )}
             </Box>
                 )}
                 />
@@ -181,13 +194,16 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               className='input-field-crud'
               placeholder='e.g Create Login Screen - Front End'
               label='Task Decription'
+              inputProps={{
+                maxLength: 255,
+              }}
             />                   
           </Grid>
           <Grid item xs={6}>
           <Controller
-                      name="statusBacklog"
-                      control={control}
-                      render={({ field }) => (
+            name="statusBacklog"
+            control={control}
+            render={({ field }) => (
             <Autocomplete                                
                   disablePortal
                   id="combo-box-demo"
@@ -250,6 +266,9 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               className='input-field-crud'
               placeholder='e.g 1 Hour'
               label='Estimation Duration *'
+              inputProps={{
+                maxLength: 5,
+              }}
             />
           </Grid>
             <Grid item xs={6}>

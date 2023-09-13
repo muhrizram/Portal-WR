@@ -98,7 +98,7 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
         {"Setting Download Configuration"}
       </DialogTitle>
       <DialogContent className="dialog-delete-content">
-        <DialogContentText>
+        <DialogContentText sx={{marginBottom: '2px'}}>
           Edit setting documents
         </DialogContentText>
       </DialogContent>

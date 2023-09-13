@@ -120,6 +120,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
               label='Task Name *'
+              inputProps={{
+                maxLength: 100,
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -141,6 +144,17 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
                   }));
                 }}
               />
+              {(errors.priority !== undefined) && (
+                <Typography
+                  color="#d32f2f"
+                  textAlign={"left"}
+                  fontSize={12}
+                  paddingY={'3px'}
+                  paddingX={'6px'}
+                >
+                  {errors.priority ? errors.priority.message : ''}
+                </Typography>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -155,6 +169,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               className='input-field-crud'
               placeholder='e.g Create Login Screen - Front End'
               label='Task Decription'
+              inputProps={{
+                maxLength: 255,
+              }}
             />                   
           </Grid>
           <Grid item xs={6}>
@@ -215,6 +232,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               className='input-field-crud'
               placeholder='e.g 1 Hour'
               label='Estimation Duration *'
+              inputProps={{
+                maxLength: 5,
+              }}
             />
           </Grid>
           <Grid item xs={6}>
