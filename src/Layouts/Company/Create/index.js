@@ -207,6 +207,9 @@ const CreateCompany = () => {
                           className='input-field-crud'
                           placeholder='e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                           label='Company Name *'
+                          inputProps={{
+                            maxLength: 50,
+                          }}
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -216,6 +219,9 @@ const CreateCompany = () => {
                           className='input-field-crud'
                           placeholder='e.g company@mail.com'
                           label='Company Email *'
+                          inputProps={{
+                            maxLength: 100,
+                          }}
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -225,6 +231,9 @@ const CreateCompany = () => {
                           className='input-field-crud'
                           placeholder='e.g XX.XXX.XXX.X-XXX.XXX'
                           label='Company NPWP *'
+                          inputProps={{
+                            maxLength: 25,
+                          }}
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -234,6 +243,9 @@ const CreateCompany = () => {
                           className='input-field-crud'
                           placeholder='e.g Jalan Gatot Subroto no 122'
                           label='Company Address *'
+                          inputProps={{
+                            maxLength: 100,
+                          }}
                         />
                       </Grid>
                     </Grid>

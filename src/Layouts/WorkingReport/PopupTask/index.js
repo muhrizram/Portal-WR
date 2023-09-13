@@ -1014,11 +1014,11 @@ const PopupTask = ({
               id="alert-dialog-title"
               className="dialog-delete-header"
             >
-              {DurationTask ? 'Oops!' : 'Oops! You Work So Hard'}
+              {DurationTask ? 'New to the Work Crew' : 'Oops! You Work So Hard'}
               </DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                  {DurationTask ? "can't add task with total duration less than 8 hours!" : "Task exceeds 8-hour duration and cannot be submitted"}
+                  {DurationTask ? "Duration is less than 8 hours, preventing task submission" : "Task exceeds 8-hour duration and cannot be submitted"}
                 </DialogContentText>
               </DialogContent>
               <DialogActions className="dialog-delete-actions"> 

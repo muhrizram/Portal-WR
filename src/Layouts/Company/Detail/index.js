@@ -20,6 +20,12 @@ import PreviewIcon from "@mui/icons-material/Preview";
 
 const DetailCompany = () => {
   const [dataProject, setDataProject] = useState([]) 
+  
+  const getDetailProject = async () => {
+    navigate("/master-project/detail");
+  }
+
+
   const columnsProject = [
     {
       field: "projectName",
@@ -38,7 +44,7 @@ const DetailCompany = () => {
       renderCell: (data) => {
         return(
           <div>
-            <IconButton>
+            <IconButton onClick={getDetailProject}>
               <PreviewIcon />
             </IconButton>
           </div>
@@ -108,8 +114,8 @@ const DetailCompany = () => {
       method: 'GET',
       endpoint: `/company/${id}`
     })
+    console.log("detail com", res)
     if (res.data.attributes) {
-      // setDataProject(res.data.attributes.projects)
       buildDataComp(res.data.attributes.projects)
       const temp = res.data.attributes
       delete temp.createdBy
@@ -298,6 +304,9 @@ const DetailCompany = () => {
                             className='input-field-crud'
                             placeholder='e.g PT. ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                             label='Company Name *'
+                            inputProps={{
+                              maxLength: 50,
+                            }}
                           />
                         ) : (
                           <Grid container>
@@ -318,6 +327,9 @@ const DetailCompany = () => {
                             className='input-field-crud'
                             placeholder='e.g company@mail.com'
                             label='Company Email *'
+                            inputProps={{
+                              maxLength: 100,
+                            }}
                           />
                         ) : (
                           <Grid container>
@@ -338,6 +350,9 @@ const DetailCompany = () => {
                             className='input-field-crud'
                             placeholder='e.g XX.XXX.XXX.X-XXX.XXX'
                             label='Company NPWP *'
+                            inputProps={{
+                              maxLength: 25,
+                            }}
                           />
                         ) : (
                           <Grid container>
@@ -358,6 +373,9 @@ const DetailCompany = () => {
                             className='input-field-crud'
                             placeholder='e.g Jalan Gatot Subroto no 122'
                             label='Company Address *'
+                            inputProps={{
+                              maxLength: 100,
+                            }}
                           />
                         ) : (
                           <Grid container>
