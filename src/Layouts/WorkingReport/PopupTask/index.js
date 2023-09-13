@@ -576,8 +576,7 @@ const PopupTask = ({
                                   </Grid>
                                   <Grid item xs={12}>
                                     <TextField
-                                      focused
-                                      required
+                                      focused                                      
                                       name='taskItem'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.taskItem}
@@ -807,7 +806,6 @@ const PopupTask = ({
                                   <Grid item xs={12}>
                                     <TextField
                                       focused
-                                      required
                                       name='taskItem'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       value={res.detail}

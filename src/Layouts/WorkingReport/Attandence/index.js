@@ -132,15 +132,51 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           }
         }    
     }else{
-      body = {
-        periodId: dataPeriod.period,
-        presenceId: parseInt(presence.value),
-        userId: parseInt(localStorage.getItem("userId")),
-        date: dataPeriod.tanggal,
-        file: filePath,
-      };
-      setdataReadyAttedance(body)   
-      setIsCheckin(true)   
+      if (presence.value != "42") {      
+        body = {
+          periodId: dataPeriod.period,
+          presenceId: parseInt(presence.value),
+          userId: parseInt(localStorage.getItem("userId")),
+          date: dataPeriod.tanggal,
+          file: filePath,
+        };      
+        const res = await client.requestAPI({
+          endpoint: "/workingReport/notAttendance",
+          method: "POST",
+          data: body,
+        });
+        if (!res.isError) {
+          // workingReportId = res.data.attributes.workingReportId;
+          localStorage.setItem(
+            "workingReportId",
+            res.data.attributes.workingReportId
+          );      
+          setDataAlert({
+            severity: "success",
+            open: true,
+            message: res.data.meta.message,
+          });
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)  
+        } else {
+          setDataAlert({
+            severity: "error",
+            message: res.error.detail,
+            open: true,
+          });
+        }
+      }else{
+        body = {
+          periodId: dataPeriod.period,
+          presenceId: parseInt(presence.value),
+          userId: parseInt(localStorage.getItem("userId")),
+          date: dataPeriod.tanggal,
+          file: filePath,
+        };
+        setdataReadyAttedance(body)   
+        setIsCheckin(true)   
+      }    
     }    
   };
 
