@@ -115,8 +115,8 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                 />
               </Grid>
               <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
-              <Button className="button-text" variant="contained" sx={{marginBottom:'10px'}} >
-                <label htmlFor='fileInput' style={{cursor:'pointer'}} onClick={()=>setUploadIndex(index)}>Upload Signature</label>
+              <Button className="button-text" variant="contained" sx={{marginBottom:'10px', padding:0}} >
+                <label htmlFor='fileInput' style={{cursor:'pointer', width:'100%', height:'100%', padding:'6px 16px'}} onClick={()=>setUploadIndex(index)}>Upload Signature</label>
                 <input
                   id="fileInput"
                   type="file"
