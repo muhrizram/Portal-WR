@@ -60,7 +60,7 @@ const CreateProject = () => {
   });
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const currentUserId = localStorage.getItem("userId");
-  
+
   const columnsProject = [
     {
       field: "no",
@@ -160,7 +160,7 @@ const CreateProject = () => {
       }
     },
     {
-      field: "role",
+      field: "roleProjectId",
       headerName: "Role",
       flex: 1,
       renderCell: (params) => {
@@ -224,7 +224,7 @@ const CreateProject = () => {
   
   const [filter, setFilter] = useState({
     sortName: "role",
-    sortType: "desc",
+    sortType: "asc",
     search: "",
   });
 
@@ -235,8 +235,8 @@ const CreateProject = () => {
           ? dataFilter.sorting[0].field
           : "nip",
       sortType:
-        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "desc",
-      search: filter.search,
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
+      search: '',
     });
   };
 
@@ -269,29 +269,28 @@ const CreateProject = () => {
     getOptDataUser('')
   }, [filter])
 
-
   const handleInvite = () => {
     const newMembers = [];
     for (const newUser of valueUser) {
       let exists = false;
       for (const existingMember of selectedMember) {
-        if(existingMember.id == currentUserId) {
-          setSelectedMember([])
+        if (newUser.id === existingMember.id) {
+          exists = true;
         }
-        if(existingMember.id != currentUserId) {
-          if (newUser.id === existingMember.id) {
-            exists = true;
-          }
-        }
-
       }
       if (!exists) {
         newMembers.push(newUser);
       }
     }
+
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
 
-    const updatedListUser = [...sendData.listUser, ...newMembers.map(member => ({
+    const updatedListUser = [...sendData.listUser, ...dataProject.map(user => ({
+      userId: user.userId,
+      roleProjectId: user.roleSelect.id,
+      joinDate: null,
+      endDate: null
+    })), ...newMembers.map(member => ({
       userId: member.userId,
       roleProjectId: member.roleProjectId,
       joinDate: null,
@@ -303,9 +302,10 @@ const CreateProject = () => {
       listUser: updatedListUser
     }));
     
+    methods.setValue('roleProjectIds', null)
     setIsInviteDisabled(true)
   }
-  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: dataProject.length + index +1 }))]
+  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: 1 + (index + 1) }))]
 
   const handleDeleteMember = (userId) => {
     let updatedSelected;
@@ -343,7 +343,7 @@ const CreateProject = () => {
     setLoading(true)
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/teamMember?page=0&size=&sort=nip,asc&search=${value}`
+      endpoint: `/ol/teamMember?page=0&size=&sort=${filter.sortName},${filter.sortType}&search=${value}`
     })
     const data = res.data.map(item => ({
       id : parseInt(item.id),
@@ -359,17 +359,15 @@ const CreateProject = () => {
       active: item.attributes.active
     }));
     setDataUser(data)
-
-    const dataForm = methods.getValues()
     const newMembers = data.filter((newUser) => newUser.id == currentUserId);
-    newMembers.forEach((user) => {
+    newMembers.forEach((user, i) => {
       user.roleSelect = {
         id: 70,
         role: 'Master'
       }
+      user.no = i + 1
     });
-    setSelectedMember(newMembers)
-    setValueUser(newMembers)
+    setDataProject(newMembers)
     setLoading(false)
   }
 
@@ -457,8 +455,6 @@ const CreateProject = () => {
     const dataForm = methods.getValues()
     delete dataForm.userId
     
-    console.log('data form : ', dataForm)
-    console.log('data send : ', sendData)
     const data = {
       ...sendData,
       ...dataForm
@@ -748,7 +744,7 @@ const CreateProject = () => {
                               multiple
                               limitTags={2}
                               onChange={(_event, newValue) => {
-                                setValueUser((prevUser) => [...prevUser, ...newValue])
+                                setValueUser([...newValue])
                               }}
                               className="input-field-crud bg-white auto-chips"
                               onKeyUpCapture={debounce((event) => searchMember(event.target.value), 500)}
@@ -769,9 +765,13 @@ const CreateProject = () => {
                           
                         </Grid>
                         <Grid item xs={12} sm={2.5}>
+                          <Controller
+                          name="roleProjectIds"
+                          control={control}
+                          render={({ field }) => (
                             <Autocomplete
                               disablePortal
-                              name="roleProjectId"
+                              name="roleProjectIds"
                               options={roles}
                               getOptionLabel={(option) => option.role}
                               onChange={(_event, newValue) => {
@@ -788,7 +788,8 @@ const CreateProject = () => {
                                 />
                               )}
                             />
-                          
+                          )}
+                          />
                         </Grid>
                         <Grid item xs={12} sm={2.5}>
                           <Button 
