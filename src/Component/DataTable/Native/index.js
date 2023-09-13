@@ -12,7 +12,7 @@ const TableNative = ({
   checkboxSelection = false,
   onFilter = () => {},
   loading = false,
-  sortingMode = "client",
+  sortingMode = "server",
 }) => {
   const [sorting, setSort] = useState([]);
 

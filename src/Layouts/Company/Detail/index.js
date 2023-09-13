@@ -414,7 +414,7 @@ const DetailCompany = () => {
                 </Button>
               </Grid>
               <Grid item xs={12}>
-                <TableNative data={dataProject} columns={columnsProject} />
+                <TableNative data={dataProject} columns={columnsProject} sortingMode="client" />
               </Grid>
             </div>
           </Grid>

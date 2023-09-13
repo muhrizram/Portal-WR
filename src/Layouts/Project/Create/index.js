@@ -814,7 +814,6 @@ const CreateProject = () => {
                       columns={columnsProject}
                       onFilter={(dataFilter => onFilter(dataFilter))}
                       loading={loading}
-                      sortingMode="server"
                     />
                   </Grid>
                 </Grid>
