@@ -10,8 +10,9 @@ const TableNative = ({
   columns,
   disableRowSelectionOnClick = false,
   checkboxSelection = false,
-  onFilter,
+  onFilter = () => {},
   loading = false,
+  sortingMode = "client",
 }) => {
   const [sorting, setSort] = useState([]);
 
@@ -40,7 +41,7 @@ const TableNative = ({
     handleBuildList(filter);
   }, [sorting]);
 
-
+  
   return (
     <Grid container>
       {data.length > 0 ? (
@@ -57,7 +58,7 @@ const TableNative = ({
             loading={loading}
             checkboxSelection={checkboxSelection}
             getRowId={(row) => row.id}
-            sortingMode="server"
+            sortingMode={sortingMode}
             rowHeight={80}
           />
         </Grid>

@@ -1052,6 +1052,7 @@ const DetailProject = () => {
                 columns={columnsProject}
                 onFilter={(dataFilter => onFilter(dataFilter))}
                 loading={loading}
+                sortingMode="server"
               />
             </Grid>
           </div>
