@@ -15,21 +15,22 @@ import client from "../../../global/client";
 export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask, StatusSearch}) {
   const [openTask, setOpenTask] = useState(false);
   const [taskData, setTaskData] = useState([]);
-  const [beforeThanToday, setBeforeThanToday] = useState(false);  
+  const [todaysWorkingReport, setTodaysWorkingReport] = useState(false);  
   
   useEffect(() => (
-    console.log('dataAll',dataAll),
     getDetailTask(),
     checkForMatch()      
   ),[])
 
   const checkForMatch = () => {
-    for (const item of dataAll) {      
-      if (item.workingReportId === WrIdDetail) {      
-        setBeforeThanToday(item.isToday);
+    for (const item of dataAll) {
+      if (item.workingReportTaskId === WrIdDetail) {     
+        // The detail working report viewed is today's working report 
+        setTodaysWorkingReport(item.isToday);
         break;
       }else{
-        setBeforeThanToday(false)        
+        // The detail working report viewed is not today's working report
+        setTodaysWorkingReport(false)        
       }
     }
   };
@@ -57,7 +58,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
   };
 
   const getDetailTask = async () => {    
-    try {         
+    try {
       const res = await client.requestAPI({
         method: "GET",
         endpoint: `/task/detail?wrId=${WrIdDetail}`        
@@ -205,7 +206,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
               Back
             </Button>
           </Grid>
-            {beforeThanToday
+            {todaysWorkingReport
               ? (
                 !StatusSearch && onStatusHr ? (
                   <>
