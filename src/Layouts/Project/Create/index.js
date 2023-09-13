@@ -60,7 +60,13 @@ const CreateProject = () => {
   });
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const currentUserId = localStorage.getItem("userId");
+  const userAdmin = JSON.parse(localStorage.getItem('listUserAdmin'))
 
+  let listUserAdmin = []
+  if(!!userAdmin) {
+    listUserAdmin = userAdmin
+  }
+  
   const columnsProject = [
     {
       field: "no",
@@ -270,6 +276,8 @@ const CreateProject = () => {
   }, [filter])
 
   const handleInvite = () => {
+    setValue('role', null);
+
     const newMembers = [];
     for (const newUser of valueUser) {
       let exists = false;
@@ -285,7 +293,7 @@ const CreateProject = () => {
 
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
 
-    const updatedListUser = [...sendData.listUser, ...dataProject.map(user => ({
+    const updatedListUser = [...sendData.listUser, ...listUserAdmin.map(user => ({
       userId: user.userId,
       roleProjectId: user.roleSelect.id,
       joinDate: null,
@@ -302,10 +310,10 @@ const CreateProject = () => {
       listUser: updatedListUser
     }));
     
-    methods.setValue('roleProjectIds', null)
     setIsInviteDisabled(true)
   }
-  const updateData = [...dataProject, ...selectedMember.map((row, index) => ({ ...row, no: 1 + (index + 1) }))]
+
+  const updateData = [...listUserAdmin, ...selectedMember.map((row, index) => ({ ...row, no: 1 + (index + 1) }))]
 
   const handleDeleteMember = (userId) => {
     let updatedSelected;
@@ -368,6 +376,9 @@ const CreateProject = () => {
       user.no = i + 1
     });
     setDataProject(newMembers)
+    if(!(!!userAdmin)) {
+      localStorage.setItem('listUserAdmin', JSON.stringify(newMembers))
+    }
     setLoading(false)
   }
 
@@ -422,7 +433,8 @@ const CreateProject = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = methods
   
   const handleClose = () => {
@@ -490,14 +502,18 @@ const CreateProject = () => {
 
   const onChangeRole = (value) => {
     let temp = []
-    if (valueUser.length > 0) {
-      temp = valueUser.map((res) => {
-        return {
-          ...res,
-          roleProjectId: value.id,
-          roleSelect: value
-        }
-      })
+    if (value === null || value === undefined) {
+      return
+    } else {
+      if (valueUser.length > 0) {
+        temp = valueUser.map((res) => {
+          return {
+            ...res,
+            roleProjectId: value.id,
+            roleSelect: value
+          }
+        })
+      }
     }
     setValueUser(temp)
     setIsInviteDisabled(false)
@@ -766,12 +782,13 @@ const CreateProject = () => {
                         </Grid>
                         <Grid item xs={12} sm={2.5}>
                           <Controller
-                          name="roleProjectIds"
+                          name="role"
                           control={control}
                           render={({ field }) => (
                             <Autocomplete
+                              {...field}
+                              value={null}
                               disablePortal
-                              name="roleProjectIds"
                               options={roles}
                               getOptionLabel={(option) => option.role}
                               onChange={(_event, newValue) => {
@@ -782,6 +799,7 @@ const CreateProject = () => {
                               renderInput={(params) => (
                                 <TextField
                                   {...params}
+                                  name="role"
                                   InputLabelProps={{ shrink: true }} 
                                   label="Select Role *"
                                   placeholder="Search Role"
