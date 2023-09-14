@@ -3,12 +3,12 @@ import * as yup from "yup";
 const textPlease = "Please Input";
 
 const schemacompany = yup.object({
-  projectName: yup.string().max(30).required(`${textPlease} Project Name`),
+  projectName: yup.string().max(100).required(`${textPlease} Project Name`),
   companyId: yup.string().max(30).required(`Please Select Company`),
-  picProjectName: yup.string().max(30).required(`${textPlease} PIC Project Name`),
-  picProjectPhone: yup.string().max(14).required(`${textPlease} PIC Project Phone`),
+  picProjectName: yup.string().max(100).required(`${textPlease} PIC Project Name`),
+  picProjectPhone: yup.string().max(15).required(`${textPlease} PIC Project Phone`),
   projectType: yup.string().max(30).required(`Please Select Project Type`),
-  initialProject: yup.string().max(50).required(`${textPlease} Initial Project`),
+  initialProject: yup.string().max(20).required(`${textPlease} Initial Project`),
   startDate: yup
     .date()
     .typeError("Invalid Date")
@@ -19,7 +19,6 @@ const schemacompany = yup.object({
       function (startDate) {
         const endDate = this.parent.endDate;
         if (!startDate || !endDate) return true;
-
         return new Date(startDate) <= new Date(endDate);
       }
     ),
