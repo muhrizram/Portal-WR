@@ -16,6 +16,7 @@ import {
   Autocomplete,
   TextField,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import "../../../App.css";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -51,6 +52,7 @@ const DetailProject = () => {
   const [columnsProject, setColumns] = useState([])
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const [loading, setLoading] = useState(false)
+  const [isSaveloading, setIsSaveLoading] = useState(false)
   const currentUserId = parseInt(localStorage.getItem("userId"))
 
   useEffect(() => {
@@ -350,6 +352,7 @@ const DetailProject = () => {
   }
 
   const handleInvite = () => {
+    methods.setValue('role', null)
     const newMembers = valueUser
       .filter(newUser => !dataMember.some(existingMember => newUser.id == existingMember.id))
       .map(newUser => ({
@@ -386,6 +389,7 @@ const DetailProject = () => {
       ...prevData,
       teamMember: updatedListUser
     }));
+    setIsInviteDisabled(true)
   }
   
   
@@ -494,6 +498,7 @@ const DetailProject = () => {
   };
 
   const onSave = async () => {
+    setIsSaveLoading(true)
     const data = {
       companyId: editData.companyId,
       projectName: editData.projectName,
@@ -516,7 +521,7 @@ const DetailProject = () => {
       })
     }
     
-    const id = localStorage.getItem('projectId')  
+    const id = localStorage.getItem('projectId')
     const res = await client.requestAPI({
       method: 'PUT',
       endpoint: `/project/update-project/projectId=${id}`,
@@ -531,12 +536,14 @@ const DetailProject = () => {
       setTimeout(() => {
         navigate('/masterProject')
       }, 3000)
+      setIsSaveLoading(false)
     } else {
       setDataAlert({
         severity: 'error',
         message: res.error.detail,
         open: true
       })
+      setIsSaveLoading(false)
     }
     setOpen(false);
   };
@@ -1007,8 +1014,9 @@ const DetailProject = () => {
                     </Grid>
                     <Grid item xs={12} sm={2.5}>
                       <Autocomplete
+                        value={null}
                         disablePortal
-                        name="roleProjectId"
+                        name="role"
                         options={roles}
                         getOptionLabel={(option) => option.role}
                         onChange={(_event, newValue) => {
@@ -1085,8 +1093,19 @@ const DetailProject = () => {
           >
             {isSave ? "Back" : "Cancel without saving"}
           </Button>
-          <Button onClick={onSave} variant="saveButton">
-            {isSave ? "Save Data" : "Back"}
+          <Button onClick={onSave} variant="saveButton" disabled={isSaveloading}>
+            {isSave ? (
+              isSaveloading ? (
+                <>
+                  <CircularProgress size="14px" color="inherit" sx={{ marginRight: '4px' }} />
+                  Loading...
+                </>
+              ) : (
+                "Save Data"
+              )
+            ) : (
+              "Back"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
