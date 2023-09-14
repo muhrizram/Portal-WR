@@ -7,6 +7,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckinTime from "./CheckIn";
 import Attendance from "./Attandence";
+import ViewAttendanceScreen from "./DetailAttedance";
 import Calendar from "../../Component/CalendarCustom";
 import { useNavigate } from "react-router-dom";
 import blanktable from '../../assets/blanktable.png'
@@ -31,13 +32,14 @@ export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
   const [isViewTask, setIsViewTask] = useState(false);
   const [isViewOvertime, setIsViewOvertime] = useState(false);
+  const [ViewAttendance, setIsViewAttendance] = useState(false);
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
   const [isHr, setIsHr] = useState(false)  
   const [WrIdDetail, setWrIdDetail] = useState()
   const [dropMenu, setDropMenu] = useState(null)
   const [dataReadyAttedance,setdataReadyAttedance] = useState()
-  const [AttendanceView,setAttendanceView] = useState()
+  const [AttendanceView,setAttendanceView] = useState(false)
   const [HrsetIdemployee,setHrsetIdemployee] = useState()
   const [onStatusHr,setonStatusHr] = useState(false)
   const [onOtherUser,setonOtherUser] = useState(false)
@@ -128,7 +130,7 @@ export default function WorkingReport() {
       method: "GET",
       endpoint: endpoint,
     });
-    if (!res.isError) {      
+    if (!res.isError) {
       rebuildData(res);
     } else {
       setDataAlert({
@@ -305,6 +307,12 @@ export default function WorkingReport() {
         setonOtherUser={setonOtherUser}
         />
       )
+    }else if (ViewAttendance) {
+      dom = (
+        <ViewAttendanceScreen
+        setIsViewAttendance={() => setIsViewAttendance()}
+        />
+      )
     } else {
         dom = <Calendar
           setOnClick={(param) => {
@@ -320,6 +328,7 @@ export default function WorkingReport() {
           updateFilterDates={updateFilterDates}
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
+          setIsViewAttendance={setIsViewAttendance}
         />
       }
     return dom;

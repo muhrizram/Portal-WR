@@ -105,11 +105,11 @@ const PopupTask = ({
         let tempSelectedProject = [];
         for (let i = 0; i < dataDetailnya.length; i++) {
           if (dataDetailnya[i] !== undefined) {
-            let tempProject = dataDetailnya[i];
+            let tempProject = dataDetailnya[i];            
             tempSelectedProject = [...tempSelectedProject, tempProject];
             for (let j = 0; j < dataDetailnya[i].attributes.listTask.length; j++) {
               if (dataDetailnya[i].attributes.listTask[j] !== undefined) {
-                let tempTask = dataDetailnya[i].attributes.listTask[j];
+                let tempTask = dataDetailnya[i].attributes.listTask[j];               
                 tempSelectedTask = [...tempSelectedTask, tempTask];
               }
             }
@@ -190,6 +190,9 @@ const PopupTask = ({
             open: true,
             message: res.data.meta.message
           })
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
           }else{
             setDataAlert({
               severity: 'error',
@@ -447,28 +450,23 @@ const PopupTask = ({
                      <Autocomplete
                         disabled={idxProject === 0 ? (addTaskinEdit && CekProjectEdit[idxProject - 1] ? false : true) : false}
                         disablePortal                    
-                        name='project'                        
-                        defaultValue={dataDetailnya[idxProject] ? (
-                          resProject.absenceId ? 
-                          { name: firstEditTask.listProject[idxProject].absenceName  }
-                           : 
-                          { name: firstEditTask.listProject[idxProject].projectName }
-                          ) : null
-                        }
+                        name='projectName'                                                
                         options={listProject}
                         getOptionLabel={(option) => option.name}
                         className='autocomplete-input autocomplete-on-popup'                       
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                         onChange={(_event, newValue) => {                          
                           if (newValue) {
-                            Kolomproject(false)
+                            setKolomproject(false)
                             let temp= {
+                             attributes:{
                               projectId : newValue.id,
                               projectName : newValue.name
+                             }
                             }
                             if(selectedProject[idxProject] != undefined){
                               const updatedSelectedProject = selectedProject.map((project, i) =>
-                                i === idxProject ? newValue : project
+                                i === idxProject ? temp : project
                               );
                               setSelectedProject(updatedSelectedProject);
                             } else {
@@ -501,7 +499,9 @@ const PopupTask = ({
                             }
                           }
                         }}
-                        // value={selectedProject[idxProject]  ? selectedProject[idxProject].projectName : null}
+                        value={selectedProject[idxProject]  ? 
+                          selectedProject[idxProject].attributes.projectName
+                          : null}
                         renderInput={(params) => (
                           <TextField
                             focused
@@ -587,11 +587,12 @@ const PopupTask = ({
                                       sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                                       onChange={(_event, newValue) => {
                                         if (newValue) {
-                                          if (selectedTask[index] !== undefined) {
-                                            const updatedSelectedTask = selectedTask.map((task, i) =>
+                                          console.log("INI NEWW",newValue)
+                                          if (selectedProject[idxProject].attributes.listTask[index]) {
+                                            const updatedSelectedTask = selectedProject[idxProject].attributes.listTask.map((task, i) =>
                                               i === index ? newValue : task
                                             );
-                                            setSelectedTask(updatedSelectedTask);
+                                            setSelectedProject(updatedSelectedTask);
                                           } else {
                                             handleChange(
                                               { target: { name: 'taskName', value: newValue.taskName } },
@@ -600,7 +601,7 @@ const PopupTask = ({
                                               newValue.backlogId
                                             );
                                             setideffortTask(newValue.backlogId);
-                                            setSelectedTask([...selectedTask, newValue]);
+                                            setSelectedProject([...selectedTask, newValue]);
                                           }
                                         } else {
                                           setideffortTask('');
@@ -612,7 +613,12 @@ const PopupTask = ({
                                           }
                                         }
                                       }}
-                                      value={selectedTask[index] || null}
+                                      value={selectedProject[idxProject] ?
+                                        ( selectedProject[idxProject].attributes.listTask ?
+                                          {taskName : selectedProject[idxProject].attributes.listTask[index].taskCode + ' - ' + selectedProject[idxProject].attributes.listTask[index].taskName} 
+                                          :
+                                          null
+                                        ) || null : null}
                                       isOptionEqualToValue={(option, value) => option.value === value.value}
                                       renderInput={(params) => (
                                         <TextField
@@ -832,6 +838,10 @@ const PopupTask = ({
                                       options={listTaskProject}                                      
                                       getOptionLabel={(option) => option.taskName} 
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
+                                      defaultValue={ res.backlogId ? (
+                                        {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration}
+                                         || null) : selectedTask[index]
+                                        }
                                       onChange={(_event, newValue) => {
                                         if (newValue) {
                                           if (selectedTask[index] !== undefined) {

@@ -30,7 +30,7 @@ import HolidayDialog from "../DialogHoliday";
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from '@mui/system';
 
-export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail, updateFilterDates, onStatusHr, setonOtherUser }) {
+export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime, events, setWrIdDetail, updateFilterDates, onStatusHr, setonOtherUser,setIsViewAttendance }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -160,7 +160,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))      
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
-      );            
+      );
       if (data) {
         return (
           <Grid container spacing={2} sx={{height: '10vh'}}>
@@ -182,7 +182,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </Button>
                           ) : !datalibur && !isWeekend(info.date) && data.presenceName && (
                           <Button
-                            variant="outlined-attedance"    
+                            variant={data.presenceName != "Hadir" ? "outlined-attedance-sick" : "outlined-attedance"}
+                            onClick={data.presenceName != "Hadir" ? 
+                            ()=>{
+                              setIsViewAttendance(true)
+                            } : null}
                           >
                             {data.presenceName}
                           </Button>
@@ -192,6 +196,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         <Grid>
                           {moment(info.date).isSameOrBefore(currentDate) && !onStatusHr ? (
                           <CustomButton
+                          disabled={!isWeekend(info.date) && data.presenceName != "Hadir"}
                             variant="outlined-warning"
                             onClick={
                               data.overtime == true ? () => {
@@ -211,6 +216,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </CustomButton>
                           ) : moment(info.date).isSameOrBefore(currentDate) && onStatusHr && data.overtime && (
                             <CustomButton
+                            // disabled={data.presenceName != "Hadir"}
                             variant="outlined-warning"
                             onClick={() => {
                               setId(data.workingReportOvertimeId)
@@ -252,7 +258,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </Grid>
                         ) : (
                           data.workingReportTaskId && !onStatusHr ? (
-                            <CustomButton variant="outlined-task" onClick={
+                            <CustomButton 
+                            disabled={data.presenceName != "Hadir"}
+                            variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
+                            onClick={
                               data.task
                               ? () => {
                                 setId({
@@ -276,7 +285,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                             </CustomButton>
                           ) : (
                             data.task ? (
-                              <CustomButton variant="outlined-task" onClick={
+                              <CustomButton 
+                              disabled={data.presenceName != "Hadir"}
+                              variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
+                              onClick={
                                 () => {
                                   setId({
                                     workingReportTaskId: data.workingReportTaskId,
@@ -318,7 +330,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   </Button>
                 ) : info.isToday && !datalibur && !isWeekend(info.date) && data.presenceName && (
                   <Button
-                    variant="outlined-attedance"    
+                    variant={data.presenceName != "Hadir" ? "outlined-attedance-sick" : "outlined-attedance"}
+                    onClick={data.presenceName != "Hadir" ? 
+                    ()=>{
+                      setIsViewAttendance(true)
+                    } : null}
                   >
                     {data.presenceName}
                   </Button>
@@ -327,6 +343,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 {info.isToday && !onStatusHr ? (
                   <CustomButton                  
                     variant="outlined-warning"
+                    disabled={data.presenceName != "Hadir"}
                     onClick={
                       data.overtime == true ?() => {
                         setId(data.workingReportOvertimeId)
@@ -346,8 +363,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 {info.isToday && !isWeekend(info.date) ? (
                   <>
                   {data.workingReportTaskId ? (
-                    <CustomButton                    
-                    variant={"outlined-task"}
+                    <CustomButton
+                    disabled={data.presenceName != "Hadir"}
+                    variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
                     onClick={                      
                       data.task || onStatusHr
                         ? () => {                         
