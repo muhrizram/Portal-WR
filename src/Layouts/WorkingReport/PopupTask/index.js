@@ -37,7 +37,7 @@ const PopupTask = ({
   const [opentask, setOpentask] = useState(false)
   const [statusTask, setstatusTask] = useState([])
   const [openPopUpMoretask, setPopUpMoretask] = useState(false)
-  const selectedTask = listTaskProject.find((item) => item.backlogId === ideffortTask);
+  const [selectedTask, setSelectedTask] = useState([]);
   const [taskDurations, setTaskDurations] = useState([listTaskProject.find((item) => item.backlogId === ideffortTask)]);
   const [cekAbsen, setCekabsen] = useState([])
   const [openConfirmCancel,setopenConfirmCancel] = useState(false)
@@ -45,6 +45,7 @@ const PopupTask = ({
   const [addTaskinEdit,setAddtaskinEdit] = useState(false)
   const [CekProjectEdit,setCekProjectEdit] = useState([])
   const [DurationTask,setDurationTask] = useState()
+  
   const navigate = useNavigate();  
 
   const clearProject = {
@@ -52,6 +53,7 @@ const PopupTask = ({
     projectId: null,
     listTask: []
   }
+  
   
   const [dataProject, setProject] = useState(
     {
@@ -87,19 +89,17 @@ const PopupTask = ({
       }
       ));
     }
-  }
-
-  useEffect(() => {
+  }  
+  useEffect(() => {    
     if(isEdit){     
       setdataDetailnya(dataDetail)
       refreshdataDetail()
       setOpentask(true)
+      setSelectedTask([])
     }
     getlistProject()
     getstatusTask()    
   },[dataProject,dataDetailnya,dataDetail])
-
-  console.log('firstEditTask',firstEditTask)
 
   const getstatusTask = async () => {
     const res = await client.requestAPI({
@@ -113,10 +113,10 @@ const PopupTask = ({
   }  
   const UpdateTask = async () => {
     const readyUpdate = {
-      workingReportTaskId: null,
+      workingReportId: null,
       listProject: []
     }    
-    readyUpdate.workingReportTaskId = firstEditTask.workingReportTaskId;    
+    readyUpdate.workingReportId = firstEditTask.workingReportTaskId;    
 
     for (const project of firstEditTask.listProject) {
       const newProject = {};
@@ -146,12 +146,12 @@ const PopupTask = ({
       endpoint: `/task/update`,
       data : readyUpdate
     })    
-    if (res.data) {           
+    if (res.data) {
      closeTask(true)
      setDataAlert({
       severity: 'success',
       open: true,
-      message: res.detail
+      message: res.data.meta.message
     })
     }else{
       setDataAlert({
@@ -295,17 +295,28 @@ const PopupTask = ({
   };
 
   const deleteTask = (e, idxProject, index) => {
-    e.preventDefault();
     if(isEdit){
-      const temp = { ...firstEditTask};
-      temp.listProject[idxProject].listTask.splice(index, 1);
-      setfirstEditTask(temp);
-    }else{
-      const temp = { ...dataProject };
-      temp.listProject[idxProject].listTask.splice(index, 1);
-      setProject(temp);
-    }    
+      const updatedDataProject = { ...firstEditTask };
+      const updatedListTask = [...updatedDataProject.listProject[idxProject].listTask];
+      updatedListTask.splice(index, 1);
+      updatedDataProject.listProject[idxProject].listTask = updatedListTask;
+      setfirstEditTask(updatedDataProject);
+      const updatedSelectedTask = [...selectedTask];
+      updatedSelectedTask.splice(index, 1);
+      setSelectedTask(updatedSelectedTask);
+    }
+    else{
+      const updatedDataProject = { ...dataProject };
+      const updatedListTask = [...updatedDataProject.listProject[idxProject].listTask];
+      updatedListTask.splice(index, 1);
+      updatedDataProject.listProject[idxProject].listTask = updatedListTask;
+      setProject(updatedDataProject);
+      const updatedSelectedTask = [...selectedTask];
+      updatedSelectedTask.splice(index, 1);
+      setSelectedTask(updatedSelectedTask);
+    }
   };
+  
 
   const SubmitSave = async () => {      
       try {
@@ -495,13 +506,12 @@ const PopupTask = ({
                                 <Grid container rowSpacing={2}>
                                   <Grid item xs={12}>
                                     <Autocomplete
-                                      disablePortal
-                                      // disabled                                      
+                                      disablePortal                                
                                       name='taskName'
                                       className='autocomplete-input autocomplete-on-popup'
                                       defaultValue={ res.backlogId ? (
                                         {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration}
-                                         || null) : null
+                                         || null) : selectedTask[index]
                                         }
                                       options={listTaskProject}
                                       getOptionLabel={(option) => option.taskName}
@@ -512,13 +522,17 @@ const PopupTask = ({
                                           idxProject,
                                           index,
                                           newValue.backlogId,)
-                                          // newValue.taskId)
                                           setideffortTask(newValue.backlogId)
-                                        } else {
-                                          // getlistTaskProject(resProject.projectId)
+                                          setSelectedTask([...selectedTask, newValue]);
+                                        } else {                                          
                                           setideffortTask('')
+                                          const updatedSelectedTask = selectedTask.filter(
+                                            (task, i) => i !== index
+                                          );
+                                          setSelectedTask(updatedSelectedTask);
                                         }
                                       }}
+                                      // value={selectedTask[index] || null}
                                       isOptionEqualToValue={(option, value) => option.value === value.value}
                                       renderInput={(params) => (
                                         <TextField
@@ -747,11 +761,16 @@ const PopupTask = ({
                                           newValue.backlogId
                                           )                                  
                                         setideffortTask(newValue.backlogId)
+                                        setSelectedTask([...selectedTask, newValue]);
                                         }else{
                                           setideffortTask('')
+                                          const updatedSelectedTask = selectedTask.filter(
+                                            (task, i) => i !== index
+                                          );
+                                          setSelectedTask(updatedSelectedTask);
                                         }
-                                      }
-                                      }
+                                      }}
+                                      value={selectedTask[index] || null}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
