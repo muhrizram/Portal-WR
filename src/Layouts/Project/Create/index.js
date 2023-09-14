@@ -18,6 +18,7 @@ import {
   IconButton,
   InputLabel,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import "../../../App.css";
 import { useNavigate } from "react-router";
@@ -53,6 +54,7 @@ const CreateProject = () => {
   const [endProject, setEndProject] = useState()
   const [startJoin, setStartJoin] = useState()
   const [endJoin, setEndJoin] = useState()
+  const [isSaveloading, setIsSaveLoading] = useState(false)
   const [sendData, setData] = useState({
     listUser: [],
     startDate: null,
@@ -464,6 +466,7 @@ const CreateProject = () => {
   };
 
   const onSave = async () => {
+    setIsSaveLoading(true)
     const dataForm = methods.getValues()
     delete dataForm.userId
     
@@ -488,6 +491,7 @@ const CreateProject = () => {
       setTimeout(() => {
         navigate('/masterProject');
       }, 1000);
+      setIsSaveLoading(false)
     }
     else {          
       setDataAlert({
@@ -496,6 +500,7 @@ const CreateProject = () => {
         open: true
       })
       setOpen(false);
+      setIsSaveLoading(false)
     }
     setOpen(false);
   };
@@ -888,8 +893,19 @@ const CreateProject = () => {
           >
             {isSave ? "Back" : "Cancel without saving"}
           </Button>
-          <Button onClick={onSave} variant="saveButton">
-            {isSave ? "Save Data" : "Back"}
+          <Button onClick={onSave} variant="saveButton" disabled={isSaveloading}>
+            {isSave ? (
+              isSaveloading ? (
+                <>
+                  <CircularProgress size="14px" color="inherit" sx={{ marginRight: '4px' }} />
+                  Loading...
+                </>
+              ) : (
+                "Save Data"
+              )
+            ) : (
+              "Back"
+            )}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,4 +1,4 @@
-import { Button, Divider, InputAdornment, TextField, Typography, IconButton, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions } from '@mui/material';
+import { Button, Divider, InputAdornment, TextField, Typography, IconButton, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import React, {useState, useEffect, useContext} from 'react';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -21,6 +21,7 @@ const Reset = ({open, onClose}) => {
   const handleClickShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
   const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+  const [loading, setLoading] = useState(false)
   const { setDataAlert } = useContext(AlertContext)
   const navigate = useNavigate(); 
   const handleMouseDownPassword = (event) => {
@@ -54,20 +55,21 @@ const Reset = ({open, onClose}) => {
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character'
       ),
     notMatch: Yup.string()
-      .required(`New Password and Confirm Password doesn't match`),
+      .required(`Looks like your new password and confirmation password aren't on the same page`),
     ifMatch: Yup.string()
       .required(`Current Password and New Password can't be match`)
   });
 
-  const { handleSubmit, formState: { errors }, register } = useForm({
+  const { handleSubmit, formState: { errors }, register, reset } = useForm({
     resolver: yupResolver(Schemareset),
   });
 
   const handleReset = async () => {
+    setLoading(true)
     const res = await client.requestAPI({
-        method: 'POST',
-        endpoint: `/auth/changePassword`,
-        data: dataPassword,
+      method: 'POST',
+      endpoint: `/auth/changePassword`,
+      data: dataPassword,
     })
       if(res.isError){ 
         console.error("Invalid current password")
@@ -76,6 +78,7 @@ const Reset = ({open, onClose}) => {
           open: true,
           message: res.error.meta.message
         })
+        setLoading(false)
       }
       else{
         localStorage.removeItem('token')
@@ -88,6 +91,7 @@ const Reset = ({open, onClose}) => {
         setTimeout(() => {
           navigate('/login')
         }, 3000)
+        setLoading(false)
       }
   };
 
@@ -102,6 +106,12 @@ const Reset = ({open, onClose}) => {
       [name]: value,
     }));
   }
+
+  const handleClose =  () => {
+    onClose()
+    reset()
+  }
+
   return(
     <>
     <Dialog
@@ -214,7 +224,7 @@ const Reset = ({open, onClose}) => {
                 </InputAdornment>
               )
             }} 
-            error={errors.confirmPassword !== undefined}
+            error={errors.confirmPassword !== undefined || !!errors.notMatch}
             helperText={
               dataPassword.newPassword !== dataPassword.confirmPassword ? 
               (errors.notMatch ? errors.notMatch.message : '')  : (errors.confirmPassword ? errors.confirmPassword.message : '')}
@@ -222,10 +232,21 @@ const Reset = ({open, onClose}) => {
         </Grid>
         
       <DialogActions className="dialog-delete-actions">
-        <Button onClick={onClose} variant='outlined' className='button-text'>Back</Button>
-        <Button type= 'submit' 
+        <Button onClick={handleClose} variant='outlined' className='button-text'>Back</Button>
+        <Button type='submit' 
           onClick={handleReset} 
-          variant='contained' className='button-text'>Save Data</Button>
+          variant='contained' 
+          className='button-text'
+          // disabled={loading}
+          >
+            {loading ? 
+            <><CircularProgress 
+              size="14px"
+              color="inherit"
+              sx={{marginRight: '4px'}}
+            /> {"Loading..."}</>
+            : "Save Data"}
+          </Button>
       </DialogActions>
       
         </div>
