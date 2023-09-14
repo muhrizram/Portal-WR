@@ -8,6 +8,11 @@ import {
   MenuItem,
   Select,
   Typography,
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogContentText, 
+  DialogTitle, 
 } from "@mui/material";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -35,6 +40,8 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
   const [startTime, setStartTime] = React.useState(null);
   const [endTime, setEndTime] = React.useState(null);
   const { setDataAlert } = useContext(AlertContext);
+  const [Duration,setDuration] = useState()
+  const [openPopUpMore, setPopUpMore] = useState(false)
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -56,14 +63,14 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
   
       const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
   
-      if (totalMinutes >= 480) {        
-        setIsTakePicture(true);        
-      } else {                
-        setDataAlert({
-          severity: "error",
-          message: 'Rentang waktu harus minimal 8 jam',
-          open: true,
-        });
+      if (totalMinutes == 540) {        
+        setIsTakePicture(true);
+      } else if (totalMinutes < 540){
+        setDuration(true)                
+        setPopUpMore(true)
+      } else {
+        setDuration(false)
+        setPopUpMore(true)
       }
     }
   };
@@ -316,6 +323,33 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
           )}
         </Card>
       </Grid>
-    </Grid>
+        <Dialog
+          open={openPopUpMore}          
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {Duration ? 'New to the Work Crew' : 'Oops! You Work So Hard'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {Duration ? "Duration is less than 8 hours, preventing task submission" : "Task exceeds 8-hour duration and cannot be submitted"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions"> 
+            <Button variant="contained" onClick={() => setPopUpMore(false)}>
+              {"Back To Attendance"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+    </Grid>    
   );
 }
