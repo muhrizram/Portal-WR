@@ -110,7 +110,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
 
       <AccordionDetails>
         <Grid container direction="row">
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -125,7 +125,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <Box sx={{ width: "100%", paddingLeft: "10px" }}>
               <Typography
                 component="legend"
@@ -158,8 +158,8 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
             </Box>
           </Grid>
         </Grid>
-        <Grid container direction="row" style={{ marginTop: "30px" }}>
-          <Grid item xs={6}>
+        <Grid container direction="row">
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -174,7 +174,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               }}
             />                   
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <Controller
               name="statusBacklog"
               control={control}
@@ -219,9 +219,9 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
         <Grid
           container
           direction="row"
-          style={{ marginTop: "30px" }}
+          mt={2}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -237,7 +237,7 @@ const TaskItem = ({ task, onDelete, onUpdate,onUpdateTasks, initialProject, idPr
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -648,14 +648,7 @@ const DetailBacklog = () => {
                       </Grid>
                     </>
                   )}
-                  <Grid container direction="row" sx={{ width: "100%" }}>
-                    <Grid
-                      item
-                      xs={6}
-                      alignSelf="center"
-                      textAlign="left"
-                      sx={{ marginTop: "20px" }}
-                    >
+                  <Grid container spacing={2} mt={3.5} textAlign="left">
                       <Button
                         disabled={!valueproject}
                         color="success"
@@ -666,22 +659,27 @@ const DetailBacklog = () => {
                         + Add Task
                       </Button>
                     </Grid>
-                    <Grid item xs textAlign='right'>
-                    <Button
-                      style={{ marginRight: '16px' }} 
-                      variant='cancelButton'
-                      onClick={() => handleClickOpenCancel()}
-                    >
-                      Cancel Data
-                    </Button>
-                    <Button
-                      variant='saveButton'
-                      type='submit'
-                      onClick={handleClickOpenSave}
-                    >
-                      Save Data
-                    </Button>
-                  </Grid>        
+                  <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                    <Grid item xs={12} sm={2} textAlign="right">
+                      <Button
+                        fullWidth
+                        variant="cancelButton"
+                        onClick={() => handleClickOpenCancel()}
+                      >
+                        Cancel Data
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={2} textAlign="right">
+                      <Button 
+                        fullWidth
+                        disabled={tasks.length === 0}
+                        variant="saveButton"
+                        type="submit"
+                        onClick={handleClickOpenSave}
+                      >
+                        Save Data
+                      </Button>
+                    </Grid>
                   </Grid>
                 </form>
               </FormProvider>
@@ -728,13 +726,13 @@ const DetailBacklog = () => {
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
-                  <Grid item xs={9.9}>
+                  <Grid item xs={12} sm={8}>
                     <Header judul="Detail Backlog" />
                   </Grid>
 
                   <Grid item />
 
-                  <Grid item xs={2} alignSelf="center" textAlign="right">
+                  <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}>
                     <Button
                       variant="outlined"
                       startIcon={<CreateIcon />}
@@ -749,13 +747,13 @@ const DetailBacklog = () => {
                 <Grid container className="HeaderDetail">
                   <>
                     <Grid container spacing={2}>
-                      <Grid item xs container direction="column" spacing={2}>
+                      <Grid item xs={12} container direction="column" spacing={2}>
                         <Grid
                           container
                           direction="row"
                           style={{ padding: "20px" }}
                         >
-                          <Grid item xs={12}>
+                          <Grid item xs={12} sm={6}>
                             <Typography variant="backlogDetail">
                               {dataDetail.projectInitial} - {dataDetail.projectName}
                             </Typography>
@@ -788,7 +786,7 @@ const DetailBacklog = () => {
                               direction="row"
                               style={{ padding: "30px" }}
                             >
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >
@@ -798,7 +796,7 @@ const DetailBacklog = () => {
                                   {dataDetail.taskDescription}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} mt={3}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >
@@ -816,7 +814,7 @@ const DetailBacklog = () => {
                                   {dataDetail.status}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} mt={3}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >
@@ -838,7 +836,7 @@ const DetailBacklog = () => {
                               direction="row"
                               style={{ padding: "30px" }}
                             >
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >
@@ -848,7 +846,7 @@ const DetailBacklog = () => {
                                   {dataDetail.assignedTo}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} mt={3}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >
@@ -858,7 +856,7 @@ const DetailBacklog = () => {
                                   {dataDetail.estimationTime}
                                 </Typography>
                               </Grid>
-                              <Grid item xs={4}>
+                              <Grid item xs={12} sm={4} mt={3}>
                                 <Typography
                                   sx={{ color: "text.secondary", fontSize: "12px" }}
                                 >

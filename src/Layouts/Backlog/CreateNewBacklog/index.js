@@ -601,14 +601,7 @@ useEffect(() => {
                       </Grid>
                     </>
                   )}
-                  <Grid container direction="row" sx={{ width: "100%" }}>
-                    <Grid
-                      item
-                      xs={6}
-                      alignSelf="center"
-                      textAlign="left"
-                      sx={{ marginTop: "20px" }}
-                    >
+                  <Grid container spacing={2} mt={3.5} textAlign="left">
                       <Button
                         disabled={!valueproject}
                         color="success"
@@ -619,23 +612,27 @@ useEffect(() => {
                         + Add Task
                       </Button>
                     </Grid>
-                    <Grid item xs textAlign='right'>
-                    <Button
-                      style={{ marginRight: '16px' }} 
-                      variant='cancelButton'
-                      onClick={() => handleClickOpenCancel()}
-                    >
-                      Cancel Data
-                    </Button>
-                    <Button                    
-                      disabled={tasks.length === 0}
-                      variant='saveButton'
-                      type='submit'
-                      onClick={handleClickOpenSave}
-                    >
-                      Save Data
-                    </Button>
-                    </Grid>  
+                  <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                    <Grid item xs={12} sm={2} textAlign="right">
+                      <Button
+                        fullWidth
+                        variant="cancelButton"
+                        onClick={() => handleClickOpenCancel()}
+                      >
+                        Cancel Data
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={2} textAlign="right">
+                      <Button 
+                        fullWidth
+                        disabled={tasks.length === 0}
+                        variant="saveButton"
+                        type="submit"
+                        onClick={handleClickOpenSave}
+                      >
+                        Save Data
+                      </Button>
+                    </Grid>
                   </Grid>
                 </form>
               </FormProvider>

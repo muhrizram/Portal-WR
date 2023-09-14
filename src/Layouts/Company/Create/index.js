@@ -154,7 +154,7 @@ const CreateCompany = () => {
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
-          <Grid item xs={12} sm={6} pb={2} sx={2}>
+          <Grid item xs={12} sm={6} pb={2}>
             <Header judul='Create New Company' />
           </Grid>
           <Grid item xs={12}>
@@ -177,7 +177,7 @@ const CreateCompany = () => {
                         <Grid item mr={2}>
                           <Avatar src={file} className="image-upload" />
                         </Grid>
-                        <Grid item xs={2} className='custom-file-upload'>
+                        <Grid item xs={12} sm={6} mt={2} className='custom-file-upload'>
                           <label className='class-label-upload'>Upload Image</label>
                           <input
                             type="file"
@@ -194,7 +194,7 @@ const CreateCompany = () => {
                           </IconButton>
                           : ''}
                         </Grid>
-                        <Grid item xs={12} mt={1}>
+                        <Grid item xs={12} sm={6} mt={1}>
                           <Typography variant='titleTextWarningUpload'>
                             Single upload file should not be more 3MB. Only the .png/jpg file types are allowed
                           </Typography>
@@ -249,30 +249,27 @@ const CreateCompany = () => {
                         />
                       </Grid>
                     </Grid>
-                  <Grid
-                    item 
-                    container 
-                    xs={12}
-                    justifyContent='end'
-                    mt={3.5}
+                    
+                <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                <Grid item xs={12} sm={2} textAlign="right">
+                  <Button
+                    fullWidth
+                    variant="cancelButton"
+                    onClick={() => cancelData()}
                   >
-                    <Grid item xs={9} />
-                    <Grid item xs textAlign='right'>
-                      <Button
-                        style={{ marginRight: '16px' }} 
-                        variant='cancelButton'
-                        onClick={() => cancelData()}
-                      >
-                        Cancel Data
-                      </Button>
-                      <Button
-                        variant='saveButton'
-                        type='submit'
-                      >
-                        Save Data
-                      </Button>
-                    </Grid>
-                  </Grid>
+                    Cancel Data
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={2} textAlign="right">
+                  <Button 
+                    fullWidth
+                    variant="saveButton"
+                    type="submit"
+                  >
+                    Save Data
+                  </Button>
+                </Grid>
+              </Grid>
                 </div>
               </form>
             </FormProvider>

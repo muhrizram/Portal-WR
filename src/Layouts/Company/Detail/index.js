@@ -261,11 +261,11 @@ const DetailCompany = () => {
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
-          <Grid item xs={8} pb={2}>
+          <Grid item xs={12} sm={8}>
             <Header judul={isEdit ? 'Edit Company' : 'Detail Company'} />
           </Grid>
           {!isEdit && 
-            <Grid item xs={4} alignSelf='center' textAlign='end'>
+            <Grid item xs={12} sm={4} alignSelf='center' sx={{ textAlign: { xs:'start', sm:'end'}}}>
               <Button
                 variant='outlined'
                 className="button-text"
@@ -287,7 +287,7 @@ const DetailCompany = () => {
                       rowSpacing={3.79}
                       xs={12}
                     >
-                      <Grid item xs={12}>
+                      <Grid item xs={12} sm={2}>
                         <Typography>
                           Company Picture
                         </Typography>
@@ -297,7 +297,7 @@ const DetailCompany = () => {
                           <Avatar src={file} className="image-upload" />
                         </Grid>
                         {isEdit &&
-                          <Grid item xs={2} className='custom-file-upload'>
+                          <Grid item xs={12} sm={6} mt={2} className='custom-file-upload'>
                             <label className='class-label-upload'>Upload Image</label>
                             <input
                               type="file"
@@ -417,25 +417,21 @@ const DetailCompany = () => {
                       </Grid>
                     </Grid>
                   {isEdit && (
-                    <Grid
-                      item 
-                      container 
-                      xs={12}
-                      justifyContent='end'
-                      mt={3.5}
-                    >
-                      <Grid item xs={9} />
-                      <Grid item xs textAlign='right'>
+                    <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
                         <Button
-                          style={{ marginRight: '16px' }} 
-                          variant='cancelButton'
+                          fullWidth
+                          variant="cancelButton"
                           onClick={() => cancelData()}
                         >
                           Cancel Data
                         </Button>
-                        <Button
-                          variant='saveButton'
-                          type='submit'
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          variant="saveButton"
+                          type="submit"
                         >
                           Save Data
                         </Button>
