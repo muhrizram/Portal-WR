@@ -271,7 +271,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             variant="saveButton"
             onClick={() => onContinue()}
           >
-            Continue
+            {presence.value === "42" ? "Continue" : "Submit Evidence" }
           </Button>
         </Grid>
       </Grid>

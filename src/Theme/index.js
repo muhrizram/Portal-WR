@@ -291,6 +291,24 @@ let globalTheme = createTheme({
         },
         {
           props: {
+            variant: "outlined-attedance-sick",
+          },
+          style: {
+            marginTop:'-33px',
+            // position: "absolute",
+            textTransform: "none",
+            width: "85%",
+            padding: "6px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            borderRadius: "6px",            
+            background:'#FF5722',
+            color: "#734011",
+            borderColor: "black",
+          },
+        },
+        {
+          props: {
             variant: "outlined-attedance-today",
           },
           style: {
