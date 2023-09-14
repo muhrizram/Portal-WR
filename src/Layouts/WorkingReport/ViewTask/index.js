@@ -11,11 +11,13 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CreateIcon from "@mui/icons-material/Create";
 import PopupTask from "../PopupTask";
 import client from "../../../global/client";
+import dayjs from "dayjs";
 
 export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusHr, setonOtherUser, setIsViewTask, StatusSearch}) {
   const [openTask, setOpenTask] = useState(false);
   const [taskData, setTaskData] = useState([]);
   const [todaysWorkingReport, setTodaysWorkingReport] = useState(false);  
+  const [currentDate, setCurrentDate] = useState('');
   
   useEffect(() => (
     getDetailTask(),
@@ -26,6 +28,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
     for (const item of dataAll) {
       if (item.workingReportTaskId === WrIdDetail) {     
         // The detail working report viewed is today's working report 
+        setCurrentDate(item.tanggal);
         setTodaysWorkingReport(item.isToday);
         break;
       }else{
@@ -86,76 +89,80 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
           <Grid item xs={12}>
             <Card>
               <Grid container p={4} spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={12} borderBottom="1px solid rgba(0, 0, 0, .12)" paddingBottom={1}>
                   <Typography variant="h4">
-                    {task.attributes.projectName}
+                    {task.attributes.absenceId !== null ? task.attributes.absenceName : task.attributes.projectName}
                   </Typography>
                   <Typography variant="body1">
+                    {dayjs(currentDate).format("dddd, DD MMMM YYYY")}
                   </Typography>
                 </Grid>
-                <Divider />
                 {task.attributes.listTask.map((taskItem) => (
                   <Grid item xs={12} key={taskItem.taskId}>
-                    <Accordion>
+                    <Accordion elevation={0}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                       >
                         <Typography sx={{ fontSize: "24px" }}>
-                          {taskItem.taskName} :: {taskItem.taskCode}
+                          {task.attributes.absenceId !== null ? "Project" : taskItem.taskName} :: {taskItem.taskCode}
                         </Typography>
                       </AccordionSummary>
                       <AccordionDetails>
                         <Grid container spacing={2}>
-                          <Grid item xs={4}>
-                            <Grid item xs={12}>
-                              <Typography variant="labelHeaderDetail">
-                                Task Description
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                              <Typography variant="inputDetail">
-                                {taskItem.taskDescription}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Grid item xs={12}>
-                              <Typography variant="labelHeaderDetail">
-                                Status Task
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={2}>
-                              <Box
-                                sx={{
-                                  backgroundColor: getStatusColor(taskItem.statusTaskName),
-                                  color: getStatusFontColor(taskItem.statusTaskName),
-                                  padding: '5px 10px',
-                                  gap: '10px',
-                                  borderRadius: '4px',
-                                  fontSize: '12px',
-                                }}
-                              >
-                                {taskItem.statusTaskName}
-                              </Box>
-                            </Grid>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Grid item xs={12}>
-                              <Typography variant="labelHeaderDetail">
-                                Priority
-                              </Typography>
-                            </Grid>
-                            <Rating
-                              // className="rating-outline"
-                              variant="outlined"
-                              name="rating"
-                              value={parseInt(taskItem.priority)}
-                              readOnly
-                              precision={0.5}
-                            />
-                          </Grid>
+                          {task.attributes.absenceId === null &&
+                            (<>
+                              <Grid item xs={4}>
+                                <Grid item xs={12}>
+                                  <Typography variant="labelHeaderDetail">
+                                    Task Description
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <Typography variant="inputDetail">
+                                    {taskItem.taskDescription}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Grid item xs={12}>
+                                  <Typography variant="labelHeaderDetail">
+                                    Status Task
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={2}>
+                                  <Box
+                                    sx={{
+                                      backgroundColor: getStatusColor(taskItem.statusTaskName),
+                                      color: getStatusFontColor(taskItem.statusTaskName),
+                                      padding: '5px 10px',
+                                      gap: '10px',
+                                      borderRadius: '4px',
+                                      fontSize: '12px',
+                                    }}
+                                  >
+                                    {taskItem.statusTaskName}
+                                  </Box>
+                                </Grid>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Grid item xs={12}>
+                                  <Typography variant="labelHeaderDetail">
+                                    Priority
+                                  </Typography>
+                                </Grid>
+                                <Rating
+                                  // className="rating-outline"
+                                  variant="outlined"
+                                  name="rating"
+                                  value={parseInt(taskItem.priority)}
+                                  readOnly
+                                  precision={0.5}
+                                />
+                              </Grid>
+                            </>)
+                          }
                           <Grid item xs={6}>
                             <Grid item xs={12}>
                               <Typography variant="labelHeaderDetail">
