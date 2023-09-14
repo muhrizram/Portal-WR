@@ -80,11 +80,15 @@ const CreateProject = () => {
       field: "nip",
       headerName: "NIP",
       flex: 0.7,
+      minWidth: 100,
+      sortable: false
     },
     {
       field: "name",
       headerName: "Name",
       flex: 1.3,
+      minWidth: 200,
+      sortable: false,
       renderCell: (params) => {
         const urlMinio = params.row.photoProfile
           ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
@@ -112,6 +116,8 @@ const CreateProject = () => {
       field: "joinDate",
       headerName: "Join-End Date",
       flex: 2.5,
+      sortable: false,
+      minWidth: 400,
       cellClassName: "joinDate-cell",
       renderCell: (params) => {
         return (
@@ -171,6 +177,8 @@ const CreateProject = () => {
       field: "roleProjectId",
       headerName: "Role",
       flex: 1,
+      sortable: false,
+      minWidth: 200,
       renderCell: (params) => {
         return (
           <Grid item xs={12}>
@@ -217,6 +225,8 @@ const CreateProject = () => {
       field: "action",
       headerName: "Action",
       flex: 0.5,
+      sortable: false,
+      minWidth: 100,
       renderCell: (params) => {
         return (
           <IconButton
@@ -452,6 +462,11 @@ const CreateProject = () => {
     }
     setOpen(false);
   };
+
+  const handleCancel = () => {
+    setOpen(false)
+    navigate('/masterProject')
+  }
 
   const handleChange = (event, newValue) => {
     const {name, value} = event.target
@@ -893,27 +908,31 @@ const CreateProject = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions className="dialog-delete-actions">
-          <Button
-            onClick={handleClose}
-            variant="outlined"
-            className="button-text"
-          >
-            {isSave ? "Back" : "Cancel without saving"}
-          </Button>
-          <Button onClick={onSave} variant="saveButton" disabled={isSaveloading}>
-            {isSave ? (
-              isSaveloading ? (
+          {isSave ? (
+            <Button onClick={handleClose} variant="outlined">
+              <span>Back</span>
+            </Button>            
+          ) : (
+            <Button onClick={handleCancel} variant="outlined">
+              <span>Cancel without saving</span>
+            </Button>
+          )}
+          {isSave ? (
+            <Button onClick={onSave} variant="saveButton" disabled={isSaveloading}>
+              {isSaveloading ? (
                 <>
                   <CircularProgress size="14px" color="inherit" sx={{ marginRight: '4px' }} />
-                  Loading...
+                  <span>Loading...</span>
                 </>
               ) : (
-                "Save Data"
-              )
-            ) : (
-              "Back"
-            )}
-          </Button>
+                <span>Save Data</span>
+              )}
+            </Button>            
+          ) : (
+            <Button onClick={handleClose} variant="saveButton">
+              Back
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </SideBar>

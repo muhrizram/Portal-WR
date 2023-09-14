@@ -91,191 +91,234 @@ const DetailProject = () => {
   
   useEffect(() => {
     setColumns([
-      {
-        field: "no",
-        headerName: "No",
-        flex: 0.2,
-        sortable: false,
-      },
-      {
-        field: "nip",
-        headerName: "NIP",
-        flex: 0.9,
-      },
-      {
-        field: "name",
-        headerName: "Name",
-        flex: 2,
-        renderCell: (params) => {
-          const urlMinio = params.row.photoProfile
-            ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
-            : "";
-          return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Avatar
-                src={urlMinio}
-                className="img-master-employee"
-                alt="Profile Image"
-              />
-              <Grid container>
-                <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
-                  <span className="text-name">{params.row.name}</span>
-                </Grid>
-                <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
-                  <span className="text-name">{params.row.assignment}</span>
-                </Grid>
-              </Grid>
-            </div>
-          );
-        },
-      },
-      ...(isEdit
-        ? [
-            {
-              field: "joinDate",
-              headerName: "Join-End Date",
-              flex: 3.5,
-              renderCell: (params) => {
-                return (
+    {
+      field: "no",
+      headerName: "No",
+      flex: 0.2,
+      sortable: false,
+    },
+    
+    ...(isEdit
+      ? [
+          {
+            field: "nip",
+            headerName: "NIP",
+            flex: 0.9,
+            minWidth: 150,
+            sortable: false,
+          },
+          {
+            field: "name",
+            headerName: "Name",
+            flex: 2,
+            minWidth: 250,
+            sortable: false,
+            renderCell: (params) => {
+              const urlMinio = params.row.photoProfile
+                ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
+                : "";
+              return (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    src={urlMinio}
+                    className="img-master-employee"
+                    alt="Profile Image"
+                  />
                   <Grid container>
-                    <Grid item xs={5.5}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          className="date-input-table"
-                          format="DD/MM/YYYY"
-                          defaultValue={dayjs(params.row.joinDate)}
-                          onChange={(startJoinProject) => {
-                            const newStartDate =
-                              startJoinProject.format("YYYY-MM-DD");
-                            const updatedListUser = editData.teamMember.map(
-                              (u) => {
-                                if (u.userId == params.row.id) {
-                                  return { ...u, joinDate: newStartDate };
-                                }
-                                return u;
-                              }
-                            );
-
-                            setEditData({
-                              ...editData,
-                              teamMember: updatedListUser,
-                            });
-                          }}
-                          sx={{ paddingRight: "2px" }}
-                        />
-                      </LocalizationProvider>
+                    <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
+                    <span className="text-name">{params.row.name}</span>
                     </Grid>
-                    <Grid item xs={0.5}>
-                      {" -"}
-                    </Grid>
-                    <Grid item xs={5.5}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          className="date-input-table"
-                          format="DD/MM/YYYY"
-                          defaultValue={dayjs(params.row.endDate)}
-                          onChange={(endJoinProject) => {
-                            const newEndDate =
-                              endJoinProject.format("YYYY-MM-DD");
-                            const updatedListUser = editData.teamMember.map(
-                              (u) => {
-                                if (u.userId == params.row.id) {
-                                  return { ...u, endDate: newEndDate };
-                                }
-                                return u;
-                              }
-                            );
-
-                            setEditData({
-                              ...editData,
-                              teamMember: updatedListUser,
-                            });
-                          }}
-                        />
-                      </LocalizationProvider>
+                    <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
+                      <span className="text-name">{params.row.assignment}</span>
                     </Grid>
                   </Grid>
-                );
-              },
+                </div>
+              );
             },
-            {
-              field: "role",
-              headerName: "Role",
-              flex: 1.5,
-              renderCell: (params) => {
-                return (
-                  <Grid item xs={12}>
-                    <Autocomplete
-                      freeSolo
-                      name="roleProjectId"
-                      options={roles}
-                      defaultValue={params.row.dataSelect}
-                      getOptionLabel={(option) => option.role}
-                      onChange={(_event, newValue) => {
-                        if (newValue) {
-                          const updatedListUser = editData.teamMember.map(
-                            (u) => {
-                              if (u.userId == params.row.id) {
-                                return { ...u, roleId: parseInt(newValue.id) };
-                              }
-                              return u;
+          },
+          {
+            field: "joinDate",
+            headerName: "Join-End Date",
+            flex: 3.5,
+            minWidth: 400,
+            sortable: false,
+            renderCell: (params) => {
+              return (
+                <Grid container>
+                  <Grid item xs={5.5}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        className="date-input-table"
+                        format="DD/MM/YYYY"
+                        defaultValue={dayjs(params.row.joinDate)}
+                        onChange={(startJoinProject) => {
+                          const newStartDate = startJoinProject.format("YYYY-MM-DD");
+                          const updatedListUser = editData.teamMember.map(u => {
+                            if (u.userId == params.row.id) {
+                              return { ...u, joinDate: newStartDate };
                             }
-                          );
-
-                          setEditData((prevData) => ({
-                            ...prevData,
-                            teamMember: updatedListUser,
-                          }));
-                        }
-                      }}
-                      renderInput={(paramsInput) => (
-                        <TextField
-                          {...paramsInput}
-                          name="roleProjectId"
-                          placeholder="Select Role"
-                          inputProps={{
-                            ...paramsInput.inputProps,
-                            style: {
-                              height: "8px",
-                            },
-                          }}
-                        />
-                      )}
-                    />
+                            return u;
+                          });
+  
+                          setEditData({
+                            ...editData,
+                            teamMember: updatedListUser
+                          });
+  
+                        }}
+                        sx={{ paddingRight: "2px" }}
+                      />
+                    </LocalizationProvider>
                   </Grid>
-                );
-              },
+                  <Grid item xs={0.5}>
+                    {' -'}
+                  </Grid>
+                  <Grid item xs={5.5}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        className="date-input-table"
+                        format="DD/MM/YYYY"
+                        defaultValue={dayjs(params.row.endDate)}
+                        onChange={(endJoinProject) => {
+                          const newEndDate = endJoinProject.format("YYYY-MM-DD");
+                          const updatedListUser = editData.teamMember.map(u => {
+                            if (u.userId == params.row.id) {
+                              return { ...u, endDate: newEndDate };
+                            }
+                            return u;
+                          });
+  
+                          setEditData({
+                            ...editData,
+                            teamMember: updatedListUser
+                          });
+  
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                </Grid>
+              )
             },
-            {
-              field: "action",
-              headerName: "Action",
-              flex: 0.7,
-              renderCell: (params) => {
-                return (
-                  <IconButton
-                    onClick={(e) => deleteMember(params.row.id)}
-                    color="default"
-                  >
-                    <DeleteOutlineOutlined />
-                  </IconButton>
-                );
-              },
+          },
+          {
+            field: "role",
+            headerName: "Role",
+            flex: 1.5,
+            minWidth: 200,
+            sortable: false,
+            renderCell: (params) => {
+              return (
+                <Grid item xs={12}>
+                  <Autocomplete
+                    freeSolo
+                    name="roleProjectId"
+                    options={roles}
+                    defaultValue={params.row.dataSelect}
+                    getOptionLabel={(option) => option.role}
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        const updatedListUser = editData.teamMember.map(u => {
+                          if (u.userId == params.row.id) {
+                            return { ...u, roleId: parseInt(newValue.id) };
+                          }
+                          return u;
+                        });
+          
+                        setEditData(prevData => ({
+                          ...prevData,
+                          teamMember: updatedListUser
+                        }));
+                    }}}
+                    renderInput={(paramsInput) => (
+                      <TextField
+                        {...paramsInput}
+                        name="roleProjectId"
+                        placeholder="Select Role"
+                        inputProps={{
+                          ...paramsInput.inputProps,
+                          style: {
+                            height: '8px',
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              );
+              
             },
-          ]
-        : [
-            {
-              field: "joinDate",
-              headerName: "Join-End Date",
-              flex: 2,
+          },
+          {
+            field: "action",
+            headerName: "Action",
+            flex: 0.7,
+            minWidth: 100,
+            sortable: false,
+            renderCell: (params) => {
+              return (
+                <IconButton
+                  onClick={(e) => deleteMember(params.row.id)}
+                  color="default"
+                >
+                  <DeleteOutlineOutlined />
+                </IconButton>
+              )
+            }
+          },
+        ]
+      : [
+          {
+            field: "nip",
+            headerName: "NIP",
+            flex: 0.9,
+            minWidth: 150,
+          },
+          {
+            field: "name",
+            headerName: "Name",
+            flex: 2,
+            minWidth: 250,
+            renderCell: (params) => {
+              const urlMinio = params.row.photoProfile
+                ? `${process.env.REACT_APP_BASE_API}/${params.row.photoProfile}`
+                : "";
+              return (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    src={urlMinio}
+                    className="img-master-employee"
+                    alt="Profile Image"
+                  />
+                  <Grid container>
+                    <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
+                    <span className="text-name">{params.row.name}</span>
+                    </Grid>
+                    <Grid style={{ marginLeft: "0.5rem" }} item xs={12} sm={6}>
+                      <span className="text-name">{params.row.assignment}</span>
+                    </Grid>
+                  </Grid>
+                </div>
+              );
             },
-            {
-              field: "role",
-              headerName: "Role",
-              flex: 1,
-            },
-          ]),
-    ]);
-  }, [isEdit, editData]);
+          },
+          {
+            field: "joinDate",
+            headerName: "Join-End Date",
+            flex: 2,
+            minWidth: 300,
+          },
+          {
+            field: "role",
+            headerName: "Role",
+            flex: 1,
+            minWidth: 150,
+          },
+        ]
+      ),
+      ]
+    )
+  }, [isEdit, editData])
 
   const [filter, setFilter] = useState({
     sortName: "role",

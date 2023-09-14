@@ -22,16 +22,19 @@ export default function Project() {
       field: "projectName",
       headerName: "Project Name",
       flex: 1,
+      minWidth: 250,
     },
     {
       field: "clientName",
       headerName: "Client Name",
       flex: 1,
+      minWidth: 250,
     },
     {
       field: "projectType",
       headerName: "Project Type",
       flex: 1,
+      minWidth: 150,
     },
   ];
   const navigate = useNavigate();
