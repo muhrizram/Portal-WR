@@ -295,9 +295,16 @@ const CreateProject = () => {
 
     setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
 
-    const updatedListUser = [...sendData.listUser, ...listUserAdmin.map(user => ({
-      userId: user.userId,
-      roleProjectId: user.roleSelect.id,
+    let listMemberAdmin;
+    if(sendData.listUser.length !== 0) {
+      listMemberAdmin = []
+    } else {
+      listMemberAdmin = listUserAdmin
+    }
+
+    const updatedListUser = [...sendData.listUser, ...listMemberAdmin.map(user => ({
+      userId: user.userId || null,
+      roleProjectId: user.roleSelect.id || null,
       joinDate: null,
       endDate: null
     })), ...newMembers.map(member => ({
