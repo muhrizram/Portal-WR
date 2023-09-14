@@ -20,9 +20,12 @@ import PreviewIcon from "@mui/icons-material/Preview";
 
 const DetailCompany = () => {
   const [dataProject, setDataProject] = useState([]) 
+  const [loading, setLoading] = useState(false)
   
-  const getDetailProject = async () => {
-    navigate("/master-project/detail");
+  const getDetailProject =  (id) => {
+    setLoading(true)
+    localStorage.setItem("projectId", id)
+    navigate("/master-project/detail")
   }
 
 
@@ -42,9 +45,11 @@ const DetailCompany = () => {
       headerName: "Detail Project",
       flex: 1,
       renderCell: (data) => {
+        console.log("cek", data.id)
         return(
           <div>
-            <IconButton onClick={getDetailProject}>
+            <IconButton 
+              onClick={(id) => getDetailProject(data.id)}>
               <PreviewIcon />
             </IconButton>
           </div>
@@ -103,9 +108,27 @@ const DetailCompany = () => {
     }
   })
 
+  const [filter, setFilter] = useState({
+    sortName: "projectName",
+    sortType: "desc",
+    search: "",
+  });
+
+  const onFilter = (dataFilter) => {
+    setFilter({
+      sortName:
+        dataFilter.sorting.field !== ""
+          ? dataFilter.sorting[0].field
+          : "",
+      sortType:
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "desc",
+      search: "",
+    });
+  };
+
   useEffect(() => {
     getDataDetail()
-  }, [])
+  }, [filter])
 
   const getDataDetail = async () => {
     const id = localStorage.getItem('companyId')
@@ -146,6 +169,10 @@ const DetailCompany = () => {
       }
     })
     setDataProject(temp)
+
+    // if (temp.length > 0) {
+    //   setGetProjectId(temp[0].id);
+    // }
   }
 
   const handleClose = () => {
@@ -296,7 +323,7 @@ const DetailCompany = () => {
                           </Grid>
                         }
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         {isEdit ? (
                           <FormInputText
                             focused
@@ -310,7 +337,7 @@ const DetailCompany = () => {
                           />
                         ) : (
                           <Grid container>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                               <Typography variant='labelHeaderDetail'>Company Name</Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -319,7 +346,7 @@ const DetailCompany = () => {
                           </Grid>
                         )}
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         {isEdit ? (
                           <FormInputText
                             focused
@@ -333,7 +360,7 @@ const DetailCompany = () => {
                           />
                         ) : (
                           <Grid container>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                               <Typography variant='labelHeaderDetail'>Company Email</Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -342,7 +369,7 @@ const DetailCompany = () => {
                           </Grid>
                         )}
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         {isEdit ? (
                           <FormInputText
                             focused
@@ -356,7 +383,7 @@ const DetailCompany = () => {
                           />
                         ) : (
                           <Grid container>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                               <Typography variant='labelHeaderDetail'>Company NPWP</Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -365,7 +392,7 @@ const DetailCompany = () => {
                           </Grid>
                         )}
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         {isEdit ? (
                           <FormInputText
                             focused
@@ -379,7 +406,7 @@ const DetailCompany = () => {
                           />
                         ) : (
                           <Grid container>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
                               <Typography variant='labelHeaderDetail'>Company Address</Typography>
                             </Grid>
                             <Grid item xs={12}>
@@ -432,7 +459,7 @@ const DetailCompany = () => {
                 </Button>
               </Grid>
               <Grid item xs={12}>
-                <TableNative data={dataProject} columns={columnsProject} sortingMode="client" />
+                <TableNative data={dataProject} columns={columnsProject} onFilter={(dataFilter => onFilter(dataFilter))} />
               </Grid>
             </div>
           </Grid>

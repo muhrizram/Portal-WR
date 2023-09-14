@@ -175,7 +175,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           file: filePath,
         };
         setdataReadyAttedance(body)   
-        setIsCheckin(true)   
+        setIsCheckin(true)
       }    
     }    
   };

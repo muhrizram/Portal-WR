@@ -17,6 +17,7 @@ import {
   TextField,
   IconButton,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import "../../../App.css";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -50,8 +51,9 @@ const DetailProject = () => {
   const [editData, setEditData] = useState({});
   const [columnsProject, setColumns] = useState([]);
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const currentUserId = parseInt(localStorage.getItem("userId"));
+  const [loading, setLoading] = useState(false)
+  const [isSaveloading, setIsSaveLoading] = useState(false)
+  const currentUserId = parseInt(localStorage.getItem("userId"))
 
   useEffect(() => {
     if (isEdit) {
@@ -358,12 +360,10 @@ const DetailProject = () => {
   };
 
   const handleInvite = () => {
+    methods.setValue('role', null)
     const newMembers = valueUser
-      .filter(
-        (newUser) =>
-          !dataMember.some((existingMember) => newUser.id == existingMember.id)
-      )
-      .map((newUser) => ({
+      .filter(newUser => !dataMember.some(existingMember => newUser.id == existingMember.id))
+      .map(newUser => ({
         id: parseInt(newUser.id),
         userId: parseInt(newUser.id),
         name: `${newUser.firstName} ${newUser.lastName}`,
@@ -375,39 +375,30 @@ const DetailProject = () => {
         assignment: newUser.position,
         joinDate: newUser.startJoin,
         endDate: newUser.endDate,
-        dataSelect: newUser.roleSelect,
+        dataSelect: newUser.roleSelect
       }))
-      .filter(
-        (newMember) =>
-          !dataMember.some(
-            (existingMember) => newMember.id == existingMember.id
-          )
-      );
-
-    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers]);
-
+      .filter(newMember => !dataMember.some(existingMember => newMember.id == existingMember.id));
+  
+    setSelectedMember(prevSelected => [...prevSelected, ...newMembers]);
+  
     const updatedListUser = editData.teamMember
-      .filter(
-        (existingMember) =>
-          !newMembers.some((newMember) => newMember.id === existingMember.id)
-      )
-      .concat(
-        newMembers.map((member, index) => ({
-          no: editData.teamMember.length + index + 1,
-          id: member.id,
-          name: member.name,
-          userId: parseInt(member.userId),
-          roleId: parseInt(member.roleId),
-          joinDate: member.joinDate,
-          endDate: member.endDate,
-        }))
-      );
-
-    setEditData((prevData) => ({
+      .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
+      .concat(newMembers.map((member, index) => ({
+        no: editData.teamMember.length + index + 1,
+        id: member.id,
+        name: member.name,
+        userId: parseInt(member.userId),
+        roleId: parseInt(member.roleId),
+        joinDate: member.joinDate,
+        endDate: member.endDate,
+      })));
+  
+    setEditData(prevData => ({
       ...prevData,
-      teamMember: updatedListUser,
+      teamMember: updatedListUser
     }));
-  };
+    setIsInviteDisabled(true)
+  }
 
   const updateData = [
     ...dataMember,
@@ -532,6 +523,7 @@ const DetailProject = () => {
   };
 
   const onSave = async () => {
+    setIsSaveLoading(true)
     const data = {
       companyId: editData.companyId,
       projectName: editData.projectName,
@@ -567,14 +559,16 @@ const DetailProject = () => {
         message: res.data.meta.message,
       });
       setTimeout(() => {
-        navigate("/masterProject");
-      }, 3000);
+        navigate('/masterProject')
+      }, 3000)
+      setIsSaveLoading(false)
     } else {
       setDataAlert({
         severity: "error",
         message: res.error.detail,
-        open: true,
-      });
+        open: true
+      })
+      setIsSaveLoading(false)
     }
     setOpen(false);
   };
@@ -1193,8 +1187,9 @@ const DetailProject = () => {
                     </Grid>
                     <Grid item xs={12} sm={2.5}>
                       <Autocomplete
+                        value={null}
                         disablePortal
-                        name="roleProjectId"
+                        name="role"
                         options={roles}
                         getOptionLabel={(option) => option.role}
                         onChange={(_event, newValue) => {
@@ -1273,8 +1268,19 @@ const DetailProject = () => {
           >
             {isSave ? "Back" : "Cancel without saving"}
           </Button>
-          <Button onClick={handleSubmit(onSave)} variant="saveButton">
-            {isSave ? "Save Data" : "Back"}
+          <Button onClick={handleSubmit(onSave)}  variant="saveButton" disabled={isSaveloading}>
+            {isSave ? (
+              isSaveloading ? (
+                <>
+                  <CircularProgress size="14px" color="inherit" sx={{ marginRight: '4px' }} />
+                  Loading...
+                </>
+              ) : (
+                "Save Data"
+              )
+            ) : (
+              "Back"
+            )}
           </Button>
         </DialogActions>
       </Dialog>

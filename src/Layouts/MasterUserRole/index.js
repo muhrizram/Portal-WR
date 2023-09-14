@@ -18,7 +18,7 @@ const RoleUser = () => {
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: 'role',
+    sortName: 'name',
     sortType: 'asc',
     search: ''
   })
@@ -26,7 +26,7 @@ const RoleUser = () => {
     setFilter({
       page: dataFilter.page,
       size: dataFilter.pageSize,
-      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'role',
+      sortName: dataFilter.sorting.field !== '' ? dataFilter.sorting[0].field : 'name',
       sortType: dataFilter.sorting.sort !== '' ? dataFilter.sorting[0].sort : 'asc',
       search: filter.search
     })
@@ -109,7 +109,7 @@ const RoleUser = () => {
     setFilter({
       page: 0,
       size: 10,
-      sortName: 'role',
+      sortName: 'name',
       sortType: 'asc',
       search: ''
     })

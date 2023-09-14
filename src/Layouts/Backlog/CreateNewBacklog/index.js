@@ -127,7 +127,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
 
       <AccordionDetails>
         <Grid container direction="row">
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -142,10 +142,10 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             
           <Controller
-            name="statusBacklog"
+            name="priority"
             control={control}
             render={({ field }) => (
             <Box sx={{ width: "100%", paddingLeft: "10px" }}>
@@ -167,7 +167,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   }));
                 }}
               />
-              {(errors.priority !== undefined) && (
+              {errors.priority && (
                 <Typography
                   color="#d32f2f"
                   textAlign={"left"}
@@ -175,7 +175,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   paddingY={'3px'}
                   paddingX={'6px'}
                 >
-                  {errors.priority ? errors.priority.message : ''}
+                  {errors.priority.message}
                 </Typography>
               )}
             </Box>
@@ -183,8 +183,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                 />
           </Grid>
         </Grid>
-        <Grid container direction="row" style={{ marginTop: "30px" }}>
-          <Grid item xs={6}>
+        <Grid container direction="row">
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -199,7 +199,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />                   
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
           <Controller
             name="statusBacklog"
             control={control}
@@ -209,8 +209,9 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   id="combo-box-demo"
                   name='statusBacklog'
                   options={StatusBacklog}
-                  value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
+                  // value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
                   onChange={(event, newValue) => {
+                    field.onChange(newValue.id)
                     if (newValue) {
                       setTaskData((prevData) => ({
                         ...prevData,
@@ -253,9 +254,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
         <Grid
           container
           direction="row"
-          style={{ marginTop: "30px" }}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -271,7 +271,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6} mt={2}>
             <Controller
               name="assignedTo"
               control={control}
@@ -285,6 +285,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               getOptionLabel={(option) => option.fullName}
               onChange={(event, newValue) =>
                 {
+                  field.onChange(newValue.id)
                   setTaskData((prevData) => ({
                     ...prevData,
                     assignedTo: newValue ? newValue.fullName : null, 
@@ -433,8 +434,9 @@ const CreateNewBacklog = () => {
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      taskCode:''  
+      taskCode: taskCode  
     };
+    console.log("task", newTask)
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
     setTasks(newTasks);
