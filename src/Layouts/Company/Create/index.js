@@ -154,7 +154,7 @@ const CreateCompany = () => {
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
         <Grid container>
-          <Grid item xs={12} pb={2}>
+          <Grid item xs={12} sm={6} pb={2} sx={2}>
             <Header judul='Create New Company' />
           </Grid>
           <Grid item xs={12}>
@@ -168,7 +168,7 @@ const CreateCompany = () => {
                       rowSpacing={3.79}
                       xs={12}
                     >
-                      <Grid item xs={12}>
+                      <Grid item xs={12} sm={6}>
                         <Typography>
                           Company Picture
                         </Typography>
@@ -200,7 +200,7 @@ const CreateCompany = () => {
                           </Typography>
                         </Grid>
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         <FormInputText
                           focused
                           name='companyName'
@@ -212,7 +212,7 @@ const CreateCompany = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         <FormInputText
                           focused
                           name='companyEmail'
@@ -224,7 +224,7 @@ const CreateCompany = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         <FormInputText
                           focused
                           name='npwp'
@@ -236,7 +236,7 @@ const CreateCompany = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         <FormInputText
                           focused
                           name='address'

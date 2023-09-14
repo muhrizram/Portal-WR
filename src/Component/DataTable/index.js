@@ -110,12 +110,12 @@ const DataTable = ({
 
   return (
     <Grid container rowSpacing={3}>
-      <Grid item xs={12}>
+      <Grid item xs={12} pb={8}>
         <Grid container className="containerHeader">
           <Grid item>
             <div className="dividerHeader" />
           </Grid>
-          <Grid item xs={11}>
+          <Grid item xs={11} sm={6}>
             <Typography variant="headerCardMenu">{`Master ${title}`}</Typography>
           </Grid>
         </Grid>
