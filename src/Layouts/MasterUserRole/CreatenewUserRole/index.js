@@ -184,11 +184,11 @@ const CreateUserRole = () => {
                   <Grid item />                 
                 </Grid>
                 <Grid className="HeaderDetail">
-                <Grid item xs={12}>
+                <Grid item xs={12} container direction="column" spacing={2}>
                   <FormProvider>
                     <form onSubmit={handleSubmit()}>              
                     <Grid container spacing={2}>
-                      <Grid item xs container direction="column" spacing={2}>                                              
+                      <Grid item xs={12} container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
                         <Autocomplete
                                 disablePortal
@@ -211,14 +211,14 @@ const CreateUserRole = () => {
                               />
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
-                        <Typography sx={{marginLeft:"20px", fontSize: "18px", fontWeight:"bold" }}>
+                        <Typography sx={{marginLeft:"35px", fontSize: "18px", fontWeight:"bold" }}>
                               Role *
                             </Typography>
-                            <Grid container direction="row" sx={{ marginLeft: "25px" }}>
-                            <Grid item xs={6}>
+                            <Grid container direction={{ xs: "row", sm: "column" }} sx={{ marginLeft: "30px" }}>
+                            <Grid item xs={12} sm={6}>
                               <FormGroup>{roleCheckboxes.slice(0, 3)}</FormGroup>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={12} sm={6}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
                             {selectedRoles.length === 0 && (
@@ -232,22 +232,27 @@ const CreateUserRole = () => {
                           </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item xs textAlign='right'>
-                      <Button
-                        style={{ marginRight: '16px' }} 
-                        variant='cancelButton'
-                        onClick={() => handleClickOpenCancel()}
-                      >
-                        Cancel Data
-                      </Button>
-                      <Button
-                        variant='saveButton'
-                        type='submit'
-                        onClick={handleClickOpenSave}
-                      >
-                        Save Data
-                      </Button>
-                    </Grid>                             
+                    <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => handleClickOpenCancel()}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          variant="saveButton"
+                          type="submit"
+                          onClick={handleClickOpenSave}
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
+                    </Grid>
                     <Dialog
                       open={open}
                       onClose={handleClose}

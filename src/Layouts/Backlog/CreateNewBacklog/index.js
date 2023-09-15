@@ -584,7 +584,7 @@ useEffect(() => {
                           flexDirection: "column",
                         }}
                       >
-                        <img src={Allura} width="396px" height="188px" />
+                        <img src={Allura} style={{ maxWidth: '100%', height: 'auto' }} />
                         <Typography
                           sx={{
                             marginTop: "20px",
@@ -601,38 +601,42 @@ useEffect(() => {
                       </Grid>
                     </>
                   )}
-                  <Grid container spacing={2} mt={3.5} textAlign="left">
+                  <Grid container spacing={2} mt={3.5} alignItems="center" justifyContent="space-between">
+                    <Grid item xs={12} sm={3}>
                       <Button
                         disabled={!valueproject}
                         color="success"
                         variant="contained"
                         onClick={handleClickTask}
-                        style={{ marginRight: "10px" }}
+                        fullWidth
                       >
                         + Add Task
                       </Button>
                     </Grid>
-                  <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
-                    <Grid item xs={12} sm={2} textAlign="right">
-                      <Button
-                        fullWidth
-                        variant="cancelButton"
-                        onClick={() => handleClickOpenCancel()}
-                      >
-                        Cancel Data
-                      </Button>
+                    <Grid item xs={12} sm={6}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => handleClickOpenCancel()}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Button
+                          fullWidth
+                          disabled={tasks.length === 0}
+                          variant="saveButton"
+                          type="submit"
+                          onClick={handleClickOpenSave}
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={2} textAlign="right">
-                      <Button 
-                        fullWidth
-                        disabled={tasks.length === 0}
-                        variant="saveButton"
-                        type="submit"
-                        onClick={handleClickOpenSave}
-                      >
-                        Save Data
-                      </Button>
-                    </Grid>
+                  </Grid>
                   </Grid>
                 </form>
               </FormProvider>
