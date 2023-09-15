@@ -627,13 +627,11 @@ const CreateProject = () => {
                     <FormInputText
                       focused
                       name="picProjectPhone"
-                      type="tel"
+                      type="number"
                       className="input-field-crud"
                       placeholder="e.g 08123456789"
                       label="PIC Project Phone *"
-                      onChange={e => hanldeChangePhone(e)}
-                      value={ phoneNumber }
-                      inputProps={{maxLength:15, inputMode:'numeric', pattern:'[0-9]*'}}
+                      inputProps={{maxLength:15}}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
