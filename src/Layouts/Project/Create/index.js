@@ -647,10 +647,10 @@ const CreateProject = () => {
                             format="DD/MM/YYYY"
                             name={field.name}
                             sx={{ width: "100%" }}
-                            value={field.value}
+                            value={field.value ? dayjs(field.value) : ""}
                             onChange={(startProjectDate) => {
-                              field.onChange(startProjectDate.format("YYYY-MM-DD"));
-                              setStartProject(startProjectDate.format("YYYY-MM-DD"));
+                              field.onChange(startProjectDate ? startProjectDate.format("YYYY-MM-DD") : "");
+                              setStartProject(startProjectDate ? startProjectDate.format("YYYY-MM-DD") : "");
                             }}
                             onAccept={field.onBlur}
                             slotProps={{
@@ -685,10 +685,10 @@ const CreateProject = () => {
                             format="DD/MM/YYYY"
                             name={field.name}
                             sx={{ width: "100%" }}
-                            value={field.value}
+                            value={field.value? dayjs(field.value): null}
                             onChange={(endProjectDate) => {
-                              field.onChange(endProjectDate.format("YYYY-MM-DD"));
-                              setEndProject(endProjectDate.format("YYYY-MM-DD"));
+                              field.onChange(endProjectDate ? endProjectDate.format("YYYY-MM-DD") : null);
+                              setEndProject(endProjectDate ? endProjectDate.format("YYYY-MM-DD") : null);
                             }}
                             onAccept={field.onBlur}
                             slotProps={{
