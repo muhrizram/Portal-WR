@@ -269,10 +269,17 @@ const PopupTask = ({
   };
 
   const handleChange = (event, idxProject, index, backlogId) => {
+   if(isEdit){
     const temp = {...firstEditTask}
     temp.listProject[idxProject].listTask[index][`${event.name}Id`] = event.value.id
     temp.listProject[idxProject].listTask[index][`${event.name}Name`] = event.value.name
-    setfirstEditTask(temp)   
+    setfirstEditTask(temp) 
+   }else{
+    const temp = {...dataProject}
+    temp.listProject[idxProject].listTask[index][`${event.name}Id`] = event.value.id
+    temp.listProject[idxProject].listTask[index][`${event.name}Name`] = event.value.name
+    setProject(temp) 
+   }  
   };
   
   
@@ -292,10 +299,12 @@ const PopupTask = ({
       const temp = { ...dataProject };    
       temp.workingReportId = selectedWrIdanAbsenceId.workingReportTaskId;    
       if(absen){
-        temp.listProject[idxProject].absenceId = newValue;
-      }else{        
-        temp.listProject[idxProject].projectId = newValue;
-      }    
+        temp.listProject[idxProject].absenceId = newValue.id;
+        temp.listProject[idxProject].projectName = newValue.name;
+      }else{
+        temp.listProject[idxProject].projectId = newValue.id;
+        temp.listProject[idxProject].projectName = newValue.name;
+      }  
       temp.listProject[idxProject].listTask = [clearTask];
       setProject(temp);
     }
@@ -328,15 +337,14 @@ const PopupTask = ({
         }else if (tempEffort > 8) {
           setPopUpMoretask(true);
           setDurationTask(false)
-        }else{          
+        }else{
+          console.log("INI data",dataProject)
           const res = await client.requestAPI({
             method: 'POST',
             endpoint: `/task/addTask`,
-            data: {
-              ...dataProject,
-              workingReportId: dataProject.workingReportId
-            },
-          });          
+            data: dataProject,
+          });
+          console.log("INI RES",res)          
           if(!res.isError){            
             setDataAlert({
               severity: 'success',
@@ -667,7 +675,7 @@ const PopupTask = ({
                         onChange={(_event, newValue) => {
                         if (newValue) {                          
                           getlistTaskProject(newValue.id)               
-                          handleChangeProject(newValue.id, idxProject, newValue.absen)                       
+                          handleChangeProject(newValue, idxProject, newValue.absen)                       
                           setCekabsen((prevCekAbsen) => {
                             const updatedCekAbsen = [...prevCekAbsen];
                             updatedCekAbsen[idxProject] = newValue.absen;
@@ -690,6 +698,18 @@ const PopupTask = ({
                           });
                         }
                         }}
+                        value={resProject !== undefined ? 
+                          resProject.projectName !== undefined  ?
+                          {
+                            name: resProject.projectName,
+                            id: resProject.id
+                          } : resProject.absenceName !== undefined ?
+                          {
+                            name: resProject.absenceName,
+                            id: resProject.absenceId
+                          } : null
+                           : null
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -767,34 +787,16 @@ const PopupTask = ({
                                         {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration}
                                          || null) : selectedTask[index]
                                         }
-                                      onChange={(_event, newValue) => {
-                                        if (newValue) {
-                                          if (selectedTask[index] !== undefined) {
-                                            const updatedSelectedTask = selectedTask.map((task, i) =>
-                                              i === index ? newValue : task
-                                            );
-                                            setSelectedTask(updatedSelectedTask);
-                                          } else {
-                                            handleChange(
-                                              { target: { name: 'taskName', value: newValue.taskName } },
-                                              idxProject,
-                                              index,
-                                              newValue.backlogId
-                                            );
-                                            setideffortTask(newValue.backlogId);
-                                            setSelectedTask([...selectedTask, newValue]);
-                                          }
-                                        } else {
-                                          setideffortTask('');
-                                          if (selectedTask[index] !== undefined) {
-                                            const updatedSelectedTask = selectedTask.filter(
-                                              (task, i) => i !== index
-                                            );
-                                            setSelectedTask(updatedSelectedTask);
-                                          }
-                                        }
-                                      }}
-                                      value={selectedTask[index] || null}
+                                        onChange={(_event, newValue) => {
+                                          const temp = { ...dataProject}
+                                          temp.listProject[idxProject].listTask[index].taskName = newValue !== null ? newValue.taskName : ''
+                                          temp.listProject[idxProject].listTask[index].backlogId = newValue !== null ? newValue.backlogId : ''
+                                          setProject(temp)
+                                        }}
+                                        alue={{
+                                          taskName: res.taskName,
+                                          id: res.taskId
+                                        }}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -816,11 +818,17 @@ const PopupTask = ({
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
                                       onChange={(_event, newValue) =>
                                         handleChange(
-                                          { target: { name : 'statusTaskId', value : newValue.id } },
+                                          { value : {...newValue }, name : 'statusTask'},
                                           idxProject,
                                           index
                                           )
                                         }
+                                        value={res.statusTaskName == undefined ? null : (
+                                          {
+                                            id: res.statusTaskId,
+                                            name: res.statusTaskName
+                                          }
+                                        )}
                                       renderInput={(params) => (
                                         <TextField
                                           {...params}
@@ -838,8 +846,14 @@ const PopupTask = ({
                                       required
                                       name='duration'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
-                                      // value={selectedTask ? selectedTask.actualEffort : ideffortTask}
-                                      onChange={(e) => handleChange(e,idxProject, index)}                                
+                                      value={res.duration == undefined ? '' : res.duration}
+                                      onChange={(_event) => {
+                                        const temp = { ...dataProject };
+                                        const inputValue = _event.target.value;
+                                        const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
+                                        temp.listProject[idxProject].listTask[index].duration = numericValue;
+                                        setProject(temp);
+                                      }}                            
                                       className='input-field-crud'
                                       type="number"
                                       placeholder='e.g Create Login Screen"'
@@ -851,8 +865,12 @@ const PopupTask = ({
                                       focused
                                       name='taskItem'
                                       sx={{ width: "100%" , backgroundColor: 'white' }}
-                                      value={res.detail}
-                                      onChange={(e) => handleChange(e,idxProject, index)}
+                                      value={res.taskItem == undefined ? '' : res.taskItem}
+                                      onChange={(_event,newValue) => {                                        
+                                        const temp = { ...dataProject };
+                                          temp.listProject[idxProject].listTask[index].taskItem = _event.target.value === '' ? null : _event.target.value;
+                                        setProject(temp);
+                                      }}
                                       className='input-field-crud'
                                       placeholder='e.g Create Login Screen"'
                                       label='Task Detail'
