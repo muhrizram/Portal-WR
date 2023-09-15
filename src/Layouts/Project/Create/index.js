@@ -61,6 +61,7 @@ const CreateProject = () => {
     endDate: null,
   });
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState(null);
   const currentUserId = localStorage.getItem("userId");
   const userAdmin = JSON.parse(localStorage.getItem('listUserAdmin'))
 
@@ -551,6 +552,13 @@ const CreateProject = () => {
     getOptDataUser(value)
     // }, 200)
   }
+
+  const hanldeChangePhone = (event) =>{
+    const inputPhone = event.target.value.replace(/\D/g, "");
+    event.target.value = inputPhone;
+    setPhoneNumber(inputPhone);
+  }
+
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />
@@ -570,6 +578,7 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g Project Internal 79"
                       label="Project Name *"
+                      inputProps={{ maxLength:100 }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -611,16 +620,20 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g John Doe"
                       label="PIC Project Name *"
+                      inputProps={{maxLength:100}}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormInputText
                       focused
                       name="picProjectPhone"
-                      type="number"
+                      type="tel"
                       className="input-field-crud"
                       placeholder="e.g 08123456789"
                       label="PIC Project Phone *"
+                      onChange={e => hanldeChangePhone(e)}
+                      value={ phoneNumber }
+                      inputProps={{maxLength:15, inputMode:'numeric', pattern:'[0-9]*'}}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -706,6 +719,7 @@ const CreateProject = () => {
                       className="input-field-crud"
                       placeholder="e.g T-PR-WR-001"
                       label="Initial Project *"
+                      inputProps={{maxLength:20}}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -754,7 +768,7 @@ const CreateProject = () => {
                           placeholder="e.g Project internal for Working Reports Employee"
                           label="Project Description"
                           InputProps={{
-                            maxLength: 255,
+                            inputProps:{ maxLength: 255 },
                             endAdornment: (
                               <InputAdornment position="end">
                                 {field.value.length}/255
