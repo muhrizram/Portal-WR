@@ -197,7 +197,7 @@ const DetailPrivilege = () => {
                   <FormProvider>
                         <form onSubmit={handleSubmit()}>  
                     <Grid container spacing={2}>
-                      <Grid item xs container direction="column" spacing={2}>                                            
+                      <Grid item xs={12} container direction="column" spacing={2}>                                            
                         <Grid style={{ padding: "30px" }}>    
                           <TextField sx={{width:"100%"}} disabled id="outlined-basic" label="Role *" value={detail.roleName} variant="outlined" />
                         </Grid>  
@@ -207,15 +207,15 @@ const DetailPrivilege = () => {
                             >
                               Privilege *
                             </Typography>
-                            <Grid container direction="row" sx={{marginLeft:'30px'}}
+                            <Grid container direction={{ xs: "row", sm: "column" }} sx={{marginLeft:'30px'}}
                               error={errors.privilege !== undefined}
                               >
-                              <Grid item xs={6}>
+                              <Grid item xs={12}>
                                 <FormGroup>
                                   {privilegeCheckboxes.slice(0,5)}
                                 </FormGroup>
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item xs={12}>
                                 <FormGroup>
                                   {privilegeCheckboxes.slice(5)}
                                 </FormGroup>
@@ -231,29 +231,27 @@ const DetailPrivilege = () => {
                             </Grid>
                       </Grid>
                     </Grid>
-                    <Grid
-                  item
-                  xs={12}
-                  alignSelf="center"
-                  textAlign="right"                  
-                >
-                  <Button
-                    onClick={handleClickCancel}
-                    variant='cancelButton'
-                    style={{ marginRight: "10px" }}
-                  >
-                    Cancel Data
-                  </Button>
-                  <Button
-                    variant="contained"
-                    className="button-text"
-                    onClick={handleClickOpen}
-                    type="submit"
-                    style={{ marginRight: "10px" }}
-                  >
-                    Save Data
-                  </Button>
-                </Grid>
+                    <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={handleClickCancel}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          variant="saveButton"
+                          type="submit"
+                          onClick={handleClickOpen}
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
+                    </Grid>
                 <Dialog
                 open={open}
                 onClose={handleClose}
@@ -342,17 +340,17 @@ const DetailPrivilege = () => {
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
-                  <Grid item xs={9.9}>
+                  <Grid item xs={9.9} sm={8}>
                     <Header judul="Detail Role Privilege" />
                   </Grid>
 
                   <Grid item />
 
-                  <Grid item xs={2} alignSelf="center" textAlign="right">
+                  <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}>
                     <Button
                       variant="outlined"
                       startIcon={<CreateIcon />}
-                      style={{ marginRight: "10px", padding: "4px 10px"}}
+                      style={{ marginRight: "10px"}}
                       onClick={clickEdit}
                     >
                       Edit Data Role Privilege

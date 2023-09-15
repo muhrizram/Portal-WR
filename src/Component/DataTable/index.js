@@ -128,7 +128,7 @@ const DataTable = ({
         paddingTop={3}
       >
         {!onUpload ? (
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}>
             <SearchBar
               placeholder={placeSearch}
               label={searchTitle}
@@ -195,13 +195,7 @@ const DataTable = ({
         )}
 
         {onEmployee && (
-          <Grid
-            container
-            direction="row"
-            item
-            xs={2}
-            alignSelf="center"
-            textAlign="right"
+          <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
           >
             <Button
               variant="contained"
@@ -243,13 +237,7 @@ const DataTable = ({
         )}
 
         {!onEmployee && !onUpload && (
-          <Grid
-            container
-            direction="row"
-            item
-            xs={2}
-            alignSelf="center"
-            textAlign="right"
+          <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
           >
             <Button
               variant="contained"
@@ -294,7 +282,7 @@ const DataTable = ({
           textAlign="center"
         >
           <Grid item xs={12} pb={3.75}>
-            <img src={blanktable} alt="blank-table" />
+            <img src={blanktable} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }} />
           </Grid>
           <Grid item xs={12}>
             <Typography variant="noDataTable">

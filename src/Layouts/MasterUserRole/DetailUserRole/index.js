@@ -211,12 +211,12 @@ const DetailUserRole = () => {
                             >
                               Role *
                             </Typography>
-                          <Grid container direction="row" sx={{ marginLeft: "25px" }}
+                          <Grid container direction={{ xs: "row", sm: "column" }} sx={{ marginLeft: "25px" }}
                           errors= {errors.role !== undefined}>
-                            <Grid item xs={6}>
+                            <Grid item xs={12}>
                               <FormGroup>{roleCheckboxes.slice(0, 3)}</FormGroup>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={12}>
                               <FormGroup>{roleCheckboxes.slice(3)}</FormGroup>
                             </Grid>
                             {selectedRoles.length === 0 && (
@@ -230,21 +230,26 @@ const DetailUserRole = () => {
                           </Grid>
                       </Grid>
                     </Grid>
-                    <Grid item xs textAlign='right'>
-                      <Button
-                        style={{ marginRight: '16px' }} 
-                        variant='cancelButton'
-                        onClick={() => handleClickOpenCancel()}
-                      >
-                        Cancel Data
-                      </Button>
-                      <Button
-                        variant='saveButton'    
-                        type='submit'                    
-                        onClick={handleClickOpenSave}
-                      >
-                        Save Data
-                      </Button>
+                    <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => handleClickOpenCancel()}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          variant="saveButton"
+                          type="submit"
+                          onClick={handleClickOpenSave}
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
                     </Grid>
                     <Dialog
                       open={open}
@@ -290,13 +295,13 @@ const DetailUserRole = () => {
             <Grid container rowSpacing={2.5}>
               <Grid item xs={12}>
                 <Grid container>
-                  <Grid item xs={9.9}>
+                  <Grid item xs={9.9} sm={8}>
                     <Header judul="Detail User Role" />
                   </Grid>
 
                   <Grid item />
 
-                  <Grid item xs={2} alignSelf="center" textAlign="right">
+                  <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}>
                     <Button
                       variant="outlined"
                       startIcon={<CreateIcon />}

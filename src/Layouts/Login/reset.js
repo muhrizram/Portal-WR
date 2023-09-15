@@ -18,6 +18,7 @@ const Reset = ({open, onClose}) => {
   const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
   const [showNewPassword, setShowNewPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [isChange, setIsChange] = useState(false)
   const handleClickShowCurrentPassword = () => setShowCurrentPassword((show) => !show);
   const handleClickShowNewPassword = () => setShowNewPassword((show) => !show);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
@@ -64,8 +65,14 @@ const Reset = ({open, onClose}) => {
     resolver: yupResolver(Schemareset),
   });
 
+  const handleSaveData = () => {
+    setIsChange(true)
+    handleReset()
+  }
+
   const handleReset = async () => {
-    setLoading(true)
+    if(isChange){
+      setLoading(true)
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/auth/changePassword`,
@@ -93,6 +100,10 @@ const Reset = ({open, onClose}) => {
         }, 3000)
         setLoading(false)
       }
+    }
+    else{
+      console.error(isChange)
+    }
   };
 
   useEffect(() => {
@@ -234,7 +245,7 @@ const Reset = ({open, onClose}) => {
       <DialogActions className="dialog-delete-actions">
         <Button onClick={handleClose} variant='outlined' className='button-text'>Back</Button>
         <Button type='submit' 
-          onClick={handleReset} 
+          onClick={handleSaveData} 
           variant='contained' 
           className='button-text'
           // disabled={loading}

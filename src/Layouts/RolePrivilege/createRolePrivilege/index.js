@@ -169,7 +169,7 @@ const CreateRolePrivilege = () => {
           </Grid>                
         </Grid>
 
-        <Grid item xs container direction="column" spacing={2}>
+        <Grid item xs={12} container direction="column" spacing={2}>
           <FormProvider>
             <form onSubmit={handleSubmit()}>  
               <div>                        
@@ -202,7 +202,7 @@ const CreateRolePrivilege = () => {
                   Privilege *
                 </Typography>
 
-                <Grid container direction="row" sx={{marginLeft:'30px'}}
+                <Grid container direction={{ xs: "column", sm: "row" }} sx={{marginLeft:'30px'}}
                   error={errors.privilege !== undefined}
                   >
                   <Grid item xs={6}>

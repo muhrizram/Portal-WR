@@ -27,7 +27,7 @@ const LoginScreen = () => {
         <Grid container height="100%">
           <Grid item xs={6} height="100%" display="flex" flexDirection="column">
             <Grid item xs={12} paddingTop={4} paddingLeft={6}>
-              <img alt="leftImage" src={logo} />
+              <img alt="leftImage" src={logo} style={{ maxWidth: '100%', height: 'auto' }}/>
             </Grid>
             <Grid item xs={12} paddingLeft={{xs:3, md:12, lg:25}} paddingRight={{xs:3, md:12, lg:25}}>
               {renderComponent(currentStat)}
