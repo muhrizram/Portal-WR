@@ -793,7 +793,7 @@ const PopupTask = ({
                                           temp.listProject[idxProject].listTask[index].backlogId = newValue !== null ? newValue.backlogId : ''
                                           setProject(temp)
                                         }}
-                                        alue={{
+                                        value={{
                                           taskName: res.taskName,
                                           id: res.taskId
                                         }}
@@ -1063,33 +1063,32 @@ const PopupTask = ({
         </Dialog>
         
         <Dialog
-              open={openPopUpMoretask}          
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-            <DialogTitle
-              sx={{
-                alignSelf: "center",
-                fontSize: "30px",
-                fontStyle: "Poppins",
-              }}
-              id="alert-dialog-title"
-              className="dialog-delete-header"
-            >
-              {DurationTask ? 'New to the Work Crew' : 'Oops! You Work So Hard'}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {DurationTask ? "Duration is less than 8 hours, preventing task submission" : "Task exceeds 8-hour duration and cannot be submitted"}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions className="dialog-delete-actions"> 
-                <Button variant="contained" onClick={() => setPopUpMoretask(false)}>
-                  {"Back To Task"}
-                </Button>
-              </DialogActions>
-            </Dialog>
-
+          open={openPopUpMoretask}          
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {DurationTask ? 'New to the Work Crew' : 'Oops! You Work So Hard'}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {DurationTask ? "Duration is less than 8 hours, preventing task submission" : "Task exceeds 8-hour duration and cannot be submitted"}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions className="dialog-delete-actions"> 
+            <Button variant="contained" onClick={() => setPopUpMoretask(false)}>
+              {"Back To Task"}
+            </Button>
+          </DialogActions>
+        </Dialog>
     </>
   )
 }
