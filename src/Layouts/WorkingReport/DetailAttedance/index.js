@@ -7,7 +7,23 @@ import {
   import React, { useContext, useEffect, useState } from "react";
   import client from "../../../global/client";
   import { AlertContext } from "../../../context";
-  const DetailAttendance = ({ setIsViewAttendance }) => {
+  const DetailAttendance = ({ setIsViewAttendance, WrIdDetail }) => {
+    useEffect(() => (
+      getDetailAttendance()      
+    ),[])
+
+    const getDetailAttendance = async () => {    
+      try {
+        const res = await client.requestAPI({
+          method: "GET",
+          endpoint: `/workingReport/detailWorkingReport/${WrIdDetail}`        
+        });
+        // setTaskData(res.data);      
+        console.log("res.data", res.data);
+      } catch (error) {
+        console.error("Error fetching task details:", error);
+      } 
+    }
   
     return (
       <div className="card-attendance">
@@ -23,9 +39,16 @@ import {
             </Typography>
           </Grid>
           <Grid item xs={12} textAlign="center">
-            <Typography variant="attendanceHeader">
+          <a href="https://images.unsplash.com/photo-1549388604-817d15aa0110">
+            <img 
+            src="https://images.unsplash.com/photo-1549388604-817d15aa0110" 
+            alt="Gambar" 
+            style={{ width: "100%", height: "500px", borderRadius: "10px" }}
+            />
+          </a>
+            {/* <Typography variant="attendanceHeader">
               GAMBAR
-            </Typography>
+            </Typography> */}
           </Grid>         
         
           <Grid

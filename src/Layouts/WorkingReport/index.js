@@ -311,6 +311,7 @@ export default function WorkingReport() {
       dom = (
         <ViewAttendanceScreen
         setIsViewAttendance={() => setIsViewAttendance()}
+        WrIdDetail={WrIdDetail}
         />
       )
     } else {
