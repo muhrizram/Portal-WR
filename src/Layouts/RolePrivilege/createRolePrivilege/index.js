@@ -185,7 +185,11 @@ const CreateRolePrivilege = () => {
                       onChange={(event, newValue) => setSelectedRoles(newValue)}
                       isOptionEqualToValue={(option, value) => option.value === value.value}
                       renderInput={(params) => (
-                        <TextField {...params} focused label="Role *" placeholder="Select Role" 
+                        <TextField 
+                        {...params} 
+                        InputLabelProps={{ shrink: true }}   
+                        label="Role *" 
+                        placeholder="Select Role" 
                         {...register('role')}
                         error={errors.role !== undefined}
                         helperText={errors.role ? errors.role.message : ''}
@@ -249,31 +253,27 @@ const CreateRolePrivilege = () => {
                   )}
                 </Grid>
 
-                <Grid
-                  item 
-                  container 
-                  xs={12}
-                  justifyContent='end'
-                  mt={3.5}
-                >
-                  <Grid item xs={9} />
-                  <Grid item xs textAlign='right'>
-                    <Button
-                      style={{ marginRight: '16px' }} 
-                      variant='cancelButton'
-                      onClick={() => cancelData()}
-                    >
-                      Cancel Data
-                    </Button>
-                    <Button
-                      variant='saveButton'
-                      type='submit'
-                      onClick={confirmSave}
-                    >
-                      Save Data
-                    </Button>
-                  </Grid>
-                </Grid>
+                <Grid container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => cancelData()}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          variant="saveButton"
+                          type="submit"
+                          onClick={confirmSave}
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
+                    </Grid>
 
               </div>
             </form>

@@ -110,7 +110,7 @@ const DataTable = ({
 
   return (
     <Grid container rowSpacing={3}>
-      <Grid item xs={12} pb={8}>
+      <Grid item xs={12} pb={2}>
         <Grid container className="containerHeader">
           <Grid item>
             <div className="dividerHeader" />

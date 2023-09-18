@@ -34,16 +34,19 @@ const DetailCompany = () => {
       field: "projectName",
       headerName: "Project Name",
       flex: 1,
+      minWidth: 250,
     },
     {
       field: "projectType",
       headerName: "Project Type",
       flex: 1,
+      minWidth: 150
     },
     {
       field: "projectDesc",
       headerName: "Detail Project",
       flex: 1,
+      minWidth: 140,
       renderCell: (data) => {
         console.log("cek", data.id)
         return(
@@ -341,7 +344,7 @@ const DetailCompany = () => {
                               <Typography variant='labelHeaderDetail'>Company Name</Typography>
                             </Grid>
                             <Grid item xs={12}>
-                              <Typography variant='inputDetail'>{dataDetail.companyName}</Typography>
+                              <Typography variant='inputDetail' style={{ wordBreak: 'break-word' }}>{dataDetail.companyName}</Typography>
                             </Grid>
                           </Grid>
                         )}
@@ -364,7 +367,7 @@ const DetailCompany = () => {
                               <Typography variant='labelHeaderDetail'>Company Email</Typography>
                             </Grid>
                             <Grid item xs={12}>
-                              <Typography variant='inputDetail'>{dataDetail.companyEmail}</Typography>
+                              <Typography variant='inputDetail' style={{ wordBreak: 'break-word' }}>{dataDetail.companyEmail}</Typography>
                             </Grid>
                           </Grid>
                         )}
@@ -410,7 +413,7 @@ const DetailCompany = () => {
                               <Typography variant='labelHeaderDetail'>Company Address</Typography>
                             </Grid>
                             <Grid item xs={12}>
-                              <Typography variant='inputDetail'>{dataDetail.address}</Typography>
+                              <Typography variant='inputDetail' style={{ wordBreak: 'break-word' }}>{dataDetail.address}</Typography>
                             </Grid>
                           </Grid>
                         )}

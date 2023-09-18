@@ -19,13 +19,14 @@ const MasterCompany = () => {
     {
       field: "no",
       headerName: 'No',
-      sortable: false
-      // flex: 1,
+      sortable: false,
+      flex: 0.4,
     },
     {
       field: "companyName",
       headerName: "Company Name",
       flex: 1,
+      minWidth: 250,
       renderCell: (params) => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
         const maxCharacters = 20
@@ -56,16 +57,19 @@ const MasterCompany = () => {
       field: "companyEmail",
       headerName: "Company Email",
       flex: 1,
+      minWidth: 250,
     },
     {
       field: "address",
       headerName: "Address",
       flex: 1,
+      minWidth: 250,
     },
     {
       field: "npwp",
       headerName: "Company NPWP",
       flex: 1,
+      minWidth: 210,
     }
   ];
   const [data, setData] = useState([]);
