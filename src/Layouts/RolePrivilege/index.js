@@ -39,12 +39,14 @@ const RolePrivilege = () => {
       field: 'roleName',
       headerName: 'Role',
       flex: 1,
-      width: 80
+      width: 80,
+      minWidth: 200
     },
     {
       field: 'privilege',
       headerName: 'Privilege',
       flex: 1,
+      minWidth: 530,
       renderCell: (data) => (
         <Box className="chips"
         > 

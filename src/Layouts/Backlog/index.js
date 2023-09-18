@@ -18,27 +18,31 @@ const Backlog = () => {
       field: 'no',
       headerName: 'No',
       flex: 0.3,
-      sortable: false
+      sortable: false,
     },
     {
       field: 'projectName',
       headerName: 'Project Name',
-      flex: 0.7
+      flex: 0.7,
+      minWidth: 200,
     },
     {
       field: 'taskCode',
       headerName: 'Task Code',
-      flex: 0.7
+      flex: 0.7,
+      minWidth: 200.
     },
     {
       field: 'taskName',
       headerName: 'Task Name',
-      flex: 1 
+      flex: 1 ,
+      minWidth: 240
     },
     {
       field: 'priority',
       headerName: 'Priority',
       flex: 1,
+      minWidth: 200,
       renderCell: (data) => (
         <Rating
           // className="rating-outline"
@@ -54,6 +58,7 @@ const Backlog = () => {
       field: 'status',
       headerName: 'Status',
       flex: 1,
+      minWidth: 180,
       renderCell: (data) => (
         <Box
           sx={{
@@ -72,7 +77,8 @@ const Backlog = () => {
     {
       field: 'assignedTo',
       headerName: 'Assigned To',
-      flex: 1 
+      flex: 1 ,
+      minWidth: 200
     }
   ];
 

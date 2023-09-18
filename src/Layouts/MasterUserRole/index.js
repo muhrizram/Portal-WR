@@ -134,12 +134,14 @@ const RoleUser = () => {
       field: "nip",
       headerName: "NIP",
       flex: 0.7,
+      minWidth: 200,
     },   
     {
       field: "name",
       headerName: "User",
       width: 200,
       flex: 1,
+      minWidth: 250,
       renderCell: (data) => (
         <Box sx={{color: '#4B465C', fontSize: '15px'}}>
           {data.row.firstName + " " + data.row.lastName}
@@ -151,6 +153,7 @@ const RoleUser = () => {
       field: "role",
       headerName: "Role",
       flex: 1,
+      minWidth: 300,
       renderCell: (data) => (
         <Box
           sx={{            
@@ -213,6 +216,7 @@ const RoleUser = () => {
           data={data}
           columns={columns}
           placeSearch="User, Role, etc"
+          searchTitle="Search By"
           onAdd={() => onAdd()}
           handleChangeSearch={handleChangeSearch}
           onDetail={(userId) => handleDetail(userId)}

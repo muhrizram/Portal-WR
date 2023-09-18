@@ -36,12 +36,12 @@ const CreateUserRole = () => {
   const [getUsersdata, setgetUsers] = useState([]);
   const navigate = useNavigate();
 
-  const textPlease = 'Please Input'
+  const textPlease = 'Please Select'
   const schemauserRole = Yup.object().shape({
     nipUser: Yup.string()
     .required(`${textPlease} NIP & User`),
     role: Yup.string()
-      .required(`Please select role`)
+      .required(`${textPlease} Role`)
   });
 
   const { handleSubmit, formState: { errors }, register } = useForm({
@@ -190,25 +190,25 @@ const CreateUserRole = () => {
                     <Grid container spacing={2}>
                       <Grid item xs={12} container direction="column" spacing={2}>                                              
                         <Grid style={{ padding: "30px" }}>                          
-                        <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                options={getUsersdata}
-                                sx={{ width: "100%" }}
-                                value={selectedUser}
-                                onChange={(event, newValue) => setSelectedUser(newValue)}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="NIP & User *"
-                                    placeholder="Select User"
-                                    focused
-                                    {...register('nipUser')}
-                                    error={errors.nipUser !== undefined}
-                                    helperText={errors.nipUser ? errors.nipUser.message : ''}
-                                  />
-                                )}
+                          <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={getUsersdata}
+                            sx={{ width: "100%" }}
+                            value={selectedUser}
+                            onChange={(event, newValue) => setSelectedUser(newValue)}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="NIP & User *"
+                                placeholder="Select User"
+                                InputLabelProps={{ shrink: true }}   
+                                {...register('nipUser')}
+                                error={errors.nipUser !== undefined}
+                                helperText={errors.nipUser ? errors.nipUser.message : ''}
                               />
+                            )}
+                          />
                         </Grid>  
                         <Divider sx={{marginLeft:"20px", marginBottom:"30px"}}/>   
                         <Typography sx={{marginLeft:"35px", fontSize: "18px", fontWeight:"bold" }}>
