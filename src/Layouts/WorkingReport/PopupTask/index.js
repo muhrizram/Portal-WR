@@ -276,6 +276,8 @@ const PopupTask = ({
     setfirstEditTask(temp) 
    }else{
     const temp = {...dataProject}
+    console.log("INI ENVET",event.target.value)
+    console.log("INI ss",event.target.name)
     temp.listProject[idxProject].listTask[index][`${event.name}Id`] = event.value.id
     temp.listProject[idxProject].listTask[index][`${event.name}Name`] = event.value.name
     setProject(temp) 
@@ -306,6 +308,7 @@ const PopupTask = ({
         temp.listProject[idxProject].projectName = newValue.name;
       }  
       temp.listProject[idxProject].listTask = [clearTask];
+      console.log("INI TEMP",temp)
       setProject(temp);
     }
   };
@@ -467,8 +470,14 @@ const PopupTask = ({
                               required
                               name='taskDuration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
-                              value={res.taskDuration}
-                              onChange={(e) => handleChange(e,idxProject, index)}
+                              onChange={(_event) => {
+                                const temp = { ...dataProject };
+                                const inputValue = _event.target.value;
+                                const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
+                                temp.listProject[idxProject].listTask[index].duration = numericValue;
+                                setProject(temp);
+                              }}
+                              value={res.duration == undefined ? '' : res.duration} 
                               className='input-field-crud'
                               type="number"
                               placeholder='e.g 0,5 or 3 (hour)'
@@ -481,8 +490,12 @@ const PopupTask = ({
                               required
                               name='taskItem'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
-                              value={res.taskItem}
-                              onChange={(e) => handleChange(e,idxProject, index)}
+                              value={res.taskItem == undefined ? '' : res.taskItem}
+                              onChange={(_event,newValue) => {                                        
+                                        const temp = { ...dataProject };
+                                          temp.listProject[idxProject].listTask[index].taskItem = _event.target.value === '' ? null : _event.target.value;
+                                        setProject(temp);
+                              }}
                               className='input-field-crud'
                               placeholder='e.g Rest for a while'
                               label='Information Details'
@@ -537,6 +550,7 @@ const PopupTask = ({
                                         taskName: res.taskName,
                                         id: res.taskId
                                       }}
+                                      // value={selectedTask[index] || null}
                                       isOptionEqualToValue={(option, value) => option.value === value.value}
                                       renderInput={(params) => (
                                         <TextField
@@ -732,7 +746,14 @@ const PopupTask = ({
                               required
                               name='duration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
-                              onChange={(e) => handleChange(e,idxProject, index)}
+                              onChange={(_event) => {
+                                const temp = { ...dataProject };
+                                const inputValue = _event.target.value;
+                                const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
+                                temp.listProject[idxProject].listTask[index].duration = numericValue;
+                                setProject(temp);
+                              }}
+                              value={res.duration == undefined ? '' : res.duration}   
                               className='input-field-crud'
                               type="number"
                               placeholder='e.g 0,5 or 3 (hour)'
@@ -745,7 +766,12 @@ const PopupTask = ({
                               required
                               name='taskItem'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
-                              onChange={(e) => handleChange(e,idxProject, index)}
+                              value={res.taskItem == undefined ? '' : res.taskItem}
+                              onChange={(_event,newValue) => {                                        
+                                        const temp = { ...dataProject };
+                                          temp.listProject[idxProject].listTask[index].taskItem = _event.target.value === '' ? null : _event.target.value;
+                                        setProject(temp);
+                              }}
                               className='input-field-crud'
                               placeholder='e.g Rest for a while'
                               label='Information Details'

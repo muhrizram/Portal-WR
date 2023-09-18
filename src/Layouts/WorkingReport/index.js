@@ -259,6 +259,7 @@ export default function WorkingReport() {
             setIsCheckin(() => false);
           }}
           dataReadyAttedance={dataReadyAttedance}
+          beforeThanToday={dataAttandance.dataPeriod.isToday}
         />
       );
     } else if (dataAttandance.isAttandance) {

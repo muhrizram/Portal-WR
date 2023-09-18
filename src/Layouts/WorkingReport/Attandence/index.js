@@ -61,7 +61,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
   const onContinue = async () => {
     let body = {};
     let workingReportId = null;    
-      if(!beforeThanToday){
+      // if(!beforeThanToday){
           if (presence.value === "42") {
           body = {
             periodId: dataPeriod.period,
@@ -71,31 +71,33 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             workLocation: location,
           };      
           localStorage.setItem("presence", presence.value);
-          const res = await client.requestAPI({
-            endpoint: "/workingReport/attendance",
-            method: "POST",
-            data: body,
-          });
-            if (!res.isError) {
-              localStorage.setItem(
-                "workingReportId",
-                res.data.attributes.workingReportId
-              );      
-              setDataAlert({
-                severity: "success",
-                open: true,
-                message: res.data.meta.message,
-              });
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000)          
-            } else {
-              setDataAlert({
-                severity: "error",
-                message: res.error.detail,
-                open: true,
-            });
-          }
+        setdataReadyAttedance(body)   
+        setIsCheckin(true)
+          // const res = await client.requestAPI({
+          //   endpoint: "/workingReport/attendance",
+          //   method: "POST",
+          //   data: body,
+          // });
+          //   if (!res.isError) {
+          //     localStorage.setItem(
+          //       "workingReportId",
+          //       res.data.attributes.workingReportId
+          //     );      
+          //     setDataAlert({
+          //       severity: "success",
+          //       open: true,
+          //       message: res.data.meta.message,
+          //     });
+          //     setTimeout(() => {
+          //       window.location.reload();
+          //     }, 3000)          
+          //   } else {
+          //     setDataAlert({
+          //       severity: "error",
+          //       message: res.error.detail,
+          //       open: true,
+          //   });
+          // }
         } else {      
           body = {
             periodId: dataPeriod.period,
@@ -103,35 +105,38 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             userId: parseInt(localStorage.getItem("userId")),
             date: dataPeriod.tanggal,
             file: filePath,
-          };      
-          const res = await client.requestAPI({
-            endpoint: "/workingReport/notAttendance",
-            method: "POST",
-            data: body,
-          });
-          if (!res.isError) {
-            // workingReportId = res.data.attributes.workingReportId;
-            localStorage.setItem(
-              "workingReportId",
-              res.data.attributes.workingReportId
-            );      
-            setDataAlert({
-              severity: "success",
-              open: true,
-              message: res.data.meta.message,
-            });
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000)  
-          } else {
-            setDataAlert({
-              severity: "error",
-              message: res.error.detail,
-              open: true,
-            });
-          }
+          };
+          localStorage.setItem("presence", presence.value);
+        setdataReadyAttedance(body)   
+        setIsCheckin(true)
+                
+          // const res = await client.requestAPI({
+          //   endpoint: "/workingReport/notAttendance",
+          //   method: "POST",
+          //   data: body,
+          // });
+          // if (!res.isError) {
+          //   localStorage.setItem(
+          //     "workingReportId",
+          //     res.data.attributes.workingReportId
+          //   );      
+          //   setDataAlert({
+          //     severity: "success",
+          //     open: true,
+          //     message: res.data.meta.message,
+          //   });
+          //   setTimeout(() => {
+          //     window.location.reload();
+          //   }, 3000)  
+          // } else {
+          //   setDataAlert({
+          //     severity: "error",
+          //     message: res.error.detail,
+          //     open: true,
+          //   });
+          // }
         }    
-    }else{
+    // }else{
       if (presence.value != "42") {      
         body = {
           periodId: dataPeriod.period,
@@ -139,33 +144,36 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           userId: parseInt(localStorage.getItem("userId")),
           date: dataPeriod.tanggal,
           file: filePath,
-        };      
-        const res = await client.requestAPI({
-          endpoint: "/workingReport/notAttendance",
-          method: "POST",
-          data: body,
-        });
-        if (!res.isError) {
-          // workingReportId = res.data.attributes.workingReportId;
-          localStorage.setItem(
-            "workingReportId",
-            res.data.attributes.workingReportId
-          );      
-          setDataAlert({
-            severity: "success",
-            open: true,
-            message: res.data.meta.message,
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000)  
-        } else {
-          setDataAlert({
-            severity: "error",
-            message: res.error.detail,
-            open: true,
-          });
-        }
+        };
+        localStorage.setItem("presence", presence.value);
+        setdataReadyAttedance(body)   
+        setIsCheckin(true)
+        // const res = await client.requestAPI({
+        //   endpoint: "/workingReport/notAttendance",
+        //   method: "POST",
+        //   data: body,
+        // });
+        // if (!res.isError) {
+        //   // workingReportId = res.data.attributes.workingReportId;
+        //   localStorage.setItem(
+        //     "workingReportId",
+        //     res.data.attributes.workingReportId
+        //   );      
+        //   setDataAlert({
+        //     severity: "success",
+        //     open: true,
+        //     message: res.data.meta.message,
+        //   });
+        //   setTimeout(() => {
+        //     window.location.reload();
+        //   }, 3000)  
+        // } else {
+        //   setDataAlert({
+        //     severity: "error",
+        //     message: res.error.detail,
+        //     open: true,
+        //   });
+        // }
       }else{
         body = {
           periodId: dataPeriod.period,
@@ -174,10 +182,11 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           date: dataPeriod.tanggal,
           file: filePath,
         };
+        localStorage.setItem("presence", presence.value);
         setdataReadyAttedance(body)   
         setIsCheckin(true)
       }    
-    }    
+    // }    
   };
 
   const renderBottom = () => {
