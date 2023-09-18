@@ -197,7 +197,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         <Grid>
                           {moment(info.date).isSameOrBefore(currentDate) && !onStatusHr ? (
                           <CustomButton
-                          disabled={!isWeekend(info.date) && data.presenceName != "Hadir" || !datalibur}
+                          disabled={!isWeekend(info.date) ? 
+                            !datalibur ? 
+                            data.presenceName != "Hadir" 
+                            : false
+                            : false }
                             variant="outlined-warning"
                             onClick={
                               data.overtime == true ? () => {
@@ -344,7 +348,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 {info.isToday && !onStatusHr ? (
                   <CustomButton                  
                     variant="outlined-warning"
-                    disabled={data.presenceName != "Hadir"}
+                    disabled={
+                      !isWeekend(info.date) ? 
+                            !datalibur ? 
+                            data.presenceName != "Hadir" 
+                            : false
+                            : false
+                    }
                     onClick={
                       data.overtime == true ?() => {
                         setId(data.workingReportOvertimeId)

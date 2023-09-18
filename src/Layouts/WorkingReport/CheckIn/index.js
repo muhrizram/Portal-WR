@@ -26,7 +26,7 @@ import client from "../../../global/client";
 import moment from "moment";
 import { AlertContext } from "../../../context";
 
-export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod }) {
+export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod, beforeThanToday }) {
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -63,8 +63,19 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
   
       const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
   
-      if (totalMinutes == 540) {        
-        setIsTakePicture(true);
+      if (totalMinutes === 540) {
+        const presence = localStorage.getItem("presence");
+        if (beforeThanToday && presence === "42") {
+          setIsTakePicture(true);
+        } else if (!beforeThanToday) {
+          if (presence === "42") {
+            hadirNotToday();
+          } else {
+            TidakhadirNotToday();
+          }
+        } else {
+          TidakhadirNotToday();
+        }      
       } else if (totalMinutes < 540){
         setDuration(true)                
         setPopUpMore(true)
@@ -74,6 +85,101 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
       }
     }
   };
+
+    const TidakhadirNotToday = async() => {
+      let workingReportId = null;
+      const res = await client.requestAPI({
+            endpoint: "/workingReport/notAttendance",
+            method: "POST",
+            data: dataReadyAttedance,
+          });
+          workingReportId = res.data.attributes.workingReportId
+          if (!res.isError) {
+            const body = {
+              workingReportId: workingReportId,
+              latitude : lat,
+              longitude : lon,
+              startTime: startTime.format("HH:mm:ss"),
+              endTime: endTime.format("HH:mm:ss"),
+              file: "null",
+            };
+        
+            const res = await client.requestAPI({
+              endpoint: "/workingReport/attendance/checkIn",
+              method: "POST",
+              data: body,
+            });
+            if (!res.isError) {                  
+              setDataAlert({
+                severity: "success",
+                open: true,
+                message: res.data.meta.message,
+              });
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000)   
+            } else {
+              setDataAlert({
+                severity: "error",
+                message: res.error.detail,
+                open: true,
+              });
+            }      
+          } else {
+            setDataAlert({
+              severity: "error",
+              message: res.error.detail,
+              open: true,
+            });
+          }
+      }
+
+      const hadirNotToday = async() => {
+        let workingReportId = null;
+        const res = await client.requestAPI({
+              endpoint: "/workingReport/attendance",
+              method: "POST",
+              data: dataReadyAttedance,
+            });
+            workingReportId = res.data.attributes.workingReportId
+              if (!res.isError) {
+                const body = {
+                  workingReportId: workingReportId,
+                  latitude : lat,
+                  longitude : lon,
+                  startTime: startTime.format("HH:mm:ss"),
+                  endTime: endTime.format("HH:mm:ss"),
+                  file: "null",
+                };
+                const res = await client.requestAPI({
+                  endpoint: "/workingReport/attendance/checkIn",
+                  method: "POST",
+                  data: body,
+                });
+                if (!res.isError) {                  
+                  setDataAlert({
+                    severity: "success",
+                    open: true,
+                    message: res.data.meta.message,
+                  });
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 3000)   
+                } else {
+                  setDataAlert({
+                    severity: "error",
+                    message: res.error.detail,
+                    open: true,
+                  });
+                }                      
+              } else {
+                setDataAlert({
+                  severity: "error",
+                  message: res.error.detail,
+                  open: true,
+              });
+            }
+      }
   
 
   const checkIn = async () => {
