@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useContext } from "react";
 import Grid from "@mui/material/Grid";
-import { Button, Typography } from "@mui/material";
+import { Button, CircularProgress, Typography } from "@mui/material";
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import TextField from "@mui/material/TextField";
@@ -11,8 +11,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FormInputText from '../../../Component/FormInputText';
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import client from '../../../global/client';
-import shemabacklog from '../shema';
+import createTaskSchema from "../shema";
 import { AlertContext } from '../../../context';
+import dayjs from "dayjs";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -89,7 +90,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
   };
 
   return (
-    <Accordion key={taskData.id} sx={{ boxShadow: 'none', width: '100%' }}>
+    <Accordion key={taskData.id} defaultExpanded sx={{ boxShadow: 'none', width: '100%', borderTop: taskData.id > 1 ?'' : 'solid 1px rgba(0, 0, 0, 0.12)', borderBottom:'solid 1px rgba(0, 0, 0, 0.12)' }}>
       <Grid
         container
         direction="row"
@@ -127,13 +128,11 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
 
       <AccordionDetails>
         <Grid container direction="row">
-          <Grid item xs={12} sm={6} mt={2}>
+          <Grid item xs={6}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              name='taskName'
-              value={taskDataUpdate.taskName}
-              onChange={handleChange}
+              name={`taskName-${taskData.id}`}
               className='input-field-crud'
               placeholder='e.g Create Login Screen"'
               label='Task Name *'
@@ -142,32 +141,32 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} mt={2}>
+          <Grid item xs={6}>
             
           <Controller
-            name="priority"
+            name={`priority-${taskData.id}`}
             control={control}
             render={({ field }) => (
             <Box sx={{ width: "100%", paddingLeft: "10px" }}>
               <Typography
                 component="legend"
-                sx={{ color: "grey" }}
+                sx={{ color: errors[`priority-${taskData.id}`] ? "#D32F2F" : "grey" }}
               >
                 Priority *
               </Typography>
               <Rating
                 variant="outlined"
-                name="priority"
-                value={taskDataUpdate.priority}
+                name={`priority-${taskData.id}`}
+                value={field.value}
                 onChange={(event, newValue) => {
                   field.onChange(newValue)
                   setTaskDataUpdate((prevData) => ({
                     ...prevData,
-                    priority: newValue.toString(),
+                    priority: newValue,
                   }));
                 }}
               />
-              {errors.priority && (
+              {errors[`priority-${taskData.id}`] && (
                 <Typography
                   color="#d32f2f"
                   textAlign={"left"}
@@ -175,7 +174,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   paddingY={'3px'}
                   paddingX={'6px'}
                 >
-                  {errors.priority.message}
+                  {errors[`priority-${taskData.id}`].message}
                 </Typography>
               )}
             </Box>
@@ -183,14 +182,12 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                 />
           </Grid>
         </Grid>
-        <Grid container direction="row">
-          <Grid item xs={12} sm={6} mt={2}>
+        <Grid container direction="row" style={{ marginTop: "30px" }}>
+          <Grid item xs={6}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
-              value={taskDataUpdate.taskDescription}
-              onChange={handleChange}
-              name='taskDescription'
+              name={`taskDescription-${taskData.id}`}
               className='input-field-crud'
               placeholder='e.g Create Login Screen - Front End'
               label='Task Decription'
@@ -199,40 +196,26 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />                   
           </Grid>
-          <Grid item xs={12} sm={6} mt={2}>
+          <Grid item xs={6}>
           <Controller
-            name="statusBacklog"
+            name={`statusBacklog-${taskData.id}`}
             control={control}
             render={({ field }) => (
-            <Autocomplete                                
+              <Autocomplete                                
                   disablePortal
                   id="combo-box-demo"
-                  name='statusBacklog'
+                  name={`statusBacklog-${taskData.id}`}
                   options={StatusBacklog}
-                  // value={taskData.statusBacklog ? StatusBacklog.find((option) => option.id === taskData.statusBacklog) : null}
                   onChange={(event, newValue) => {
-                    field.onChange(newValue.id)
-                    if (newValue) {
-                      setTaskData((prevData) => ({
-                        ...prevData,
-                        statusBacklog: newValue.id,
-                      }))
-                      setTaskDataUpdate((prevData) => ({
-                        ...prevData,
-                        statusBacklog: newValue.id,
-                      }))
-                      field.onChange(newValue.id)
-                    } else {
-                      setTaskData((prevData) => ({
-                        ...prevData,
-                        statusBacklog: newValue.id,
-                      }))
-                      setTaskDataUpdate((prevData) => ({
-                        ...prevData,
-                        statusBacklog: null,
-                      }))
-                      field.onChange(newValue.id)
-                    }
+                    setTaskData((prevData) => ({
+                      ...prevData,
+                      statusBacklog: newValue ? newValue.id : null,
+                    }))
+                    setTaskDataUpdate((prevData) => ({
+                      ...prevData,
+                      statusBacklog: newValue ? newValue.id : null,
+                    }))
+                    field.onChange(newValue ? newValue.id : null)
                   }}
                   sx={{ width: "100%" }}
                   getOptionLabel={(option) => option.name}
@@ -242,27 +225,26 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                       InputLabelProps={{ shrink: true }}                    
                       label="Backlog Status *"
                       placeholder="Select Status"
-                      error={!!errors.statusBacklog}
-                      helperText={errors.statusBacklog ? errors.statusBacklog.message : ''}
+                      error={!!errors[`statusBacklog-${taskData.id}`]}
+                      helperText={errors[`statusBacklog-${taskData.id}`] ? errors[`statusBacklog-${taskData.id}`].message : ''}
                     />
                   )}
                 />  
-                )}
-                />         
+            )}
+          />         
           </Grid>
         </Grid>
         <Grid
           container
           direction="row"
+          style={{ marginTop: "30px" }}
         >
-          <Grid item xs={12} sm={6} mt={2}>
+          <Grid item xs={6}>
             <FormInputText
+              name={`estimationTime-${taskData.id}`}
               style={{ paddingRight: "10px" }}
               focused
-              value={taskDataUpdate.estimationTime}
-              onChange={handleChange}
               onKeyPress={handleKeyPress}
-              name='estimationTime'
               className='input-field-crud'
               placeholder='e.g 1 Hour'
               label='Estimation Duration *'
@@ -271,32 +253,29 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-            <Grid item xs={12} sm={6} mt={2}>
+            <Grid item xs={6}>
             <Controller
-              name="assignedTo"
+              name={`assignedTo-${taskData.id}`}
               control={control}
               render={({ field }) => (
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              name="assignedTo"
+              name={`assignedTo-${taskData.id}`}
               options={AssignedTo}
               value={AssignedTo.find((option) => option.fullName === taskData.assignedTo) || null}
               getOptionLabel={(option) => option.fullName}
-              onChange={(event, newValue) =>
-                {
-                  field.onChange(newValue.id)
-                  setTaskData((prevData) => ({
-                    ...prevData,
-                    assignedTo: newValue ? newValue.fullName : null, 
-                  }))
+              onChange={(event, newValue) => {
+                setTaskData((prevData) => ({
+                  ...prevData,
+                  assignedTo: newValue ? newValue.fullName : null, 
+                }))
                 setTaskDataUpdate((prevData) => ({
                   ...prevData,
                   userId: newValue ? newValue.id : null, 
                 }))
-                field.onChange(newValue.id)
-              }
-              }
+                field.onChange(newValue ? newValue.id : null)
+              }}
               sx={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField
@@ -304,8 +283,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                   InputLabelProps={{ shrink: true }}      
                   label="Assigned To *"
                   placeholder="Select Talent"
-                  error={!!errors.assignedTo}
-                  helperText={errors.assignedTo ? errors.assignedTo.message : ''}
+                  error={!!errors[`assignedTo-${taskData.id}`]}
+                  helperText={errors[`assignedTo-${taskData.id}`] ? errors[`assignedTo-${taskData.id}`].message : ''}
                 />
               )}
             />
@@ -326,8 +305,8 @@ const CreateNewBacklog = () => {
   const [isSave, setIsSave] = useState(false)  
   const [addTask, setAddTask] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [valueproject, setValueproject] = React.useState();
+  const [open, setOpen] = useState(false);
+  const [valueproject, setValueproject] = useState();
   const [initialProject, setInitialProject] = useState()
   const [taskCode, setTaskCode] = useState()
 
@@ -396,7 +375,6 @@ const CreateNewBacklog = () => {
       ...task,
       id: index + 1, 
     }));
-    console.log("data update", updatedTasks)
     setTasks(updatedTasks);
   };
 
@@ -434,67 +412,69 @@ const CreateNewBacklog = () => {
       createdBy: parseInt(localStorage.getItem('userId')),
       updatedBy: parseInt(localStorage.getItem('userId')),
       priority: '',           
-      taskCode: taskCode  
+      taskCode:''  
     };
-    console.log("task", newTask)
     const newTasks = JSON.parse(JSON.stringify(tasks));
     newTasks.push(newTask);
     setTasks(newTasks);
   };
 
   const methods = useForm({
-    resolver: yupResolver(shemabacklog),
-    defaultValues: {
-      taskName:'',
-      statusBacklog: '',
-      priority: '',
-      estimationTime:'',
-      statusBacklog:''
-    }
+    resolver: yupResolver(createTaskSchema(tasks)),
   })
   
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors, isSubmitting}
   } = methods
 
-  const SubmitSave = async () => {
+  const SubmitSave = async (formData) => {
+    const data = tasks.map((value) => ({
+      projectId: value.projectId,
+      statusBacklog: parseInt(formData[`statusBacklog-${value.id}`]),
+      userId: parseInt(formData[`assignedTo-${value.id}`]),
+      taskName: formData[`taskName-${value.id}`],
+      taskDescription: formData[`taskDescription-${value.id}`],
+      estimationTime: formData[`estimationTime-${value.id}`],
+      createdBy: value.createdBy,
+      updatedBy: value.updatedBy,
+      actualDate: dayjs(new Date()).add(1, 'day').format("YYYY-MM-DD"),
+      estimationDate: dayjs(new Date()).add(1,'day').format("YYYY-MM-DD"),
+      priority: parseInt(formData[`priority-${value.id}`]),
+    }));
+    
     if (!isSave){
       setOpen(false);
     }
     else {
       try {
         const res = await client.requestAPI({
-          method: 'POST',
-          endpoint: '/backlog/addBacklog',
-          data: tasks,
+          method: "POST",
+          endpoint: "/backlog/addBacklog",
+          data: data,
         });
-    
-        console.log("data", res)
-        if(!res.isError){
+
+        if (!res.isError) {
           setDataAlert({
-            severity: 'success',
+            severity: "success",
             open: true,
-            message: res.meta.message
-          }) 
-    
+            message: res.meta.message,
+          });
           setTimeout(() => {
-            navigate('/masterbacklog');
+            navigate("/masterbacklog");
           }, 3000);
-        }
-        else {          
+        } else {
           setDataAlert({
-            severity: 'error',
+            severity: "error",
             message: res.error.detail,
-            open: true
-          })
-          setOpen(false);
+            open: true,
+          });
         }
         setOpen(false);
-      // }
-    } catch (error) {
-        console.error('Error:', error);
+        
+      } catch (error) {
+        console.error("Error:", error);
       }
     }
   };
@@ -504,7 +484,7 @@ const CreateNewBacklog = () => {
       method: 'GET',
       endpoint: '/ol/project?search=',      
     })
-    const data = res.data.map(item => ({id : item.id, name: item.attributes.name, projectInitial: item.attributes.projectInitial, taskCode: item.attributes.taskCode}));    
+    const data = res.data.map(item => ({id : `${item.id} - ${item.attributes.taskCode}`, name: item.attributes.name, projectInitial: item.attributes.projectInitial, taskCode: item.attributes.taskCode}));    
     setProjectName(data)
   }
 
@@ -526,151 +506,152 @@ useEffect(() => {
             </Grid>
             <Grid className="HeaderDetail" >
               <Grid item xs={12}>
-              <FormProvider {...methods}>
-                <form onSubmit={handleSubmit(confirmSave)}>
-                  <Autocomplete                    
-                    disablePortal
-                    id="combo-box-demo"
-                    name="projectName"
-                    options={ProjectName}
-                    sx={{ width: "100%", marginTop: "8px" }}
-                    getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
-                    onChange={(event, newValue) => {
-                      if (!newValue) {                                              
-                        setTasks([])
-                        setAddTask(false);
-                        setValueproject(undefined);
-                      }else{
-                        setValueproject(parseInt(newValue.id));
-                        setInitialProject(newValue.projectInitial)
-                        setTaskCode(newValue.taskCode)
-                      }                      
-                    }}
-                    renderInput={(params) => (
-                      <TextField 
-                        {...params} 
-                        InputLabelProps={{ shrink: true }}
-                        label="Project Name *" 
-                        placeholder="Select Project" 
-                      />
-                    )}
-                  />
-                  
-                  {addTask && valueproject ? (
-                    <>
-                    {tasks.map((task, index) => (
-                         <TaskItem
-                         key={task.id}
-                         task={task}
-                         onDelete={handleDeleteTask}
-                         onUpdate={handleUpdateTask}
-                         onUpdateTasks={handleUpdateTasks}
-                         initialProject={initialProject}
-                         idProject={valueproject}
-                         taskCode={taskCode}
-                         control={control}
-                         errors={errors}
-                       />
-                    ))}
-                    </>
-                  ) : (                  
-                    <>                    
-                      <Grid
-                        sx={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <img src={Allura} style={{ maxWidth: '100%', height: 'auto' }} />
-                        <Typography
+                <FormProvider {...methods}>
+                  <form onSubmit={handleSubmit(handleClickOpenSave)}>
+                    <Autocomplete                    
+                      disablePortal
+                      id="combo-box-demo"
+                      name="projectName"
+                      options={ProjectName}
+                      sx={{ width: "100%", marginTop: "8px" }}
+                      getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
+                      onChange={(event, newValue) => {
+                        if (!newValue) {                                              
+                          setTasks([])
+                          setAddTask(false);
+                          setValueproject(undefined);
+                        }else{
+                          setValueproject(parseInt(newValue.id));
+                          setInitialProject(newValue.projectInitial)
+                          setTaskCode(newValue.taskCode)
+                        }                      
+                      }}
+                      renderInput={(params) => (
+                        <TextField 
+                          {...params} 
+                          InputLabelProps={{ shrink: true }}
+                          label="Project Name *" 
+                          placeholder="Select Project" 
+                        />
+                      )}
+                    />
+                    
+                    {addTask && valueproject ? (
+                      <>
+                      {tasks.map((task, index) => (
+                        <TaskItem
+                          key={task.id}
+                          task={task}
+                          onDelete={handleDeleteTask}
+                          onUpdate={handleUpdateTask}
+                          onUpdateTasks={handleUpdateTasks}
+                          initialProject={initialProject}
+                          idProject={valueproject}
+                          taskCode={taskCode}
+                          control={control}
+                          errors={errors}
+                        />
+                      ))}
+                      </>
+                    ) : (                  
+                      <>                    
+                        <Grid
                           sx={{
-                            marginTop: "20px",
-                            fontFamily: "Poppins",
-                            fontSize: "16px",
-                            fontWeight: "500",
-                            lineHeight: "24px",
-                            letterSpacing: "0em",
-                            textAlign: "left",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
                           }}
                         >
-                          Sorry, the data you are looking for could not be found
-                        </Typography>
-                      </Grid>
-                    </>
-                  )}
-                  <Grid container spacing={2} mt={3.5} alignItems="center" justifyContent="space-between">
-                    <Grid item xs={12} sm={3}>
-                      <Button
-                        disabled={!valueproject}
-                        color="success"
-                        variant="contained"
-                        onClick={handleClickTask}
-                        fullWidth
+                          <img src={Allura} width="396px" height="188px" />
+                          <Typography
+                            sx={{
+                              marginTop: "20px",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              fontWeight: "500",
+                              lineHeight: "24px",
+                              letterSpacing: "0em",
+                              textAlign: "left",
+                            }}
+                          >
+                            Sorry, the data you are looking for could not be found
+                          </Typography>
+                        </Grid>
+                      </>
+                    )}
+                    <Grid container direction="row" sx={{ width: "100%" }}>
+                      <Grid
+                        item
+                        xs={6}
+                        alignSelf="center"
+                        textAlign="left"
                       >
-                        + Add Task
+                        <Button
+                          disabled={!valueproject}
+                          color="success"
+                          variant="contained"
+                          onClick={handleClickTask}
+                          style={{ marginRight: "10px" }}
+                        >
+                          + Add Task
+                        </Button>
+                      </Grid>
+                      <Grid item xs textAlign='right'>
+                      <Button
+                        style={{ marginRight: '16px' }} 
+                        variant='cancelButton'
+                        onClick={() => handleClickOpenCancel()}
+                      >
+                        Cancel Data
                       </Button>
+                      <Button                    
+                        disabled={tasks.length === 0}
+                        variant='saveButton'
+                        type='submit'
+                        // onClick={handleClickOpenSave}
+                      >
+                        Save Data
+                      </Button>
+                      </Grid>  
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={6}>
-                        <Button
-                          fullWidth
-                          variant="cancelButton"
-                          onClick={() => handleClickOpenCancel()}
-                        >
-                          Cancel Data
-                        </Button>
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Button
-                          fullWidth
-                          disabled={tasks.length === 0}
-                          variant="saveButton"
-                          type="submit"
-                          onClick={handleClickOpenSave}
-                        >
-                          Save Data
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  </Grid>
-                </form>
-              </FormProvider>
+                  </form>
+                </FormProvider>
                 <Dialog
-                      open={open}
-                      onClose={handleClose}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                      className="dialog-delete"
-                    >
-                    <DialogTitle
-                      sx={{
-                        alignSelf: "center",
-                        fontSize: "30px",
-                        fontStyle: "Poppins",
-                      }}
-                      id="alert-dialog-title"
-                    >
-                      {isSave ? 'Save Data' : 'Cancel Data'}
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                          {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions className="dialog-delete-actions">
-                        <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
-                          {isSave ? "Back" : "Cancel without saving"}
-                        </Button>
-                        <Button variant="saveButton" onClick={SubmitSave} autoFocus>
-                          {isSave ? 'Save Data' : 'Back'}
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                  className="dialog-delete"
+                >
+                  <DialogTitle
+                    sx={{
+                      alignSelf: "center",
+                      fontSize: "30px",
+                      fontStyle: "Poppins",
+                    }}
+                    id="alert-dialog-title"
+                  >
+                    {isSave ? 'Save Data' : 'Cancel Data'}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions className="dialog-delete-actions">
+                    <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
+                      {isSave ? "Back" : "Cancel without saving"}
+                    </Button>
+                    <Button variant="saveButton" disabled={isSave && isSubmitting} onClick={isSave ? handleSubmit(SubmitSave) : handleClose} autoFocus>
+                      {isSave ? isSubmitting ? <>
+                          <CircularProgress size={14} color="inherit" />
+                          <Typography marginLeft={1}>Saving...</Typography>
+                        </> : 'Save Data' : 'Back'}
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </Grid>
             </Grid>
           </Grid>
