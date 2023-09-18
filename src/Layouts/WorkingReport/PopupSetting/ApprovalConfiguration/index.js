@@ -5,38 +5,62 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Grid,
+  IconButton,
+  Paper,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { Clear } from "@mui/icons-material";
+import React, { useRef, useState } from "react";
 import '../../../../App.css';
 import uploadFile from "../../../../global/uploadFile";
 
-const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
+const convertBytesToString = (bytes) => {
+  const kb = bytes / 1024;
+  const mb = kb / 1024;
+  const gb = mb / 1024;
 
+  if (gb >= 1) {
+    return gb.toFixed(2) + " GB";
+  } else if (mb >= 1) {
+    return mb.toFixed(2) + " MB";
+  } else if (kb >= 1) {
+    return kb.toFixed(2) + " KB";
+  } else {
+    return bytes + " Bytes";
+  }
+};
+
+const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
+  const inputRef = useRef(null);
   const [file, setFile] = useState('')
   const [filePath, setFilePath] = useState('')
-  const [uploadIndex, setUploadIndex] = useState(0);
+  const [uploadedFiles, setUploadedFiles] = useState(new Array(approvalConfig.length).fill(null));
+  // const [uploadIndex, setUploadIndex] = useState(0);
   const addApproval = () => {
     setApprovalConfig((prevData) => [
       ...prevData, {...approvalConfig}
     ])
   }
 
-  const handleChangeUpload = async (e) => {
+  const handleChangeUpload = async (e, index) => {
     if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0], 'signature')
-      const parts = tempFilePath.split('=')
+      const tempFilePath = await uploadFile(e.target.files[0], 'signature');
+      const parts = tempFilePath.split('=');
       const fileName = parts[1];
 
-      setFilePath(fileName)
-      setFile(URL.createObjectURL(e.target.files[0]));
+      setFilePath(fileName);
+
+      const tempUploadedFiles = [...uploadedFiles];
+      tempUploadedFiles[index] = e.target.files[0];
+      setUploadedFiles(tempUploadedFiles);
 
       const tempApproval = [...approvalConfig];
-      tempApproval[uploadIndex] = {
-        ...tempApproval[uploadIndex],
+      tempApproval[index] = {
+        ...tempApproval[index],
         signatureName: fileName
       };
       setApprovalConfig(tempApproval);
@@ -50,6 +74,19 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
       return temp
     })  
   }
+
+  const clearSignature = (index) => {
+    const tempApproval = [...approvalConfig];
+    tempApproval[index] = {
+      ...tempApproval[index],
+      signatureName: null
+    };
+    setApprovalConfig(tempApproval);
+
+    const tempUploadedFiles = [...uploadedFiles];
+    tempUploadedFiles[index] = null;
+    setUploadedFiles(tempUploadedFiles);
+  };
 
   const changeField = (props, value, idx) => {
     const tempApproval = [...approvalConfig]
@@ -115,18 +152,48 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                 />
               </Grid>
               <Grid item xs={12} textAlign='left' sx={{marginTop:'10px'}}>
-              <Button className="button-text" variant="contained" sx={{marginBottom:'10px', padding:0}} >
-                <label htmlFor='fileInput' style={{cursor:'pointer', width:'100%', height:'100%', padding:'6px 16px'}} onClick={()=>setUploadIndex(index)}>Upload Signature</label>
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".png, .jpg"
-                  className="custom-file-input"
-                  style={{display:'none'}}
-                  onChange={handleChangeUpload}
-                />
+              <Button
+                variant="contained"
+                sx={{ marginBottom: '8px' }}
+                onClick={() => inputRef.current.click()}
+              >
+                Upload Signature
               </Button>
-              <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".png, .jpg"
+                className="custom-file-input"
+                style={{ display: 'none' }}
+                onChange={(e) => handleChangeUpload(e, index)}
+              />
+
+
+              {uploadedFiles[index] ? (
+                      <Grid item xs={12} component={Paper} mt={1} display="flex" p={2}>
+                        <Box display="flex" flexDirection="column" textAlign="start" flex={1}>
+                          <span className='text-files-name'>{uploadedFiles[index].name}</span>
+                          <Box display="flex" gap={1} alignItems="center">
+                          <span className='text-files-sizes'>
+                            {convertBytesToString(uploadedFiles[index].size)}
+                          </span>
+                          <Box width="3px" height="3px" borderRadius="999px" backgroundColor="#00000099"/>
+                          <span className='text-files-sizes'>
+                            Completed
+                          </span>
+                          </Box>
+                        </Box>
+                        <Box display="flex" alignItems="center">
+                          <IconButton
+                            onClick={() => clearSignature(index)}
+                          >
+                            <Clear />
+                          </IconButton>
+                        </Box>
+                      </Grid>
+                    ) : (
+                      <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
+                    )}
             </Grid>
             </Grid>
           </AccordionDetails>

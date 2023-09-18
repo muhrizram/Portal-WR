@@ -158,28 +158,80 @@ const CreateOvertime = ({
     }
   }
 
-  const calculateTimeDifference = (startTime, endTime) => {
-    const startTimeParts = startTime.split(":").map(Number);
-    const endTimeParts = endTime.split(":").map(Number);
+  function calculateTimeDifference(startTime, endTime) {
+    const start = parseTime(startTime);
+    const end = parseTime(endTime);
   
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const currentDay = currentDate.getDate();
-  
-    const startTimeDate = new Date(currentYear, currentMonth, currentDay, startTimeParts[0], startTimeParts[1], startTimeParts[2]);
-  
-    const endTimeDate = new Date(currentYear, currentMonth, currentDay, endTimeParts[0], endTimeParts[1], endTimeParts[2]);
-  
-    if (endTimeDate < startTimeDate) {
-      endTimeDate.setDate(endTimeDate.getDate() + 1);
+    if (!start || !end) {
+      return 0;
     }
   
-    const timeDifference = endTimeDate - startTimeDate;
+    const startHour = start.hours + start.minutes / 60;
+    const endHour = end.hours + end.minutes / 60;
   
-    const hours = timeDifference / (1000 * 60 * 60);
+    const diff = endHour - startHour;
+    const wholeHours = Math.floor(diff);
+
+    const threeQuarterHours =  wholeHours + 0.75;
+    const midHours =  wholeHours + 0.50;
   
-    return hours;
+    if (diff < threeQuarterHours) {
+      return midHours;
+    } else if (diff >= threeQuarterHours) {
+      return threeQuarterHours;
+    } else {
+      return Math.ceil(diff);
+    }
+  }
+  
+  function parseTime(time) {
+    const timeRegex = /^(\d{1,2}):(\d{2}):(\d{2})$/;
+
+    const match = time.match(timeRegex);
+  
+    if (match) {
+      const hours = parseInt(match[1]);
+      const minutes = parseInt(match[2]);
+      return { hours, minutes };
+    }
+  
+    return null;
+  }
+  
+  
+  const handleArrowKeys = (e, idxProject, index) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+
+      let currentValue
+      if(dataEditOvertime.listProject[idxProject].listTask.length !== 0) {
+        currentValue = parseFloat(dataEditOvertime.listProject[idxProject].listTask[index]['duration']);
+      } else {
+        currentValue = parseFloat(dataOvertime.listProject[idxProject].listTask[index]['duration'])
+      }
+
+      let newValue;
+
+      if (e.key === 'ArrowUp') {
+        newValue = currentValue + 0.25;
+      } else {
+        newValue = currentValue - 0.25;
+      }
+
+      if (newValue < 0) {
+        newValue = 0;
+      }
+
+      const startTimes = startTime ? startTime : dataEditOvertime.startTime;
+      const endTimes = endTime ? endTime : dataEditOvertime.endTime;
+      const hours = calculateTimeDifference(startTimes, endTimes);
+
+      if (newValue > parseFloat(hours)) {
+        newValue = parseFloat(hours);
+      }
+
+      handleChange({ target: { name: 'duration', value: newValue.toFixed(2) } }, idxProject, index);
+    }
   };
 
   const handleChange = (event, idxProject, index, backlogId, taskId) => {   
@@ -187,64 +239,64 @@ const CreateOvertime = ({
       const { name, value } = event.target;
       const updateDataEditOvertime = {...dataEditOvertime}
       updateDataEditOvertime.listProject[idxProject].listTask[index][name] = value
-      setDataEditOvertime(updateDataEditOvertime)
+      // setDataEditOvertime(updateDataEditOvertime)
 
-      if(name === 'duration'){
-        const updateDataEditOvertime = {...dataEditOvertime}
-        updateDataEditOvertime.listProject[idxProject].listTask[index][name] = parseInt(value)
+      if (name === 'duration') {
+        const parsedValue = parseFloat(value);
+        if (isNaN(parsedValue)) {
+          updateDataEditOvertime.listProject[idxProject].listTask[index][name] = '';
+        } else if (parsedValue < 0) {
+          updateDataEditOvertime.listProject[idxProject].listTask[index][name] = '0';
+        } else {
+          const startTimes = startTime ? startTime : dataEditOvertime.startTime;
+          const endTimes = endTime ? endTime : dataEditOvertime.endTime;
+          const hours = calculateTimeDifference(startTimes, endTimes);
 
-        if (parseInt(value) < 0) {
-          handleChange({ target: { name: 'duration', value: 0 } }, idxProject, index);
-          return;
+          if (parsedValue > hours) {
+            updateDataEditOvertime.listProject[idxProject].listTask[index][name] = hours.toFixed(2);
+          } else {
+            updateDataEditOvertime.listProject[idxProject].listTask[index][name] = parsedValue.toFixed(2);
+          }
         }
-
-        const startTimes = startTime ? startTime : dataEditOvertime.startTime;
-        const endTimes = endTime ? endTime : dataEditOvertime.endTime;
-    
-        const hours = calculateTimeDifference(startTimes, endTimes);
-    
-        if (parseInt(value) > hours) {
-          handleChange({ target: { name: 'duration', value: hours } }, idxProject, index);
-          return;
-        }
-
-      }
-      else if(name === 'taskName'){
+      } else if(name === 'taskName'){
         updateDataEditOvertime.listProject[idxProject].listTask[index].backlogId = backlogId
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = taskId
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = 270
         // updateDataEditOvertime.listProject[idxProject].listTask[index].taskId = null
         // temp.listProject[0].listTask[0].backlogId = "35"
       }
-      setDataEditOvertime(updateDataEditOvertime)
+  
+      setDataEditOvertime(updateDataEditOvertime);
+    
 
     } else{
       const { name, value } = event.target;
-        if(name === 'duration'){
-          const temp = {...dataOvertime}
-          temp.listProject[idxProject].listTask[index][name]= parseInt(value)
-          setIdEffortTask(parseInt(value))
-          setDataOvertime(temp)
-          
-          if (parseInt(value) < 0) {
-            handleChange({ target: { name: 'duration', value: 0 } }, idxProject, index);
-            return;
-          }
+      if (name === 'duration') {
+        const temp = { ...dataOvertime };
+        const parsedValue = parseFloat(value);
 
+        if (isNaN(parsedValue)) {
+          temp.listProject[idxProject].listTask[index][name] = '';
+        } else if (parsedValue < 0) {
+          temp.listProject[idxProject].listTask[index][name] = '0';
+        } else {
           const hours = calculateTimeDifference(startTime, endTime);
-      
-          if (parseInt(value) > hours) {
-            handleChange({ target: { name: 'duration', value: hours } }, idxProject, index);
-            return;
+          if (parsedValue > hours) {
+            temp.listProject[idxProject].listTask[index][name] = hours.toFixed(2);
+          } else {
+            setIdEffortTask(parsedValue);
+            setDataOvertime(temp);
+            temp.listProject[idxProject].listTask[index][name] = parsedValue.toFixed(2);
           }
-          
-          setTaskDurations((prevDurations) =>
-            prevDurations.map((durationItem, i) => ({
-              ...durationItem,
-              duration: i === index ? parseInt(value) : durationItem.duration,
-            }))
-          )
-        } else{
+        }
+      
+        setTaskDurations((prevDurations) =>
+          prevDurations.map((durationItem, i) => ({
+            ...durationItem,
+            duration: i === index ? parsedValue : durationItem.duration,
+          }))
+        );
+      } else{
         const temp = {...dataOvertime}
         temp.listProject[idxProject].listTask[index][name]= value
         if(name === 'taskName'){
@@ -333,10 +385,37 @@ const onSave = async () => {
       startTime: startTime,
       endTime: endTime,
       date: wrDate,
-      ...dataOvertime,
+      // ...dataOvertime,
+      listProject: [],
       createdBy: currentUserId,
       updatedBy: currentUserId
     }
+
+    for (const project of dataOvertime.listProject){
+      const updateFilled = {
+        projectId : project.projectId,
+        listTask : []
+      }
+      for (const task of project.listTask){
+        let duration;
+        const wholeHours = Math.floor(parseFloat(task.duration));
+        if (parseFloat(task.duration) >= wholeHours + 0.75) {
+          duration = Math.ceil(parseFloat(task.duration)).toFixed(2)
+        } else {
+          duration = parseFloat(task.duration)
+        }
+        const updateTask = {
+          backlogId : task.backlogId,
+          taskName : task.taskName,
+          statusTaskId : task.statusTaskId,
+          duration : parseFloat(duration),
+          taskItem : task.taskItem,
+        }
+        updateFilled.listTask.push(updateTask)
+      }
+      data.listProject.push(updateFilled)
+    }
+
     const res = await client.requestAPI({
       method: 'POST',
       endpoint: `/overtime/addOvertime`,
@@ -384,13 +463,20 @@ const onSave = async () => {
         if(task.taskId === null){
           task.backlogId = null
         }
+        let duration;
+        const wholeHours = Math.floor(parseFloat(task.duration));
+        if (parseFloat(task.duration) >= wholeHours + 0.75) {
+          duration = Math.ceil(parseFloat(task.duration)).toFixed(2)
+        } else {
+          duration = parseFloat(task.duration)
+        }
         const updateTask = {
           taskId : task.taskId,
           workingReportId : dataUpdate.workingReportOvertimeId,
           backlogId : task.backlogId,
           taskName : task.taskName,
           statusTaskId : task.statusTaskId,
-          duration : parseInt(task.duration),
+          duration : parseFloat(duration),
           taskItem : task.taskItem,
         }
         updateFilled.listTask.push(updateTask)
@@ -608,7 +694,8 @@ const onSave = async () => {
                               onChange={(e) => handleChange(e, idxProject, index)}
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen"'
-                              type="number"
+                              onKeyDown={(e) => handleArrowKeys(e, idxProject, index)}
+                              type="text"
                               label='Actual Effort *'
                               sx={{width: "100%", backgroundColor: "white" }}
                             />
@@ -809,11 +896,13 @@ const onSave = async () => {
                             <TextField
                               focused
                               name='duration'
-                              value={dataOvertime.listProject[idxProject].listTask[index]['duration'] || ''}
+                              value={res.duration}
+                              // value={dataOvertime.listProject[idxProject].listTask[index]['duration'] || ''}
                               onChange={(e) => handleChange(e, idxProject, index)}
+                              onKeyDown={(e) => handleArrowKeys(e, idxProject, index)}
+                              type="text"
                               className='input-field-crud'
-                              placeholder='e.g Create Login Screen"'
-                              type="number"
+                              placeholder='e.g Create Login Screen'
                               label='Actual Effort *'
                               sx={{width: "100%", backgroundColor: "white" }}
                             />
