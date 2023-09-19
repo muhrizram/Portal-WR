@@ -147,12 +147,10 @@ const PopupTask = ({
     }
         let tempEffort = 0;
         for (const data of readyUpdate.listProject) {
-          for (const resTask of data.listTask) {
-            console.log("penjumlahan", resTask.duration)            
+          for (const resTask of data.listTask) {       
             tempEffort = tempEffort + resTask.duration;
           }
         }
-        console.log("Total", tempEffort)
         if (tempEffort < 8) {
           setPopUpMoretask(true);
           setDurationTask(true)
@@ -160,7 +158,6 @@ const PopupTask = ({
           setPopUpMoretask(true);
           setDurationTask(false)
         }else{
-          console.log("Misi Paket", readyUpdate)
           const res = await client.requestAPI({
             method: 'PUT',
             endpoint: `/task/update`,
@@ -341,7 +338,6 @@ const PopupTask = ({
           setPopUpMoretask(true);
           setDurationTask(false)
         }else{
-          console.log("INI data",dataProject)
           const res = await client.requestAPI({
             method: 'POST',
             endpoint: `/task/addTask`,
