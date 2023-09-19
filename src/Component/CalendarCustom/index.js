@@ -339,6 +339,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                     onClick={data.presenceName != "Hadir" ? 
                     ()=>{
                       setIsViewAttendance(true)
+                      setWrIdDetail(data.workingReportTaskId);
                     } : null}
                   >
                     {data.presenceName}
