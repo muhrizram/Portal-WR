@@ -163,7 +163,6 @@ const PopupTask = ({
             endpoint: `/task/update`,
             data : readyUpdate
           })
-          console.log("res", res)
           if (res.data) {
            closeTask(true)
            setDataAlert({
@@ -220,7 +219,7 @@ const PopupTask = ({
       setfirstEditTask((prevState) => ({
         ...prevState,
         listProject: [...prevState.listProject, clearProject]
-      }));      
+      }));
     }else{
       setProject((prevState) => ({
         ...prevState,
@@ -273,8 +272,6 @@ const PopupTask = ({
     setfirstEditTask(temp) 
    }else{
     const temp = {...dataProject}
-    console.log("INI ENVET",event.target.value)
-    console.log("INI ss",event.target.name)
     temp.listProject[idxProject].listTask[index][`${event.name}Id`] = event.value.id
     temp.listProject[idxProject].listTask[index][`${event.name}Name`] = event.value.name
     setProject(temp) 
@@ -305,7 +302,6 @@ const PopupTask = ({
         temp.listProject[idxProject].projectName = newValue.name;
       }  
       temp.listProject[idxProject].listTask = [clearTask];
-      console.log("INI TEMP",temp)
       setProject(temp);
     }
   };
@@ -342,8 +338,7 @@ const PopupTask = ({
             method: 'POST',
             endpoint: `/task/addTask`,
             data: dataProject,
-          });
-          console.log("INI RES",res)          
+          });        
           if(!res.isError){            
             setDataAlert({
               severity: 'success',
@@ -432,11 +427,11 @@ const PopupTask = ({
                           }
                         }}
                         value={resProject !== undefined ? 
-                          resProject.projectName !== undefined  ?
+                          resProject.projectId  ?
                           {
                             name: resProject.projectName,
                             id: resProject.id
-                          } : resProject.absenceName !== undefined ?
+                          } : resProject.absenceName ?
                           {
                             name: resProject.absenceName,
                             id: resProject.absenceId
@@ -466,17 +461,17 @@ const PopupTask = ({
                               required
                               name='taskDuration'
                               sx={{ width: "100%" , backgroundColor: 'white' }}
+                              value={res.taskDuration == undefined ? '' : res.taskDuration}
                               onChange={(_event) => {
-                                const temp = { ...dataProject };
+                                const temp = { ...firstEditTask };
                                 const inputValue = _event.target.value;
                                 const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
-                                temp.listProject[idxProject].listTask[index].duration = numericValue;
-                                setProject(temp);
-                              }}
-                              value={res.duration == undefined ? '' : res.duration} 
+                                temp.listProject[idxProject].listTask[index].taskDuration = numericValue;
+                                setfirstEditTask(temp);
+                              }}                                      
                               className='input-field-crud'
                               type="number"
-                              placeholder='e.g 0,5 or 3 (hour)'
+                              placeholder='e.g Create Login Screen"'
                               label='Duration'
                             />
                           </Grid>
@@ -488,7 +483,7 @@ const PopupTask = ({
                               sx={{ width: "100%" , backgroundColor: 'white' }}
                               value={res.taskItem == undefined ? '' : res.taskItem}
                               onChange={(_event,newValue) => {                                        
-                                        const temp = { ...dataProject };
+                                        const temp = { ...firstEditTask };
                                           temp.listProject[idxProject].listTask[index].taskItem = _event.target.value === '' ? null : _event.target.value;
                                         setProject(temp);
                               }}
@@ -605,8 +600,7 @@ const PopupTask = ({
                                         const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
                                         temp.listProject[idxProject].listTask[index].taskDuration = numericValue;
                                         setfirstEditTask(temp);
-                                      }}
-                                      
+                                      }}                                      
                                       className='input-field-crud'
                                       type="number"
                                       placeholder='e.g Create Login Screen"'
