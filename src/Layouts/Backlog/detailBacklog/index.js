@@ -32,7 +32,7 @@ import Box from "@mui/material/Box";
 import dayjs from "dayjs";
 
 
-const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedToOl, setValue, getValues}) => {
+const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedToOl, setValue }) => {
   const [taskData, setTaskData] = useState(task);
   const [taskDataUpdate, setTaskDataUpdate] = useState(task);
   useEffect(() => {
@@ -48,6 +48,14 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
     setValue(`actualTime-${task.id}`, task.actualTime);
     setValue(`assignedTo-${task.id}`, task.userId);
   },[]);
+
+  const handleChangeAutocomplete = (name, value) => {
+    // const { name, value } = event.target;
+    console.log("Task before: ", taskData[name])
+    setTaskData((prevData) => ({...prevData, [name]: value}));
+    setTaskDataUpdate((prevData) => ({...prevData, [name]: value }))
+    console.log("Task after: ", taskData[name])
+  }
 
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -155,14 +163,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
                   value={statusBacklogOl.find((option) => option.id === field.value) || null}
                   getOptionLabel={(option) => option.name}
                   onChange={(_, newValue) => {
-                      setTaskData((prevData) => ({
-                        ...prevData,
-                        statusBacklog: newValue ? newValue.id : null, 
-                      }))
-                      setTaskDataUpdate((prevData) => ({
-                        ...prevData,
-                        statusBacklog: newValue ? newValue.id : null, 
-                      }))
+                      handleChangeAutocomplete('statusBacklog', newValue ? newValue.id : null);
                       field.onChange(newValue ? newValue.id : null)
                     }
                   }
@@ -211,19 +212,12 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  name="statusBacklog"
+                  name={`assignedTo-${task.id}`}
                   options={assignedToOl}
                   getOptionLabel={(option) => option.fullName}
                   value={assignedToOl.find((option) => option.id === field.value) || null}
-                  onChange={(event, newValue) => {
-                    setTaskData((prevData) => ({
-                      ...prevData,
-                      assignedTo: newValue ? newValue.fullName : null, 
-                    }))
-                    setTaskDataUpdate((prevData) => ({
-                      ...prevData,
-                      userId: newValue ? newValue.id : null, 
-                    }))
+                  onChange={(_, newValue) => {
+                    handleChangeAutocomplete("assignedTo", newValue ? newValue.id : null);
                     field.onChange(newValue ? newValue.id : null)
                   }}
                   renderInput={(params) => (
