@@ -59,9 +59,10 @@ const CreateOvertime = ({
   const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
   const [openEditTask, setOpenEditTask] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState(null)
+  const [isEndTimeError, setIsEndTimeError] = useState(false)
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
-
+  
   const clearProject = {
     projectId: '',
     listTask: []
@@ -549,12 +550,42 @@ const onSave = async () => {
             onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
             ampm={false}
           />
+          <Grid item>
           <TimePicker
             label="End Time *"
             defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
-            onChange={(end) => setEndTime(end.format("HH:mm:ss"))}
+            onChange={(end) => {
+              const newEndTime = end.format("HH:mm:ss");
+              const newStartTime = startTime ? startTime : dataEditOvertime.startTime
+          
+              if (newStartTime && newEndTime <= newStartTime) {
+                setEndTime(dataEditOvertime.endTime)
+                setIsEndTimeError(true)
+                setDataAlert({
+                  severity: 'error',
+                  message: 'End Time cannot be earlier than Start Time',
+                  open: true
+                })
+              } else {
+                setEndTime(newEndTime);
+                setIsEndTimeError(false)
+                setIsLocalizationFilled(true);
+              }
+            }}
             ampm={false}
           />
+          {isEndTimeError && (
+            <Typography
+              color="#d32f2f"
+              textAlign={"left"}
+              fontSize={12}
+              paddingY={'3px'}
+              paddingX={'13px'}
+            >
+              {'End Time cannot be earlier than Start Time'}
+            </Typography>
+          )}
+          </Grid>
           </DemoContainer>
         </LocalizationProvider>
         </Grid>
@@ -767,15 +798,41 @@ const onSave = async () => {
               onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
               ampm={false}
             />
+            <Grid item>
             <TimePicker
               label="End Time *"
               value={endTime}
               onChange={(end) => {
-                setEndTime(end.format("HH:mm:ss"))
-                setIsLocalizationFilled(true)
+                const newEndTime = end.format("HH:mm:ss");
+                const newStartTime = startTime;
+            
+                if (newStartTime && newEndTime <= newStartTime) {
+                  setIsEndTimeError(true)
+                  setDataAlert({
+                    severity: 'error',
+                    message: 'End Time cannot be earlier than Start Time',
+                    open: true
+                  })
+                } else {
+                  setEndTime(newEndTime);
+                  setIsLocalizationFilled(true);
+                  setIsEndTimeError(false)
+                }
               }}
               ampm={false}
             />
+            {isEndTimeError && (
+              <Typography
+                color="#d32f2f"
+                textAlign={"left"}
+                fontSize={12}
+                paddingY={'3px'}
+                paddingX={'13px'}
+              >
+                {'End Time cannot be earlier than Start Time'}
+              </Typography>
+            )}
+            </Grid>
             </DemoContainer>
         </LocalizationProvider>
         </Grid>
