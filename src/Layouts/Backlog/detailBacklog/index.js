@@ -188,6 +188,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
         >
           <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
+              style={{ paddingRight: "10px" }}
               focused
               onKeyPress={handleKeyPress}
               name={`estimationTime-${task.id}`}
@@ -199,8 +200,9 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
+              style={{ paddingLeft: "5px" }}
               focused
               disabled
               name={`actualTime-${task.id}`}
@@ -209,7 +211,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
               label='Actual Duration'
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} mt={2}>
             <Controller
               name={`assignedTo-${task.id}`}
               control={control}
@@ -555,29 +557,28 @@ const DetailBacklog = () => {
                           />
                         ))}
                       </Grid>
-                      <Grid item container spacing={2} alignItems="center" justifyContent="flex-end">
-                        <Grid item xs={12} sm={6}>
-                          <Grid container spacing={2} justifyContent="flex-end">
-                            <Grid item>
-                              <Button
-                                variant="cancelButton"
-                                onClick={() => handleClickOpenCancel()}
-                              >
-                                Cancel Data
-                              </Button>
-                            </Grid>
-                            <Grid item>
-                              <Button
-                                disabled={tasks.length === 0}
-                                variant="saveButton"
-                                type="submit"
-                              >
-                                Save Data
-                              </Button>
-                            </Grid>
-                          </Grid>
-                        </Grid>
+
+                      <Grid item container spacing={2} justifyContent="flex-end" mt={3.5}>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => handleClickOpenCancel()}
+                        >
+                          Cancel Data
+                        </Button>
                       </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button 
+                          fullWidth
+                          disabled={tasks.length === 0}
+                          variant="saveButton"
+                          type="submit"
+                        >
+                          Save Data
+                        </Button>
+                      </Grid>
+                    </Grid>
                     </Grid>
                   </form>
                 </FormProvider>
@@ -602,6 +603,7 @@ const DetailBacklog = () => {
                     <DialogContentText id="alert-dialog-description">
                       {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
                     </DialogContentText>
+                    
                   </DialogContent>
                   <DialogActions className="dialog-delete-actions">
                     <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
@@ -743,7 +745,7 @@ const DetailBacklog = () => {
                       </Grid>
                     </AccordionDetails>
                   </Accordion>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} mt={5}>
                     <Divider/>
                   </Grid>
                 </Grid>
