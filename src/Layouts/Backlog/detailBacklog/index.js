@@ -181,7 +181,12 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+        </Grid>
+        <Grid
+          container
+          direction="row"
+        >
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               focused
               onKeyPress={handleKeyPress}

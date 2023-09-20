@@ -86,7 +86,7 @@ const CreateRolePrivilege = () => {
   const getDataRole = async () => {
     const res = await client.requestAPI({
       method: 'GET',
-      endpoint: `/ol/role?search=`
+      endpoint: `/ol/rolePrivilege?search=`
     })
     const data = res.data.map(item => ({id : item.id, name: item.attributes.name}));
     setOptRole(data)

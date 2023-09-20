@@ -109,7 +109,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
           >
             <Typography sx={{ fontSize: "24px" }}>
               T - {initialProject} - 00{taskData.id}
-              {/* {taskCode} */}
             </Typography>
           </AccordionSummary>
         </Grid>
@@ -128,7 +127,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
 
       <AccordionDetails>
         <Grid container direction="row">
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -141,8 +140,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-          <Grid item xs={6}>
-            
+
+          <Grid item xs={12} sm={6} mt={2}>
           <Controller
             name={`priority-${taskData.id}`}
             control={control}
@@ -182,8 +181,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
                 />
           </Grid>
         </Grid>
-        <Grid container direction="row" style={{ marginTop: "30px" }}>
-          <Grid item xs={6}>
+        <Grid container direction="row">
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               style={{ paddingRight: "10px" }}
               focused
@@ -196,7 +195,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />                   
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
           <Controller
             name={`statusBacklog-${taskData.id}`}
             control={control}
@@ -237,9 +236,8 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
         <Grid
           container
           direction="row"
-          style={{ marginTop: "30px" }}
         >
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} mt={2}>
             <FormInputText
               name={`estimationTime-${taskData.id}`}
               style={{ paddingRight: "10px" }}
@@ -253,7 +251,7 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
               }}
             />
           </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6} mt={2}>
             <Controller
               name={`assignedTo-${taskData.id}`}
               control={control}
@@ -564,7 +562,7 @@ useEffect(() => {
                             flexDirection: "column",
                           }}
                         >
-                          <img src={Allura} width="396px" height="188px" />
+                          <img src={Allura} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }} />
                           <Typography
                             sx={{
                               marginTop: "20px",
@@ -581,41 +579,43 @@ useEffect(() => {
                         </Grid>
                       </>
                     )}
-                    <Grid container direction="row" sx={{ width: "100%" }}>
-                      <Grid
-                        item
-                        xs={6}
-                        alignSelf="center"
-                        textAlign="left"
-                      >
-                        <Button
-                          disabled={!valueproject}
-                          color="success"
-                          variant="contained"
-                          onClick={handleClickTask}
-                          style={{ marginRight: "10px" }}
-                        >
-                          + Add Task
-                        </Button>
-                      </Grid>
-                      <Grid item xs textAlign='right'>
+                    <Grid container spacing={2} mt={3.5} alignItems="center" justifyContent="space-between">
+                    <Grid item xs={12} sm={3}>
                       <Button
-                        style={{ marginRight: '16px' }} 
-                        variant='cancelButton'
-                        onClick={() => handleClickOpenCancel()}
+                        disabled={!valueproject}
+                        color="success"
+                        variant="contained"
+                        onClick={handleClickTask}
+                        fullWidth
                       >
-                        Cancel Data
+                        + Add Task
                       </Button>
-                      <Button                    
-                        disabled={tasks.length === 0}
-                        variant='saveButton'
-                        type='submit'
-                        // onClick={handleClickOpenSave}
-                      >
-                        Save Data
-                      </Button>
-                      </Grid>  
                     </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                          <Button
+                            fullWidth
+                            variant="cancelButton"
+                            onClick={() => handleClickOpenCancel()}
+                          >
+                            Cancel Data
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <Button
+                            fullWidth
+                            disabled={tasks.length === 0}
+                            variant="saveButton"
+                            type="submit"
+                          >
+                            Save Data
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                   </form>
                 </FormProvider>
                 <Dialog

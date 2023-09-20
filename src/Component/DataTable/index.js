@@ -140,12 +140,12 @@ const DataTable = ({
             container
             direction="row"
             item
-            xs={4}
+            xs={6}
             alignItems="center"
             justifyContent="flex-start"
             spacing={2}
           >
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={8} md={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   views={["month"]}
@@ -168,7 +168,7 @@ const DataTable = ({
               </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={8} md={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   views={["year"]}
@@ -195,7 +195,7 @@ const DataTable = ({
         )}
 
         {onEmployee && (
-          <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
+          <Grid item xs={12} sm={4} mt={1} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
           >
             <Button
               variant="contained"
@@ -213,10 +213,12 @@ const DataTable = ({
             container
             direction="row"
             item
-            xs={4}
+            xs={12}
+            sm={6}
+            mt={1}
             gap={1}
             alignItems="center"
-            justifyContent="flex-end"
+            sx={{justifyContent: {xs: "start", sm:"end"}}}
           >
             <Button
               variant="contained"
@@ -237,7 +239,7 @@ const DataTable = ({
         )}
 
         {!onEmployee && !onUpload && (
-          <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
+          <Grid item xs={12} sm={4} mt={1} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}
           >
             <Button
               variant="contained"
