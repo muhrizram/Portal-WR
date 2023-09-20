@@ -45,11 +45,13 @@ const Employee = () => {
       field: "nip",
       headerName: "NIP",
       flex: 0.5,
+      minWidth: 180
     },
     {
       field: "firstName",
       headerName: "Name",
       flex: 1,
+      minWidth: 270,
       renderCell: (params) => {
         const urlMinio = params.row.image
           ? convertBase64(params.row.image)
@@ -95,11 +97,13 @@ const Employee = () => {
       field: "email",
       headerName: "Work Email",
       flex: 1,
+      minWidth: 270,
     },
     {
       field: "departement",
       headerName: "Departement",
       flex: 1,
+      minWidth: 160
     },
   ];
 

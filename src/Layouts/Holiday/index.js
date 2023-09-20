@@ -28,17 +28,20 @@ const MasterHoliday = () => {
     {
       field: 'date',
       headerName: 'Date',
-      flex: 1
+      flex: 1,
+      minWidth: 150,
     },
     {
       field: 'weekday',
       headerName: 'Weekday',
       flex: 1,
+      minWidth: 120,
     },
     {
       field: 'notes',
       headerName: 'Name',
-      flex: 1
+      flex: 1,
+      minWidth: 200
     }
   ];
 
