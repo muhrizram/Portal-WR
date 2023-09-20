@@ -213,7 +213,7 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
               Back
             </Button>
           </Grid>
-            {!todaysWorkingReport
+            {todaysWorkingReport
               ? (
                 !StatusSearch && onStatusHr ? (
                   <>
