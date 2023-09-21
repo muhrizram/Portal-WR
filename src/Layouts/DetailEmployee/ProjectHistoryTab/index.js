@@ -63,21 +63,25 @@ const ProjectHistoryTab = ({ id }) => {
       field: "projectName",
       headerName: "Project Name",
       flex: 1,
+      minWidth: 200
     },
     {
       field: "companyName",
       headerName: "Client Name",
       flex: 1,
+      minWidth: 250
     },
     {
       field: "startDate",
       headerName: "Start Date",
       flex: 1,
+      minWidth: 150
     },
     {
       field: "endDate",
       headerName: "End Date",
       flex: 1,
+      minWidth: 150
     },
   ];
 
@@ -148,7 +152,7 @@ const ProjectHistoryTab = ({ id }) => {
       textAlign="center"
     >
       <Grid item xs={12} pb={3.75}>
-        <img src={blanktable} alt="blank-table" />
+        <img src={blanktable} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }}/>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="noDataTable">Sorry, the data you are looking for could not be found.</Typography>

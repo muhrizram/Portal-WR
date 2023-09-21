@@ -34,22 +34,26 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
       field: "codeName",
       headerName: "Contract Status",
       flex: 1,
+      minWidth: 160,
     },
     {
       field: "startDate",
       headerName: "Start Date",
       flex: 1,
+      minWidth: 150
     },
     {
       field: "endDate",
       headerName: "End Date",
       flex: 1,
+      minWidth: 150
     },
     {
       field: "file",
       headerName: "Contract File",
       sortable:false,
       flex: 1,
+      minWidth: 150,
       renderCell: (params) => {
         return params.row.file !== "" ? (
           <Link
@@ -176,7 +180,7 @@ const StatusEmployeeTab = ({ id, dataChange }) => {
       textAlign="center"
     >
       <Grid item xs={12} pb={3.75}>
-        <img src={blanktable} alt="blank-table" />
+        <img src={blanktable} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }}/>
       </Grid>
       <Grid item xs={12}>
         <Typography variant="noDataTable">

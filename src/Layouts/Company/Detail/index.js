@@ -48,7 +48,6 @@ const DetailCompany = () => {
       flex: 1,
       minWidth: 140,
       renderCell: (data) => {
-        console.log("cek", data.id)
         return(
           <div>
             <IconButton 
@@ -140,7 +139,6 @@ const DetailCompany = () => {
       method: 'GET',
       endpoint: `/company/${id}`
     })
-    console.log("detail com", res)
     if (res.data.attributes) {
       buildDataComp(res.data.attributes.projects)
       const temp = res.data.attributes
