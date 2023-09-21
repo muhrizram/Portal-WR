@@ -262,15 +262,15 @@ const DetailEmployee = () => {
           <Grid item xs={12}>
             <Grid container>
               {isEdit ? (
-                <Grid item xs={9.9}>
+                <Grid item xs={9.9} sm={6}>
                   <Header judul="Edit Employee" />
                 </Grid>
               ) : (
-                <Grid item xs={9.9}>
+                <Grid item xs={9.9} sm={6}>
                   <Header judul="Detail Employee" />
                 </Grid>
               )}
-              <Grid item xs={2} alignSelf="center" textAlign="right">
+              <Grid item xs={12} sm={6} alignSelf="center" sx={{textAlign: {xs: 'start', sm: 'end'}}}>
                 <Button
                   variant="outlined"
                   startIcon={<CreateIcon />}
@@ -371,8 +371,8 @@ const DetailEmployee = () => {
                         {formState.errors.contractStatus.message}
                       </Typography>
                     )}
-                    <Grid container direction="row" sx={{ marginTop: "20px" }}>
-                      <Grid item xs={6}>
+                    <Grid container spacing={1} direction="row" sx={{ marginTop: "20px" }}>
+                      <Grid item xs={12} sm={6}>
                         <Controller
                           name="startDate"
                           control={control}
@@ -383,7 +383,7 @@ const DetailEmployee = () => {
                                   {...field}
                                   format="DD/MM/YYYY"
                                   label="Contract Start Date"
-                                  sx={{ width: "100%", paddingRight: "20px" }}
+                                  sx={{ width: "100%" }}
                                   value={field.value}
                                   onChange={(value) => {
                                     field.onChange(
@@ -413,7 +413,7 @@ const DetailEmployee = () => {
                           </Typography>
                         )}
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={12} sm={6}>
                         <Controller
                           name="endDate"
                           control={control}
