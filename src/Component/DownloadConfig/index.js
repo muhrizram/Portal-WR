@@ -68,9 +68,9 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
   const saveConfiguration = () => {
     const tempApproval = dataApproval.map(res => {
       return {
-        headerValue: res.approvalHeader,
-        nameValue: res.approvalName,
-        roleValue: res.approvalRole,
+        headerValue: res.approvalHeader || '',
+        nameValue: res.approvalName || '',
+        roleValue: res.approvalRole || '',
         signatureName: res.signatureName
       }
     })
