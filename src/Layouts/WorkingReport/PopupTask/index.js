@@ -278,7 +278,6 @@ const PopupTask = ({
    }  
   };
   
-  
   const handleChangeProject = (newValue, idxProject,absen) => {    
     if(isEdit){
       const temp = { ...firstEditTask };              
@@ -288,7 +287,7 @@ const PopupTask = ({
       }else{
         temp.listProject[idxProject].projectId = newValue.id;
         temp.listProject[idxProject].projectName = newValue.name;
-      }    
+      } 
       temp.listProject[idxProject].listTask = [clearTask];
       setfirstEditTask(temp);
     }else{
@@ -398,24 +397,22 @@ const PopupTask = ({
                      <Autocomplete
                         disabled={idxProject === 0 ? (addTaskinEdit && CekProjectEdit[idxProject - 1] ? false : true) : false}
                         disablePortal                    
-                        name='projectName'                                                
+                        name='project'
+                        className='autocomplete-input autocomplete-on-popup'
                         options={listProject}
                         getOptionLabel={(option) => option.name}
-                        className='autocomplete-input autocomplete-on-popup'                       
                         sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
-                        onChange={(_event, newValue) => {                          
-                          if (newValue) {
-                            setKolomproject(false)
-                              getlistTaskProject(newValue.id)                  
-                              handleChangeProject(newValue, idxProject, newValue.absen)                       
-                              setCekabsen((prevCekAbsen) => {
-                                const updatedCekAbsen = [...prevCekAbsen];
-                                updatedCekAbsen[idxProject] = newValue.absen;
-                                return updatedCekAbsen;
-                              });
-                              setOpentask(true);
-                            // }
-                          } else {
+                        onChange={(_event, newValue) => {
+                        if (newValue) {                          
+                          getlistTaskProject(newValue.id)               
+                          handleChangeProject(newValue, idxProject, newValue.absen)                       
+                          setCekabsen((prevCekAbsen) => {
+                            const updatedCekAbsen = [...prevCekAbsen];
+                            updatedCekAbsen[idxProject] = newValue.absen;
+                            return updatedCekAbsen;
+                          });     
+                          setOpentask(true)
+                        }else {
                             setlistTaskProject([])
                             setKolomproject(true)
                             setideffortTask('');                      
@@ -427,11 +424,11 @@ const PopupTask = ({
                           }
                         }}
                         value={resProject !== undefined ? 
-                          resProject.projectId  ?
+                          resProject.projectName !== undefined  ?
                           {
                             name: resProject.projectName,
                             id: resProject.id
-                          } : resProject.absenceName ?
+                          } : resProject.absenceName !== undefined ?
                           {
                             name: resProject.absenceName,
                             id: resProject.absenceId
@@ -485,7 +482,7 @@ const PopupTask = ({
                               onChange={(_event,newValue) => {                                        
                                         const temp = { ...firstEditTask };
                                           temp.listProject[idxProject].listTask[index].taskItem = _event.target.value === '' ? null : _event.target.value;
-                                        setProject(temp);
+                                          setfirstEditTask(temp);
                               }}
                               className='input-field-crud'
                               placeholder='e.g Rest for a while'
