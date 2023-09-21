@@ -157,7 +157,6 @@ const CreateOvertime = ({
   function calculateTimeDifference(startTime, endTime) {
     const start = parseTime(startTime);
     const end = parseTime(endTime);
-    console.log('end : ', endTime);
   
     if (!start || !end) {
       return 0;
@@ -165,12 +164,9 @@ const CreateOvertime = ({
   
     const startHour = start.hours + start.minutes / 60;
     const endHour = end.hours + end.minutes / 60;
-    console.log('end hour : ', endHour);
   
     const diff = endHour - startHour;
     const wholeHours = Math.floor(diff);
-    console.log('diff : ', diff);
-    console.log('whole hour : ', wholeHours);
 
     const endParts = endTime.split(':');
     const endHours = parseInt(endParts[0]);
