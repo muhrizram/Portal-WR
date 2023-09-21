@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
-import { Autocomplete, Avatar, Button, Card, Grid, InputAdornment, TextField, Typography } from "@mui/material";
+import { Autocomplete, Avatar, Button, Card, CircularProgress, Grid, InputAdornment, Modal, TextField, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -27,6 +27,9 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LockIcon from '@mui/icons-material/Lock'; 
 import { convertBase64 } from "../../global/convertBase64";
 import Reset from "../Login/reset";
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 
 export default function WorkingReport() {
   const [isCheckin, setIsCheckin] = useState(false);
@@ -44,6 +47,7 @@ export default function WorkingReport() {
   const [onStatusHr,setonStatusHr] = useState(false)
   const [onOtherUser,setonOtherUser] = useState(false)
   const [StatusSearch,setStatusSearch] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false);
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -71,9 +75,7 @@ export default function WorkingReport() {
   const [downloadConfiguration, setDownloadConf] = useState({
     open: false
   })
-  // const [changePass, setChangePass] = useState({
-  //   open: false
-  // })
+ 
   const [changePass, setChangePass] = useState(false)
 
   const [filteredNames, setFilteredNames] = useState([]);
@@ -185,20 +187,51 @@ export default function WorkingReport() {
     }
   };
 
-  // func for get download file excel or pdf
-  const downloadFormatFile = (employeeId = 1, isExcell, url = '') => {
-    // employeeId = this.state.role !== 'talent' ? this.state.selectedEmployee.employeeId : localStorage.getItem('employeeId');
+  const downloadFormatFile = (employeeId = 1, isExcel, url = '') => {
+    setIsDownloading(true);
     const start = moment(filter.startDate).format('yyyy-MM-DD')
     const end = moment(filter.endDate).format('yyyy-MM-DD');
-    const link = document.createElement('a');
-    link.href = isExcell ? getWorkingReportExcelUrl(employeeId, start, end, url) : getWorkingReportPdfUrl(employeeId, start, end, url);
-    link.download = '';
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+    const downloadUrl = isExcel
+      ? getWorkingReportExcelUrl(employeeId, start, end, url)
+      : getWorkingReportPdfUrl(employeeId, start, end, url);
+  
+    const fileName = `Timesheet - ${userProfile.name} - ${moment().month(m).format('MMMM')} ${y}.${isExcel ? 'xlsx' : 'pdf'}`
+
+    fetch(downloadUrl)
+      .then((response) => {
+        if (response.ok) {
+          setIsDownloading(false);
+          return response.blob();
+        } else {
+          setDataAlert({
+            severity: 'error',
+            open: true,
+            message: 'Download failed!'
+          });
+        }
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error) => {
+        setDataAlert({
+          severity: 'error',
+          open: true,
+          message: error.message || 'Download failed!'
+        });
+        setIsDownloading(false);
+      });
+  };
+  
+  
 
   const rebuildData = (resData) => {     
     let temp = [];    
@@ -233,9 +266,6 @@ export default function WorkingReport() {
             presenceName: value.attributes.listDate.presenceName,
           };      
     });
-    // if(selectedUser == null){
-    //   setData([])
-    // }
     setData([...temp]);
   };
 
@@ -385,10 +415,6 @@ export default function WorkingReport() {
   };
 
   const handleReset = () => {
-    // navigate('/reset-password')
-    // setChangePass({
-    //   open
-    // })
     setChangePass(true)
   }
 
@@ -560,10 +586,26 @@ export default function WorkingReport() {
         </Grid>
       </Grid>
 
-      {/* <PopupTask selectedWrIdanAbsenceId={104} open={openTask} closeTask={() => setOpenTask(false)} /> */}
       <CreateOvertime open={openOvertime} closeTask={() => setOpenOvertime(false)} />
       <DownloadConfiguration {...downloadConfiguration} onClose={() => openDownload(false)} />
       <Reset open={changePass} onClose={() => setChangePass(false)} />
+      <Dialog
+        open={isDownloading}
+        aria-labelledby="download-dialog"
+        aria-describedby="download-dialog-description"
+      >
+      <DialogContent>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <CircularProgress size={50} color="primary" />
+          <DialogContentText id="download-dialog-description" style={{ textAlign: 'center', marginTop: 10  }}>
+            Downloading...
+          </DialogContentText>
+        </div>
+      </DialogContent>
+
+      </Dialog>
+
+
     </SideBar>
   );
 }

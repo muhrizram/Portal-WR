@@ -7,6 +7,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  CircularProgress,
   Grid,
   IconButton,
   Paper,
@@ -14,9 +15,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Clear } from "@mui/icons-material";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import '../../../../App.css';
 import uploadFile from "../../../../global/uploadFile";
+import { AlertContext } from '../../../../context';
 
 const convertBytesToString = (bytes) => {
   const kb = bytes / 1024;
@@ -38,8 +40,9 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
   const inputRef = useRef(null);
   const [file, setFile] = useState('')
   const [filePath, setFilePath] = useState('')
+  const { setDataAlert } = useContext(AlertContext)
   const [uploadedFiles, setUploadedFiles] = useState(new Array(approvalConfig.length).fill(null));
-  // const [uploadIndex, setUploadIndex] = useState(0);
+  const [isUploading, setIsUploading] = useState(new Array(approvalConfig.length).fill(false));
   const addApproval = () => {
     setApprovalConfig((prevData) => [
       ...prevData, {...approvalConfig}
@@ -48,22 +51,42 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
 
   const handleChangeUpload = async (e, index) => {
     if (e.target.files) {
-      const tempFilePath = await uploadFile(e.target.files[0], 'signature');
-      const parts = tempFilePath.split('=');
-      const fileName = parts[1];
+      setIsUploading((prevIsUploading) => {
+        const updatedIsUploading = [...prevIsUploading];
+        updatedIsUploading[index] = true;
+        return updatedIsUploading;
+      });
 
-      setFilePath(fileName);
+      try {
+        const tempFilePath = await uploadFile(e.target.files[0], 'signature');
+        const parts = tempFilePath.split('=');
+        const fileName = parts[1];
 
-      const tempUploadedFiles = [...uploadedFiles];
-      tempUploadedFiles[index] = e.target.files[0];
-      setUploadedFiles(tempUploadedFiles);
+        setFilePath(fileName);
 
-      const tempApproval = [...approvalConfig];
-      tempApproval[index] = {
-        ...tempApproval[index],
-        signatureName: fileName
-      };
-      setApprovalConfig(tempApproval);
+        const tempUploadedFiles = [...uploadedFiles];
+        tempUploadedFiles[index] = e.target.files[0];
+        setUploadedFiles(tempUploadedFiles);
+
+        const tempApproval = [...approvalConfig];
+        tempApproval[index] = {
+          ...tempApproval[index],
+          signatureName: fileName
+        };
+        setApprovalConfig(tempApproval);
+      } catch (error) {
+        setDataAlert({
+          severity: 'error',
+          open: true,
+          message: "Error uploading file!"
+        }) 
+      } finally {
+        setIsUploading((prevIsUploading) => {
+          const updatedIsUploading = [...prevIsUploading];
+          updatedIsUploading[index] = false;
+          return updatedIsUploading;
+        });
+      }
     }
   }
 
@@ -96,6 +119,11 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
     }
     setApprovalConfig(tempApproval)
   } 
+
+  const handleButtonClick = (index) => {
+    const fileInput = document.getElementById(`file-input-${index}`);
+    fileInput.click();
+  };
 
   return (
     <Grid container direction="row"  className={'card-configuration'}>
@@ -155,14 +183,23 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
               <Button
                 variant="contained"
                 sx={{ marginBottom: '8px' }}
-                onClick={() => inputRef.current.click()}
+                onClick={() => handleButtonClick(index)}
+                disabled={!!isUploading[index]}
               >
-                Upload Signature
+                {isUploading[index] ? (
+                  <>
+                    <CircularProgress size={12} color="inherit" />
+                    <Typography marginLeft={1}>Uploading...</Typography>
+                  </>
+                ) : (
+                  "Upload Signature"
+                )}
               </Button>
               <input
-                ref={inputRef}
+                id={`file-input-${index}`}
                 type="file"
-                accept=".png, .jpg"
+                hidden
+                accept=".png, .jpg, jpeg"
                 className="custom-file-input"
                 style={{ display: 'none' }}
                 onChange={(e) => handleChangeUpload(e, index)}
@@ -192,7 +229,28 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                         </Box>
                       </Grid>
                     ) : (
-                      <Typography className="font-upload-signature">Allowed JPG or PNG. Max size of 1MB</Typography>
+                      <Typography className="font-upload-signature">
+                        {approval.signatureName ? (
+                          <Grid item xs={12} component={Paper} mt={1} display="flex" p={2}>
+                            <Box display="flex" flexDirection="column" textAlign="start" flex={1}>
+                            <span className='text-files-name'>{approval.signatureName.split('/').pop()}</span>
+                              <Box display="flex" gap={1} alignItems="center">
+                              <Box width="3px" height="3px" borderRadius="999px" backgroundColor="#00000099"/>
+                              <span className='text-files-sizes'>
+                                Stored in Settings
+                              </span>
+                              </Box>
+                            </Box>
+                            <Box display="flex" alignItems="center">
+                              <IconButton
+                                onClick={() => clearSignature(index)}
+                              >
+                                <Clear />
+                              </IconButton>
+                            </Box>
+                          </Grid>
+                        ) : 'Allowed JPG or PNG. Max size of 1MB'}
+                      </Typography>
                     )}
             </Grid>
             </Grid>
@@ -212,7 +270,6 @@ const ApprovalConfiguration = ({approvalConfig, setApprovalConfig}) => {
                   Add Approval
               </Button>
             </Grid>
-      {/* </Grid> */}
     </Grid>
   );
 };
