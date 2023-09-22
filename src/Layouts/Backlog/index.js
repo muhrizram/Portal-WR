@@ -30,7 +30,7 @@ const Backlog = () => {
       field: 'taskCode',
       headerName: 'Task Code',
       flex: 0.7,
-      minWidth: 200.
+      minWidth: 200,
     },
     {
       field: 'taskName',
@@ -45,10 +45,9 @@ const Backlog = () => {
       minWidth: 200,
       renderCell: (data) => (
         <Rating
-          // className="rating-outline"
           variant="outlined"
           name="rating"
-          value={parseFloat(data.row.priority)} // Ambil nilai rating dari properti "priority"
+          value={parseFloat(data.row.priority)} 
           readOnly
           precision={0.5}
         />
@@ -89,7 +88,6 @@ const Backlog = () => {
   const [idHapus,setidHapus] = useState();
   const [totalData, setTotalData] = useState();
   const { setDataAlert } = useContext(AlertContext)
-  // const [isDelete, setIsDelete] = (false)
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,

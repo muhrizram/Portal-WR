@@ -66,13 +66,6 @@ const TaskItem = ({ task, onDelete, onUpdate, onUpdateTasks, initialProject, idP
     onUpdate(taskDataUpdate);
   }, [taskDataUpdate]);
 
-  const handleChange = (event) => {    
-      const { name, value } = event.target;
-        setTaskDataUpdate((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-  }; 
 
   const handleDelete = () => {
     onDelete(taskData.id);
@@ -383,10 +376,6 @@ const CreateNewBacklog = () => {
     setTasks(updatedTasks);
   };
 
-  const confirmSave = async () => {    
-    setIsSave(true)
-    setOpen(true)    
-  }
   
   const currentDate = new Date()
   currentDate.setDate(currentDate.getDate() + 1)

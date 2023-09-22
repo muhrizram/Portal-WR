@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import Grid from "@mui/material/Grid";
 import SideBar from '../../../Component/Sidebar';
 import Breadcrumbs from "../../../Component/BreadCumb";
@@ -55,7 +55,6 @@ const CreateCompany = () => {
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      // companyProfile: '',
       companyName: '',
       companyEmail: '',
       npwp: '',
