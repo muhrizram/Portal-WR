@@ -49,12 +49,7 @@ const CreateOvertime = ({
   const [optProject, setOptProject] = useState([])
   const [optTask, setOptTask] = useState([])
   const [optStatus, setOptStatus] = useState([])
-  const [idEffortTask, setIdEffortTask] = useState()
   const [opentask, setOpentask] = useState(false)
-  const [valueDetail, setValueDetail] = useState([])
-  const selectedTask = optTask.find((item) => item.taskId);
-  const [taskDurations, setTaskDurations] = useState([optTask.find((item) => item.backlogId === idEffortTask)]);
-  const [openEditTask, setOpenEditTask] = useState(false)
   const [isEndTimeError, setIsEndTimeError] = useState(false)
 
   const currentUserId = parseInt(localStorage.getItem("userId"))
@@ -92,7 +87,6 @@ const CreateOvertime = ({
 
   const onAddProject = () => {
     if(isEdit){
-      setOpenEditTask(true)
       const temp = {...dataEditOvertime}
       temp.listProject = [...dataEditOvertime.listProject, { 
         projectId: null,
@@ -202,74 +196,38 @@ const CreateOvertime = ({
     return null;
   }
 
-  const handleChange = (event, idxProject, index, backlogId, taskId) => {   
-    if(isEdit){
-      const { name, value } = event.target;
-      const updateDataEditOvertime = {...dataEditOvertime}
-      const inputValue = value;
-      const numericValue = inputValue === '' ? null : parseFloat(inputValue);                                        
-      updateDataEditOvertime.listProject[idxProject].listTask[index][name] = numericValue;
-
-      if (name === 'duration') {
-        if (numericValue < 0) {
-          updateDataEditOvertime.listProject[idxProject].listTask[index][name] = '0';
-        } else {
-          const startTimes = startTime ? startTime : dataEditOvertime.startTime;
-          const endTimes = endTime ? endTime : dataEditOvertime.endTime;
-          const hours = calculateTimeDifference(startTimes, endTimes);
-
-          if (numericValue > hours) {
-            updateDataEditOvertime.listProject[idxProject].listTask[index][name] = hours;
-          } else {
-            updateDataEditOvertime.listProject[idxProject].listTask[index][name] = numericValue;
-          }
-        }
-      } else if(name === 'taskName'){
-        updateDataEditOvertime.listProject[idxProject].listTask[index].backlogId = backlogId
-      }
-  
-      setDataEditOvertime(updateDataEditOvertime);
+  const handleChange = (event, idxProject, index, isEdit, backlogId) => {
+    const { name, value } = event.target;
+    const isDuration = name === 'duration';
+    const isTaskName = name === 'taskName';
     
-
-    } else{
-      const { name, value } = event.target;
-      if (name === 'duration') {
-        const temp = { ...dataOvertime };
+    const updateData = (data) => {
+      if (isDuration) {
         const parsedValue = parseFloat(value);
-
-        if (isNaN(parsedValue)) {
-          temp.listProject[idxProject].listTask[index][name] = '';
-        } else if (parsedValue < 0) {
-          temp.listProject[idxProject].listTask[index][name] = '0';
+        if (parsedValue < 0) {
+          data.listProject[idxProject].listTask[index][name] = '0';
         } else {
-          const hours = calculateTimeDifference(startTime, endTime);
-          if (parsedValue > hours) {
-            temp.listProject[idxProject].listTask[index][name] = hours;
-          } else {
-            setIdEffortTask(parsedValue);
-            setDataOvertime(temp);
-            temp.listProject[idxProject].listTask[index][name] = parsedValue;
-          }
+          const calculatedValue = Math.min(parsedValue, calculateTimeDifference(startTime || data.startTime, endTime || data.endTime));
+          data.listProject[idxProject].listTask[index][name] = calculatedValue;
         }
-      
-        setTaskDurations((prevDurations) =>
-          prevDurations.map((durationItem, i) => ({
-            ...durationItem,
-            duration: i === index ? parsedValue : durationItem.duration,
-          }))
-        );
-      } else{
-        const temp = {...dataOvertime}
-        temp.listProject[idxProject].listTask[index][name]= value
-        if(name === 'taskName'){
-          temp.listProject[idxProject].listTask[index].backlogId = backlogId
-        }
-      setDataOvertime(temp)
+      } else if (isTaskName) {
+        data.listProject[idxProject].listTask[index].backlogId = backlogId;
+      } else {
+        data.listProject[idxProject].listTask[index][name] = value;
       }
-    }
     
-  }; 
-
+      return data;
+    };
+    
+  
+    if (isEdit) {
+      const updatedData = updateData({ ...dataEditOvertime });
+      setDataEditOvertime(updatedData);
+    } else {
+      const updatedData = updateData({ ...dataOvertime });
+      setDataOvertime(updatedData);
+    }
+  };
   
   const handleChangeProject = (value, idxProject) => {
     if(isEdit){
@@ -304,7 +262,6 @@ const CreateOvertime = ({
 
   useEffect(() => {
     if(isEdit){
-      setValueDetail(dataDetail)
       onEdit()
       setOpentask(true)
     }
@@ -404,8 +361,8 @@ const onSave = async () => {
 
   const saveEdit = async () => {
     const dataUpdate = {
-      startTime: startTime ? startTime : dataEditOvertime.startTime,
-      endTime: endTime ? endTime : dataEditOvertime.endTime,
+      startTime: startTime || dataEditOvertime.startTime,
+      endTime: endTime || dataEditOvertime.endTime,
       workingReportId : null,
       listProjectId : [],
       createdBy: currentUserId,
@@ -513,7 +470,7 @@ const onSave = async () => {
             defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
             onChange={(end) => {
               const newEndTime = end.format("HH:mm:ss");
-              const newStartTime = startTime ? startTime : dataEditOvertime.startTime
+              const newStartTime = startTime || dataEditOvertime.startTime
           
               if (newStartTime && newEndTime <= newStartTime) {
                 setEndTime(dataEditOvertime.endTime)
@@ -563,7 +520,6 @@ const onSave = async () => {
                   } else {
                     setOpentask(false)
                     setDataOvertime([clearProject])
-                    setIdEffortTask('')
                   }
                 }}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -607,7 +563,7 @@ const onSave = async () => {
                             name='taskName'
                             className='autocomplete-input autocomplete-on-popup'
                             options={optTask}
-                            defaultValue={!!resProject.projectId ? {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} : null}
+                            defaultValue={resProject.projectId ? {backlogId : res.backlogId, taskName: res.taskCode + ' - ' +  res.taskName, actualEffort: res.duration} : null}
                             getOptionLabel={(option) => option.taskName}
                             sx={{ width: "100%", marginTop: "20px", backgroundColor: "white" }}
                             onChange={(_event, newValue) => {
@@ -615,11 +571,9 @@ const onSave = async () => {
                                 handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                 idxProject,
                                 index,
+                                true,
                                 newValue.backlogId,)
-                                setIdEffortTask(newValue.backlogId)
-                              } else {
-                                setIdEffortTask('')
-                              }
+                              } 
                             }}
                             isOptionEqualToValue={(option, value) => option.value === value.value}
                             renderInput={(params) => (
@@ -646,7 +600,8 @@ const onSave = async () => {
                               handleChange(
                               { target: { name : 'statusTaskId', value : newValue.id } },
                                 idxProject,
-                                index
+                                index,
+                                true
                                 )
                             }
                             isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -667,7 +622,7 @@ const onSave = async () => {
                               focused
                               name='duration'
                               value={res.duration}
-                              onChange={(e) => handleChange(e, idxProject, index)}
+                              onChange={(e) => handleChange(e, idxProject, index, true)}
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen'
                               type="number"
@@ -680,7 +635,7 @@ const onSave = async () => {
                               focused
                               name='taskItem'
                               value={res.taskItem}
-                              onChange={(e) => handleChange(e, idxProject, index)}
+                              onChange={(e) => handleChange(e, idxProject, index, true)}
                               className='input-field-crud'
                               placeholder='e.g Create Login Screen"'
                               label='Task Detail'
@@ -774,7 +729,7 @@ const onSave = async () => {
         </Grid>
 
         {isLocalizationFilled ? dataOvertime.listProject.length > 0 && dataOvertime.listProject.map((resProject, idxProject) => (
-          <div className={opentask ? 'card-project' : ''} key={`${idxProject}-project`}>
+          <div className={opentask ? 'card-project' : ''} key={`${idxProject+1}-project`}>
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
                 <Autocomplete
@@ -792,7 +747,6 @@ const onSave = async () => {
                   } else {
                     setOpentask(false)
                     setDataOvertime([clearProject])
-                    setIdEffortTask('')
                   }
                 }}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -837,10 +791,9 @@ const onSave = async () => {
                               if(newValue) {
                                 handleChange({target : { name : 'taskName', value: newValue.taskName }},
                                 idxProject,
-                                index, newValue.backlogId)
-                                setIdEffortTask(newValue.backlogId)
-                              } else {
-                                setIdEffortTask('')
+                                index,
+                                false,
+                                newValue.backlogId)
                               }
                             }}
                             isOptionEqualToValue={(option, value) => option.value === value.value}
@@ -1011,14 +964,12 @@ const onSave = async () => {
               closeOvertime(false)
               setOpentask(false)
               setDataOvertime([clearProject])
-              setIdEffortTask('')
               setIsLocalizationFilled(false)
               setDialogCancel(false)
             } : () => {
               closeTask(false)
               setOpentask(false)
               setDataOvertime([clearProject])
-              setIdEffortTask('')
               setIsLocalizationFilled(false)
               setDialogCancel(false)
             }}>
