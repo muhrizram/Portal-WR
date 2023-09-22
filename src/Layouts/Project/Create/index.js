@@ -26,14 +26,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import FormInputText from "../../../Component/FormInputText";
 import schemacompany from "../shema";
-// import CustomAlert from "../../../Component/Alert";
 import TableNative from "../../../Component/DataTable/Native";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
-// import { options } from "@fullcalendar/core/preact";
 import { DeleteOutlineOutlined } from "@mui/icons-material";
 import debounce from "@mui/utils/debounce";
 import dayjs from "dayjs";
@@ -440,7 +438,6 @@ const CreateProject = () => {
   const methods = useForm({
     resolver: yupResolver(schemacompany),
     defaultValues: {
-      projectName: '',
       picProjectName: '',
       picProjectPhone: '',
       projectDescription: '',

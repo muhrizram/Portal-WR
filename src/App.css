@@ -48,7 +48,6 @@
   font-size: 14px;
   line-height: 125%;
   color: #004881;
-  /* line-height: 21px; */
 }
 
 .MuiDataGrid-cellContent {
@@ -94,9 +93,9 @@
   display: flex;
 }
 
-.containerButton {
+/* .containerButton {
   display: flex;
-}
+} */
 
 .containerButton>button {
   margin-right: 10px;
@@ -110,13 +109,7 @@
 
 .iconTable {
   cursor: pointer;
-  /* background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  color: #4B5563; */
   font-size: 14px;
-  /* margin-right: 16px; */
 }
 
 .employetext {
@@ -135,7 +128,6 @@
 
 .employetextvalue {
   display: flex;
-  /* flex-direction: row; */
   position: absolute;
   margin-top: 180px;
   font-size: 20px;
@@ -143,7 +135,6 @@
 }
 
 .textnameemployevalue {
-  /* padding-right: 10px; */
   margin-right: 460px;
 }
 
@@ -154,8 +145,6 @@
 }
 
 .HeaderDetail {
-  /* width: Fill (1, 320px); */
-  /* height: 74vh; */
   margin-top: 20px;
   background: #ffffff;
   padding: 24px;
@@ -176,7 +165,6 @@
 .text {
   font-size: 12px;
   color: grey;
-  /* margin-left: 30px; */
 }
 
 @keyframes App-logo-spin {
@@ -287,7 +275,6 @@
   flex-direction: column;
   align-self: stretch;
   color: #58585b;
-  /* Text - sm/14/Regular */
   font-size: 14px;
   line-height: 125%;
 }
@@ -297,7 +284,6 @@
   flex-direction: column;
   align-self: stretch;
   color: #4b465c;
-  /* Text - xs/12/Regular */
   font-size: 12px;
   line-height: 150%;
 }
@@ -321,7 +307,6 @@
 .input-field-crud input {
   font-size: 16px;
   line-height: 150%;
-  /* color: rgba(0, 0, 0, 0.38); */
   padding: 16px 12px !important;
 }
 
@@ -449,7 +434,6 @@
 }
 
 .dzu-inputLabel {
-  /* position: relative !important; */
   color: transparent !important;
 }
 
@@ -516,7 +500,6 @@
 .button-clear{
   display: flex;
 padding: 4px;
-/* margin-left: 2px; */
 flex-direction: column;
 justify-content: center;
 align-items: center;
@@ -527,7 +510,6 @@ color: #ED6C02;
   flex-direction: column;
   padding: 4px 10px;
   justify-content: center;
-  padding: 4px 10px;
   align-items: center;
   border-radius: 4px;
   color: #2196f3;
@@ -554,13 +536,11 @@ color: #ED6C02;
 .dialogDescription {
   width: 370px;
   text-align: center;
-  /* Text - base/16/Regular */
   font-family: Poppins;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: 150%;
-  /* 24px */
 }
 
 .dialogButton {
@@ -670,7 +650,6 @@ color: #ED6C02;
 
 .blue-outline .MuiFormLabel-root.Mui-focused {
   color: #2196F3 !important;
-  /* font-size: 15px; */
   font-style: normal;
   font-weight: 500;
   text-transform: uppercase;
@@ -682,7 +661,6 @@ color: #ED6C02;
 
 .blue-outline .Mui-focused fieldset legend span {
   color: #2196F3 !important;
-  /* font-size: 15px; */
   font-style: normal;
   font-weight: 500;
   text-transform: uppercase;
@@ -712,7 +690,6 @@ color: #ED6C02;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* gap: 10px; */
 }
 
 .dialog-configuration-header {
@@ -723,7 +700,6 @@ color: #ED6C02;
   color: #4b465c;
   padding: 12px 45px !important;
   align-items: stretch;
-  /* width: max-content; */
   align-content: flex-start;
 
 }
@@ -800,12 +776,3 @@ color: #ED6C02;
 .MuiSelect-select.MuiSelect-outlined.Mui-disabled.MuiInputBase-input.MuiOutlinedInput-input.Mui-disabled.Mui-readOnly.MuiInputBase-readOnly.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
   background-color : '#9E9E9E'
 }
-
-/* .MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-stjrvf-MuiGrid-root {
-  flex-direction: column-reverse;
-  margin-top: -5px;
-} */
-
-/* .fc-day.fc-day-sat.fc-day-past.fc-daygrid-day {
-  background-color: 'red';
-} */

@@ -5,14 +5,8 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import globalTheme from './Theme';
 import { finalRoutes } from './routes';
 import { AlertContext } from './context';
-// import { useAuth } from 'react-oidc-context';
 
 const App = () => {
-  // const [valRoute, setRoute] = useState([])
-  // useEffect(() => {
-  //   console.log('final routes: ', finalRoutes())
-  //   setRoute(finalRoutes())
-  // }, [])
   const navigate = useNavigate()
   const location = useLocation()
   const userId = localStorage.getItem("userId") || null
