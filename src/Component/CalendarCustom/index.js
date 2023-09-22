@@ -13,14 +13,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import Switch from "@mui/material/Switch";
 import moment from "moment";
 import PopupTask from "../../Layouts/WorkingReport/PopupTask";
-import { useNavigate } from "react-router";
 import CreateOvertime from "../../Layouts/Overtime/createOvertime";
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -49,7 +46,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [descHoliday, setdescHoliday] = useState(null);
   const [finalDateCalendar,setfinalDateCalendar] = useState()
 
-  const navigate = useNavigate();
 
   useEffect(() => {    
    const currentDate = new Date();
@@ -80,7 +76,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     fontSize: '14px',
     lineHeight: '100%',
     borderColor: 'black', 
-    // marginRight: '10vh',
     marginTop: '2vh',  
     borderRadius:6
     }));

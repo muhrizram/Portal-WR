@@ -9,7 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import blanktable from "../../assets/blanktable.png";
 import "../../App.css";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
-import { Close, EditOutlined, UploadFileOutlined } from "@mui/icons-material";
+import { EditOutlined, UploadFileOutlined } from "@mui/icons-material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -268,7 +268,6 @@ const DataTable = ({
             rowCount={totalData}
             getRowId={(row) => row.id}
             sortingMode="server"
-            // getRowHeight={() => 'auto'}
           />
         </Grid>
       ) : (
