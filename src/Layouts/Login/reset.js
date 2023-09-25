@@ -1,12 +1,11 @@
-import { Button, Divider, InputAdornment, TextField, Typography, IconButton, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, CircularProgress } from '@mui/material';
+import { Button, InputAdornment, TextField, IconButton, Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import React, {useState, useEffect, useContext} from 'react';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import client from '../../global/client';
 import { AlertContext } from '../../context';
 import * as Yup from 'yup';

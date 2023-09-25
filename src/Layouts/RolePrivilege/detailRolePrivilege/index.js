@@ -67,7 +67,7 @@ const DetailPrivilege = () => {
       .required(`${textPlease} Privilege`)
   });
 
-  const { handleSubmit, formState: { errors }, register } = useForm({
+  const { handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schemaRolePrivilege),
   });
 

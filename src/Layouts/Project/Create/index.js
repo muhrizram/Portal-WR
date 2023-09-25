@@ -12,11 +12,9 @@ import {
   DialogActions,
   Typography,
   Avatar,
-  FormControl,
   Autocomplete,
   TextField,
   IconButton,
-  InputLabel,
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
@@ -50,8 +48,6 @@ const CreateProject = () => {
   const [dataProject, setDataProject] = useState([]);
   const [startProject, setStartProject] = useState()
   const [endProject, setEndProject] = useState()
-  const [startJoin, setStartJoin] = useState()
-  const [endJoin, setEndJoin] = useState()
   const [isSaveloading, setIsSaveLoading] = useState(false)
   const [sendData, setData] = useState({
     listUser: [],

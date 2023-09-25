@@ -155,11 +155,7 @@ const CreateRolePrivilege = () => {
   };
 
   const [selectedRole, setSelectedRoles] = useState()
-  const handleChangeRole = (value) => {    
-    if(value){
-      setgetoptRoleId(value.id)
-    }
-  }
+  
   return (
     <SideBar>
       <Breadcrumbs breadcrumbs={dataBread} />

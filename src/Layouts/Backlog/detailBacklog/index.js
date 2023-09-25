@@ -50,7 +50,6 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
   },[]);
 
   const handleChangeAutocomplete = (name, value) => {
-    // const { name, value } = event.target;
     console.log("Task before: ", taskData[name])
     setTaskData((prevData) => ({...prevData, [name]: value}));
     setTaskDataUpdate((prevData) => ({...prevData, [name]: value }))
