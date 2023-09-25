@@ -77,7 +77,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     lineHeight: '100%',
     borderColor: 'black', 
     marginTop: '2vh',  
-    borderRadius:6
+    borderRadius:6,
     }));
   
     const CustomButtonDisabledTask = styled(Button)(({ theme }) => ({
@@ -177,14 +177,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </Button>
                           ) : !datalibur && !isWeekend(info.date) && data.presenceName && (
                           <Button
-                            variant={data.presenceName != "Hadir" ? "outlined-attedance-sick" : "outlined-attedance"}
+                            variant={data.presenceName == "Sakit" ? "outlined-attedance-sick" : data.presenceName == "Cuti" ? "outlined-attedance-cuti" : data.presenceName == "Izin" ? "outlined-attedance-off" : "outlined-attedance"}
                             onClick={data.presenceName != "Hadir" ? 
                             ()=>{
                               setIsViewAttendance(true)
                               setWrIdDetail(data.workingReportTaskId);
                             } : null}
                           >
-                            {data.presenceName}
+                            <Typography style={{fontSize:12}}>
+                            {data.presenceName == "Sakit" ? "Sick Leave" : data.presenceName == "Cuti" ? "Off-Duty" : data.presenceName == "Izin" ? "Authorized Absence" : data.presenceName}
+                            </Typography>
                           </Button>
                           ) 
                         }
