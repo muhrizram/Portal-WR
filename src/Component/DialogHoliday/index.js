@@ -26,9 +26,11 @@ const HolidayDialog = ({dialogOpen, handleClose, date, titleHoliday}) => {
             >             
               {moment(date).format("DD MMMM YYYY")}              
             </DialogContentText>
-            <DialogContentText>             
-              {titleHoliday ? titleHoliday : "Weekend Holiday"}
-            </DialogContentText>
+            {titleHoliday ? titleHoliday.map((value)=>(
+              <DialogContentText key={`${value}-holiday`}>            
+                {value === "Weekend" ? `${value} Holiday` : value}
+              </DialogContentText>
+            )):<></>}
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
             <Button
