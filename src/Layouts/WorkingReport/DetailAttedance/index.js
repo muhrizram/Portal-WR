@@ -50,7 +50,7 @@ import {
             <img 
             src={urlMinio}
             alt="Gambar" 
-            style={{ width: "100%", height: "500px", borderRadius: "10px" }}
+            style={{ width: "100%", height: "100%", borderRadius: "10px" }}
             onClick={() => setopen(true)}
             />
           </a>

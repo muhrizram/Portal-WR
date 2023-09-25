@@ -34,7 +34,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
   const handleChange = (value) => {
     setPresence(value);
   };
-
+  
   const handleChangeLocation = (event) => {
     setLocation(event.target.value);
   };
@@ -60,8 +60,6 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
 
   const onContinue = async () => {
     let body = {};
-    // let workingReportId = null;    
-      // if(!beforeThanToday){
           if (presence.value === "42") {
           body = {
             periodId: dataPeriod.period,
@@ -72,32 +70,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           };      
               localStorage.setItem("presence", presence.value);
               setdataReadyAttedance(body)   
-              setIsCheckin(true)
-          // const res = await client.requestAPI({
-          //   endpoint: "/workingReport/attendance",
-          //   method: "POST",
-          //   data: body,
-          // });
-          //   if (!res.isError) {
-          //     localStorage.setItem(
-          //       "workingReportId",
-          //       res.data.attributes.workingReportId
-          //     );      
-          //     setDataAlert({
-          //       severity: "success",
-          //       open: true,
-          //       message: res.data.meta.message,
-          //     });
-          //     setTimeout(() => {
-          //       window.location.reload();
-          //     }, 3000)          
-          //   } else {
-          //     setDataAlert({
-          //       severity: "error",
-          //       message: res.error.detail,
-          //       open: true,
-          //   });
-          // }
+              setIsCheckin(true)     
         } else {      
           body = {
             periodId: dataPeriod.period,
@@ -120,7 +93,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
             setDataAlert({
               severity: "success",
               open: true,
-              message: res.data.meta.message,
+              message: presence.value == "43" ? "Your sick leave request has been approved. Take care and get well soon!" : presence.value == "44" ? "Your work leave request has been processed successfully!" : presence.value == "45" ? "Success! Your authorized absence has been recorded. Enjoy" : null  
             });
             setTimeout(() => {
               window.location.reload();
@@ -132,58 +105,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
               open: true,
             });
           }
-        }    
-    // }else{
-      // if (presence.value != "42") {      
-      //   body = {
-      //     periodId: dataPeriod.period,
-      //     presenceId: parseInt(presence.value),
-      //     userId: parseInt(localStorage.getItem("userId")),
-      //     date: dataPeriod.tanggal,
-      //     file: filePath,
-      //   };
-      //   localStorage.setItem("presence", presence.value);
-      //   // setdataReadyAttedance(body)   
-      //   // setIsCheckin(true)
-      //   const res = await client.requestAPI({
-      //     endpoint: "/workingReport/notAttendance",
-      //     method: "POST",
-      //     data: body,
-      //   });
-      //   if (!res.isError) {
-      //     // workingReportId = res.data.attributes.workingReportId;
-      //     localStorage.setItem(
-      //       "workingReportId",
-      //       res.data.attributes.workingReportId
-      //     );      
-      //     setDataAlert({
-      //       severity: "success",
-      //       open: true,
-      //       message: res.data.meta.message,
-      //     });
-      //     setTimeout(() => {
-      //       window.location.reload();
-      //     }, 3000)  
-      //   } else {
-      //     setDataAlert({
-      //       severity: "error",
-      //       message: res.error.detail,
-      //       open: true,
-      //     });
-      //   }
-      // }else{
-      //   body = {
-      //     periodId: dataPeriod.period,
-      //     presenceId: parseInt(presence.value),
-      //     userId: parseInt(localStorage.getItem("userId")),
-      //     date: dataPeriod.tanggal,
-      //     file: filePath,
-      //   };
-      //   localStorage.setItem("presence", presence.value);
-      //   setdataReadyAttedance(body)   
-      //   setIsCheckin(true)
-      // }    
-    // }    
+        }
   };
 
   const renderBottom = () => {
