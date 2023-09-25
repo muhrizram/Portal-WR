@@ -17,7 +17,6 @@ const TableNative = ({
   const [sorting, setSort] = useState([]);
 
   const changeSort = (model) => {
-    console.log('model table : ', model);
     if (model.length > 0) {
       setSort([{ ...model }]);
     } else {

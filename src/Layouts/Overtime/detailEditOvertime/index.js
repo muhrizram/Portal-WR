@@ -13,12 +13,7 @@ import client from '../../../global/client';
 
 
 export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusHr, setonOtherUser}) {
-  const [value, setValue] = React.useState("one");
   const [openOvertime, setOpenOvertime] = useState(false);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -55,7 +50,6 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusH
     };
 
       setDetail(updatedData)
-      // setDetail(res.data.attributes.listProject)
   }
 
   useEffect(() => {
@@ -75,7 +69,7 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusH
               value="one" 
               label="Overtime Task"
               style={{
-                borderBottom: value === "one" ? "2px solid #2196F3" : "none",
+                borderBottom: "2px solid #2196F3"
               }}
             />
           </Tabs>
@@ -93,13 +87,12 @@ export default function ViewOvertime({WrIdDetail, onCloseViewOvertime, onStatusH
               </Typography>
               <Typography variant="body1">
                 {item.date}
-                {/* Tuesday, 2 May 2023 */}
                 </Typography>
             </Grid>
             <Divider />
 
-            {item.listTask.map((taskItem,id) => (
-            <Grid item xs={12} key={`${taskItem}-${id}`}>
+            {item.listTask.map((taskItem) => (
+            <Grid item xs={12} key={`${taskItem.taskId}`}>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
