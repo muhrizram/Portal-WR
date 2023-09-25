@@ -531,7 +531,7 @@ const PopupTask = ({
                                       onChange={(_event, newValue) => {
                                         const temp = { ...firstEditTask}
                                         temp.listProject[idxProject].listTask[index].taskName = newValue !== null ? newValue.taskName : ''
-                                        temp.listProject[idxProject].listTask[index].taskId = newValue !== null ? newValue.backlogId : ''
+                                        temp.listProject[idxProject].listTask[index].backlogId = newValue !== null ? newValue.backlogId : ''
                                         setfirstEditTask(temp)                                        
                                       }}
                                       value={{
