@@ -184,7 +184,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
 
   const checkIn = async () => {
     const resAttedance = await client.requestAPI({
-      endpoint: "/workingReport/notAttendance",
+      endpoint: "/workingReport/attendance",
       method: "POST",
       data: dataReadyAttedance,
     });
