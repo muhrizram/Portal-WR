@@ -170,10 +170,12 @@ const CreateOvertime = ({
     const midHours =  wholeHours + 0.50;
 
     if (endHours === 23) {
-      if (endMinutes < 45) {
+      if (endMinutes >= 30 && endMinutes < 45) {
         return midHours;
-      } else {
+      } else if (endMinutes >= 45) {
         return threeQuarterHours;
+      } else {
+        return wholeHours;
       }
     }
 
