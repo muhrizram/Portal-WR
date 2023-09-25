@@ -10,7 +10,7 @@ const TableNative = ({
   columns,
   disableRowSelectionOnClick = false,
   checkboxSelection = false,
-  onFilter = () => {},
+  onFilter = null,
   loading = false,
   sortingMode = "server",
 }) => {

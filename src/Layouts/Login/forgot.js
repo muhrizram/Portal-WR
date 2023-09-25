@@ -82,7 +82,7 @@ const Forgot = ({ changeStat }) => {
             <Typography variant='body4'>Boom! We've sent an activation link to your email at employee@mail.com. Just click it and let the magic begin!</Typography>
           </Grid>
           <Grid item xs={12} paddingTop={2}>
-            <Typography variant='body4'>Didn't get the mail?  <span style={{ cursor: resendWaiting?'unset':'pointer', color: resendWaiting? '#8a8a8a' : '#0078D7' }} onClick={resendWaiting ? ()=>{}: handleResend}>Resend</span></Typography>
+            <Typography variant='body4'>Didn't get the mail?  <span style={{ cursor: resendWaiting?'unset':'pointer', color: resendWaiting? '#8a8a8a' : '#0078D7' }} onClick={resendWaiting ? null: handleResend}>Resend</span></Typography>
           </Grid>
         </Grid>
       ) : (

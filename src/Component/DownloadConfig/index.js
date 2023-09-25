@@ -45,6 +45,26 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
     setValue(newValue);
   };
 
+  const tabs = [
+    { value: "one", label: "TASK CONFIGURATION" },
+    { value: "two", label: "COLUMN CONFIGURATION" },
+    { value: "three", label: "APPROVAL CONFIGURATION" },
+  ];
+
+  const TaskConfigurationTab = (
+    <TaskConfiguration taskConfig={taskConfig} setTaskConfig={handleTaskConfigChange} />
+  );
+  const ColumnConfigurationTab = <ColumnConfiguration ref={columnConfig} />;
+  const ApprovalConfigurationTab = (
+    <ApprovalConfiguration approvalConfig={dataApproval} setApprovalConfig={setDataApprove} />
+  );
+
+  const tabContent = {
+    one: TaskConfigurationTab,
+    two: ColumnConfigurationTab,
+    three: ApprovalConfigurationTab,
+  }[value];
+
   useEffect(() => {
     open && setState(JSON.parse(localStorage.getItem('downloadConfiguration')) || defaultConfiguration);
   }, [open]);
@@ -67,12 +87,14 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
 
   const saveConfiguration = () => {
     const tempApproval = dataApproval.map(res => {
+      const { approvalHeader = '', approvalName = '', approvalRole = '', signatureName } = res;
+
       return {
-        headerValue: res.approvalHeader || '',
-        nameValue: res.approvalName || '',
-        roleValue: res.approvalRole || '',
-        signatureName: res.signatureName
-      }
+        headerValue: approvalHeader,
+        nameValue: approvalName,
+        roleValue: approvalRole,
+        signatureName
+      };
     })
     localStorage.setItem(
       'downloadConfiguration',
@@ -106,33 +128,20 @@ const DownloadConfiguration = ({ open = false, onClose: handleClose = () => fals
       <DialogContent className="dialog-delete-content"> 
         <Grid>
           <Box className="tab-config">
-          <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{marginBottom: 3}}>
-              <Tab 
-                value="one" 
-                label="TASK CONFIGURATION"
+          <Tabs value={value} onChange={handleTab} indicatorColor="primary" textColor="primary" sx={{ marginBottom: 3 }}>
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.value}
+                value={tab.value}
+                label={tab.label}
                 style={{
-                  borderBottom: value === "one" ? "2px solid #2196F3" : "none",
-                }}
-              ></Tab>
-              <Tab 
-                value="two" 
-                label="COLUMN CONFIGURATION"
-                style={{
-                  borderBottom: value === "two" ? "2px solid #2196F3" : "none",
+                  borderBottom: value === tab.value ? "2px solid #2196F3" : "none",
                 }}
               />
-              <Tab 
-                value="three" 
-                label="APPROVAL CONFIGURATION"
-                style={{
-                  borderBottom: value === "three" ? "2px solid #2196F3" : "none",
-                }}
-              />
-            </Tabs>
+            ))}
+          </Tabs>
           </Box>
-          {value === "one" && (<TaskConfiguration taskConfig={taskConfig} setTaskConfig={handleTaskConfigChange} />)}
-          {value === "two" && (<ColumnConfiguration ref={columnConfig} />)}
-          {value === "three" && (<ApprovalConfiguration approvalConfig={dataApproval} setApprovalConfig={setDataApprove} />)}
+          {tabContent}
         </Grid>
       </DialogContent>
               

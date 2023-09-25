@@ -22,6 +22,7 @@ const Item = ({
   visible,
   onVisibilityChange: handleVisibilityChange = () => false,
 }) => {
+  const visibilityIcon = visible ? <Visibility /> : <VisibilityOff />;
 
   return (
     <Grid item component={Card} elevation={active ? 2 : 0}>
@@ -43,7 +44,7 @@ const Item = ({
             <div className='pad' />
           ) : (
             <IconButton size="small" onClick={handleVisibilityChange}>
-              {visible ? <Visibility /> : <VisibilityOff />}
+              {visibilityIcon}
             </IconButton>
           )}
         </Grid>
