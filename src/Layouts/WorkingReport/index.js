@@ -48,6 +48,7 @@ export default function WorkingReport() {
   const [onOtherUser,setonOtherUser] = useState(false)
   const [StatusSearch,setStatusSearch] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false);
+  const [DataPresence,setDataPresence] = useState()
   
   const open = dropMenu
   const handleClick = (event) => {
@@ -229,9 +230,7 @@ export default function WorkingReport() {
         });
         setIsDownloading(false);
       });
-  };
-  
-  
+  };    
 
   const rebuildData = (resData) => {     
     let temp = [];    
@@ -288,6 +287,7 @@ export default function WorkingReport() {
           setIsCheckin={(param) => {
             setIsCheckin(() => false);
           }}
+          DataPresence={DataPresence}
           dataReadyAttedance={dataReadyAttedance}
           beforeThanToday={dataAttandance.dataPeriod.isToday}
         />
@@ -302,6 +302,7 @@ export default function WorkingReport() {
           setAttendanceView={() => setAttandance({isAttandance: false})}
           beforeThanToday={dataAttandance.dataPeriod.isToday}
           setdataReadyAttedance={setdataReadyAttedance}
+          setDataPresence={setDataPresence}
         />
       );
     } else if (isCheckOut) {
