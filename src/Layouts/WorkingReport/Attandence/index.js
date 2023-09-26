@@ -12,7 +12,7 @@ import UploaderFile from "../../../Component/UploaderFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
-const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAttedance, setAttendanceView}) => {
+const Attendance = ({ dataPeriod, setIsCheckin, setDataPresence ,setdataReadyAttedance, setAttendanceView}) => {
   const listLocation = [
     {
       label: "Work From Home",
@@ -70,7 +70,11 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           };      
               localStorage.setItem("presence", presence.value);
               setdataReadyAttedance(body)   
-              setIsCheckin(true)     
+              setIsCheckin(true)
+              setDataPresence({
+                presence:presence.label,
+                location:location              
+              })
         } else {      
           body = {
             periodId: dataPeriod.period,
@@ -145,7 +149,7 @@ const Attendance = ({ dataPeriod, setIsCheckin, beforeThanToday ,setdataReadyAtt
           </Typography>
         </Grid>
         <Grid item xs={12} textAlign="center">
-          <Typography variant="attendanceTrack">
+          <Typography variant ="attendanceTrack">
             Track and start your workday
           </Typography>
         </Grid>

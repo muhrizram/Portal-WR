@@ -26,7 +26,7 @@ import client from "../../../global/client";
 import moment from "moment";
 import { AlertContext } from "../../../context";
 
-export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod, beforeThanToday }) {
+export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod, beforeThanToday,DataPresence }) {
   const videoConstraints = {
     width: 622,
     height: 417,
@@ -353,7 +353,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                         value={10}
                         readOnly
                       >
-                        <MenuItem disabled value={10}>Check In Present</MenuItem>
+                        <MenuItem disabled value={10}>{DataPresence.presence}</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -370,7 +370,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                         value={10}
                         readOnly
                       >
-                        <MenuItem disabled value={10}>Work From Office</MenuItem>
+                        <MenuItem disabled value={10}>{DataPresence.location}</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

@@ -518,6 +518,7 @@ const PopupTask = ({
                                 <Grid container rowSpacing={2}>
                                   <Grid item xs={12}>
                                     <Autocomplete
+                                      required
                                       disablePortal                                
                                       name='taskName'
                                       className='autocomplete-input autocomplete-on-popup'
@@ -542,6 +543,7 @@ const PopupTask = ({
                                       isOptionEqualToValue={(option, value) => option.value === value.value}
                                       renderInput={(params) => (
                                         <TextField
+                                          required
                                           {...params}
                                           className='input-field-crud'
                                           placeholder='e.g Create Login Screen"'

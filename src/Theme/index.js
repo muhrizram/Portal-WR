@@ -285,7 +285,6 @@ let globalTheme = createTheme({
             borderColor: "#2196F3",
             background:'#B1C5F6',
             color: "#3267E3",
-            borderColor: "black",
           },
         },
         {
