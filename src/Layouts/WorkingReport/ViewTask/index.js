@@ -74,15 +74,14 @@ export default function ViewTask({ setIsCheckOut, WrIdDetail ,dataAll, onStatusH
 
   return (
     <>
-     <Grid container spacing={2}>      
-      {/* <Grid item xs={12}>
-        <Box sx={{ width: "100%" }}>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab value="one" label="Regular Task" />
-            <Tab value="two" label="Overtime Task" />
-          </Tabs>
-        </Box>
-      </Grid> */}
+      <Grid container spacing={2}>      
+        <Grid item xs={12}>
+          <Box sx={{ width: "100%" }}>
+            <Tabs value={"one"}>
+              <Tab value="one" label="Regular Task" style={{textTransform:'none', borderBottom: "2px solid #2196F3"}}/>
+            </Tabs>
+          </Box>
+        </Grid>
       {taskData ? (<>      
         {taskData.map((task) => (
         <React.Fragment key={task.id}>
