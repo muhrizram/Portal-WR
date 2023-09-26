@@ -13,7 +13,6 @@ import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import client from "../../global/client";
 import { AlertContext } from "../../context";
-import { convertBase64 } from "../../global/convertBase64";
 const MasterCompany = () => {
   const columns = [
     {
@@ -31,7 +30,7 @@ const MasterCompany = () => {
         const urlMinio = params.row.companyProfile ? `${process.env.REACT_APP_BASE_API}/${params.row.companyProfile}` : ''
         const maxCharacters = 20
         let truncatedCompanyName
-        if(!!params.row.companyName) {
+        if(params.row.companyName) {
           truncatedCompanyName = params.row.companyName.length > maxCharacters
           ? params.row.companyName.substring(0, maxCharacters - 3) + "..."
           : params.row.companyName

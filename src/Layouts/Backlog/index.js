@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-// import backlog from './initjson.json';
 import DataTable from '../../Component/DataTable';
-import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button } from '@mui/material';
-import CustomAlert from '../../Component/Alert';
+import { Dialog, DialogContent, DialogTitle, DialogContentText, DialogActions, Button, Box } from '@mui/material';
 import SideBar from '../../Component/Sidebar';
 import Rating from '@mui/material/Rating';
-import { Box } from '@mui/material';
 import { useNavigate } from "react-router";
 import client from "../../global/client";
-import { blueGrey } from '@mui/material/colors';
 import { AlertContext } from "../../context";
 
 
@@ -189,9 +185,6 @@ const Backlog = () => {
     setOpen(false);
   };
 
-  const handleCloseAlert = () => {
-    setOpenAlert(false)
-  }
 
   const handleChangeSearch = (event) => {
     setFilter({

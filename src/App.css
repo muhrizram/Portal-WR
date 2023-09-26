@@ -536,7 +536,7 @@ color: #ED6C02;
 .dialogDescription {
   width: 370px;
   text-align: center;
-  font-family: Poppins;
+  font-family: "Poppins";
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -728,7 +728,7 @@ color: #ED6C02;
 }
 
 .font-upload-signature {
-  font-family: "public sans";
+  font-family: sans-serif;
   font-size: 15px;
   font-style: normal;
   font-weight: 400;

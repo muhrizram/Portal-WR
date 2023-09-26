@@ -170,11 +170,7 @@ const DetailCompany = () => {
       }
     })
     setDataProject(temp)
-
-    // if (temp.length > 0) {
-    //   setGetProjectId(temp[0].id);
-    // }
-  }
+  }
 
   const handleClose = () => {
     if (!isSave) {

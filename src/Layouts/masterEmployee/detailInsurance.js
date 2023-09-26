@@ -28,10 +28,6 @@ const CInsuranceDetail = ({
 
   const [open, setOpen] = React.useState(false);
 
-  const onSave = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };

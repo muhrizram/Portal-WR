@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-// import Index from '../../Component/Header';
-// import BreadCumbComp from '../../Component/BreadCumb';
 import Grid from "@mui/material/Grid";
 import { Avatar, Button, Typography } from "@mui/material";
-// import TabsMenu from '../../Component/menu/tabs';
 import Tooltip from "@mui/material/Tooltip";
 import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -53,13 +50,6 @@ const CBiodataEmployee = ({ onCancel, onSave }) => {
   function handleChange(e) {
     setFile(URL.createObjectURL(e.target.files[0]));
   }
-  const [nip, setNip] = useState("");
-  const [generation, setGeneration] = useState();
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [npwp, setNPWP] = useState();
-  const [email, setEmail] = useState();
-  const [position, setPosition] = useState();
 
   return (
     <>

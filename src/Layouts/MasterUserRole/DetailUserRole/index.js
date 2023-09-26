@@ -39,7 +39,6 @@ const DetailUserRole = () => {
   const [detail, setDetail] = useState({});
   const [Detailid,setDetailid] = useState()
   const [role,setRole] = useState([])
-  const [Cancel, setCancel] = React.useState(false);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [RoleCheck,setRoleCheck] = useState([])
    
@@ -69,7 +68,7 @@ const DetailUserRole = () => {
       .required(`${textPlease} Role`)
   });
 
-  const { handleSubmit, formState: { errors }, register } = useForm({
+  const { handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schemaUserRole),
   });
 
