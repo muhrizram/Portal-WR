@@ -41,7 +41,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
   const [endTime, setEndTime] = React.useState(null);
   const { setDataAlert } = useContext(AlertContext);
   const [Duration,setDuration] = useState()
-  const [openPopUpMore, setPopUpMore] = useState(false)
+  const [openPopUpMore, setPopUpMore] = useState(false)  
 
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -248,6 +248,11 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
     });
   }, []);
 
+  useEffect(() => {
+    const iframeData = document.getElementById("iframeId");    
+    iframeData.src=`https://maps.google.com/maps?q=${lat},${lon}&hl=es;&output=embed`;
+  },[lat,lon])
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -334,6 +339,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                 </Grid>
                 <Typography>Latitude : {lat}</Typography>
                 <Typography>Longitude : {lon}</Typography>
+                <iframe id="iframeId" height="70%" width="90%"></iframe>
               </Grid>
               <Grid item xs={6}>
                 <Grid container spacing={2}>
