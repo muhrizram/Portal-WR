@@ -168,7 +168,8 @@ const PopupTask = ({
            setDataAlert({
             severity: 'success',
             open: true,
-            message: res.data.meta.message
+            // message: res.data.meta.message
+            message : "Task edited successfully. Let's get things done!"
           })
           setTimeout(() => {
             window.location.reload();
@@ -413,7 +414,8 @@ const PopupTask = ({
                           });     
                           setOpentask(true)
                         }else {
-                            setlistTaskProject([])
+                            // setlistTaskProject([])
+                            onRemoveProject(_event, idxProject)
                             setKolomproject(true)
                             setideffortTask('');                      
                             setCekabsen((prevCekAbsen) => {
@@ -686,14 +688,15 @@ const PopupTask = ({
                           });     
                           setOpentask(true)
                         }else {
-                          setOpentask(false)
-                          setProject(
-                              {
-                              workingReportTaskId: undefined,
-                              listProject: [clearProject]
-                              }
-                            )
-                          setideffortTask('')                      
+                          // setOpentask(false)
+                          // setProject(
+                          //     {
+                          //     workingReportTaskId: undefined,
+                          //     listProject: [clearProject]
+                          //     }
+                          //   )
+                          onRemoveProject(_event, idxProject)
+                          // setideffortTask('')                      
                           setCekabsen((prevCekAbsen) => {
                             const updatedCekAbsen = [...prevCekAbsen];
                             updatedCekAbsen[idxProject] = '';

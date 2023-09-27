@@ -38,6 +38,7 @@ export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTa
     const imageSrc = webcamRef.current.getScreenshot();
     setPicture(imageSrc);
   }, [webcamRef]);
+
   const checkIn = async () => {
     const blob = await fetch(picture).then((res) => res.blob());    
     const file = new File([blob],localStorage.getItem("employeeName") + moment(date).format("DD-MM-YYYY") +  "checkout.jpg");
@@ -59,7 +60,8 @@ export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTa
       setDataAlert({
         severity: "success",
         open: true,
-        message: res.meta.message,
+        // message: res.meta.message,        
+        message : "Check-out successful! Have a great day ahead!"
       });
       setTimeout(() => {
         window.location.reload();
@@ -80,6 +82,11 @@ export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTa
     });
   },[])
 
+  useEffect(() => {
+    const iframeData = document.getElementById("iframeId");    
+    iframeData.src=`https://maps.google.com/maps?q=${lat},${lon}&hl=es;&output=embed`;
+  },[lat,lon])
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -90,6 +97,7 @@ export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTa
                 </Grid>
                 <Typography>Latitude : {lat}</Typography>
                 <Typography>Longitude : {lon}</Typography>
+                <iframe id="iframeId" height="70%" width="90%"></iframe>
               </Grid>
           <Grid container p={4} spacing={2}>
             <Grid item xs={6}>

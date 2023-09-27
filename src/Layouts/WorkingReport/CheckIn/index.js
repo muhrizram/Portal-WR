@@ -243,7 +243,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
-      setLat(position.coords.latitude.toString());
+      setLat(position.coords. latitude.toString());
       setLon(position.coords.longitude.toString());
     });
   }, []);

@@ -184,9 +184,10 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                               setWrIdDetail(data.workingReportTaskId);
                             } : null}
                           >
-                            <Typography style={{fontSize:12}}>
+                            {data.presenceName}
+                            {/* <Typography style={{fontSize:12}}>
                             {data.presenceName == "Sakit" ? "Sick Leave" : data.presenceName == "Cuti" ? "Off-Duty" : data.presenceName == "Izin" ? "Authorized Absence" : data.presenceName}
-                            </Typography>
+                            </Typography> */}
                           </Button>
                           ) 
                         }
