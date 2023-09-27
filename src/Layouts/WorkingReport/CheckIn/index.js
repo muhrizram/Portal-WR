@@ -419,7 +419,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                       <Grid item xs={2} display="flex" alignItems="center">
                         <Button
                           disabled={
-                            (startTime == null || endTime == null)
+                            (startTime == null || endTime == null || lat == '' || lon == '')
                           }
                           variant="contained"
                           onClick={() => cekRangeHour()}

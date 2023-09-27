@@ -163,7 +163,7 @@ export default function CheckOut({ setIsCheckin ,setIsCheckOut,  workingReportTa
                       </Button>
                     </Grid>
                     <Grid item xs={2} display="flex" alignItems="center">
-                      <Button variant="contained" disabled={!picture} onClick={() => checkIn()}>
+                      <Button variant="contained" disabled={!picture || lat == '' || lon == ''} onClick={() => checkIn()}>
                         Check Out
                       </Button>
                     </Grid>
