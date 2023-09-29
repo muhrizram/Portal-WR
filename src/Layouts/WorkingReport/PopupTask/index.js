@@ -426,11 +426,11 @@ const PopupTask = ({
                           }
                         }}
                         value={resProject !== undefined ? 
-                          resProject.projectName !== undefined  ?
+                          resProject.projectName && resProject.projectId  ?
                           {
                             name: resProject.projectName,
-                            id: resProject.id
-                          } : resProject.absenceName !== undefined ?
+                            id: resProject.projectId
+                          } : resProject.absenceName && resProject.absenceId ?
                           {
                             name: resProject.absenceName,
                             id: resProject.absenceId
