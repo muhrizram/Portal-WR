@@ -339,7 +339,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                 </Grid>
                 <Typography>Latitude : {lat}</Typography>
                 <Typography>Longitude : {lon}</Typography>
-                <iframe id="iframeId" height="70%" width="90%"></iframe>
+                <iframe id="iframeId" height="82%" width="98%"></iframe>
               </Grid>
               <Grid item xs={6}>
                 <Grid container spacing={2}>
@@ -384,6 +384,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["TimePicker"]}>
                         <TimePicker
+                          sx={{width: '100%'}}
                           ampm={false}
                           onChange={(value) => {
                             setStartTime(value);
@@ -401,14 +402,15 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                           ampm={false}
                           onChange={(value) => setEndTime(value)}
                           value={endTime}
+                          sx={{width: '100%'}}
                           label="End Time"
                         />
                       </DemoContainer>
                     </LocalizationProvider>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sx={{marginTop:25}}>
                     <Grid container justifyContent="center">
-                      <Grid item xs={2} display="flex" alignItems="center">
+                      <Grid item xs={1.2} display="flex" alignItems="center">
                         <Button
                           variant="outlined"
                           onClick={() => setIsCheckin(false)}
@@ -416,7 +418,7 @@ export default function CheckinTime({ setIsCheckin,dataReadyAttedance,dataPeriod
                           Cancel
                         </Button>
                       </Grid>
-                      <Grid item xs={2} display="flex" alignItems="center">
+                      <Grid item xs={1.2} display="flex" alignItems="center">
                         <Button
                           disabled={
                             (startTime == null || endTime == null || lat == '' || lon == '')
