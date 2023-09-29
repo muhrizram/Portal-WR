@@ -93,7 +93,8 @@ const Attendance = ({ dataPeriod, setIsCheckin, setDataPresence ,setdataReadyAtt
             localStorage.setItem(
               "workingReportId",
               res.data.attributes.workingReportId
-            );      
+            );
+            setAttendanceView()      
             setDataAlert({
               severity: "success",
               open: true,
