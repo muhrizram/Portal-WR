@@ -4,7 +4,7 @@ import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Hidden, Typography } from '@mui/material';
 import { AlertContext } from '../../context';
 
 export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
@@ -64,12 +64,32 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid marginTop='4vh'/>
-      <div style={{ position: 'relative' }}>
-        <Grid position='absolute' margin={4}>
+        <Grid margin={4}>
           <Typography variant='TextBulankalender'>{selectedMonthRange}</Typography>
-        </Grid>
-      </div>       
-        <Grid container justifyContent="flex-end" marginTop="-5vh">          
+        </Grid>     
+        <Grid container justifyContent="flex-end" marginTop={{xs: "-3vh", sm: "-5vh"}} >
+          <Hidden smUp>          
+          <Grid item xs={12} padding="5px">
+            <Typography>Start Date</Typography>
+            <DemoItem>
+              <MobileDatePicker value={startDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, true)} />
+            </DemoItem>
+          </Grid>
+          <Grid item xs={12} padding="5px">
+            <Typography>End Date</Typography>
+            <DemoItem>
+              <MobileDatePicker value={endDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, false)} />
+            </DemoItem>            
+          </Grid>
+          <Grid item xs={12} sx={{marginTop:'3%'}}>
+            <Grid display='flex'>
+            <Button onClick={handleApplyFilter} sx={{textTransform:'none'}}>Filters</Button>
+            <Button onClick={ResetFilter} sx={{textTransform:'none'}}>Reset</Button>
+            </Grid>
+          </Grid>
+          </Hidden>
+
+          <Hidden smDown>
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
@@ -82,12 +102,13 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
               <MobileDatePicker value={endDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, false)} />
             </DemoItem>            
           </Grid>
-          <Grid item sx={{marginTop:'2%'}}>
+          <Grid item sx={{marginTop:'2.5%'}}>
             <Grid display='flex'>
             <Button onClick={handleApplyFilter} sx={{textTransform:'none'}}>Filters</Button>
             <Button onClick={ResetFilter} sx={{textTransform:'none'}}>Reset</Button>
             </Grid>
           </Grid>
+          </Hidden>
         </Grid>
     </LocalizationProvider>
   );

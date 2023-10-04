@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
 // import Calendar from "../../Component/CalendarCustom";
+import Header from "../../Component/Header";
 import { Autocomplete, Avatar, Button, Card, CircularProgress, Grid, InputAdornment, Modal, TextField, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -424,14 +425,14 @@ export default function WorkingReport() {
       <Grid container rowSpacing={2}>
         <Grid time xs={12}>
           <Card className="cardHeader">
-            <Grid container p={2} alignContent="space-between" spacing={1}>
-              <Grid item xs={0.1}>
-                <div className="dividerHeader" />
+            <Grid container p={2}  alignContent={'space-between'} spacing={1}>
+              <Grid item xs={12} sm={8.4}>
+                <Header judul={"Working Report"} />
               </Grid>
-              <Grid item xs={8.4}>
-                <Typography variant="headerCardMenu">{`Working Report`}</Typography>
-              </Grid>
-              <Grid item xs={2} display="flex" justifyContent="flex-end" alignItems="center">
+              <Grid item xs={12} sm={2} display="flex"  sx={{
+                  justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                  marginTop: { xs: 2, sm: 0 },
+                }} alignItems="center">
                 <Button
                   id="basic-button"
                   variant="contained"
@@ -459,7 +460,10 @@ export default function WorkingReport() {
                   <MenuItem onClick={handleDownloadExcel}>Download as Excel</MenuItem>
                 </Menu>
               </Grid>
-              <Grid item display="flex" alignItems="center" justifyContent="flex-end">
+              <Grid item xs={12} sm={1.2} display="flex" alignItems="center"  sx={{
+                  justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                  marginTop: { xs: 2, sm: 0 },
+                }}>
                 <Button
                   variant="outlined"
                   onClick={openDownload}
@@ -471,7 +475,9 @@ export default function WorkingReport() {
               </Grid>
               {isHr && (
               <> 
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={4} sx={{
+                marginY: {xs: 2}
+              }}>
                 <Autocomplete
                   disabled={onOtherUser}
                   freeSolo
@@ -506,22 +512,22 @@ export default function WorkingReport() {
                   )}
                 />
               </Grid>
-              <Grid item xs={8}></Grid>
+              <Grid item xs={0} sm={8}></Grid>
               </>
               )}
-              <Grid item xs={1}>
+              <Grid item xs={4} sm={1}>
                 <Avatar
                   variant="square"
                   className="full-avatar" 
                   src={userProfile != null ? convertBase64(localStorage.getItem("photoProfile")) : ''}                   
                 />
               </Grid>
-              <Grid item xs={11}>
+              <Grid item xs={12} sm={11}>
                 <Grid container>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6}>
                     <Typography variant="body2">Employee Details</Typography>
                   </Grid>
-                  <Grid item xs={5.25} textAlign="right">
+                  <Grid item xs={12} sm={5.25} textAlign={{ xs: 'left', sm: 'right' }} marginY={{xs: 2, sm: 0}}>
                       <Button
                       variant="outlined"
                       onClick={handleReset}
@@ -533,17 +539,17 @@ export default function WorkingReport() {
                   </Grid>
                   {isHr ? (
                     <>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                       <Typography>Name</Typography>
                       <Typography variant="drawerNameUser">
                         {userProfile == null ? "-" : userProfile.name}
                       </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                       <Typography>Role</Typography>
                       <Typography variant="drawerNameUser">{userProfile == null ? "-" : userProfile.role}</Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                       <Typography>Email</Typography>
                       <Typography variant="drawerNameUser">
                         {userProfile ? (
@@ -555,17 +561,17 @@ export default function WorkingReport() {
                   ) : (
                     <>
                     <Grid container>
-                      <Grid item xs={4}>
+                      <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                         <Typography>Name</Typography>
                         <Typography variant="drawerNameUser">
                         {userProfile == null ? "-" : userProfile.name}
                         </Typography>
                       </Grid>
-                      <Grid item xs={4}>
+                      <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                         <Typography>Role</Typography>
                         <Typography variant="drawerNameUser">{userProfile == null ? "-" : userProfile.role}</Typography>
                       </Grid>
-                      <Grid item xs={4}>
+                      <Grid item xs={12} sm={4} marginBottom={{xs: 2, sm: 0}}>
                         <Typography>Email</Typography>
                         <Typography variant="drawerNameUser">
                         {userProfile ? (

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import scrollGridPlugin from '@fullcalendar/scrollgrid';
 import interactionPlugin from "@fullcalendar/interaction";
 import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
@@ -458,13 +459,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   return (
     <Grid>      
        {!changeCurrentMonth && (
-      <div style={{ position: "relative" }}>
-        <Grid position="absolute" margin={4}>
+     <div sx={{ position: { xs: 'block', sm: 'relative' } }}>
+        <Grid sx={{ position: { xs: 'block', sm: 'absolute' }, margin: { sm: 4 } }}>
           <Grid
             display="flex"
             container
             alignItems="center"
             justifyContent="flex-start"
+            sx={{ textAlign: { xs: 'left', sm: 'center' } }} // Align center on sm
           >
             <Typography variant="TextBulankalender">
               {moment(activeMonth).format("MMMM YYYY")}
@@ -486,14 +488,15 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
     )}
       <DateRangeCalendar setchangeCurrentMonth={setchangeCurrentMonth} setEndDateCall={setEndDate} setStartDateCall={setStartDate} setWeekendDates={setWeekendDates}/> 
       <FullCalendar  
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, scrollGridPlugin]}
         // initialView={"dayGridMonth"}
         firstDay={1}
         key={activeMonth.getTime()} 
         initialDate={activeMonth}
         dayCellContent={(info, create) => renderCalendar(info)}        
         // eventAdd={(info, create) => renderCalendar(info)}
-        height={1100}        
+        height={1100}   
+        dayMinWidth={160} 
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
