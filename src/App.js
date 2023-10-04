@@ -51,7 +51,7 @@ const App = () => {
   return (
     <ThemeProvider theme={globalTheme}>
       <AlertContext.Provider value={value}>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<p style={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh'}}>Loading...</p>}>
           <Routes>
             {finalRoutes().map((res, idx) => {
               return <Route path={res.path} element={res.element} key={`${idx + 1}-route-path`} />
