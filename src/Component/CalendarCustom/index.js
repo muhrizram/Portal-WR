@@ -46,8 +46,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
   const [descHoliday, setdescHoliday] = useState(null);
   const [finalDateCalendar,setfinalDateCalendar] = useState()
-  const [holidayDates, setHolidayDates] = useState([])
-  console.log('week end : ', weekendDates); 
 
   useEffect(() => {    
    const currentDate = new Date();
@@ -154,19 +152,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       return dayOfWeek === 0 || dayOfWeek === 6;
     };
        
-      const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))  
-      setHolidayDates(datalibur)
-      console.log('data libur : ', holidayDates);   
+      const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD")) 
 
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );
 
-      console.log("start date : ", StartDate);
       const finalDateCalendarMinusOneDay = moment(finalDateCalendar).subtract(1, 'days');
       const isDateInRange = moment(info.date).isBetween(StartDate, finalDateCalendarMinusOneDay, null, '[]', 'days');
-
-      console.log('isDateInRange : ', isDateInRange);
 
       if (data) {
         return (
