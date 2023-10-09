@@ -47,7 +47,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
   const [descHoliday, setdescHoliday] = useState(null);
   const [finalDateCalendar,setfinalDateCalendar] = useState()
 
-
   useEffect(() => {    
    const currentDate = new Date();
    const formattedMonthYear = moment(currentDate).format("MMMM YYYY");
@@ -153,22 +152,34 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
       return dayOfWeek === 0 || dayOfWeek === 6;
     };
        
-      const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD"))      
+      const datalibur = events.find(val => val.holiday && val.tanggal === moment(info.date).format("yyyy-MM-DD")) 
+
       const data = events.find(
         (val) => val.tanggal === moment(info.date).format("yyyy-MM-DD")
       );
+
+      const finalDateCalendarMinusOneDay = moment(finalDateCalendar).subtract(1, 'days');
+      const isDateInRange = moment(info.date).isBetween(StartDate, finalDateCalendarMinusOneDay, null, '[]', 'days');
+
       if (data) {
         return (
-          <Grid container spacing={2} sx={{height: '10vh'}}>
-            <Grid item xs={12} display="flex" justifyContent="right" >            
+          <Grid container columnSpacing={4} sx={{height: '10vh', display: 'flex'}}>
+            <Grid item xs={12} justifyContent="start" marginBottom={(datalibur && isWeekend) ? 10.5 : 7.5} marginLeft={2}>            
               <Typography variant="h6" color={isWeekend(info.date) ? "error" : "#3393DF"}>{info.dayNumberText}</Typography>
             </Grid>            
-            <Grid item >
+            <Grid item>
                 {!info.isToday && (                    
-                      <>
-                        <Grid>
+                      <Grid container sx={{marginLeft: 2, display: 'block'}}>
+                        <Grid marginBottom={1}>
                         {moment(info.date).isSameOrBefore(currentDate) && !data.workingReportTaskId && !data.task && !isWeekend(info.date) && !datalibur && !onStatusHr ? (
                           <Button
+                            sx={{
+                              borderWidth: "1px",
+                              borderStyle: "solid", 
+                              borderColor: "#B1C5F6",
+                              borderRadius: '8px',
+                            }}
+                            disabled={finalDateCalendar !== undefined && !isDateInRange}
                             variant="outlined-attedance"
                             onClick={() => {
                               setOnClick(info)}  
@@ -178,6 +189,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </Button>
                           ) : !datalibur && !isWeekend(info.date) && data.presenceName && (
                           <Button
+                            sx={{
+                              borderWidth: "1px",
+                              borderStyle: "solid", 
+                              minWidth: data.presenceName == "Hadir" ? "110%" : "150%",
+                              borderColor: data.presenceName == "Hadir" || data.presenceName == "Cuti" ? "#B1C5F6" : "#EEB4B0",
+                              borderRadius: '8px',
+                            }}
+                            disabled={finalDateCalendar !== undefined && !isDateInRange}
                             variant={data.presenceName == "Sakit" ? "outlined-attedance-sick" : data.presenceName == "Cuti" ? "outlined-attedance-cuti" : data.presenceName == "Izin" ? "outlined-attedance-off" : "outlined-attedance"}
                             onClick={data.presenceName != "Hadir" ? 
                             ()=>{
@@ -186,9 +205,6 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                             } : null}
                           >
                             {data.presenceName}
-                            {/* <Typography style={{fontSize:12}}>
-                            {data.presenceName == "Sakit" ? "Sick Leave" : data.presenceName == "Cuti" ? "Off-Duty" : data.presenceName == "Izin" ? "Authorized Absence" : data.presenceName}
-                            </Typography> */}
                           </Button>
                           ) 
                         }
@@ -196,12 +212,19 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         <Grid>
                           {moment(info.date).isSameOrBefore(currentDate) && !onStatusHr ? (
                           <CustomButton
-                          disabled={!isWeekend(info.date) ? 
+                          disabled={(!isWeekend(info.date) ? 
                             !datalibur ? 
                             data.presenceName != "Hadir" 
                             : false
-                            : false }
-                            variant="outlined-warning"
+                            : false) || (finalDateCalendar !== undefined && !isDateInRange) }
+                            variant={data.overtime ? "outlined-overtime" : "outlined-warning"}
+                            sx={{
+                              borderWidth: "1px",
+                              borderStyle: "solid", 
+                              borderColor: "#EECEB0",
+                              borderRadius: '8px',
+                              marginBottom: '8px'
+                            }}
                             onClick={
                               data.overtime == true ? () => {
                                 setId(data.workingReportOvertimeId)
@@ -220,8 +243,15 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           </CustomButton>
                           ) : moment(info.date).isSameOrBefore(currentDate) && onStatusHr && data.overtime && (
                             <CustomButton
-                            // disabled={data.presenceName != "Hadir"}
-                            variant="outlined-warning"
+                            disabled={finalDateCalendar !== undefined && !isDateInRange}
+                            variant="outlined-overtime"
+                            sx={{
+                              borderWidth: "1px",
+                              borderStyle: "solid", 
+                              borderColor: "#EECEB0",
+                              borderRadius: '8px',
+                              marginBottom: '8px'
+                            }}
                             onClick={() => {
                               setId(data.workingReportOvertimeId)
                               setWrIdDetail(data.workingReportOvertimeId);
@@ -243,8 +273,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   setTanggalHoliday(data.tanggal);
                                   setDialogOpenHoliday(true);
                                   }}
+                                   sx={{
+                                    borderWidth: "1px",
+                                    borderStyle: "solid", 
+                                    borderColor: "#EEB4B0",
+                                    borderRadius: '8px',
+                                    marginTop: 0
+                                  }}
+                                  disabled={finalDateCalendar !== undefined && !isDateInRange}
                                 >
-                                  holiday
+                                  Holiday
                                 </Button>
                               ) : (
                                 <CustomButtonHoliday variant="outlined-holiday" onClick={
@@ -253,8 +291,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   setTanggalHoliday(data.tanggal);
                                   setDialogOpenHoliday(true);
                                   }}
+                                   sx={{
+                                    borderWidth: "1px",
+                                    borderStyle: "solid", 
+                                    borderColor: "#EEB4B0",
+                                    borderRadius: '8px',
+                                    marginTop: 6.5
+                                  }}
+                                  disabled={finalDateCalendar !== undefined && !isDateInRange}
                                 >
-                                  holiday
+                                  Holiday
                                 </CustomButtonHoliday>
                               )
                             }
@@ -263,7 +309,14 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                         ) : (
                           data.workingReportTaskId && !onStatusHr ? (
                             <CustomButton 
-                            disabled={data.presenceName != "Hadir"}
+                            sx={{
+                              marginTop: 0,
+                              borderWidth: "1px",
+                              borderStyle: "solid", 
+                              borderColor: "#B1C5F6",
+                              borderRadius: '8px',
+                            }}
+                            disabled={(data.presenceName != "Hadir") || (finalDateCalendar !== undefined && !isDateInRange)}
                             variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
                             onClick={
                               data.task
@@ -285,12 +338,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   });
                                 }
                             }>
-                              task
+                              Task
                             </CustomButton>
                           ) : (
                             data.task ? (
                               <CustomButton 
-                              disabled={data.presenceName != "Hadir"}
+                              sx={{marginTop: 0}}
+                              disabled={(data.presenceName != "Hadir") || (finalDateCalendar !== undefined && !isDateInRange)}
                               variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
                               onClick={
                                 () => {
@@ -303,28 +357,37 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                                   setonOtherUser(true)
                                 }
                               }>
-                                task
+                                Task
                               </CustomButton>
                             ) : moment(info.date).isSameOrBefore(currentDate) ? (                            
-                              <CustomButton disabled variant="outlined" >
-                                task
+                              <CustomButton disabled variant="outlined" sx={{marginTop: 0}}>
+                                Task
                               </CustomButton>
                             ) : (
-                            <CustomButtonDisabledTask disabled variant="outlined" >
-                              task
+                            <CustomButtonDisabledTask disabled variant="outlined" sx={{marginTop: 9.5}}>
+                              Task
                              </CustomButtonDisabledTask>  
                             )
                           )
                         )}
-                      </>
+                      </Grid>
                     // )
                   )}
                 </Grid>   
             {data ? 
               <> 
-                <Grid item display="flex" justifyContent="left" sx={{ marginTop: "0.8vh", flexDirection: "column" }}>
+                <Grid item display="flex" justifyContent="left" sx={{ marginTop: "2vh", flexDirection: "column", marginLeft: 2 }}>
                 {info.isToday && !data.workingReportTaskId && !isWeekend(info.date) && !onStatusHr && !datalibur? (
-                  <Button                    
+                  <Button 
+                    sx={{
+                      borderWidth: "1px",
+                      borderStyle: "solid", 
+                      borderColor: "#B1C5F6",
+                      maxWidth: "90%",
+                      borderRadius: '8px',
+                      marginBottom: 2
+                    }}    
+                    disabled={finalDateCalendar !== undefined && !isDateInRange}             
                     variant="outlined-attedance"
                     onClick={() => {
                       setOnClick(info)}  
@@ -334,6 +397,13 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   </Button>
                 ) : info.isToday && !datalibur && !isWeekend(info.date) && data.presenceName && (
                   <Button
+                    sx={{
+                      borderWidth: "1px",
+                      borderStyle: "solid", 
+                      borderColor: data.presenceName == "Hadir" || data.presenceName == "Cuti"  ? "#B1C5F6" : "#EEB4B0",
+                      borderRadius: '8px',
+                    }}  
+                    disabled={finalDateCalendar !== undefined && !isDateInRange}
                     variant={data.presenceName != "Hadir" ? "outlined-attedance-sick" : "outlined-attedance"}
                     onClick={data.presenceName != "Hadir" ? 
                     ()=>{
@@ -347,13 +417,20 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                 }
                 {info.isToday && !onStatusHr ? (
                   <CustomButton                  
-                    variant="outlined-warning"
+                    variant={data.overtime == true ? "outlined-overtime" : "outlined-overtime-today"}
+                    sx={{
+                      borderWidth: "1px",
+                      borderStyle: "solid", 
+                      borderColor: "#EECEB0",
+                      borderRadius: '8px',
+                      marginBottom: '8px'
+                    }}
                     disabled={
-                      !isWeekend(info.date) ? 
+                     (!isWeekend(info.date) ? 
                             !datalibur ? 
                             data.presenceName != "Hadir" 
                             : false
-                            : false
+                            : false) || (finalDateCalendar !== undefined && !isDateInRange)
                     }
                     onClick={
                       data.overtime == true ?() => {
@@ -372,10 +449,17 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                   </CustomButton>
                 ): null}
                 {info.isToday && !isWeekend(info.date) ? (
-                  <>
+                  <Grid>
                   {data.workingReportTaskId ? (
                     <CustomButton
-                    disabled={data.presenceName != "Hadir"}
+                    sx={{
+                      marginTop: 0,
+                      borderWidth: data.presenceName != "Hadir" ? 0 : "1px",
+                      borderStyle: "solid", 
+                      borderColor: "#B1C5F6",
+                      borderRadius: '8px',
+                    }}
+                    disabled={(data.presenceName != "Hadir") || (finalDateCalendar !== undefined && !isDateInRange)}
                     variant={data.presenceName != "Hadir" ? "outlined" : "outlined-task"}
                     onClick={                      
                       data.task || onStatusHr
@@ -396,11 +480,11 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           }
                       }
                     >
-                    task
+                    Task
                     </CustomButton>
                     ) : moment(info.date).isSameOrBefore(currentDate) && !datalibur ? (                            
-                      <CustomButton disabled variant="outlined" >
-                        task
+                      <CustomButton disabled variant="outlined" sx={{marginTop: 0}}>
+                        Task
                       </CustomButton>
                       ) : datalibur ? (
                         <Button variant="outlined-holiday" onClick={
@@ -409,16 +493,24 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           setTanggalHoliday(data.tanggal);
                           setDialogOpenHoliday(true);
                           }}
+                          sx={{
+                            borderWidth: "1px",
+                            borderStyle: "solid", 
+                            borderColor: "#EEB4B0",
+                            borderRadius: '8px',
+                            marginTop: 0
+                          }}
+                          disabled={finalDateCalendar !== undefined && !isDateInRange}
                         >
-                          holiday
+                          Holiday
                         </Button>
                         ) : (
-                      <CustomButtonDisabledTask disabled variant="outlined" >
-                        task
+                      <CustomButtonDisabledTask disabled variant="outlined" sx={{marginTop: 0}}>
+                        Task
                       </CustomButtonDisabledTask>  
                       )
                     }
-                  </>                                   
+                  </Grid>                                   
                 ) : (info.isToday && isWeekend(info.date) && (
                     <Grid justifyContent="left">
                       {moment(info.date).isSameOrBefore(currentDate) ? (
@@ -428,8 +520,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           setTanggalHoliday(data.tanggal);
                           setDialogOpenHoliday(true);
                           }}
+                          sx={{
+                            borderWidth: "1px",
+                            borderStyle: "solid", 
+                            borderColor: "#EEB4B0",
+                            borderRadius: '8px',
+                            marginTop: 0
+                          }}
+                          disabled={finalDateCalendar !== undefined && !isDateInRange}
                         >
-                          holiday
+                          Holiday
                         </Button>
                       ) : (
                         <CustomButtonHoliday variant="outlined-holiday" onClick={
@@ -438,8 +538,16 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
                           setTanggalHoliday(data.tanggal);
                           setDialogOpenHoliday(true);
                           }}
+                          sx={{
+                            borderWidth: "1px",
+                            borderStyle: "solid", 
+                            borderColor: "#EEB4B0",
+                            borderRadius: '8px',
+                            marginTop: 0
+                          }}
+                          disabled={finalDateCalendar !== undefined && !isDateInRange}
                         >
-                          holiday
+                          Holiday
                         </CustomButtonHoliday>
                       )
                     }
@@ -466,7 +574,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             container
             alignItems="center"
             justifyContent="flex-start"
-            sx={{ textAlign: { xs: 'left', sm: 'center' } }} // Align center on sm
+            sx={{ textAlign: { xs: 'left', sm: 'center' } }}
           >
             <Typography variant="TextBulankalender">
               {moment(activeMonth).format("MMMM YYYY")}
@@ -493,10 +601,9 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
         firstDay={1}
         key={activeMonth.getTime()} 
         initialDate={activeMonth}
-        dayCellContent={(info, create) => renderCalendar(info)}        
-        // eventAdd={(info, create) => renderCalendar(info)}
-        height={1100}   
-        dayMinWidth={160} 
+        dayCellContent={(info, create) => renderCalendar(info)}
+        height={1400}   
+        dayMinWidth={200}
         selectable={true}
         eventContent={renderEventContent}
         headerToolbar={{
@@ -511,7 +618,7 @@ export default function Calendar({ setOnClick, setIsViewTask, setIsViewOvertime,
             start: StartDate,
             end: finalDateCalendar,
             display: 'background',
-            color:'blue'
+            color:'#b0d8f7'
           },
           ...(Array.isArray(weekendDates)
           ? weekendDates.map(date => ({

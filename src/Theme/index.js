@@ -170,12 +170,6 @@ let globalTheme = createTheme({
       fontWeight: ["bold"],
     },    
   },
-  // textfield: {
-  //   textFieldEmployee: {
-  //     width: ["100%"],
-  //     paddingRight: ["10px"],
-  //   },
-  // },
   components: {
     MuiButton: {
       variants: [
@@ -208,13 +202,8 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            // padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            // color: "#2196F3",         
-            // justifyContent: "flex-start",
-            // background: "#EECEB0",
-            // borderColor: "#734011"
           },
         },        
         {
@@ -223,14 +212,40 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            width: "100%",
-            padding: "6px 16px",
+            minWidth: "50%",
+            padding: "5px 16px",
             fontSize: "14px",
             lineHeight: "125%",
-            borderRadius: "6px",
-            background: "#EECEB0",
-            color: "#734011",
-            borderColor: "#734011",            
+            background: "#FFF9F2",
+            color: "#734011",            
+          },          
+        },
+        {
+          props: {
+            variant: "outlined-overtime-today",
+          },
+          style: {
+            textTransform: "none",
+            maxWidth: "55%",
+            padding: "5px 10px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            background: "#FFF9F2",
+            color: "#734011",            
+          },          
+        },
+        {
+          props: {
+            variant: "outlined-overtime",
+          },
+          style: {
+            textTransform: "none",
+            maxWidth: "90%",
+            padding: "5px 16px",
+            fontSize: "14px",
+            lineHeight: "125%",
+            background: "#FFF9F2",
+            color: "#734011",            
           },          
         },
         {
@@ -239,17 +254,13 @@ let globalTheme = createTheme({
           },
           style: {
             textTransform: "none",
-            // padding: "6px 16px",
+            padding: "4px 16px",
             fontSize: "14px",
-            // lineHeight: "125%",
+            lineHeight: "125%",
             color: "#CB3A31",            
             background: "#FFF4F2",
-            borderColor: "black",
-            // marginRight: "10vh",
             marginTop: "4vh",
-            // width: "40%", 
-            // marginRight: "12vh", 
-            // marginTop: "9vh"
+            minWidth: "60%",
           },          
         },
         {
@@ -259,13 +270,11 @@ let globalTheme = createTheme({
           style: {
             textTransform: "none",
             width: "40%",
-            // padding: "6px 16px",
             fontSize: "14px",
             lineHeight: "125%",
             borderRadius: "6px",
-            borderColor: "#2196F3",
-            background:'#B1C5F6',
-            color: "#3267E3",
+            background:'#F0F3FF',
+            color: "#618AEA",
           },
         },
         {
@@ -274,16 +283,13 @@ let globalTheme = createTheme({
           },
           style: {
             marginTop:'-33px',
-            // position: "absolute",
+            maxWidth: "85%",
             textTransform: "none",
-            width: "85%",
-            padding: "6px 16px",
+            padding: "5px 50px",
             fontSize: "14px",
             lineHeight: "125%",
-            borderRadius: "6px",
-            borderColor: "#2196F3",
-            background:'#B1C5F6',
-            color: "#3267E3",
+            background:'#F0F3FF',
+            color: "#618AEA",
           },
         },
         {
@@ -292,16 +298,13 @@ let globalTheme = createTheme({
           },
           style: {
             marginTop:'-33px',
-            // position: "absolute",
             textTransform: "none",
-            width: "100%",
-            padding: "6px 16px",
+            padding: "5px 16px",
             fontSize: "14px",
             lineHeight: "125%",
             borderRadius: "6px",            
             background:'#FBE9E7',
             color: "#FF5722",
-            borderColor: "black",
           },
         },
         {
@@ -310,10 +313,9 @@ let globalTheme = createTheme({
           },
           style: {
             marginTop:'-33px',
-            // position: "absolute",
+            
             textTransform: "none",
-            width: "95%",
-            padding: "6px 16px",
+            padding: "5px 16px",
             fontSize: "14px",
             lineHeight: "125%",
             borderRadius: "6px",            
@@ -328,10 +330,10 @@ let globalTheme = createTheme({
           },
           style: {
             marginTop:'-33px',
-            // position: "absolute",
+            
             textTransform: "none",
-            width: "100%",
-            padding: "6px 16px",
+            minWidth: "85%",
+            padding: "5px 16px",
             fontSize: "14px",
             lineHeight: "125%",
             borderRadius: "6px",            
@@ -346,17 +348,16 @@ let globalTheme = createTheme({
           },
           style: {
             marginTop:'-38px',
-            // position: "absolute",
+            
             textTransform: "none",
-            width: "55%",
-            padding: "6px 16px",
+            minWidth: "55%",
+            padding: "5px 16px",
             fontSize: "14px",
             lineHeight: "125%",
             borderRadius: "6px",
             borderColor: "#2196F3",
             background:'#B1C5F6',
             color: "#3267E3",
-            borderColor: "black",
           },
         },
         {
