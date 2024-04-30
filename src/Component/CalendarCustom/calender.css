@@ -1,15 +1,51 @@
 .selected-date-range {
-    background-color: #E6F2FB;
-}
-
-.date-weekend {
-    background-color: #FDECEB;
-}
-
-.weekend-event {
+    background-color: #e6f2fb;
+  }
+  
+  .date-weekend {
+    background-color: #ff6666;
+  }
+  
+  .date-selected {
+    background-color: #87ceeb;
+  }
+  
+  .weekend-event {
     background-color: red;
-}
-
-.weekend-day-header {
+  }
+  
+  .selected-weekend {
+    background-color: #ff4d4d;
+  }
+  
+  .weekend-day-header {
     background-color: pink;
-}
+  }
+  
+  .rbc-button-link {
+    font-size: 30px !important;
+  }
+  
+  .rbc-date-cell {
+    padding: 15px 20px 0px 0px !important;
+  }
+  
+  .rbc-allday-cell {
+    display: none;
+  }
+  
+  .rbc-event,
+  .rbc-background-event {
+    z-index: 2;
+    padding: 0px !important;
+    border: none !important;
+  }
+  
+  .rbc-event-label {
+    display: none !important;
+  }
+  
+  .rbc-event-content {
+    padding: 10px !important;
+  }
+  
