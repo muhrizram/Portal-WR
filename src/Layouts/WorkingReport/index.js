@@ -380,7 +380,8 @@ export default function WorkingReport() {
         <BigCalendar
           setOnClick={(param) => {
             const _data = data.find(
-              (val) => val.tanggal === moment(param.date).format("yyyy-MM-DD")
+              (val) =>
+                val.tanggal === moment(param.tanggal).format("yyyy-MM-DD")
             );
             onAttendence(_data);
           }}
@@ -388,6 +389,7 @@ export default function WorkingReport() {
           setIsViewOvertime={setIsViewOvertime}
           events={data}
           setWrIdDetail={setWrIdDetail}
+          filter={filter}
           updateFilterDates={updateFilterDates}
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
