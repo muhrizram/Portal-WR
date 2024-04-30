@@ -970,12 +970,15 @@ export default function BigCalendar({
           </Grid>
         </div>
       )}
+
       <DateRangeCalendar
-        setchangeCurrentMonth={setchangeCurrentMonth}
+        updateFilterDates={updateFilterDates}
+        setActiveMonth={setActiveMonth}
         setEndDateCall={setEndDate}
         setStartDateCall={setStartDate}
         setWeekendDates={setWeekendDates}
       />
+
       <Calendar
         localizer={localizer}
         views={["month"]}
