@@ -1,16 +1,21 @@
-import React, { useContext,useState } from 'react';
-import dayjs from 'dayjs';
-import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { Button, Grid, Hidden, Typography } from '@mui/material';
-import { AlertContext } from '../../context';
+import React, { useContext, useState } from "react";
+import dayjs from "dayjs";
+import { DemoItem } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
+import { Button, Grid, Hidden, Typography } from "@mui/material";
+import { AlertContext } from "../../context";
+import moment from "moment";
 
-export default function DateRangeCalendar({setStartDateCall, setEndDateCall, setWeekendDates}) {
+export default function DateRangeCalendar({
+  updateFilterDates,
+  setActiveMonth,
+  setStartDateCall,
+  setEndDateCall,
+}) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [selectedMonthRange, setSelectedMonthRange] = React.useState('');
   const { setDataAlert } = useContext(AlertContext);
 
   const handleDateChange = (date, isStart) => {
@@ -22,29 +27,15 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
     }
   };
 
-  const calculateWeekendDates = (start, end) => {
-    const weekendDates = [];
-    let currentDay = start.clone();
-
-    while (currentDay.isBefore(end) || currentDay.isSame(end, 'day')) {
-      if (currentDay.day() === 0 || currentDay.day() === 6) {
-        weekendDates.push(currentDay.format('YYYY-MM-DD'));
-      }
-      currentDay = currentDay.add(1, 'day');
-    }
-
-    return weekendDates;
+  const ResetFilter = () => {
+    setStartDateCall(null);
+    setStartDate(null);
+    setEndDate(null);
+    setEndDateCall(null);
   };
 
-  const ResetFilter = () => {    
-    setStartDateCall(null)
-    setStartDate(null)
-    setEndDate(null)
-    setEndDateCall(null)
-    setWeekendDates([])
-  }
-
   const handleApplyFilter = () => {
+    console.log(startDate, endDate);
     if (!startDate || !endDate) {
       setDataAlert({
         severity: "error",
@@ -52,64 +43,95 @@ export default function DateRangeCalendar({setStartDateCall, setEndDateCall, set
         open: true,
       });
     }
-   
-    const start = dayjs(startDate);
-    const end = dayjs(endDate);
-    const weekendDates = calculateWeekendDates(start, end);     
-    setWeekendDates(weekendDates)    
-    setStartDateCall(startDate)
-    setEndDateCall(endDate)
-    }    
+
+    if (startDate !== null && endDate !== null) {
+      setStartDateCall(startDate);
+      setActiveMonth(moment(startDate).toDate());
+      updateFilterDates(moment(startDate).toDate());
+      setEndDateCall(endDate);
+    }
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Grid marginTop='4vh'/>
-        <Grid margin={4}>
-          <Typography variant='TextBulankalender'>{selectedMonthRange}</Typography>
-        </Grid>     
-        <Grid container justifyContent="flex-end" marginTop={{xs: "-3vh", sm: "-5vh"}} >
-          <Hidden smUp>          
+      <Grid marginTop="4vh" />
+      <Grid
+        container
+        justifyContent="flex-end"
+        marginTop={{ xs: "-3vh", sm: "-5vh" }}
+      >
+        <Hidden smUp>
           <Grid item xs={12} padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={startDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, true)} />
+              <MobileDatePicker
+                value={startDate}
+                format="DD/MM/YYYY"
+                onChange={(date) => handleDateChange(date.$d, true)}
+              />
             </DemoItem>
           </Grid>
           <Grid item xs={12} padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={endDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, false)} />
-            </DemoItem>            
+              <MobileDatePicker
+                value={endDate}
+                format="DD/MM/YYYY"
+                onChange={(date) => handleDateChange(date.$d, false)}
+              />
+            </DemoItem>
           </Grid>
-          <Grid item xs={12} sx={{marginTop:'3%'}}>
-            <Grid display='flex'>
-            <Button onClick={handleApplyFilter} sx={{textTransform:'none'}}>Filters</Button>
-            <Button onClick={ResetFilter} sx={{textTransform:'none'}}>Reset</Button>
+          <Grid item xs={12} sx={{ marginTop: "3%" }}>
+            <Grid display="flex">
+              <Button
+                onClick={handleApplyFilter}
+                sx={{ textTransform: "none" }}
+              >
+                Filters
+              </Button>
+              <Button onClick={ResetFilter} sx={{ textTransform: "none" }}>
+                Reset
+              </Button>
             </Grid>
           </Grid>
-          </Hidden>
+        </Hidden>
 
-          <Hidden smDown>
+        <Hidden smDown>
           <Grid item padding="5px">
             <Typography>Start Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={startDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, true)} />
+              <MobileDatePicker
+                value={startDate}
+                format="DD/MM/YYYY"
+                onChange={(date) => handleDateChange(date.$d, true)}
+              />
             </DemoItem>
           </Grid>
           <Grid item padding="5px">
             <Typography>End Date</Typography>
             <DemoItem>
-              <MobileDatePicker value={endDate} format="DD/MM/YYYY" onChange={(date) => handleDateChange(date.$d, false)} />
-            </DemoItem>            
+              <MobileDatePicker
+                value={endDate}
+                format="DD/MM/YYYY"
+                onChange={(date) => handleDateChange(date.$d, false)}
+              />
+            </DemoItem>
           </Grid>
-          <Grid item sx={{marginTop:'2.5%'}}>
-            <Grid display='flex'>
-            <Button onClick={handleApplyFilter} sx={{textTransform:'none'}}>Filters</Button>
-            <Button onClick={ResetFilter} sx={{textTransform:'none'}}>Reset</Button>
+          <Grid item sx={{ marginTop: "2.5%" }}>
+            <Grid display="flex">
+              <Button
+                onClick={handleApplyFilter}
+                sx={{ textTransform: "none" }}
+              >
+                Filters
+              </Button>
+              <Button onClick={ResetFilter} sx={{ textTransform: "none" }}>
+                Reset
+              </Button>
             </Grid>
           </Grid>
-          </Hidden>
-        </Grid>
+        </Hidden>
+      </Grid>
     </LocalizationProvider>
   );
 }
