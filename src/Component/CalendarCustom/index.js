@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import scrollGridPlugin from "@fullcalendar/scrollgrid";
-import interactionPlugin from "@fullcalendar/interaction";
 import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -27,9 +22,10 @@ import "./calender.css";
 import HolidayDialog from "../DialogHoliday";
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { styled } from "@mui/system";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
+import { important } from "polished";
 const localizer = momentLocalizer(moment);
 
 export default function BigCalendar({
@@ -73,7 +69,6 @@ export default function BigCalendar({
   const [finalDateCalendar, setfinalDateCalendar] = useState();
 
   useEffect(() => {
-    console.log("Ini Startdate", StartDate);
     if (isDataObtained) {
       if (StartDate) {
         setActiveMonth(moment(StartDate).toDate());
@@ -237,14 +232,7 @@ export default function BigCalendar({
         };
       }
 
-      return (
-        <Typography
-          sx={{ color: "white" }} // Menghilangkan background biru
-          onClick={clickHere}
-        >
-          {event.title}
-        </Typography>
-      );
+      return <Typography onClick={clickHere}>{event.title}</Typography>;
     },
   };
 
@@ -281,61 +269,106 @@ export default function BigCalendar({
     return {};
   };
 
-  const eventStyle = (event, start, end, isSelected) => {
+  const eventStyle = (event) => {
     let backgroundColor = "transparent";
-    let opacity = 0.5;
+    let opacity = 0.8;
     let cursor = "not-allowed";
+    let color = "transparent";
     if (event.title === "Hadir") {
       cursor = "pointer";
-      backgroundColor = "green";
+      backgroundColor = "#F0F3FF";
+      color = "#618AEA";
     } else if (event.title === "Sakit") {
       cursor = "pointer";
-      backgroundColor = "red";
+      backgroundColor = "#FBE9E7";
+      color = "#FF5722";
     } else if (event.title === "Cuti") {
       cursor = "pointer";
-      backgroundColor = "orange";
+      backgroundColor = "#E0F2F1";
+      color = "#009688";
     } else if (event.title === "Izin") {
-      backgroundColor = "yellow";
+      backgroundColor = "#FCE4EC";
       cursor = "pointer";
+      color = "#E91E63";
     } else if (event.title === "Overtime") {
-      backgroundColor = "purple";
+      backgroundColor = "#FFF9F2";
+      color = "#734011";
       if (event.presenceName === "Hadir" || event.holiday === true) {
+        backgroundColor = "#FFF9F2";
+        color = "#734011";
         cursor = "pointer";
         opacity = 1;
       }
     } else if (event.title === "View Overtime") {
+      backgroundColor = "#FFF9F2";
+      color = "#734011";
       cursor = "pointer";
-      backgroundColor = "black";
       opacity = 1;
     } else if (event.title === "Attendance") {
       cursor = "pointer";
-      backgroundColor = "grey";
+      backgroundColor = "#B1C5F6";
       opacity = 1;
+      color = "#3267E3";
     } else if (event.title === "Task") {
-      backgroundColor = "yellow";
+      backgroundColor = "#F0F3FF";
+      color = "#618AEA";
       if (event.presenceName === "Hadir") {
         cursor = "pointer";
         opacity = 1;
       }
     } else if (event.title === "Holiday") {
       cursor = "pointer";
-      backgroundColor = "red";
+      backgroundColor = "#FFF4F2";
+      color = "#CB3A31";
       opacity = 1;
     }
-    const style = {
+    const eventStyle = {
       backgroundColor: backgroundColor,
-      borderRadius: "30px",
-      margin: "0px 5px 5px 5px",
+      borderRadius: "6px",
+      margin: "0px auto 5px auto",
       cursor: cursor,
       opacity: opacity,
-      border: "none",
-      color: "black",
+      width: "80%",
       display: "block",
+      border: `1px solid ${color}`,
+      color: color,
+      textAlign: "center",
     };
     return {
-      style,
+      style: eventStyle,
     };
   };
+
+  const MOCK_EVENTS = [
+    {
+      id: 1,
+      title: "Event 1",
+      start: "2024-05-15T08:31:38",
+      end: "2024-05-15T18:15:58",
+      description:
+        "Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.\n\nPraesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio.",
+      color: "#C97D60",
+    },
+    {
+      id: 2,
+      title: "Event 2",
+      start: "2024-05-15T13:30:02",
+      end: "2024-05-15T17:30:20",
+      description:
+        "Duis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum.\n\nIn hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante. Nulla justo.\n\nAliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.",
+      color: "green",
+    },
+  ];
+
+  const concos = MOCK_EVENTS.map((event) => {
+    // new Date(Y, M, D, H, MIN)
+    return {
+      title: event.title,
+      start: new Date(event.start),
+      end: new Date(event.end),
+      color: event.color,
+    };
+  });
 
   return (
     <Grid>
@@ -380,10 +413,9 @@ export default function BigCalendar({
         setStartDateCall={setStartDate}
         setWeekendDates={setWeekendDates}
       />
-
       <Calendar
         localizer={localizer}
-        views={["month"]}
+        views={[Views.MONTH]}
         events={allEvents}
         components={components}
         style={{ height: 1100 }}
@@ -394,6 +426,29 @@ export default function BigCalendar({
         }
         eventPropGetter={eventStyle}
       />
+      {/* <Calendar
+        localizer={localizer}
+        startAccessor={"start"}
+        endAccessor={"end"}
+        events={concos}
+        style={{
+          height: "1000px",
+        }}
+        eventPropGetter={(event) => {
+          return {
+            style: {
+              backgroundColor: event.color,
+              border: "1px solid black",
+              color: "black",
+              textAlign: "center",
+            },
+          };
+        }}
+        onSelectEvent={(event) => alert(event.title)}
+        views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+      /> */}
+
+      {console.log(allEvents, "allEvents")}
       <Dialog
         fullWidth={fullWidth}
         maxWidth={maxWidth}
