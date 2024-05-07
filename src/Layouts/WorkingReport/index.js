@@ -64,6 +64,7 @@ export default function WorkingReport() {
   const [StatusSearch, setStatusSearch] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [DataPresence, setDataPresence] = useState();
+  const [isDataObtained, setIsDataObtained] = useState(false);
 
   const open = dropMenu;
   const handleClick = (event) => {
@@ -77,6 +78,10 @@ export default function WorkingReport() {
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
+  // const [filter, setFilter] = useState({
+  //   startDate: new Date(y, m, 1),
+  //   endDate: new Date(y, m + 1, 0),
+  // });
   const [filter, setFilter] = useState({
     startDate: new Date(y, m, 1),
     endDate: new Date(y, m + 1, 0),
@@ -139,7 +144,6 @@ export default function WorkingReport() {
       startDate: newStartDate,
       endDate: newEndDate,
     });
-    getData();
   };
 
   const getData = async () => {
@@ -152,14 +156,19 @@ export default function WorkingReport() {
       method: "GET",
       endpoint: endpoint,
     });
+    console.log(endpoint);
     if (!res.isError) {
       rebuildData(res);
+      setIsDataObtained(true);
+      console.log("Data dapat");
     } else {
       setDataAlert({
         severity: "error",
-        message: res.error.detail,
+        message: "Error Periode",
         open: true,
       });
+      setIsDataObtained(false);
+      console.log("Data ga dapat");
     }
 
     const resUser = await client.requestAPI({
@@ -389,6 +398,8 @@ export default function WorkingReport() {
           setIsViewOvertime={setIsViewOvertime}
           events={data}
           setWrIdDetail={setWrIdDetail}
+          setIsDataObtained={setIsDataObtained}
+          isDataObtained={isDataObtained}
           filter={filter}
           updateFilterDates={updateFilterDates}
           onStatusHr={onStatusHr}
