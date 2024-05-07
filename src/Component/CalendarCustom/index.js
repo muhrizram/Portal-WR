@@ -38,12 +38,15 @@ export default function BigCalendar({
   setIsViewOvertime,
   events,
   setWrIdDetail,
+  isDataObtained,
+  setIsDataObtained,
   updateFilterDates,
   filter,
   onStatusHr,
   setonOtherUser,
   setIsViewAttendance,
 }) {
+  console.log("Ini filter ", filter);
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
@@ -59,9 +62,10 @@ export default function BigCalendar({
   const [weekendDates, setWeekendDates] = useState([]);
   const [StartDate, setStartDate] = useState();
   const [EndDate, setEndDate] = useState();
-  const [activeMonth, setActiveMonth] = useState(
-    filter.startDate ? filter.startDate : new Date()
-  );
+  // const [activeMonth, setActiveMonth] = useState(
+  //   filter.startDate ? filter.startDate : new Date()
+  // );
+  const [activeMonth, setActiveMonth] = useState(new Date());
   const [wrDate, setWrDate] = useState(null);
   const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
@@ -69,11 +73,15 @@ export default function BigCalendar({
   const [finalDateCalendar, setfinalDateCalendar] = useState();
 
   useEffect(() => {
-    const currentDate = new Date();
-    const formattedMonthYear = moment(currentDate).format("MMMM YYYY");
-    setCurrentMonthYear(formattedMonthYear);
-    tambahSatuHari();
-  }, [EndDate]);
+    console.log("Ini Startdate", StartDate);
+    if (isDataObtained) {
+      if (StartDate) {
+        setActiveMonth(moment(StartDate).toDate());
+      } else {
+        setActiveMonth(moment(filter.startDate).toDate());
+      }
+    }
+  }, [isDataObtained, StartDate]);
 
   const navigateNextMonth = () => {
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
@@ -275,38 +283,50 @@ export default function BigCalendar({
 
   const eventStyle = (event, start, end, isSelected) => {
     let backgroundColor = "transparent";
-    let opacity = 0.2;
+    let opacity = 0.5;
+    let cursor = "not-allowed";
     if (event.title === "Hadir") {
+      cursor = "pointer";
       backgroundColor = "green";
     } else if (event.title === "Sakit") {
+      cursor = "pointer";
       backgroundColor = "red";
     } else if (event.title === "Cuti") {
+      cursor = "pointer";
       backgroundColor = "orange";
     } else if (event.title === "Izin") {
       backgroundColor = "yellow";
+      cursor = "pointer";
     } else if (event.title === "Overtime") {
       backgroundColor = "purple";
       if (event.presenceName === "Hadir" || event.holiday === true) {
+        cursor = "pointer";
         opacity = 1;
       }
     } else if (event.title === "View Overtime") {
+      cursor = "pointer";
       backgroundColor = "black";
       opacity = 1;
     } else if (event.title === "Attendance") {
+      cursor = "pointer";
       backgroundColor = "grey";
       opacity = 1;
     } else if (event.title === "Task") {
       backgroundColor = "yellow";
       if (event.presenceName === "Hadir") {
+        cursor = "pointer";
         opacity = 1;
       }
     } else if (event.title === "Holiday") {
+      cursor = "pointer";
       backgroundColor = "red";
       opacity = 1;
     }
     const style = {
       backgroundColor: backgroundColor,
-      borderRadius: "0px",
+      borderRadius: "30px",
+      margin: "0px 5px 5px 5px",
+      cursor: cursor,
       opacity: opacity,
       border: "none",
       color: "black",
@@ -352,7 +372,9 @@ export default function BigCalendar({
       )}
 
       <DateRangeCalendar
+        events={events}
         updateFilterDates={updateFilterDates}
+        setIsDataObtained={setIsDataObtained}
         setActiveMonth={setActiveMonth}
         setEndDateCall={setEndDate}
         setStartDateCall={setStartDate}
