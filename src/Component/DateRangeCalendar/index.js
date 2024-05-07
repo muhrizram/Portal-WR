@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -9,6 +9,7 @@ import { AlertContext } from "../../context";
 import moment from "moment";
 
 export default function DateRangeCalendar({
+  setIsDataObtained,
   updateFilterDates,
   setActiveMonth,
   setStartDateCall,
@@ -30,12 +31,11 @@ export default function DateRangeCalendar({
   const ResetFilter = () => {
     setStartDateCall(null);
     setStartDate(null);
-    setEndDate(null);
     setEndDateCall(null);
+    setEndDate(null);
   };
 
   const handleApplyFilter = () => {
-    console.log(startDate, endDate);
     if (!startDate || !endDate) {
       setDataAlert({
         severity: "error",
@@ -45,9 +45,9 @@ export default function DateRangeCalendar({
     }
 
     if (startDate !== null && endDate !== null) {
-      setStartDateCall(startDate);
-      setActiveMonth(moment(startDate).toDate());
+      setIsDataObtained(false);
       updateFilterDates(moment(startDate).toDate());
+      setStartDateCall(startDate);
       setEndDateCall(endDate);
     }
   };
