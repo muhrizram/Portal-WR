@@ -500,13 +500,7 @@ const CreateOvertime = ({
   };
 
   const handleSubmit = () => {
-    const dataError =
-      isEndTimeError &&
-      isStartTimeError &&
-      isTaskNameEmpty &&
-      isStatusTaskEmpty &&
-      isEstimationEffortEmpty;
-
+    let hasError = false;
     dataOvertime.listProject.map((resProject, idxProject) => {
       if (resProject.projectId === null) {
         setIsProjectEmptyArray((prev) => {
@@ -514,28 +508,32 @@ const CreateOvertime = ({
           newArr[idxProject] = true;
           return newArr;
         });
+        hasError = true;
       }
 
       resProject.listTask.map((res, index) => {
         if (res.taskName === "") {
           setIsTaskNameEmpty(true);
+          hasError = true;
         }
         if (res.statusTaskId === "") {
           setIsStatusTaskEmpty(true);
+          hasError = true;
         }
         if (res.duration === "") {
           setIsEstimationEffortEmpty(true);
+          hasError = true;
         }
       });
     });
-    console.log(dataOvertime.listProject.projectId);
-    // if (!dataError) {
-    //   if (isEdit) {
-    //     saveEdit();
-    //   } else {
-    //     onSave();
-    //   }
-    // }
+
+    if (!hasError) {
+      if (isEdit) {
+        saveEdit();
+      } else {
+        onSave();
+      }
+    }
   };
 
   return (
