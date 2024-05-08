@@ -605,7 +605,7 @@ const PopupTask = ({
                                       className='input-field-crud'
                                       type="number"
                                       placeholder='e.g Create Login Screen"'
-                                      label='Actual Effort'
+                                      label='Estimation Effort'
                                     />
                                   </Grid>
                                   <Grid item xs={12}>
