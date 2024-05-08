@@ -49,9 +49,38 @@ const CreateOvertime = ({
   const [optTask, setOptTask] = useState([]);
   const [optStatus, setOptStatus] = useState([]);
   const [opentask, setOpentask] = useState(false);
+  const [resetForm, setResetForm] = useState(false);
+
   const [isEndTimeError, setIsEndTimeError] = useState(false);
+  const [isStartTimeError, setIsStartTimeError] = useState(true);
+  const [isStartTimeTouched, setIsStartTimeTouched] = useState(false);
+
+  const [isProjectEmptyArray, setIsProjectEmptyArray] = useState(
+    Array(optProject.length).fill(false)
+  );
+  const [isTaskNameEmpty, setIsTaskNameEmpty] = useState(false);
+  const [isStatusTaskEmpty, setIsStatusTaskEmpty] = useState(false);
+  const [isEstimationEffortEmpty, setIsEstimationEffortEmpty] = useState(false);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
+
+  if (resetForm) {
+    setIsEndTimeError(false);
+    setIsStartTimeError(false);
+    setIsProjectEmptyArray(Array(optProject.length).fill(false));
+    setIsTaskNameEmpty(false);
+    setIsStatusTaskEmpty(false);
+    setIsEstimationEffortEmpty(false);
+    setResetForm(false);
+  }
+
+  const errorTextStyles = {
+    color: "#d32f2f",
+    textAlign: "left",
+    fontSize: 12,
+    paddingY: "3px",
+    marginLeft: "16px",
+  };
 
   const clearProject = {
     projectId: "",
@@ -214,23 +243,40 @@ const CreateOvertime = ({
 
     const updateData = (data) => {
       if (isDuration) {
-        const parsedValue = parseFloat(value);
-        if (parsedValue < 0) {
-          data.listProject[idxProject].listTask[index][name] = "0";
+        if (value !== "") {
+          setIsEstimationEffortEmpty(false);
+          const parsedValue = parseFloat(value);
+          if (parsedValue < 0) {
+            data.listProject[idxProject].listTask[index][name] = "0";
+          } else {
+            const calculatedValue = Math.min(
+              parsedValue,
+              calculateTimeDifference(
+                startTime || data.startTime,
+                endTime || data.endTime
+              )
+            );
+            data.listProject[idxProject].listTask[index][name] =
+              calculatedValue;
+          }
         } else {
-          const calculatedValue = Math.min(
-            parsedValue,
-            calculateTimeDifference(
-              startTime || data.startTime,
-              endTime || data.endTime
-            )
-          );
-          data.listProject[idxProject].listTask[index][name] = calculatedValue;
+          setIsEstimationEffortEmpty(true);
         }
       } else if (isTaskName) {
-        data.listProject[idxProject].listTask[index].backlogId = backlogId;
+        if (value === null) {
+          setIsTaskNameEmpty(true);
+        } else {
+          setIsTaskNameEmpty(false);
+          data.listProject[idxProject].listTask[index].backlogId = backlogId;
+        }
       } else {
-        data.listProject[idxProject].listTask[index][name] = value;
+        console.log(value);
+        if (value === null) {
+          setIsStatusTaskEmpty(true);
+        } else {
+          setIsStatusTaskEmpty(false);
+          data.listProject[idxProject].listTask[index][name] = value;
+        }
       }
 
       return data;
@@ -453,6 +499,45 @@ const CreateOvertime = ({
     return timeString ? dayjs(`${formattedDate}T${timeString}`) : null;
   };
 
+  const handleSubmit = () => {
+    const dataError =
+      isEndTimeError &&
+      isStartTimeError &&
+      isTaskNameEmpty &&
+      isStatusTaskEmpty &&
+      isEstimationEffortEmpty;
+
+    dataOvertime.listProject.map((resProject, idxProject) => {
+      if (resProject.projectId === null) {
+        setIsProjectEmptyArray((prev) => {
+          const newArr = [...prev];
+          newArr[idxProject] = true;
+          return newArr;
+        });
+      }
+
+      resProject.listTask.map((res, index) => {
+        if (res.taskName === "") {
+          setIsTaskNameEmpty(true);
+        }
+        if (res.statusTaskId === "") {
+          setIsStatusTaskEmpty(true);
+        }
+        if (res.duration === "") {
+          setIsEstimationEffortEmpty(true);
+        }
+      });
+    });
+    console.log(dataOvertime.listProject.projectId);
+    // if (!dataError) {
+    //   if (isEdit) {
+    //     saveEdit();
+    //   } else {
+    //     onSave();
+    //   }
+    // }
+  };
+
   return (
     <>
       <Dialog
@@ -563,7 +648,8 @@ const CreateOvertime = ({
                             setOpentask(true);
                           } else {
                             setOpentask(false);
-                            setDataOvertime([clearProject]);
+                            // setIsProjectEmpty(true);
+                            // setDataOvertime([clearProject]);
                           }
                         }}
                         isOptionEqualToValue={(option, value) =>
@@ -714,7 +800,7 @@ const CreateOvertime = ({
                                     className="input-field-crud"
                                     placeholder="e.g Create Login Screen"
                                     type="number"
-                                    label="Actual Effort *"
+                                    label="Estimation Effort *"
                                     sx={{
                                       width: "100%",
                                       backgroundColor: "white",
@@ -783,14 +869,29 @@ const CreateOvertime = ({
               <Grid item xs={12}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["TimePicker"]}>
-                    <TimePicker
-                      label="Start Time *"
-                      value={startTime}
-                      onChange={(start) =>
-                        setStartTime(start.format("HH:mm:ss"))
-                      }
-                      ampm={false}
-                    />
+                    <Grid item>
+                      <TimePicker
+                        label="Start Time *"
+                        value={startTime}
+                        onChange={(start) => {
+                          if (start) {
+                            setStartTime(start.format("HH:mm:ss"));
+                            setIsStartTimeError(false);
+                            setIsStartTimeTouched(true);
+                          } else {
+                            setStartTime("");
+                            setIsStartTimeError(true);
+                            setIsStartTimeTouched(true);
+                          }
+                        }}
+                        ampm={false}
+                      />
+                      {isStartTimeError && isStartTimeTouched && (
+                        <Typography sx={errorTextStyles}>
+                          {"Start Time can not be empty"}
+                        </Typography>
+                      )}
+                    </Grid>
                     <Grid item>
                       <TimePicker
                         label="End Time *"
@@ -803,7 +904,6 @@ const CreateOvertime = ({
                             setIsEndTimeError(true);
                           } else {
                             setEndTime(newEndTime);
-                            console.log(dataOvertime);
                             setIsLocalizationFilled(true);
                             setIsEndTimeError(false);
                           }
@@ -811,13 +911,7 @@ const CreateOvertime = ({
                         ampm={false}
                       />
                       {isEndTimeError && (
-                        <Typography
-                          color="#d32f2f"
-                          textAlign={"left"}
-                          fontSize={12}
-                          paddingY={"3px"}
-                          marginLeft={"16px"}
-                        >
+                        <Typography sx={errorTextStyles}>
                           {"End Time cannot be earlier than Start Time"}
                         </Typography>
                       )}
@@ -851,9 +945,19 @@ const CreateOvertime = ({
                               getDataTask(newValue.id);
                               handleChangeProject(newValue.id, idxProject);
                               setOpentask(true);
+                              setIsProjectEmptyArray((prev) => {
+                                const newArr = [...prev];
+                                newArr[idxProject] = false;
+                                return newArr;
+                              });
                             } else {
                               setOpentask(false);
-                              setDataOvertime([clearProject]);
+                              setIsProjectEmptyArray((prev) => {
+                                const newArr = [...prev];
+                                newArr[idxProject] = true;
+                                return newArr;
+                              });
+                              // setDataOvertime([clearProject]);
                             }
                           }}
                           isOptionEqualToValue={(option, value) =>
@@ -869,6 +973,11 @@ const CreateOvertime = ({
                             />
                           )}
                         />
+                        {isProjectEmptyArray[idxProject] && (
+                          <Typography sx={errorTextStyles}>
+                            {"Project can not be empty"}
+                          </Typography>
+                        )}
                       </Grid>
                       <Grid item xs={12}>
                         {resProject.value !== "" &&
@@ -921,6 +1030,13 @@ const CreateOvertime = ({
                                             false,
                                             newValue.backlogId
                                           );
+                                        } else {
+                                          handleChange({
+                                            target: {
+                                              name: "taskName",
+                                              value: null,
+                                            },
+                                          });
                                         }
                                       }}
                                       isOptionEqualToValue={(option, value) =>
@@ -936,7 +1052,13 @@ const CreateOvertime = ({
                                         />
                                       )}
                                     />
+                                    {isTaskNameEmpty && (
+                                      <Typography sx={errorTextStyles}>
+                                        {"Task Name can not be empty"}
+                                      </Typography>
+                                    )}
                                   </Grid>
+
                                   <Grid item xs={12}>
                                     <Autocomplete
                                       disablePortal
@@ -948,18 +1070,27 @@ const CreateOvertime = ({
                                         width: "100%",
                                         backgroundColor: "white",
                                       }}
-                                      onChange={(_event, newValue) =>
-                                        handleChange(
-                                          {
+                                      onChange={(_event, newValue) => {
+                                        if (newValue) {
+                                          handleChange(
+                                            {
+                                              target: {
+                                                name: "statusTaskId",
+                                                value: newValue.id,
+                                              },
+                                            },
+                                            idxProject,
+                                            index
+                                          );
+                                        } else {
+                                          handleChange({
                                             target: {
                                               name: "statusTaskId",
-                                              value: newValue.id,
+                                              value: null,
                                             },
-                                          },
-                                          idxProject,
-                                          index
-                                        )
-                                      }
+                                          });
+                                        }
+                                      }}
                                       isOptionEqualToValue={(option, value) =>
                                         option.value === value.value
                                       }
@@ -973,6 +1104,11 @@ const CreateOvertime = ({
                                         />
                                       )}
                                     />
+                                    {isStatusTaskEmpty && (
+                                      <Typography sx={errorTextStyles}>
+                                        {"Status Task can not be empty"}
+                                      </Typography>
+                                    )}
                                   </Grid>
 
                                   <Grid item xs={12}>
@@ -986,12 +1122,17 @@ const CreateOvertime = ({
                                       type="number"
                                       className="input-field-crud"
                                       placeholder="e.g Create Login Screen"
-                                      label="Actual Effort *"
+                                      label="Estimation Effort *"
                                       sx={{
                                         width: "100%",
                                         backgroundColor: "white",
                                       }}
                                     />
+                                    {isEstimationEffortEmpty && (
+                                      <Typography sx={errorTextStyles}>
+                                        {"Estimation Effort can not be empty"}
+                                      </Typography>
+                                    )}
                                   </Grid>
                                   <Grid item xs={12}>
                                     <TextField
@@ -1078,8 +1219,8 @@ const CreateOvertime = ({
             <Button
               variant="saveButton"
               className="button-text"
-              disabled={isEndTimeError}
-              onClick={isEdit ? saveEdit : onSave}
+              disabled={isEndTimeError || isStartTimeError}
+              onClick={handleSubmit}
             >
               Submit
             </Button>
@@ -1126,6 +1267,7 @@ const CreateOvertime = ({
                       closeTask(false);
                       setOpentask(false);
                       setIsLocalizationFilled(false);
+                      setResetForm(true);
                       setDialogCancel(false);
                     }
               }
