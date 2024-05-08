@@ -271,8 +271,8 @@ export default function BigCalendar({
 
   const eventStyle = (event) => {
     let backgroundColor = "transparent";
-    let opacity = 0.8;
-    let cursor = "not-allowed";
+    let opacity = 1;
+    let cursor = "pointer";
     let color = "transparent";
     if (event.title === "Hadir") {
       cursor = "pointer";
