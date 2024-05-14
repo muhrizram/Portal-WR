@@ -21,11 +21,9 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import "./calender.css";
 import HolidayDialog from "../DialogHoliday";
 import DateRangeCalendar from "../../Component/DateRangeCalendar";
-import { styled } from "@mui/system";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
-import { important } from "polished";
 const localizer = momentLocalizer(moment);
 
 export default function BigCalendar({
@@ -38,35 +36,30 @@ export default function BigCalendar({
   setIsDataObtained,
   updateFilterDates,
   filter,
-  onStatusHr,
+  _onStatusHr,
   setonOtherUser,
   setIsViewAttendance,
 }) {
-  console.log("Ini filter ", filter);
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
   const [openOvertime, setOpenOvertime] = useState(false);
-  const [fullWidth, setFullWidth] = React.useState(true);
+  const [fullWidth, _setFullWidth] = React.useState(true);
   const [maxWidth, setMaxWidth] = React.useState("sm");
   const [wrId, setId] = useState({
     workingReportOvertimeId: null,
     absenceId: null,
     workingReportTaskId: null,
   });
-  const [currentMonthYear, setCurrentMonthYear] = useState("");
-  const [changeCurrentMonth, setchangeCurrentMonth] = useState(false);
-  const [weekendDates, setWeekendDates] = useState([]);
+  const [changeCurrentMonth, _setchangeCurrentMonth] = useState(false);
+  const [_weekendDates, setWeekendDates] = useState([]);
   const [StartDate, setStartDate] = useState();
   const [EndDate, setEndDate] = useState();
-  // const [activeMonth, setActiveMonth] = useState(
-  //   filter.startDate ? filter.startDate : new Date()
-  // );
   const [activeMonth, setActiveMonth] = useState(new Date());
   const [wrDate, setWrDate] = useState(null);
   const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
   const [descHoliday, setdescHoliday] = useState(null);
-  const [finalDateCalendar, setfinalDateCalendar] = useState();
+  const [_finalDateCalendar, setfinalDateCalendar] = useState();
 
   useEffect(() => {
     if (isDataObtained) {
@@ -102,19 +95,9 @@ export default function BigCalendar({
     setMaxWidth(event.target.value);
   };
 
-  const tambahSatuHari = () => {
-    if (EndDate) {
-      const tanggalAwal = new Date(EndDate);
-      tanggalAwal.setDate(tanggalAwal.getDate() + 1);
-
-      const tanggalBaru = tanggalAwal.toISOString().split("T")[0];
-      setfinalDateCalendar(tanggalBaru);
-    }
-  };
-
   const createAllEvents = () => {
     const today = moment().startOf("day");
-    let mappedEvents = []; // Menginisialisasi mappedEvents sebagai array kosong
+    let mappedEvents = [];
 
     events
       .filter((event) => moment(event.tanggal).isSameOrBefore(today, "day"))
@@ -173,7 +156,6 @@ export default function BigCalendar({
     event: ({ event }) => {
       let clickHere = null;
       const isNotCheckIn = event.title === "Attendance";
-      const isCheckIn = event.title === "Hadir";
       const isCheckInButNotPresent =
         event.presenceName !== "Hadir" && event.paramAttendance;
       const isHoliday = event.title === "Holiday";
@@ -271,22 +253,24 @@ export default function BigCalendar({
 
   const eventStyle = (event) => {
     let backgroundColor = "transparent";
-    let opacity = 1;
-    let cursor = "pointer";
+    let opacity = 0.5;
+    let cursor = "not-allowed";
     let color = "transparent";
     if (event.title === "Hadir") {
-      cursor = "pointer";
       backgroundColor = "#F0F3FF";
       color = "#618AEA";
     } else if (event.title === "Sakit") {
+      opacity = 1;
       cursor = "pointer";
       backgroundColor = "#FBE9E7";
       color = "#FF5722";
     } else if (event.title === "Cuti") {
+      opacity = 1;
       cursor = "pointer";
       backgroundColor = "#E0F2F1";
       color = "#009688";
     } else if (event.title === "Izin") {
+      opacity = 1;
       backgroundColor = "#FCE4EC";
       cursor = "pointer";
       color = "#E91E63";
@@ -361,7 +345,6 @@ export default function BigCalendar({
   ];
 
   const concos = MOCK_EVENTS.map((event) => {
-    // new Date(Y, M, D, H, MIN)
     return {
       title: event.title,
       start: new Date(event.start),
@@ -426,29 +409,7 @@ export default function BigCalendar({
         }
         eventPropGetter={eventStyle}
       />
-      {/* <Calendar
-        localizer={localizer}
-        startAccessor={"start"}
-        endAccessor={"end"}
-        events={concos}
-        style={{
-          height: "1000px",
-        }}
-        eventPropGetter={(event) => {
-          return {
-            style: {
-              backgroundColor: event.color,
-              border: "1px solid black",
-              color: "black",
-              textAlign: "center",
-            },
-          };
-        }}
-        onSelectEvent={(event) => alert(event.title)}
-        views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
-      /> */}
 
-      {console.log(allEvents, "allEvents")}
       <Dialog
         fullWidth={fullWidth}
         maxWidth={maxWidth}
