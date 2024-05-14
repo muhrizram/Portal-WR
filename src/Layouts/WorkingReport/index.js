@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
-// import Calendar from "../../Component/CalendarCustom";
 import Header from "../../Component/Header";
 import {
   Autocomplete,
@@ -78,10 +77,6 @@ export default function WorkingReport() {
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
-  // const [filter, setFilter] = useState({
-  //   startDate: new Date(y, m, 1),
-  //   endDate: new Date(y, m + 1, 0),
-  // });
   const [filter, setFilter] = useState({
     startDate: new Date(y, m, 1),
     endDate: new Date(y, m + 1, 0),
@@ -156,11 +151,9 @@ export default function WorkingReport() {
       method: "GET",
       endpoint: endpoint,
     });
-    console.log(endpoint);
     if (!res.isError) {
       rebuildData(res);
       setIsDataObtained(true);
-      console.log("Data dapat");
     } else {
       setDataAlert({
         severity: "error",
@@ -168,7 +161,6 @@ export default function WorkingReport() {
         open: true,
       });
       setIsDataObtained(false);
-      console.log("Data ga dapat");
     }
 
     const resUser = await client.requestAPI({
