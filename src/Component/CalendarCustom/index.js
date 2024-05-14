@@ -24,6 +24,7 @@ import DateRangeCalendar from "../../Component/DateRangeCalendar";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment/locale/en-gb";
+import { cellStyle } from "./cellStyle";
 const localizer = momentLocalizer(moment);
 
 export default function BigCalendar({
@@ -252,74 +253,33 @@ export default function BigCalendar({
   };
 
   const eventStyle = (event) => {
-    let backgroundColor = "transparent";
-    let opacity = 0.5;
-    let cursor = "not-allowed";
-    let color = "transparent";
-    if (event.title === "Hadir") {
-      backgroundColor = "#F0F3FF";
-      color = "#618AEA";
-    } else if (event.title === "Sakit") {
-      opacity = 1;
-      cursor = "pointer";
-      backgroundColor = "#FBE9E7";
-      color = "#FF5722";
-    } else if (event.title === "Cuti") {
-      opacity = 1;
-      cursor = "pointer";
-      backgroundColor = "#E0F2F1";
-      color = "#009688";
-    } else if (event.title === "Izin") {
-      opacity = 1;
-      backgroundColor = "#FCE4EC";
-      cursor = "pointer";
-      color = "#E91E63";
-    } else if (event.title === "Overtime") {
-      backgroundColor = "#FFF9F2";
-      color = "#734011";
-      if (event.presenceName === "Hadir" || event.holiday === true) {
-        backgroundColor = "#FFF9F2";
-        color = "#734011";
-        cursor = "pointer";
-        opacity = 1;
-      }
-    } else if (event.title === "View Overtime") {
-      backgroundColor = "#FFF9F2";
-      color = "#734011";
-      cursor = "pointer";
-      opacity = 1;
-    } else if (event.title === "Attendance") {
-      cursor = "pointer";
-      backgroundColor = "#B1C5F6";
-      opacity = 1;
-      color = "#3267E3";
-    } else if (event.title === "Task") {
-      backgroundColor = "#F0F3FF";
-      color = "#618AEA";
-      if (event.presenceName === "Hadir") {
-        cursor = "pointer";
-        opacity = 1;
-      }
-    } else if (event.title === "Holiday") {
-      cursor = "pointer";
-      backgroundColor = "#FFF4F2";
-      color = "#CB3A31";
-      opacity = 1;
-    }
-    const eventStyle = {
-      backgroundColor: backgroundColor,
+    const defaultStyle = {
+      backgroundColor: "transparent",
+      opacity: 0.5,
+      cursor: "not-allowed",
+      color: "transparent",
+    };
+    const specificStyle = cellStyle[event.title] || {};
+    const combinedStyle = {
+      ...defaultStyle,
+      ...specificStyle,
+    };
+
+    const finalStyle = {
+      backgroundColor: combinedStyle.backgroundColor,
       borderRadius: "6px",
       margin: "0px auto 5px auto",
-      cursor: cursor,
-      opacity: opacity,
+      cursor: combinedStyle.cursor,
+      opacity: combinedStyle.opacity,
       width: "80%",
       display: "block",
-      border: `1px solid ${color}`,
-      color: color,
+      border: `1px solid ${combinedStyle.color}`,
+      color: combinedStyle.color,
       textAlign: "center",
     };
+
     return {
-      style: eventStyle,
+      style: finalStyle,
     };
   };
 
