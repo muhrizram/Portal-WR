@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 
-//waktu
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -270,7 +269,6 @@ const CreateOvertime = ({
           data.listProject[idxProject].listTask[index].backlogId = backlogId;
         }
       } else {
-        console.log(value);
         if (value === null) {
           setIsStatusTaskEmpty(true);
         } else {
@@ -646,8 +644,6 @@ const CreateOvertime = ({
                             setOpentask(true);
                           } else {
                             setOpentask(false);
-                            // setIsProjectEmpty(true);
-                            // setDataOvertime([clearProject]);
                           }
                         }}
                         isOptionEqualToValue={(option, value) =>
@@ -955,7 +951,6 @@ const CreateOvertime = ({
                                 newArr[idxProject] = true;
                                 return newArr;
                               });
-                              // setDataOvertime([clearProject]);
                             }
                           }}
                           isOptionEqualToValue={(option, value) =>
