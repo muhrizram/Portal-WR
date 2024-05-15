@@ -1,34 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Autocomplete,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid,
-  TextField,
-  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import "../../../App.css";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
-
-//waktu
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { createOvertimeSchema } from "./schema";
+import { calculateTimeDifference, parseTime } from "./timeUtils";
+import { getDataTask, getDataProject, getDataStatus } from "./apiFunctions";
 import dayjs from "dayjs";
-import { Remove } from "@mui/icons-material";
+import AddOvertime from "./Form/addOvertime";
 
 const CreateOvertime = ({
   open,
@@ -42,37 +30,20 @@ const CreateOvertime = ({
   const navigate = useNavigate();
   const { setDataAlert } = useContext(AlertContext);
   const [dialogCancel, setDialogCancel] = useState(false);
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
+  const [datas, setDatas] = useState({
+    startTime: "",
+    endTime: "",
+    projects: [{ projectId: "" }],
+    tasks: [[{ taskName: "", statusTaskId: "", duration: "" }]],
+  });
   const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
   const [optProject, setOptProject] = useState([]);
   const [optTask, setOptTask] = useState([]);
   const [optStatus, setOptStatus] = useState([]);
   const [opentask, setOpentask] = useState(false);
-  const [resetForm, setResetForm] = useState(false);
-
-  const [isEndTimeError, setIsEndTimeError] = useState(false);
-  const [isStartTimeError, setIsStartTimeError] = useState(true);
-  const [isStartTimeTouched, setIsStartTimeTouched] = useState(false);
-
-  const [isProjectEmptyArray, setIsProjectEmptyArray] = useState(
-    Array(optProject.length).fill(false)
-  );
-  const [isTaskNameEmpty, setIsTaskNameEmpty] = useState(false);
-  const [isStatusTaskEmpty, setIsStatusTaskEmpty] = useState(false);
-  const [isEstimationEffortEmpty, setIsEstimationEffortEmpty] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
-
-  if (resetForm) {
-    setIsEndTimeError(false);
-    setIsStartTimeError(false);
-    setIsProjectEmptyArray(Array(optProject.length).fill(false));
-    setIsTaskNameEmpty(false);
-    setIsStatusTaskEmpty(false);
-    setIsEstimationEffortEmpty(false);
-    setResetForm(false);
-  }
 
   const errorTextStyles = {
     color: "#d32f2f",
@@ -86,6 +57,7 @@ const CreateOvertime = ({
     projectId: "",
     listTask: [],
   };
+
   const clearTask = {
     backlogId: null,
     taskName: null,
@@ -136,6 +108,10 @@ const CreateOvertime = ({
           listTask: [{ ...clearProject }],
         },
       ];
+      setDatas({
+        ...datas,
+        projects: [...datas.projects, { projectId: "" }],
+      });
       setDataOvertime(temp);
     }
   };
@@ -149,6 +125,7 @@ const CreateOvertime = ({
       const temp = { ...dataOvertime };
       temp.listProject.splice(projectIndex, 1);
       setDataOvertime(temp);
+      datas.projects.splice(projectIndex, 1);
     }
   };
 
@@ -179,62 +156,23 @@ const CreateOvertime = ({
       setDataEditOvertime(temp);
     } else {
       const temp = { ...dataOvertime };
+      const taskLength = temp.listProject[idxProject].listTask.length;
+      let dataArray = [...datas.tasks];
+      dataArray[idxProject][taskLength] = {
+        taskName: "",
+        statusTaskId: "",
+        duration: "",
+      };
+      setDatas({
+        ...datas,
+        tasks: dataArray,
+      });
       temp.listProject[idxProject].listTask.push({
         ...clearTask,
       });
       setDataOvertime(temp);
     }
   };
-
-  function calculateTimeDifference(startTime, endTime) {
-    const start = parseTime(startTime);
-    const end = parseTime(endTime);
-
-    if (!start || !end) {
-      return 0;
-    }
-
-    const startHour = start.hours + start.minutes / 60;
-    const endHour = end.hours + end.minutes / 60;
-
-    const diff = endHour - startHour;
-    const wholeHours = Math.floor(diff);
-
-    const endParts = endTime.split(":");
-    const endHours = parseInt(endParts[0]);
-    const endMinutes = parseInt(endParts[1]);
-
-    const threeQuarterHours = wholeHours + 0.75;
-    const midHours = wholeHours + 0.5;
-
-    if (endHours === 23) {
-      if (endMinutes >= 30 && endMinutes < 45) {
-        return midHours;
-      } else if (endMinutes >= 45) {
-        return threeQuarterHours;
-      } else {
-        return wholeHours;
-      }
-    }
-
-    if (endHours < 23) {
-      return Math.max(0, wholeHours);
-    }
-  }
-
-  function parseTime(time) {
-    const timeRegex = /^(\d{1,2}):(\d{2}):(\d{2})$/;
-
-    const match = time.match(timeRegex);
-
-    if (match) {
-      const hours = parseInt(match[1]);
-      const minutes = parseInt(match[2]);
-      return { hours, minutes };
-    }
-
-    return null;
-  }
 
   const handleChange = (event, idxProject, index, isEdit, backlogId) => {
     const { name, value } = event.target;
@@ -244,7 +182,15 @@ const CreateOvertime = ({
     const updateData = (data) => {
       if (isDuration) {
         if (value !== "") {
-          setIsEstimationEffortEmpty(false);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            duration: value,
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
           const parsedValue = parseFloat(value);
           if (parsedValue < 0) {
             data.listProject[idxProject].listTask[index][name] = "0";
@@ -252,29 +198,68 @@ const CreateOvertime = ({
             const calculatedValue = Math.min(
               parsedValue,
               calculateTimeDifference(
-                startTime || data.startTime,
-                endTime || data.endTime
+                datas.startTime || data.startTime,
+                datas.endTime || data.endTime
               )
             );
             data.listProject[idxProject].listTask[index][name] =
               calculatedValue;
           }
         } else {
-          setIsEstimationEffortEmpty(true);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            duration: "",
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
         }
       } else if (isTaskName) {
         if (value === null) {
-          setIsTaskNameEmpty(true);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            taskName: "",
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
         } else {
-          setIsTaskNameEmpty(false);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            taskName: String(value),
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
           data.listProject[idxProject].listTask[index].backlogId = backlogId;
         }
       } else {
-        console.log(value);
         if (value === null) {
-          setIsStatusTaskEmpty(true);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            statusTaskId: "",
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
         } else {
-          setIsStatusTaskEmpty(false);
+          let dataArray = [...datas.tasks];
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            statusTaskId: String(value),
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
           data.listProject[idxProject].listTask[index][name] = value;
         }
       }
@@ -292,16 +277,31 @@ const CreateOvertime = ({
   };
 
   const handleChangeProject = (value, idxProject) => {
-    if (isEdit) {
-      const temp = { ...dataEditOvertime };
-      temp.listProject[idxProject].projectId = value;
-      temp.listProject[idxProject].listTask = [clearTask];
-      setDataEditOvertime(temp);
+    if (value !== null) {
+      if (isEdit) {
+        const temp = { ...dataEditOvertime };
+        temp.listProject[idxProject].projectId = value;
+        temp.listProject[idxProject].listTask = [clearTask];
+        setDataEditOvertime(temp);
+      } else {
+        const temp = { ...dataOvertime };
+        temp.listProject[idxProject].projectId = value;
+        temp.listProject[idxProject].listTask = [clearTask];
+        let dataArray = [...datas.projects];
+        dataArray[idxProject] = { projectId: String(value) };
+        setDatas({
+          ...datas,
+          projects: dataArray,
+        });
+        setDataOvertime(temp);
+      }
     } else {
-      const temp = { ...dataOvertime };
-      temp.listProject[idxProject].projectId = value;
-      temp.listProject[idxProject].listTask = [clearTask];
-      setDataOvertime(temp);
+      let dataArray = [...datas.projects];
+      dataArray[idxProject] = { projectId: "" };
+      setDatas({
+        ...datas,
+        projects: dataArray,
+      });
     }
   };
 
@@ -327,52 +327,14 @@ const CreateOvertime = ({
       onEdit();
       setOpentask(true);
     }
-    getDataProject();
-    getDataStatus();
+    getDataProject(currentUserId, setOptProject);
+    getDataStatus(setOptStatus);
   }, [dataOvertime, dataDetail]);
-
-  const getDataTask = async (id) => {
-    const res = await client.requestAPI({
-      method: "GET",
-      endpoint: `/ol/taskProject?projectId=${id}&userId=${currentUserId}&search=`,
-    });
-
-    const data = res.data.map((item) => ({
-      backlogId: parseInt(item.id),
-      taskName: item.attributes.taskName,
-      actualEffort: item.attributes.actualEffort,
-    }));
-    setOptTask(data);
-  };
-
-  const getDataProject = async () => {
-    const res = await client.requestAPI({
-      method: "GET",
-      endpoint: `/ol/projectTypeList?userId=${currentUserId}&search=`,
-    });
-    const data = res.data.map((item) => ({
-      id: parseInt(item.id),
-      name: item.attributes.projectName,
-    }));
-    setOptProject(data);
-  };
-
-  const getDataStatus = async () => {
-    const res = await client.requestAPI({
-      method: "GET",
-      endpoint: `/ol/status?search=`,
-    });
-    const data = res.data.map((item) => ({
-      id: parseInt(item.id),
-      status: item.attributes.name,
-    }));
-    setOptStatus(data);
-  };
 
   const onSave = async () => {
     const data = {
-      startTime: startTime,
-      endTime: endTime,
+      startTime: datas.startTime,
+      endTime: datas.endTime,
       date: wrDate,
       listProject: [],
       createdBy: currentUserId,
@@ -430,8 +392,8 @@ const CreateOvertime = ({
 
   const saveEdit = async () => {
     const dataUpdate = {
-      startTime: startTime || dataEditOvertime.startTime,
-      endTime: endTime || dataEditOvertime.endTime,
+      startTime: datas.startTime || dataEditOvertime.startTime,
+      endTime: datas.endTime || dataEditOvertime.endTime,
       workingReportId: null,
       listProjectId: [],
       createdBy: currentUserId,
@@ -493,46 +455,23 @@ const CreateOvertime = ({
     closeOvertime(true);
   };
 
-  const setTimeTo = (timeString) => {
-    const currentDate = dayjs();
-    const formattedDate = currentDate.format("YYYY-MM-DD");
-    return timeString ? dayjs(`${formattedDate}T${timeString}`) : null;
-  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationResult = createOvertimeSchema.safeParse(datas);
 
-  const handleSubmit = () => {
-    let hasError = false;
-    dataOvertime.listProject.map((resProject, idxProject) => {
-      if (resProject.projectId === null) {
-        setIsProjectEmptyArray((prev) => {
-          const newArr = [...prev];
-          newArr[idxProject] = true;
-          return newArr;
-        });
-        hasError = true;
-      }
-
-      resProject.listTask.map((res, index) => {
-        if (res.taskName === "") {
-          setIsTaskNameEmpty(true);
-          hasError = true;
-        }
-        if (res.statusTaskId === "") {
-          setIsStatusTaskEmpty(true);
-          hasError = true;
-        }
-        if (res.duration === "") {
-          setIsEstimationEffortEmpty(true);
-          hasError = true;
-        }
-      });
-    });
-
-    if (!hasError) {
+    if (validationResult.success) {
+      setErrors("");
       if (isEdit) {
         saveEdit();
       } else {
         onSave();
       }
+    } else {
+      const validationErrors = {};
+      validationResult.error.errors.forEach((err) => {
+        validationErrors[err.path] = err.message;
+      });
+      setErrors(validationErrors);
     }
   };
 
@@ -559,640 +498,30 @@ const CreateOvertime = ({
           </DialogContentText>
 
           {isEdit ? (
-            <>
-              <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["TimePicker"]}>
-                    <TimePicker
-                      label="Start Time *"
-                      defaultValue={
-                        setTimeTo(dataEditOvertime.startTime) || null
-                      }
-                      onChange={(start) =>
-                        setStartTime(start.format("HH:mm:ss"))
-                      }
-                      ampm={false}
-                    />
-                    <Grid item>
-                      <TimePicker
-                        label="End Time *"
-                        defaultValue={
-                          setTimeTo(dataEditOvertime.endTime) || null
-                        }
-                        onChange={(end) => {
-                          const newEndTime = end.format("HH:mm:ss");
-                          const newStartTime =
-                            startTime || dataEditOvertime.startTime;
-
-                          if (newStartTime && newEndTime <= newStartTime) {
-                            setEndTime(dataEditOvertime.endTime);
-                            setIsEndTimeError(true);
-                          } else {
-                            setEndTime(newEndTime);
-                            setIsEndTimeError(false);
-                            setIsLocalizationFilled(true);
-                          }
-                        }}
-                        ampm={false}
-                      />
-                      {isEndTimeError && (
-                        <Typography
-                          color="#d32f2f"
-                          textAlign={"left"}
-                          fontSize={12}
-                          paddingY={"3px"}
-                          marginLeft={"16px"}
-                        >
-                          {"End Time cannot be earlier than Start Time"}
-                        </Typography>
-                      )}
-                    </Grid>
-                  </DemoContainer>
-                </LocalizationProvider>
-              </Grid>
-
-              {dataEditOvertime.listProject.map((resProject, idxProject) => (
-                <div
-                  className={opentask ? "card-project" : ""}
-                  key={`${idxProject + 1}-project`}
-                >
-                  <Grid container rowSpacing={2}>
-                    <Grid item xs={12}>
-                      <Autocomplete
-                        disablePortal
-                        disabled={
-                          !!optProject.find(
-                            (option) => option.id == resProject.projectId
-                          )
-                        }
-                        name="project"
-                        className="autocomplete-input autocomplete-on-popup"
-                        options={optProject}
-                        defaultValue={
-                          optProject.find(
-                            (option) => option.id == resProject.projectId
-                          ) || null
-                        }
-                        getOptionLabel={(option) => option.name}
-                        sx={{
-                          width: "100%",
-                          marginTop: "20px",
-                          backgroundColor: "white",
-                        }}
-                        onChange={(_event, newValue) => {
-                          if (newValue) {
-                            getDataTask(newValue.id);
-                            handleChangeProject(newValue.id, idxProject);
-                            setOpentask(true);
-                          } else {
-                            setOpentask(false);
-                            // setIsProjectEmpty(true);
-                            // setDataOvertime([clearProject]);
-                          }
-                        }}
-                        isOptionEqualToValue={(option, value) =>
-                          option.value === value.value
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            className="input-field-crud"
-                            label="Project *"
-                            InputLabelProps={{ shrink: true }}
-                            placeholder="Select Project"
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      {resProject.listTask.map((res, index) => (
-                        <>
-                          <Accordion
-                            onChange={() => getDataTask(resProject.projectId)}
-                            key={res.id}
-                            sx={{ boxShadow: "none", width: "100%" }}
-                          >
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              className="header-accordion"
-                            >
-                              <Typography sx={{ fontSize: "24px" }}>
-                                Task {index + 1}
-                              </Typography>
-                              <DeleteIcon
-                                className="icon-trash"
-                                onClick={(e) =>
-                                  deleteTask(e, idxProject, index)
-                                }
-                              />
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <Grid container rowSpacing={2}>
-                                <Grid item xs={12}>
-                                  <Autocomplete
-                                    disablePortal
-                                    name="taskName"
-                                    className="autocomplete-input autocomplete-on-popup"
-                                    options={optTask}
-                                    defaultValue={
-                                      resProject.projectId
-                                        ? {
-                                            backlogId: res.backlogId,
-                                            taskName:
-                                              res.taskCode +
-                                              " - " +
-                                              res.taskName,
-                                            actualEffort: res.duration,
-                                          }
-                                        : null
-                                    }
-                                    getOptionLabel={(option) => option.taskName}
-                                    sx={{
-                                      width: "100%",
-                                      marginTop: "20px",
-                                      backgroundColor: "white",
-                                    }}
-                                    onChange={(_event, newValue) => {
-                                      if (newValue) {
-                                        handleChange(
-                                          {
-                                            target: {
-                                              name: "taskName",
-                                              value: newValue.taskName,
-                                            },
-                                          },
-                                          idxProject,
-                                          index,
-                                          true,
-                                          newValue.backlogId
-                                        );
-                                      }
-                                    }}
-                                    isOptionEqualToValue={(option, value) =>
-                                      option.value === value.value
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        className="input-field-crud"
-                                        placeholder='e.g Create Login Screen"'
-                                        label="Task Name *"
-                                        InputLabelProps={{ shrink: true }}
-                                      />
-                                    )}
-                                  />
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <Autocomplete
-                                    disablePortal
-                                    name="statusTaskId"
-                                    className="autocomplete-input autocomplete-on-popup"
-                                    options={optStatus}
-                                    defaultValue={
-                                      optStatus.find(
-                                        (option) =>
-                                          option.status === res.statusTaskName
-                                      ) || null
-                                    }
-                                    getOptionLabel={(option) => option.status}
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                    onChange={(_event, newValue) =>
-                                      handleChange(
-                                        {
-                                          target: {
-                                            name: "statusTaskId",
-                                            value: newValue.id,
-                                          },
-                                        },
-                                        idxProject,
-                                        index,
-                                        true
-                                      )
-                                    }
-                                    isOptionEqualToValue={(option, value) =>
-                                      option.value === value.value
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        className="input-field-crud"
-                                        placeholder="e.g In Progress"
-                                        label="Status Task *"
-                                        InputLabelProps={{ shrink: true }}
-                                      />
-                                    )}
-                                  />
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                  <TextField
-                                    focused
-                                    name="duration"
-                                    value={res.duration}
-                                    onChange={(e) =>
-                                      handleChange(e, idxProject, index, true)
-                                    }
-                                    className="input-field-crud"
-                                    placeholder="e.g Create Login Screen"
-                                    type="number"
-                                    label="Estimation Effort *"
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                  />
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <TextField
-                                    focused
-                                    name="taskItem"
-                                    value={res.taskItem}
-                                    onChange={(e) =>
-                                      handleChange(e, idxProject, index, true)
-                                    }
-                                    className="input-field-crud"
-                                    placeholder='e.g Create Login Screen"'
-                                    label="Task Detail"
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                    multiline
-                                    maxRows={4}
-                                  />
-                                </Grid>
-                              </Grid>
-                            </AccordionDetails>
-                          </Accordion>
-                        </>
-                      ))}
-                    </Grid>
-                    <Grid
-                      container
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      <Grid item xs={6} textAlign="left">
-                        <Button
-                          onClick={() => AddTask(idxProject)}
-                          variant="outlined"
-                          className="button-text"
-                          startIcon={<AddIcon />}
-                        >
-                          Add Task
-                        </Button>
-                      </Grid>
-                      {idxProject > 0 && (
-                        <Grid item xs={6} textAlign="right">
-                          <Button
-                            onClick={() => RemoveProject(idxProject)}
-                            variant="outlined"
-                            color="error"
-                            className="button-text"
-                            startIcon={<Remove />}
-                          >
-                            Remove Project
-                          </Button>
-                        </Grid>
-                      )}
-                    </Grid>
-                  </Grid>
-                </div>
-              ))}
-            </>
+            <h1></h1>
           ) : (
-            <>
-              <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["TimePicker"]}>
-                    <Grid item>
-                      <TimePicker
-                        label="Start Time *"
-                        value={startTime}
-                        onChange={(start) => {
-                          if (start) {
-                            setStartTime(start.format("HH:mm:ss"));
-                            setIsStartTimeError(false);
-                            setIsStartTimeTouched(true);
-                          } else {
-                            setStartTime("");
-                            setIsStartTimeError(true);
-                            setIsStartTimeTouched(true);
-                          }
-                        }}
-                        ampm={false}
-                      />
-                      {isStartTimeError && isStartTimeTouched && (
-                        <Typography sx={errorTextStyles}>
-                          {"Start Time can not be empty"}
-                        </Typography>
-                      )}
-                    </Grid>
-                    <Grid item>
-                      <TimePicker
-                        label="End Time *"
-                        value={endTime}
-                        onChange={(end) => {
-                          const newEndTime = end.format("HH:mm:ss");
-                          const newStartTime = startTime;
-
-                          if (newStartTime && newEndTime <= newStartTime) {
-                            setIsEndTimeError(true);
-                          } else {
-                            setEndTime(newEndTime);
-                            setIsLocalizationFilled(true);
-                            setIsEndTimeError(false);
-                          }
-                        }}
-                        ampm={false}
-                      />
-                      {isEndTimeError && (
-                        <Typography sx={errorTextStyles}>
-                          {"End Time cannot be earlier than Start Time"}
-                        </Typography>
-                      )}
-                    </Grid>
-                  </DemoContainer>
-                </LocalizationProvider>
-              </Grid>
-
-              {isLocalizationFilled ? (
-                dataOvertime.listProject.length > 0 &&
-                dataOvertime.listProject.map((resProject, idxProject) => (
-                  <div
-                    className={opentask ? "card-project" : ""}
-                    key={`${idxProject + 1}-project`}
-                  >
-                    <Grid container rowSpacing={2}>
-                      <Grid item xs={12}>
-                        <Autocomplete
-                          disablePortal
-                          name="project"
-                          className="autocomplete-input autocomplete-on-popup"
-                          options={optProject}
-                          getOptionLabel={(option) => option.name}
-                          sx={{
-                            width: "100%",
-                            marginTop: "20px",
-                            backgroundColor: "white",
-                          }}
-                          onChange={(_event, newValue) => {
-                            if (newValue) {
-                              getDataTask(newValue.id);
-                              handleChangeProject(newValue.id, idxProject);
-                              setOpentask(true);
-                              setIsProjectEmptyArray((prev) => {
-                                const newArr = [...prev];
-                                newArr[idxProject] = false;
-                                return newArr;
-                              });
-                            } else {
-                              setOpentask(false);
-                              setIsProjectEmptyArray((prev) => {
-                                const newArr = [...prev];
-                                newArr[idxProject] = true;
-                                return newArr;
-                              });
-                              // setDataOvertime([clearProject]);
-                            }
-                          }}
-                          isOptionEqualToValue={(option, value) =>
-                            option.value === value.value
-                          }
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              className="input-field-crud"
-                              label="Project *"
-                              InputLabelProps={{ shrink: true }}
-                              placeholder="Select Project"
-                            />
-                          )}
-                        />
-                        {isProjectEmptyArray[idxProject] && (
-                          <Typography sx={errorTextStyles}>
-                            {"Project can not be empty"}
-                          </Typography>
-                        )}
-                      </Grid>
-                      <Grid item xs={12}>
-                        {resProject.value !== "" &&
-                          resProject.listTask.map((res, index) => (
-                            <Accordion
-                              key={res.id}
-                              sx={{ boxShadow: "none", width: "100%" }}
-                            >
-                              <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                className="header-accordion"
-                              >
-                                <Typography sx={{ fontSize: "24px" }}>
-                                  Task {index + 1}
-                                </Typography>
-                                <DeleteIcon
-                                  className="icon-trash"
-                                  onClick={(e) =>
-                                    deleteTask(e, idxProject, index)
-                                  }
-                                />
-                              </AccordionSummary>
-                              <AccordionDetails>
-                                <Grid container rowSpacing={2}>
-                                  <Grid item xs={12}>
-                                    <Autocomplete
-                                      disablePortal
-                                      name="taskName"
-                                      className="autocomplete-input autocomplete-on-popup"
-                                      options={optTask}
-                                      getOptionLabel={(option) =>
-                                        option.taskName
-                                      }
-                                      sx={{
-                                        width: "100%",
-                                        marginTop: "20px",
-                                        backgroundColor: "white",
-                                      }}
-                                      onChange={(_event, newValue) => {
-                                        if (newValue) {
-                                          handleChange(
-                                            {
-                                              target: {
-                                                name: "taskName",
-                                                value: newValue.taskName,
-                                              },
-                                            },
-                                            idxProject,
-                                            index,
-                                            false,
-                                            newValue.backlogId
-                                          );
-                                        } else {
-                                          handleChange({
-                                            target: {
-                                              name: "taskName",
-                                              value: null,
-                                            },
-                                          });
-                                        }
-                                      }}
-                                      isOptionEqualToValue={(option, value) =>
-                                        option.value === value.value
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          className="input-field-crud"
-                                          placeholder='e.g Create Login Screen"'
-                                          label="Task Name *"
-                                          InputLabelProps={{ shrink: true }}
-                                        />
-                                      )}
-                                    />
-                                    {isTaskNameEmpty && (
-                                      <Typography sx={errorTextStyles}>
-                                        {"Task Name can not be empty"}
-                                      </Typography>
-                                    )}
-                                  </Grid>
-
-                                  <Grid item xs={12}>
-                                    <Autocomplete
-                                      disablePortal
-                                      name="statusTaskId"
-                                      className="autocomplete-input autocomplete-on-popup"
-                                      options={optStatus}
-                                      getOptionLabel={(option) => option.status}
-                                      sx={{
-                                        width: "100%",
-                                        backgroundColor: "white",
-                                      }}
-                                      onChange={(_event, newValue) => {
-                                        if (newValue) {
-                                          handleChange(
-                                            {
-                                              target: {
-                                                name: "statusTaskId",
-                                                value: newValue.id,
-                                              },
-                                            },
-                                            idxProject,
-                                            index
-                                          );
-                                        } else {
-                                          handleChange({
-                                            target: {
-                                              name: "statusTaskId",
-                                              value: null,
-                                            },
-                                          });
-                                        }
-                                      }}
-                                      isOptionEqualToValue={(option, value) =>
-                                        option.value === value.value
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          className="input-field-crud"
-                                          placeholder="e.g In Progress"
-                                          label="Status Task *"
-                                          InputLabelProps={{ shrink: true }}
-                                        />
-                                      )}
-                                    />
-                                    {isStatusTaskEmpty && (
-                                      <Typography sx={errorTextStyles}>
-                                        {"Status Task can not be empty"}
-                                      </Typography>
-                                    )}
-                                  </Grid>
-
-                                  <Grid item xs={12}>
-                                    <TextField
-                                      focused
-                                      name="duration"
-                                      value={res.duration}
-                                      onChange={(e) =>
-                                        handleChange(e, idxProject, index)
-                                      }
-                                      type="number"
-                                      className="input-field-crud"
-                                      placeholder="e.g Create Login Screen"
-                                      label="Estimation Effort *"
-                                      sx={{
-                                        width: "100%",
-                                        backgroundColor: "white",
-                                      }}
-                                    />
-                                    {isEstimationEffortEmpty && (
-                                      <Typography sx={errorTextStyles}>
-                                        {"Estimation Effort can not be empty"}
-                                      </Typography>
-                                    )}
-                                  </Grid>
-                                  <Grid item xs={12}>
-                                    <TextField
-                                      focused
-                                      name="taskItem"
-                                      onChange={(e) =>
-                                        handleChange(e, idxProject, index)
-                                      }
-                                      className="input-field-crud"
-                                      placeholder='e.g Create Login Screen"'
-                                      label="Task Detail"
-                                      sx={{
-                                        width: "100%",
-                                        backgroundColor: "white",
-                                      }}
-                                      multiline
-                                      maxRows={4}
-                                    />
-                                  </Grid>
-                                </Grid>
-                              </AccordionDetails>
-                            </Accordion>
-                          ))}
-                      </Grid>
-                      <Grid
-                        container
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Grid item xs={6} textAlign="left">
-                          <Button
-                            onClick={() => AddTask(idxProject)}
-                            variant="outlined"
-                            className="button-text"
-                            startIcon={<AddIcon />}
-                          >
-                            Add Task
-                          </Button>
-                        </Grid>
-                        {idxProject > 0 && (
-                          <Grid item xs={6} textAlign="right">
-                            <Button
-                              onClick={() => RemoveProject(idxProject)}
-                              variant="outlined"
-                              color="error"
-                              className="button-text"
-                              startIcon={<Remove />}
-                            >
-                              Remove Project
-                            </Button>
-                          </Grid>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </div>
-                ))
-              ) : (
-                <></>
-              )}
-            </>
+            <AddOvertime
+              errors={errors}
+              handleChange={handleChange}
+              handleChangeProject={handleChangeProject}
+              datas={datas}
+              setDatas={setDatas}
+              dataOvertime={dataOvertime}
+              optProject={optProject}
+              optTask={optTask}
+              optStatus={optStatus}
+              isLocalizationFilled={isLocalizationFilled}
+              setIsLocalizationFilled={setIsLocalizationFilled}
+              opentask={opentask}
+              setOpentask={setOpentask}
+              deleteTask={deleteTask}
+              AddTask={AddTask}
+              RemoveProject={RemoveProject}
+              errorTextStyles={errorTextStyles}
+              getDataTask={getDataTask}
+              currentUserId={currentUserId}
+              setOptTask={setOptTask}
+            />
           )}
         </DialogContent>
         <DialogActions>
@@ -1217,7 +546,6 @@ const CreateOvertime = ({
             <Button
               variant="saveButton"
               className="button-text"
-              disabled={isEndTimeError || isStartTimeError}
               onClick={handleSubmit}
             >
               Submit
@@ -1260,13 +588,35 @@ const CreateOvertime = ({
                       setDialogCancel(false);
                     }
                   : () => {
-                      setStartTime(null);
-                      setEndTime(null);
+                      setDatas({
+                        startTime: "",
+                        endTime: "",
+                        projects: [{ projectId: "" }],
+                        tasks: [
+                          [{ taskName: "", statusTaskId: "", duration: "" }],
+                        ],
+                      });
                       closeTask(false);
                       setOpentask(false);
                       setIsLocalizationFilled(false);
-                      setResetForm(true);
                       setDialogCancel(false);
+                      setErrors({});
+                      setDataOvertime({
+                        listProject: [
+                          {
+                            projectId: "",
+                            listTask: [
+                              {
+                                backlogId: null,
+                                taskName: "",
+                                statusTaskId: "",
+                                duration: "",
+                                taskItem: "",
+                              },
+                            ],
+                          },
+                        ],
+                      });
                     }
               }
             >
