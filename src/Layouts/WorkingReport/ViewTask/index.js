@@ -179,7 +179,6 @@ export default function ViewTask({
                                         </Typography>
                                       </Grid>
                                       <Rating
-                                        // className="rating-outline"
                                         variant="outlined"
                                         name="rating"
                                         value={parseInt(taskItem.priority)}
@@ -192,7 +191,7 @@ export default function ViewTask({
                                 <Grid item xs={6}>
                                   <Grid item xs={12}>
                                     <Typography variant="labelHeaderDetail">
-                                      Actual Effort
+                                      Estimation Effort
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={12}>
