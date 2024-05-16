@@ -12,11 +12,11 @@ import "../../../App.css";
 import { useNavigate } from "react-router-dom";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
-import { createOvertimeSchema } from "./schema";
 import { calculateTimeDifference, parseTime } from "./timeUtils";
 import { getDataTask, getDataProject, getDataStatus } from "./apiFunctions";
-import dayjs from "dayjs";
 import AddOvertime from "./Form/addOvertime";
+import { timeSchema } from "../../../global/timeSchema";
+import { projectSchema } from "../../../global/projectSchema";
 
 const CreateOvertime = ({
   open,
@@ -111,6 +111,10 @@ const CreateOvertime = ({
       setDatas({
         ...datas,
         projects: [...datas.projects, { projectId: "" }],
+        tasks: [
+          ...datas.tasks,
+          [{ taskName: "", statusTaskId: "", duration: "" }],
+        ],
       });
       setDataOvertime(temp);
     }
@@ -179,10 +183,15 @@ const CreateOvertime = ({
     const isDuration = name === "duration";
     const isTaskName = name === "taskName";
 
+    let dataArray = [...datas.tasks];
+
+    if (!dataArray[idxProject]) {
+      dataArray[idxProject] = [];
+    }
+
     const updateData = (data) => {
       if (isDuration) {
         if (value !== "") {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             duration: value,
@@ -206,7 +215,6 @@ const CreateOvertime = ({
               calculatedValue;
           }
         } else {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             duration: "",
@@ -218,7 +226,6 @@ const CreateOvertime = ({
         }
       } else if (isTaskName) {
         if (value === null) {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             taskName: "",
@@ -228,7 +235,6 @@ const CreateOvertime = ({
             tasks: dataArray,
           });
         } else {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             taskName: String(value),
@@ -241,7 +247,6 @@ const CreateOvertime = ({
         }
       } else {
         if (value === null) {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             statusTaskId: "",
@@ -251,7 +256,6 @@ const CreateOvertime = ({
             tasks: dataArray,
           });
         } else {
-          let dataArray = [...datas.tasks];
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             statusTaskId: String(value),
@@ -312,6 +316,7 @@ const CreateOvertime = ({
       temp.listProject[idxProject].listTask.splice(index, 1);
       setDataEditOvertime(temp);
     } else {
+      datas.tasks[idxProject].splice(index, 1);
       const temp = { ...dataOvertime };
       temp.listProject[idxProject].listTask.splice(index, 1);
       setDataOvertime(temp);
@@ -457,9 +462,10 @@ const CreateOvertime = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationResult = createOvertimeSchema.safeParse(datas);
+    const validationTime = timeSchema.safeParse(datas);
+    const validationProject = projectSchema.safeParse(datas);
 
-    if (validationResult.success) {
+    if (validationTime.success && validationProject.success) {
       setErrors("");
       if (isEdit) {
         saveEdit();
@@ -468,9 +474,21 @@ const CreateOvertime = ({
       }
     } else {
       const validationErrors = {};
-      validationResult.error.errors.forEach((err) => {
-        validationErrors[err.path] = err.message;
-      });
+
+      if (validationTime.error && Array.isArray(validationTime.error.errors)) {
+        validationTime.error.errors.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+      }
+
+      if (
+        validationProject.error &&
+        Array.isArray(validationProject.error.errors)
+      ) {
+        validationProject.error.errors.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+      }
       setErrors(validationErrors);
     }
   };
