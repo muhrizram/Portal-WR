@@ -162,7 +162,9 @@ export default function BigCalendar({
       const isHoliday = event.title === "Holiday";
       const isViewOvertime = event.title === "View Overtime";
       const isOvertime =
-        (event.title === "Overtime" && event.presenceName === "Hadir") ||
+        (event.title === "Overtime" &&
+          event.presenceName === "Hadir" &&
+          event.task == true) ||
         event.holiday === true;
       const isTaskNotFilled =
         !event.task && event.title === "Task" && event.presenceName === "Hadir";
@@ -279,7 +281,8 @@ export default function BigCalendar({
     };
 
     if (
-      ((event.title === "Overtime" || event.title === "Task") &&
+      (((event.title === "Overtime" && event.task === true) ||
+        event.title === "Task") &&
         event.presenceName === "Hadir") ||
       event.holiday === true
     ) {
@@ -294,36 +297,6 @@ export default function BigCalendar({
       style: finalStyle,
     };
   };
-
-  const MOCK_EVENTS = [
-    {
-      id: 1,
-      title: "Event 1",
-      start: "2024-05-15T08:31:38",
-      end: "2024-05-15T18:15:58",
-      description:
-        "Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem.\n\nPraesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio.",
-      color: "#C97D60",
-    },
-    {
-      id: 2,
-      title: "Event 2",
-      start: "2024-05-15T13:30:02",
-      end: "2024-05-15T17:30:20",
-      description:
-        "Duis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum.\n\nIn hac habitasse platea dictumst. Morbi vestibulum, velit id pretium iaculis, diam erat fermentum justo, nec condimentum neque sapien placerat ante. Nulla justo.\n\nAliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.",
-      color: "green",
-    },
-  ];
-
-  const concos = MOCK_EVENTS.map((event) => {
-    return {
-      title: event.title,
-      start: new Date(event.start),
-      end: new Date(event.end),
-      color: event.color,
-    };
-  });
 
   return (
     <Grid>
