@@ -265,7 +265,7 @@ export default function BigCalendar({
       ...specificStyle,
     };
 
-    const finalStyle = {
+    let finalStyle = {
       backgroundColor: combinedStyle.backgroundColor,
       borderRadius: "6px",
       margin: "0px auto 5px auto",
@@ -277,6 +277,18 @@ export default function BigCalendar({
       color: combinedStyle.color,
       textAlign: "center",
     };
+
+    if (
+      ((event.title === "Overtime" || event.title === "Task") &&
+        event.presenceName === "Hadir") ||
+      event.holiday === true
+    ) {
+      finalStyle = {
+        ...finalStyle,
+        opacity: 1,
+        cursor: "pointer",
+      };
+    }
 
     return {
       style: finalStyle,

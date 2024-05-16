@@ -24,8 +24,6 @@ export const cellStyle = {
   Overtime: {
     backgroundColor: "#FFF9F2",
     color: "#734011",
-    opacity: 1,
-    cursor: "pointer",
   },
   "View Overtime": {
     backgroundColor: "#FFF9F2",
@@ -42,13 +40,9 @@ export const cellStyle = {
   Task: {
     backgroundColor: "#F0F3FF",
     color: "#618AEA",
-    cursor: "pointer",
-    opacity: 1,
   },
   Holiday: {
     backgroundColor: "#FFF4F2",
     color: "#CB3A31",
-    cursor: "pointer",
-    opacity: 1,
   },
 };
