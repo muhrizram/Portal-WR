@@ -18,11 +18,13 @@ export default function DateRangeCalendar({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
+  const [minDate, setMinDate] = useState(null);
 
   const handleDateChange = (date, isStart) => {
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
     if (isStart) {
       setStartDate(formattedDate);
+      setMinDate(dayjs(date));
     } else {
       setEndDate(formattedDate);
     }
@@ -40,6 +42,14 @@ export default function DateRangeCalendar({
       setDataAlert({
         severity: "error",
         message: "Incorrect date format",
+        open: true,
+      });
+    }
+
+    if (startDate > endDate) {
+      setDataAlert({
+        severity: "error",
+        message: "End date can not be earlier than start date",
         open: true,
       });
     }
@@ -77,6 +87,8 @@ export default function DateRangeCalendar({
               <MobileDatePicker
                 value={endDate}
                 format="DD/MM/YYYY"
+                disabled={!startDate}
+                minDate={minDate}
                 onChange={(date) => handleDateChange(date.$d, false)}
               />
             </DemoItem>
@@ -112,6 +124,8 @@ export default function DateRangeCalendar({
             <DemoItem>
               <MobileDatePicker
                 value={endDate}
+                disabled={!startDate}
+                minDate={minDate}
                 format="DD/MM/YYYY"
                 onChange={(date) => handleDateChange(date.$d, false)}
               />
