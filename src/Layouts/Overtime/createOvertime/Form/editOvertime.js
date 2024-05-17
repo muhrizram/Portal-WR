@@ -45,7 +45,6 @@ const EditOvertime = ({
   setIsLocalizationFilled,
   setIsEndTimeError,
 }) => {
-  console.log("Data Edit Overtime", dataEditOvertime);
   return (
     <>
       <Grid item xs={12}>
@@ -172,7 +171,6 @@ const EditOvertime = ({
             <Grid item xs={12}>
               {resProject.listTask.map((res, index) => (
                 <>
-                  {console.log("Accordion", resProject)}
                   <Accordion
                     onChange={() =>
                       getDataTask(
