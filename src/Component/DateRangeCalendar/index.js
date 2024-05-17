@@ -14,7 +14,13 @@ export default function DateRangeCalendar({
   setActiveMonth,
   setStartDateCall,
   setEndDateCall,
+  setResetFilterRef,
 }) {
+  useEffect(() => {
+    if (setResetFilterRef) {
+      setResetFilterRef(ResetFilter);
+    }
+  }, [setResetFilterRef]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
