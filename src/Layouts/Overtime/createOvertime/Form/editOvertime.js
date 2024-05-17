@@ -119,11 +119,8 @@ const EditOvertime = ({
               <Autocomplete
                 disablePortal
                 disabled={
-                  idxProject === 0
-                    ? addTaskinEdit && projectEdit[idxProject - 1]
-                      ? false
-                      : true
-                    : false
+                  idxProject === 0 &&
+                  !(addTaskinEdit && projectEdit[idxProject - 1])
                 }
                 name="project"
                 className="autocomplete-input autocomplete-on-popup"
