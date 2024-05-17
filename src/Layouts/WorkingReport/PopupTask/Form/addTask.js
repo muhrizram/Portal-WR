@@ -127,9 +127,9 @@ const CreateTask = ({
                               width: "100%",
                               backgroundColor: "white",
                             }}
-                            onChange={(_event) => {
+                            onChange={(event) => {
                               const temp = { ...dataProject };
-                              const inputValue = _event.target.value;
+                              const inputValue = event.target.value;
                               const numericValue =
                                 inputValue === ""
                                   ? null
@@ -138,6 +138,31 @@ const CreateTask = ({
                                 index
                               ].duration = numericValue;
                               setProject(temp);
+
+                              let arrayProject = [...datas.projects];
+                              let dataArray = [...datas.tasks];
+
+                              arrayProject[idxProject] = { projectId: "Absen" };
+
+                              if (!dataArray[idxProject]) {
+                                dataArray[idxProject] = [];
+                              }
+
+                              dataArray[idxProject][index] = {
+                                ...dataArray[idxProject][index],
+                                taskName: "Absen",
+                                statusTaskId: "Absen",
+                                duration: String(
+                                  event.target.value !== null
+                                    ? event.target.value
+                                    : ""
+                                ),
+                              };
+                              setDatas({
+                                ...datas,
+                                projects: arrayProject,
+                                tasks: dataArray,
+                              });
                             }}
                             value={
                               res.duration == undefined ? "" : res.duration
@@ -146,7 +171,15 @@ const CreateTask = ({
                             type="number"
                             placeholder="e.g 0,5 or 3 (hour)"
                             label="Duration"
+                            error={
+                              errors[`tasks,${idxProject},${index},duration`]
+                            }
                           />
+                          {errors[`tasks,${idxProject},${index},duration`] && (
+                            <Typography sx={errorTextStyles}>
+                              {errors[`tasks,${idxProject},${index},duration`]}
+                            </Typography>
+                          )}
                         </Grid>
                         <Grid item xs={12}>
                           <TextField
