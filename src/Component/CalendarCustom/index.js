@@ -109,7 +109,7 @@ export default function BigCalendar({
       .forEach((event) => {
         let title = "";
 
-        if (event.presenceName == null && event.holiday == false) {
+        if (event.presenceName === null && event.holiday === false) {
           title = "Attendance";
         } else {
           title = event.presenceName;
@@ -124,7 +124,7 @@ export default function BigCalendar({
         };
         mappedEvents.push(attendance);
 
-        if (event.overtime == true) {
+        if (event.overtime === true) {
           title = "View Overtime";
         } else {
           title = "Overtime";
@@ -139,7 +139,7 @@ export default function BigCalendar({
         };
         mappedEvents.push(overtime);
 
-        if (event.holiday == true) {
+        if (event.holiday === true) {
           title = "Holiday";
         } else {
           title = "Task";
@@ -168,7 +168,7 @@ export default function BigCalendar({
       const isOvertime =
         (event.title === "Overtime" &&
           event.presenceName === "Hadir" &&
-          event.task == true) ||
+          event.task === true) ||
         event.holiday === true;
       const isTaskNotFilled =
         !event.task && event.title === "Task" && event.presenceName === "Hadir";
