@@ -209,7 +209,6 @@ export const SubmitSave = async (
         navigate("/workingReport");
       }
     } catch (error) {
-      console.error("Error:", error);
     }
   } else {
     const validationErrors = {};
