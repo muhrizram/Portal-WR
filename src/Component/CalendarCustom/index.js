@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -62,6 +62,8 @@ export default function BigCalendar({
   const [descHoliday, setdescHoliday] = useState(null);
   const [_finalDateCalendar, setfinalDateCalendar] = useState();
 
+  const ResetFilterRef = useRef(null);
+
   useEffect(() => {
     if (isDataObtained) {
       if (StartDate) {
@@ -69,6 +71,8 @@ export default function BigCalendar({
       } else {
         setActiveMonth(moment(filter.startDate).toDate());
       }
+    } else {
+      ResetFilterRef.current();
     }
   }, [isDataObtained, StartDate]);
 
@@ -340,6 +344,9 @@ export default function BigCalendar({
         setEndDateCall={setEndDate}
         setStartDateCall={setStartDate}
         setWeekendDates={setWeekendDates}
+        setResetFilterRef={(ref) => {
+          ResetFilterRef.current = ref;
+        }}
       />
       <Calendar
         localizer={localizer}
