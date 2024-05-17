@@ -146,7 +146,6 @@ const CreateOvertime = ({
     let data = dataDetail.attributes.listProject.length;
     let time = dataDetail.attributes;
     for (let i = 0; i < data; i++) {
-      console.log("Data Detail", dataDetail.attributes);
       temp.push(dataDetail.attributes.listProject[i]);
       setDataEditOvertime((prevDataEditOvertime) => ({
         ...prevDataEditOvertime,
@@ -283,9 +282,6 @@ const CreateOvertime = ({
             ...datas,
             tasks: dataArray,
           });
-          console.log("Yang tadi error", data);
-          console.log("IdxProject", idxProject);
-          console.log("Backlog error", data);
           data.listProject[idxProject].listTask[index].backlogId = backlogId;
         }
       } else {
@@ -515,7 +511,6 @@ const CreateOvertime = ({
     const validationTime = timeSchema.safeParse(datas);
     const validationProject = projectSchema.safeParse(datas);
     if (validationTime.success && validationProject.success) {
-      console.log("Data Valid", datas);
       setErrors("");
       if (isEdit) {
         saveEdit();
@@ -524,7 +519,6 @@ const CreateOvertime = ({
       }
     } else {
       const validationErrors = {};
-      console.log("Data Invalid", datas);
       if (validationTime.error && Array.isArray(validationTime.error.errors)) {
         validationTime.error.errors.forEach((err) => {
           validationErrors[err.path] = err.message;
