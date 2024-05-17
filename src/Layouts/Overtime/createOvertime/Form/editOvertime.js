@@ -17,16 +17,22 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { Remove } from "@mui/icons-material";
+import { getDataTask } from "../apiFunctions";
 
 const EditOvertime = ({
+  addTaskinEdit,
+  projectEdit,
+  errors,
+  errorTextStyles,
+  currentUserId,
+  setOptTask,
+  datas,
+  setDatas,
   dataEditOvertime,
-  startTime,
-  setStartTime,
   setEndTime,
   setTimeTo,
   opentask,
   setOpentask,
-  getDataTask,
   optProject,
   optTask,
   optStatus,
@@ -39,6 +45,7 @@ const EditOvertime = ({
   setIsLocalizationFilled,
   setIsEndTimeError,
 }) => {
+  console.log("Data Edit Overtime", dataEditOvertime);
   return (
     <>
       <Grid item xs={12}>
@@ -46,39 +53,57 @@ const EditOvertime = ({
           <DemoContainer components={["TimePicker"]}>
             <TimePicker
               label="Start Time *"
+              slotProps={{
+                textField: {
+                  error: errors.startTime ? true : false,
+                },
+              }}
               defaultValue={setTimeTo(dataEditOvertime.startTime) || null}
-              onChange={(start) => setStartTime(start.format("HH:mm:ss"))}
+              onChange={(e) => {
+                if (e) {
+                  setDatas({
+                    ...datas,
+                    startTime: e.format("HH:mm:ss"),
+                  });
+                } else {
+                  setDatas({
+                    ...datas,
+                    startTime: "",
+                  });
+                }
+              }}
               ampm={false}
             />
+            {errors.startTime && (
+              <Typography sx={errorTextStyles}>{errors.startTime}</Typography>
+            )}
             <Grid item>
               <TimePicker
                 label="End Time *"
+                slotProps={{
+                  textField: {
+                    error: errors.endTime ? true : false,
+                  },
+                }}
                 defaultValue={setTimeTo(dataEditOvertime.endTime) || null}
-                onChange={(end) => {
-                  const newEndTime = end.format("HH:mm:ss");
-                  const newStartTime = startTime || dataEditOvertime.startTime;
-
-                  if (newStartTime && newEndTime <= newStartTime) {
-                    setEndTime(dataEditOvertime.endTime);
-                    setIsEndTimeError(true);
-                  } else {
-                    setEndTime(newEndTime);
-                    setIsEndTimeError(false);
+                onChange={(e) => {
+                  if (e) {
+                    setDatas({
+                      ...datas,
+                      endTime: e.format("HH:mm:ss"),
+                    });
                     setIsLocalizationFilled(true);
+                  } else {
+                    setDatas({
+                      ...datas,
+                      endTime: "",
+                    });
                   }
                 }}
                 ampm={false}
               />
-              {isEndTimeError && (
-                <Typography
-                  color="#d32f2f"
-                  textAlign={"left"}
-                  fontSize={12}
-                  paddingY={"3px"}
-                  marginLeft={"16px"}
-                >
-                  {"End Time cannot be earlier than Start Time"}
-                </Typography>
+              {errors.endTime && (
+                <Typography sx={errorTextStyles}>{errors.endTime}</Typography>
               )}
             </Grid>
           </DemoContainer>
@@ -95,9 +120,11 @@ const EditOvertime = ({
               <Autocomplete
                 disablePortal
                 disabled={
-                  !!optProject.find(
-                    (option) => option.id == resProject.projectId
-                  )
+                  idxProject === 0
+                    ? addTaskinEdit && projectEdit[idxProject - 1]
+                      ? false
+                      : true
+                    : false
                 }
                 name="project"
                 className="autocomplete-input autocomplete-on-popup"
@@ -115,7 +142,7 @@ const EditOvertime = ({
                 }}
                 onChange={(_event, newValue) => {
                   if (newValue) {
-                    getDataTask(newValue.id);
+                    getDataTask(newValue.id, currentUserId, setOptTask);
                     handleChangeProject(newValue.id, idxProject);
                     setOpentask(true);
                   } else {
@@ -132,15 +159,28 @@ const EditOvertime = ({
                     label="Project *"
                     InputLabelProps={{ shrink: true }}
                     placeholder="Select Project"
+                    error={errors[`projects,${idxProject},projectId`]}
                   />
                 )}
               />
+              {errors[`projects,${idxProject},projectId`] && (
+                <Typography sx={errorTextStyles}>
+                  {errors[`projects,${idxProject},projectId`]}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12}>
               {resProject.listTask.map((res, index) => (
                 <>
+                  {console.log("Accordion", resProject)}
                   <Accordion
-                    onChange={() => getDataTask(resProject.projectId)}
+                    onChange={() =>
+                      getDataTask(
+                        resProject.projectId,
+                        currentUserId,
+                        setOptTask
+                      )
+                    }
                     key={res.id}
                     sx={{ boxShadow: "none", width: "100%" }}
                   >
@@ -151,10 +191,12 @@ const EditOvertime = ({
                       <Typography sx={{ fontSize: "24px" }}>
                         Task {index + 1}
                       </Typography>
-                      <DeleteIcon
-                        className="icon-trash"
-                        onClick={(e) => deleteTask(e, idxProject, index)}
-                      />
+                      {index > 0 && (
+                        <DeleteIcon
+                          className="icon-trash"
+                          onClick={(e) => deleteTask(e, idxProject, index)}
+                        />
+                      )}
                     </AccordionSummary>
                     <AccordionDetails>
                       <Grid container rowSpacing={2}>
@@ -165,13 +207,8 @@ const EditOvertime = ({
                             className="autocomplete-input autocomplete-on-popup"
                             options={optTask}
                             defaultValue={
-                              resProject.projectId
-                                ? {
-                                    backlogId: res.backlogId,
-                                    taskName:
-                                      res.taskCode + " - " + res.taskName,
-                                    actualEffort: res.duration,
-                                  }
+                              res.taskName
+                                ? { taskName: res.taskName, id: res.taskId }
                                 : null
                             }
                             getOptionLabel={(option) => option.taskName}
@@ -194,6 +231,18 @@ const EditOvertime = ({
                                   true,
                                   newValue.backlogId
                                 );
+                              } else {
+                                handleChange(
+                                  {
+                                    target: {
+                                      name: "taskName",
+                                      value: null,
+                                    },
+                                  },
+                                  idxProject,
+                                  index,
+                                  true
+                                );
                               }
                             }}
                             isOptionEqualToValue={(option, value) =>
@@ -206,9 +255,19 @@ const EditOvertime = ({
                                 placeholder='e.g Create Login Screen"'
                                 label="Task Name *"
                                 InputLabelProps={{ shrink: true }}
+                                error={
+                                  errors[
+                                    `tasks,${idxProject},${index},taskName`
+                                  ]
+                                }
                               />
                             )}
                           />
+                          {errors[`tasks,${idxProject},${index},taskName`] && (
+                            <Typography sx={errorTextStyles}>
+                              {errors[`tasks,${idxProject},${index},taskName`]}
+                            </Typography>
+                          )}
                         </Grid>
                         <Grid item xs={12}>
                           <Autocomplete
@@ -226,19 +285,33 @@ const EditOvertime = ({
                               width: "100%",
                               backgroundColor: "white",
                             }}
-                            onChange={(_event, newValue) =>
-                              handleChange(
-                                {
-                                  target: {
-                                    name: "statusTaskId",
-                                    value: newValue.id,
+                            onChange={(_event, newValue) => {
+                              if (newValue) {
+                                handleChange(
+                                  {
+                                    target: {
+                                      name: "statusTaskId",
+                                      value: newValue.id,
+                                    },
                                   },
-                                },
-                                idxProject,
-                                index,
-                                true
-                              )
-                            }
+                                  idxProject,
+                                  index,
+                                  true
+                                );
+                              } else {
+                                handleChange(
+                                  {
+                                    target: {
+                                      name: "statusTaskId",
+                                      value: null,
+                                    },
+                                  },
+                                  idxProject,
+                                  index,
+                                  true
+                                );
+                              }
+                            }}
                             isOptionEqualToValue={(option, value) =>
                               option.value === value.value
                             }
@@ -249,9 +322,25 @@ const EditOvertime = ({
                                 placeholder="e.g In Progress"
                                 label="Status Task *"
                                 InputLabelProps={{ shrink: true }}
+                                error={
+                                  errors[
+                                    `tasks,${idxProject},${index},statusTaskId`
+                                  ]
+                                }
                               />
                             )}
                           />
+                          {errors[
+                            `tasks,${idxProject},${index},statusTaskId`
+                          ] && (
+                            <Typography sx={errorTextStyles}>
+                              {
+                                errors[
+                                  `tasks,${idxProject},${index},statusTaskId`
+                                ]
+                              }
+                            </Typography>
+                          )}
                         </Grid>
 
                         <Grid item xs={12}>
@@ -259,9 +348,13 @@ const EditOvertime = ({
                             focused
                             name="duration"
                             value={res.duration}
-                            onChange={(e) =>
-                              handleChange(e, idxProject, index, true)
-                            }
+                            onChange={(e) => {
+                              if (e) {
+                                handleChange(e, idxProject, index, true);
+                              } else {
+                                handleChange(null, idxProject, index, true);
+                              }
+                            }}
                             className="input-field-crud"
                             placeholder="e.g Create Login Screen"
                             type="number"
@@ -270,7 +363,15 @@ const EditOvertime = ({
                               width: "100%",
                               backgroundColor: "white",
                             }}
+                            error={
+                              errors[`tasks,${idxProject},${index},duration`]
+                            }
                           />
+                          {errors[`tasks,${idxProject},${index},duration`] && (
+                            <Typography sx={errorTextStyles}>
+                              {errors[`tasks,${idxProject},${index},duration`]}
+                            </Typography>
+                          )}
                         </Grid>
                         <Grid item xs={12}>
                           <TextField

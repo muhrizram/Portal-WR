@@ -17,6 +17,8 @@ import { getDataTask, getDataProject, getDataStatus } from "./apiFunctions";
 import AddOvertime from "./Form/addOvertime";
 import { timeSchema } from "../../../global/timeSchema";
 import { projectSchema } from "../../../global/projectSchema";
+import EditOvertime from "./Form/editOvertime";
+import dayjs from "dayjs";
 
 const CreateOvertime = ({
   open,
@@ -42,6 +44,9 @@ const CreateOvertime = ({
   const [optStatus, setOptStatus] = useState([]);
   const [opentask, setOpentask] = useState(false);
   const [errors, setErrors] = useState({});
+  const [dataDetailnya, setdataDetailnya] = useState({});
+  const [projectEdit, setProjectEdit] = useState([]);
+  const [addtaskinEdit, setAddtaskinEdit] = useState(false);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
 
@@ -88,8 +93,18 @@ const CreateOvertime = ({
     listProject: [clearProject],
   });
 
-  const onAddProject = () => {
+  const onAddProject = (checkProject) => {
+    setDatas({
+      ...datas,
+      projects: [...datas.projects, { projectId: "" }],
+      tasks: [
+        ...datas.tasks,
+        [{ taskName: "", statusTaskId: "", duration: "" }],
+      ],
+    });
     if (isEdit) {
+      setProjectEdit(checkProject);
+      setAddtaskinEdit(true);
       const temp = { ...dataEditOvertime };
       temp.listProject = [
         ...dataEditOvertime.listProject,
@@ -108,19 +123,13 @@ const CreateOvertime = ({
           listTask: [{ ...clearProject }],
         },
       ];
-      setDatas({
-        ...datas,
-        projects: [...datas.projects, { projectId: "" }],
-        tasks: [
-          ...datas.tasks,
-          [{ taskName: "", statusTaskId: "", duration: "" }],
-        ],
-      });
       setDataOvertime(temp);
     }
   };
 
   const RemoveProject = (projectIndex) => {
+    datas.projects.splice(projectIndex, 1);
+    datas.tasks.splice(projectIndex, 1);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject.splice(projectIndex, 1);
@@ -129,7 +138,6 @@ const CreateOvertime = ({
       const temp = { ...dataOvertime };
       temp.listProject.splice(projectIndex, 1);
       setDataOvertime(temp);
-      datas.projects.splice(projectIndex, 1);
     }
   };
 
@@ -138,6 +146,7 @@ const CreateOvertime = ({
     let data = dataDetail.attributes.listProject.length;
     let time = dataDetail.attributes;
     for (let i = 0; i < data; i++) {
+      console.log("Data Detail", dataDetail.attributes);
       temp.push(dataDetail.attributes.listProject[i]);
       setDataEditOvertime((prevDataEditOvertime) => ({
         ...prevDataEditOvertime,
@@ -148,29 +157,60 @@ const CreateOvertime = ({
         createdBy: currentUserId,
         updatedBy: currentUserId,
       }));
+
+      const newProjects = [];
+      const newTasks = [];
+
+      const newStartTime = dataDetail.attributes.startTime;
+      const newEndTime = dataDetail.attributes.endTime;
+
+      dataDetail.attributes.listProject.forEach((data, projectIndex) => {
+        newProjects.push({
+          projectId: String(data.projectId),
+        });
+        data.listTask.forEach((task) => {
+          newTasks[projectIndex] = newTasks[projectIndex] || [];
+          newTasks[projectIndex].push({
+            taskName: task.taskName,
+            statusTaskId: String(task.statusTaskId),
+            duration: String(task.taskDuration),
+          });
+        });
+      });
+      setDatas((prevDatas) => ({
+        ...prevDatas,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        projects: newProjects,
+        tasks: newTasks,
+      }));
     }
   };
 
   const AddTask = (idxProject) => {
+    let temp = null;
     if (isEdit) {
-      const temp = { ...dataEditOvertime };
+      temp = { ...dataEditOvertime };
+    } else {
+      temp = { ...dataOvertime };
+    }
+    const taskLength = temp.listProject[idxProject].listTask.length;
+    let dataArray = [...datas.tasks];
+    dataArray[idxProject][taskLength] = {
+      taskName: "",
+      statusTaskId: "",
+      duration: "",
+    };
+    setDatas({
+      ...datas,
+      tasks: dataArray,
+    });
+    if (isEdit) {
       temp.listProject[idxProject].listTask.push({
         ...clearTask,
       });
       setDataEditOvertime(temp);
     } else {
-      const temp = { ...dataOvertime };
-      const taskLength = temp.listProject[idxProject].listTask.length;
-      let dataArray = [...datas.tasks];
-      dataArray[idxProject][taskLength] = {
-        taskName: "",
-        statusTaskId: "",
-        duration: "",
-      };
-      setDatas({
-        ...datas,
-        tasks: dataArray,
-      });
       temp.listProject[idxProject].listTask.push({
         ...clearTask,
       });
@@ -243,6 +283,9 @@ const CreateOvertime = ({
             ...datas,
             tasks: dataArray,
           });
+          console.log("Yang tadi error", data);
+          console.log("IdxProject", idxProject);
+          console.log("Backlog error", data);
           data.listProject[idxProject].listTask[index].backlogId = backlogId;
         }
       } else {
@@ -281,6 +324,12 @@ const CreateOvertime = ({
   };
 
   const handleChangeProject = (value, idxProject) => {
+    let dataArray = [...datas.projects];
+    dataArray[idxProject] = { projectId: String(value) };
+    setDatas({
+      ...datas,
+      projects: dataArray,
+    });
     if (value !== null) {
       if (isEdit) {
         const temp = { ...dataEditOvertime };
@@ -291,12 +340,6 @@ const CreateOvertime = ({
         const temp = { ...dataOvertime };
         temp.listProject[idxProject].projectId = value;
         temp.listProject[idxProject].listTask = [clearTask];
-        let dataArray = [...datas.projects];
-        dataArray[idxProject] = { projectId: String(value) };
-        setDatas({
-          ...datas,
-          projects: dataArray,
-        });
         setDataOvertime(temp);
       }
     } else {
@@ -327,14 +370,21 @@ const CreateOvertime = ({
     setDialogCancel(false);
   };
 
+  const setTimeTo = (timeString) => {
+    const currentDate = dayjs();
+    const formattedDate = currentDate.format("YYYY-MM-DD");
+    return timeString ? dayjs(`${formattedDate}T${timeString}`) : null;
+  };
+
   useEffect(() => {
     if (isEdit) {
       onEdit();
+      setdataDetailnya(dataDetail);
       setOpentask(true);
     }
     getDataProject(currentUserId, setOptProject);
     getDataStatus(setOptStatus);
-  }, [dataOvertime, dataDetail]);
+  }, [dataOvertime, dataDetailnya, dataDetail]);
 
   const onSave = async () => {
     const data = {
@@ -464,8 +514,8 @@ const CreateOvertime = ({
     e.preventDefault();
     const validationTime = timeSchema.safeParse(datas);
     const validationProject = projectSchema.safeParse(datas);
-
     if (validationTime.success && validationProject.success) {
+      console.log("Data Valid", datas);
       setErrors("");
       if (isEdit) {
         saveEdit();
@@ -474,7 +524,7 @@ const CreateOvertime = ({
       }
     } else {
       const validationErrors = {};
-
+      console.log("Data Invalid", datas);
       if (validationTime.error && Array.isArray(validationTime.error.errors)) {
         validationTime.error.errors.forEach((err) => {
           validationErrors[err.path] = err.message;
@@ -516,7 +566,29 @@ const CreateOvertime = ({
           </DialogContentText>
 
           {isEdit ? (
-            <h1></h1>
+            <EditOvertime
+              addTaskinEdit={addtaskinEdit}
+              projectEdit={projectEdit}
+              errors={errors}
+              errorTextStyles={errorTextStyles}
+              currentUserId={currentUserId}
+              setOptTask={setOptTask}
+              datas={datas}
+              setDatas={setDatas}
+              dataEditOvertime={dataEditOvertime}
+              setTimeTo={setTimeTo}
+              opentask={opentask}
+              setOpentask={setOpentask}
+              optProject={optProject}
+              optTask={optTask}
+              optStatus={optStatus}
+              handleChange={handleChange}
+              handleChangeProject={handleChangeProject}
+              AddTask={AddTask}
+              RemoveProject={RemoveProject}
+              deleteTask={deleteTask}
+              setIsLocalizationFilled={setIsLocalizationFilled}
+            />
           ) : (
             <AddOvertime
               errors={errors}
@@ -543,32 +615,77 @@ const CreateOvertime = ({
           )}
         </DialogContent>
         <DialogActions>
-          <div className="left-container">
-            <Button
-              variant="outlined"
-              className="green-button button-text"
-              onClick={() => onAddProject()}
-              startIcon={<AddIcon />}
-            >
-              Add Project
-            </Button>
-          </div>
-          <div className="right-container">
-            <Button
-              variant="outlined"
-              className="button-text"
-              onClick={() => setDialogCancel(true)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="saveButton"
-              className="button-text"
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-          </div>
+          {isEdit ? (
+            <>
+              <div className="left-container">
+                <Button
+                  variant="outlined"
+                  className="green-button button-text"
+                  onClick={() => {
+                    let CekProject = [];
+                    for (let i = 0; i < optProject.length; i++) {
+                      if (dataDetailnya[i]) {
+                        if (dataDetailnya[i].attributes.projectName) {
+                          CekProject[i] = true;
+                        } else {
+                          CekProject[i] = false;
+                        }
+                      }
+                    }
+                    onAddProject(CekProject);
+                  }}
+                  startIcon={<AddIcon />}
+                >
+                  Add Project
+                </Button>
+              </div>
+              <div className="right-container">
+                <Button
+                  variant="outlined"
+                  className="button-text"
+                  onClick={() => setDialogCancel(true)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="saveButton"
+                  className="button-text"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="left-container">
+                <Button
+                  variant="outlined"
+                  className="green-button button-text"
+                  onClick={() => onAddProject()}
+                  startIcon={<AddIcon />}
+                >
+                  Add Project
+                </Button>
+              </div>
+              <div className="right-container">
+                <Button
+                  variant="outlined"
+                  className="button-text"
+                  onClick={() => setDialogCancel(true)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="saveButton"
+                  className="button-text"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
+            </>
+          )}
         </DialogActions>
 
         <Dialog
@@ -604,6 +721,7 @@ const CreateOvertime = ({
                       setDataOvertime([clearProject]);
                       setIsLocalizationFilled(false);
                       setDialogCancel(false);
+                      setErrors({});
                     }
                   : () => {
                       setDatas({
