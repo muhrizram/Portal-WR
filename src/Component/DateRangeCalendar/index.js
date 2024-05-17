@@ -28,7 +28,7 @@ export default function DateRangeCalendar({
 
   const handleDateChange = (date, isStart) => {
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
-    if (isStart) {
+    if (isStart && date) {
       setStartDate(formattedDate);
       setMinDate(dayjs(date));
     } else {
@@ -83,7 +83,10 @@ export default function DateRangeCalendar({
               <MobileDatePicker
                 value={startDate}
                 format="DD/MM/YYYY"
-                onChange={(date) => handleDateChange(date.$d, true)}
+                disabled={endDate}
+                onChange={(date) =>
+                  handleDateChange(date ? date.$d : null, true)
+                }
               />
             </DemoItem>
           </Grid>
@@ -95,7 +98,9 @@ export default function DateRangeCalendar({
                 format="DD/MM/YYYY"
                 disabled={!startDate}
                 minDate={minDate}
-                onChange={(date) => handleDateChange(date.$d, false)}
+                onChange={(date) =>
+                  handleDateChange(date ? date.$d : null, false)
+                }
               />
             </DemoItem>
           </Grid>
@@ -121,7 +126,10 @@ export default function DateRangeCalendar({
               <MobileDatePicker
                 value={startDate}
                 format="DD/MM/YYYY"
-                onChange={(date) => handleDateChange(date.$d, true)}
+                disabled={endDate}
+                onChange={(date) =>
+                  handleDateChange(date ? date.$d : null, true)
+                }
               />
             </DemoItem>
           </Grid>
@@ -133,7 +141,9 @@ export default function DateRangeCalendar({
                 disabled={!startDate}
                 minDate={minDate}
                 format="DD/MM/YYYY"
-                onChange={(date) => handleDateChange(date.$d, false)}
+                onChange={(date) =>
+                  handleDateChange(date ? date.$d : null, false)
+                }
               />
             </DemoItem>
           </Grid>
