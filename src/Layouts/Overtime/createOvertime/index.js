@@ -42,11 +42,11 @@ const CreateOvertime = ({
   const [optProject, setOptProject] = useState([]);
   const [optTask, setOptTask] = useState([]);
   const [optStatus, setOptStatus] = useState([]);
-  const [opentask, setOpentask] = useState(false);
+  const [openTask, setOpenTask] = useState(false);
   const [errors, setErrors] = useState({});
-  const [dataDetailnya, setdataDetailnya] = useState({});
+  const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
-  const [addtaskinEdit, setAddtaskinEdit] = useState(false);
+  const [addTaskInEdit, setAddTaskInEdit] = useState(false);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
 
@@ -104,7 +104,7 @@ const CreateOvertime = ({
     });
     if (isEdit) {
       setProjectEdit(checkProject);
-      setAddtaskinEdit(true);
+      setAddTaskInEdit(true);
       const temp = { ...dataEditOvertime };
       temp.listProject = [
         ...dataEditOvertime.listProject,
@@ -375,12 +375,12 @@ const CreateOvertime = ({
   useEffect(() => {
     if (isEdit) {
       onEdit();
-      setdataDetailnya(dataDetail);
-      setOpentask(true);
+      setDataDetailArray(dataDetail);
+      setOpenTask(true);
     }
     getDataProject(currentUserId, setOptProject);
     getDataStatus(setOptStatus);
-  }, [dataOvertime, dataDetailnya, dataDetail]);
+  }, [dataOvertime, dataDetailArray, dataDetail]);
 
   const onSave = async () => {
     const data = {
@@ -431,7 +431,7 @@ const CreateOvertime = ({
       });
       window.location.href = "/workingReport";
       closeTask(false);
-      setOpentask(false);
+      setOpenTask(false);
     } else {
       setDataAlert({
         severity: "error",
@@ -561,7 +561,7 @@ const CreateOvertime = ({
 
           {isEdit ? (
             <EditOvertime
-              addTaskinEdit={addtaskinEdit}
+              addTaskInEdit={addTaskInEdit}
               projectEdit={projectEdit}
               errors={errors}
               errorTextStyles={errorTextStyles}
@@ -571,8 +571,8 @@ const CreateOvertime = ({
               setDatas={setDatas}
               dataEditOvertime={dataEditOvertime}
               setTimeTo={setTimeTo}
-              opentask={opentask}
-              setOpentask={setOpentask}
+              openTask={openTask}
+              setOpenTask={setOpenTask}
               optProject={optProject}
               optTask={optTask}
               optStatus={optStatus}
@@ -596,8 +596,8 @@ const CreateOvertime = ({
               optStatus={optStatus}
               isLocalizationFilled={isLocalizationFilled}
               setIsLocalizationFilled={setIsLocalizationFilled}
-              opentask={opentask}
-              setOpentask={setOpentask}
+              openTask={openTask}
+              setOpenTask={setOpenTask}
               deleteTask={deleteTask}
               AddTask={AddTask}
               RemoveProject={RemoveProject}
@@ -618,8 +618,8 @@ const CreateOvertime = ({
                   onClick={() => {
                     let CekProject = [];
                     for (let i = 0; i < optProject.length; i++) {
-                      if (dataDetailnya[i]) {
-                        if (dataDetailnya[i].attributes.projectName) {
+                      if (dataDetailArray[i]) {
+                        if (dataDetailArray[i].attributes.projectName) {
                           CekProject[i] = true;
                         } else {
                           CekProject[i] = false;
@@ -711,7 +711,7 @@ const CreateOvertime = ({
                 isEdit
                   ? () => {
                       closeOvertime(false);
-                      setOpentask(false);
+                      setOpenTask(false);
                       setDataOvertime([clearProject]);
                       setIsLocalizationFilled(false);
                       setDialogCancel(false);
@@ -727,7 +727,7 @@ const CreateOvertime = ({
                         ],
                       });
                       closeTask(false);
-                      setOpentask(false);
+                      setOpenTask(false);
                       setIsLocalizationFilled(false);
                       setDialogCancel(false);
                       setErrors({});

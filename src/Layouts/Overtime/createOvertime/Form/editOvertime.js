@@ -20,7 +20,7 @@ import { Remove } from "@mui/icons-material";
 import { getDataTask } from "../apiFunctions";
 
 const EditOvertime = ({
-  addTaskinEdit,
+  addTaskInEdit,
   projectEdit,
   errors,
   errorTextStyles,
@@ -31,8 +31,8 @@ const EditOvertime = ({
   dataEditOvertime,
   setEndTime,
   setTimeTo,
-  opentask,
-  setOpentask,
+  openTask,
+  setOpenTask,
   optProject,
   optTask,
   optStatus,
@@ -111,7 +111,7 @@ const EditOvertime = ({
 
       {dataEditOvertime.listProject.map((resProject, idxProject) => (
         <div
-          className={opentask ? "card-project" : ""}
+          className={openTask ? "card-project" : ""}
           key={`${idxProject + 1}-project`}
         >
           <Grid container rowSpacing={2}>
@@ -120,7 +120,7 @@ const EditOvertime = ({
                 disablePortal
                 disabled={
                   idxProject === 0 &&
-                  !(addTaskinEdit && projectEdit[idxProject - 1])
+                  !(addTaskInEdit && projectEdit[idxProject - 1])
                 }
                 name="project"
                 className="autocomplete-input autocomplete-on-popup"
@@ -140,9 +140,9 @@ const EditOvertime = ({
                   if (newValue) {
                     getDataTask(newValue.id, currentUserId, setOptTask);
                     handleChangeProject(newValue.id, idxProject);
-                    setOpentask(true);
+                    setOpenTask(true);
                   } else {
-                    setOpentask(false);
+                    setOpenTask(false);
                   }
                 }}
                 isOptionEqualToValue={(option, value) =>

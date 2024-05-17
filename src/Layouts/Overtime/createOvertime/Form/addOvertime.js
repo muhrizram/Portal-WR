@@ -30,8 +30,8 @@ const AddOvertime = ({
   optStatus,
   isLocalizationFilled,
   setIsLocalizationFilled,
-  opentask,
-  setOpentask,
+  openTask,
+  setOpenTask,
   deleteTask,
   AddTask,
   RemoveProject,
@@ -108,7 +108,7 @@ const AddOvertime = ({
         dataOvertime.listProject.length > 0 &&
         dataOvertime.listProject.map((resProject, idxProject) => (
           <div
-            className={opentask ? "card-project" : ""}
+            className={openTask ? "card-project" : ""}
             key={`${idxProject + 1}-project`}
           >
             <Grid container rowSpacing={2}>
@@ -128,10 +128,10 @@ const AddOvertime = ({
                     if (newValue) {
                       getDataTask(newValue.id, currentUserId, setOptTask);
                       handleChangeProject(newValue.id, idxProject);
-                      setOpentask(true);
+                      setOpenTask(true);
                     } else {
                       handleChangeProject(null, idxProject);
-                      setOpentask(false);
+                      setOpenTask(false);
                     }
                   }}
                   isOptionEqualToValue={(option, value) =>
@@ -158,7 +158,7 @@ const AddOvertime = ({
                 {resProject.value !== "" &&
                   resProject.listTask.map((res, index) => (
                     <Accordion
-                      key={res.id}      
+                      key={res.id}
                       sx={{ boxShadow: "none", width: "100%" }}
                     >
                       <AccordionSummary
