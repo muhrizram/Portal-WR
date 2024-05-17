@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   Button,
   Dialog,
@@ -366,6 +366,76 @@ const CreateOvertime = ({
     setDialogCancel(false);
   };
 
+  const handleAddProject = useCallback(() => {
+    if (isEdit) {
+      let CekProject = [];
+      for (let i = 0; i < optProject.length; i++) {
+        if (dataDetailArray[i]) {
+          CekProject[i] = dataDetailArray[i].attributes.projectName
+            ? true
+            : false;
+        }
+      }
+      onAddProject(CekProject);
+    } else {
+      onAddProject();
+    }
+  }, [isEdit, optProject, dataDetailArray, onAddProject]);
+
+  const handleCancel = useCallback(() => {
+    setDialogCancel(true);
+  }, [setDialogCancel]);
+
+  const handleCancelClick = useCallback(() => {
+    if (isEdit) {
+      closeOvertime(false);
+      setOpenTask(false);
+      setDataOvertime([clearProject]);
+      setIsLocalizationFilled(false);
+      setDialogCancel(false);
+      setErrors({});
+    } else {
+      setDatas({
+        startTime: "",
+        endTime: "",
+        projects: [{ projectId: "" }],
+        tasks: [[{ taskName: "", statusTaskId: "", duration: "" }]],
+      });
+      closeTask(false);
+      setOpenTask(false);
+      setIsLocalizationFilled(false);
+      setDialogCancel(false);
+      setErrors({});
+      setDataOvertime({
+        listProject: [
+          {
+            projectId: "",
+            listTask: [
+              {
+                backlogId: null,
+                taskName: "",
+                statusTaskId: "",
+                duration: "",
+                taskItem: "",
+              },
+            ],
+          },
+        ],
+      });
+    }
+  }, [
+    isEdit,
+    closeOvertime,
+    setOpenTask,
+    setDataOvertime,
+    clearProject,
+    setIsLocalizationFilled,
+    setDialogCancel,
+    setErrors,
+    setDatas,
+    closeTask,
+  ]);
+
   const setTimeTo = (timeString) => {
     const currentDate = dayjs();
     const formattedDate = currentDate.format("YYYY-MM-DD");
@@ -506,36 +576,42 @@ const CreateOvertime = ({
     closeOvertime(true);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationTime = timeSchema.safeParse(datas);
-    const validationProject = projectSchema.safeParse(datas);
-    if (validationTime.success && validationProject.success) {
-      setErrors("");
-      if (isEdit) {
-        saveEdit();
+  const handleFormSubmit = useCallback(
+    (e) => {
+      const validationTime = timeSchema.safeParse(datas);
+      const validationProject = projectSchema.safeParse(datas);
+      console.log("Submit", datas);
+      if (validationTime.success && validationProject.success) {
+        setErrors("");
+        if (isEdit) {
+          saveEdit();
+        } else {
+          onSave();
+        }
       } else {
-        onSave();
-      }
-    } else {
-      const validationErrors = {};
-      if (validationTime.error && Array.isArray(validationTime.error.errors)) {
-        validationTime.error.errors.forEach((err) => {
-          validationErrors[err.path] = err.message;
-        });
-      }
+        const validationErrors = {};
+        if (
+          validationTime.error &&
+          Array.isArray(validationTime.error.errors)
+        ) {
+          validationTime.error.errors.forEach((err) => {
+            validationErrors[err.path] = err.message;
+          });
+        }
 
-      if (
-        validationProject.error &&
-        Array.isArray(validationProject.error.errors)
-      ) {
-        validationProject.error.errors.forEach((err) => {
-          validationErrors[err.path] = err.message;
-        });
+        if (
+          validationProject.error &&
+          Array.isArray(validationProject.error.errors)
+        ) {
+          validationProject.error.errors.forEach((err) => {
+            validationErrors[err.path] = err.message;
+          });
+        }
+        setErrors(validationErrors);
       }
-      setErrors(validationErrors);
-    }
-  };
+    },
+    [datas, timeSchema, projectSchema, isEdit, setErrors, saveEdit, onSave]
+  );
 
   return (
     <>
@@ -609,77 +685,32 @@ const CreateOvertime = ({
           )}
         </DialogContent>
         <DialogActions>
-          {isEdit ? (
-            <>
-              <div className="left-container">
-                <Button
-                  variant="outlined"
-                  className="green-button button-text"
-                  onClick={() => {
-                    let CekProject = [];
-                    for (let i = 0; i < optProject.length; i++) {
-                      if (dataDetailArray[i]) {
-                        if (dataDetailArray[i].attributes.projectName) {
-                          CekProject[i] = true;
-                        } else {
-                          CekProject[i] = false;
-                        }
-                      }
-                    }
-                    onAddProject(CekProject);
-                  }}
-                  startIcon={<AddIcon />}
-                >
-                  Add Project
-                </Button>
-              </div>
-              <div className="right-container">
-                <Button
-                  variant="outlined"
-                  className="button-text"
-                  onClick={() => setDialogCancel(true)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="saveButton"
-                  className="button-text"
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="left-container">
-                <Button
-                  variant="outlined"
-                  className="green-button button-text"
-                  onClick={() => onAddProject()}
-                  startIcon={<AddIcon />}
-                >
-                  Add Project
-                </Button>
-              </div>
-              <div className="right-container">
-                <Button
-                  variant="outlined"
-                  className="button-text"
-                  onClick={() => setDialogCancel(true)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="saveButton"
-                  className="button-text"
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-              </div>
-            </>
-          )}
+          <div className="left-container">
+            <Button
+              variant="outlined"
+              className="green-button button-text"
+              onClick={handleAddProject}
+              startIcon={<AddIcon />}
+            >
+              Add Project
+            </Button>
+          </div>
+          <div className="right-container">
+            <Button
+              variant="outlined"
+              className="button-text"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="saveButton"
+              className="button-text"
+              onClick={handleFormSubmit}
+            >
+              Submit
+            </Button>
+          </div>
         </DialogActions>
 
         <Dialog
@@ -705,51 +736,7 @@ const CreateOvertime = ({
             </DialogContentText>
           </DialogContent>
           <DialogActions className="dialog-delete-actions">
-            <Button
-              variant="outlined"
-              onClick={
-                isEdit
-                  ? () => {
-                      closeOvertime(false);
-                      setOpenTask(false);
-                      setDataOvertime([clearProject]);
-                      setIsLocalizationFilled(false);
-                      setDialogCancel(false);
-                      setErrors({});
-                    }
-                  : () => {
-                      setDatas({
-                        startTime: "",
-                        endTime: "",
-                        projects: [{ projectId: "" }],
-                        tasks: [
-                          [{ taskName: "", statusTaskId: "", duration: "" }],
-                        ],
-                      });
-                      closeTask(false);
-                      setOpenTask(false);
-                      setIsLocalizationFilled(false);
-                      setDialogCancel(false);
-                      setErrors({});
-                      setDataOvertime({
-                        listProject: [
-                          {
-                            projectId: "",
-                            listTask: [
-                              {
-                                backlogId: null,
-                                taskName: "",
-                                statusTaskId: "",
-                                duration: "",
-                                taskItem: "",
-                              },
-                            ],
-                          },
-                        ],
-                      });
-                    }
-              }
-            >
+            <Button variant="outlined" onClick={handleCancelClick}>
               {"Cancel without saving"}
             </Button>
             <Button
