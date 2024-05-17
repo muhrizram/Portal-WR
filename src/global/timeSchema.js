@@ -3,18 +3,12 @@ import moment from "moment";
 
 export const timeSchema = z
   .object({
-    startTime: z
-      .string()
-      .refine(
-        (value) => {
-          return moment(value, "HH:mm:ss").isValid();
-        },
-        { message: "Start Time is invalid" }
-      )
-      .refine((value) => value !== "", {
-        message: "Start Time is required",
-        path: ["startTime"],
-      }),
+    startTime: z.string().refine(
+      (value) => {
+        return moment(value, "HH:mm:ss").isValid();
+      },
+      { message: "Start Time is invalid" }
+    ),
     endTime: z.string().refine(
       (value) => {
         return moment(value, "HH:mm:ss").isValid();
@@ -33,4 +27,8 @@ export const timeSchema = z
   .refine((data) => data.endTime !== "", {
     message: "End Time is required",
     path: ["endTime"],
+  })
+  .refine((data) => data.startTime !== "", {
+    message: "Start Time is required",
+    path: ["startTime"],
   });
