@@ -490,14 +490,16 @@ const EditTask = ({
               </Grid>
               <Grid container>
                 <Grid item xs={6} textAlign="left">
-                  <Button
-                    onClick={() => AddTask(idxProject)}
-                    variant="outlined"
-                    className="button-text"
-                    startIcon={<AddIcon />}
-                  >
-                    Add Task
-                  </Button>
+                  {!resProject.absenceId && (
+                    <Button
+                      onClick={() => AddTask(idxProject)}
+                      variant="outlined"
+                      className="button-text"
+                      startIcon={<AddIcon />}
+                    >
+                      Add Task
+                    </Button>
+                  )}
                 </Grid>
                 <Grid item xs={6} textAlign="right">
                   {idxProject > 0 && (
