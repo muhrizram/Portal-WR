@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,10 +11,20 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Avatar,
+  Typography,
+} from "@mui/material";
 import "./index.css";
 import logo from "../../assets/logo.png";
 import logoMini from "../../assets/logo-mini.png";
-import { Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { finalRoutes } from "../../routes";
@@ -87,6 +96,7 @@ export default function SideBar({ children }) {
   const [selectedIndex, setSelectedIndex] = React.useState(
     parseInt(currentMenu ? currentMenu.idx : 0)
   );
+  const [openConfirmLogout, setOpenConfirmLogout] = useState(false);
   const dataRoute = finalRoutes().filter((res) => res.icon);
 
   const handleLogout = () => {
@@ -105,9 +115,12 @@ export default function SideBar({ children }) {
   };
   const location = useLocation();
 
-  const clearStringPath = (string) =>{
-    return string.split("/")[1].toLowerCase().replace(/[^A-Za-z0-9]/g,"");
-  }
+  const clearStringPath = (string) => {
+    return string
+      .split("/")[1]
+      .toLowerCase()
+      .replace(/[^A-Za-z0-9]/g, "");
+  };
   const currentLocation = dataRoute.find(
     (res) => clearStringPath(location.pathname) === clearStringPath(res.path)
   );
@@ -145,8 +158,18 @@ export default function SideBar({ children }) {
                     {open && (
                       <Grid item container xs={8}>
                         <Grid item container xs={8} overflow="hidden">
-                          <Grid item container xs={12} style={{maxWidth:"150px"}}>
-                            <Typography variant="drawerNameUser" textOverflow="ellipsis" noWrap overflow="hidden">
+                          <Grid
+                            item
+                            container
+                            xs={12}
+                            style={{ maxWidth: "150px" }}
+                          >
+                            <Typography
+                              variant="drawerNameUser"
+                              textOverflow="ellipsis"
+                              noWrap
+                              overflow="hidden"
+                            >
                               {username}
                             </Typography>
                           </Grid>
@@ -209,7 +232,7 @@ export default function SideBar({ children }) {
           <ListItem className="footer-logout-container">
             <ListItemButton
               className="footer-logout-button"
-              onClick={() => handleLogout()}
+              onClick={() => setOpenConfirmLogout(true)}
             >
               <ListItemIcon
                 className="logout-button"
@@ -226,6 +249,42 @@ export default function SideBar({ children }) {
           </ListItem>
         </List>
       </Drawer>
+      <Dialog
+        open={openConfirmLogout}
+        onClose={() => setOpenConfirmLogout(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          sx={{
+            alignSelf: "center",
+            fontSize: "30px",
+            fontStyle: "Poppins",
+          }}
+          id="alert-dialog-title"
+          className="dialog-delete-header"
+        >
+          {"Warning"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {"Are you sure you want to Log Out?"}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className="dialog-delete-actions">
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setOpenConfirmLogout(false);
+            }}
+          >
+            {"Back"}
+          </Button>
+          <Button variant="contained" onClick={() => handleLogout()}>
+            {"Log Out"}
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Box
         component="main"
         className="drawer-main-children"
