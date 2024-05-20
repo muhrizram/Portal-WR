@@ -66,13 +66,7 @@ export default function BigCalendar({
 
   useEffect(() => {
     if (isDataObtained) {
-      if (StartDate) {
-        setActiveMonth(moment(StartDate).toDate());
-      } else {
-        setActiveMonth(moment(filter.startDate).toDate());
-      }
-    } else {
-      ResetFilterRef.current();
+      setActiveMonth(moment(filter.startDate).toDate());
     }
   }, [isDataObtained, StartDate]);
 
