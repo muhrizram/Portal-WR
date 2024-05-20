@@ -30,6 +30,7 @@ export default function DateRangeCalendar({
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
     if (isStart && date) {
       setStartDate(formattedDate);
+      setEndDate(null);
       setMinDate(dayjs(date));
     } else {
       setEndDate(formattedDate);
@@ -83,7 +84,6 @@ export default function DateRangeCalendar({
               <MobileDatePicker
                 value={startDate}
                 format="DD/MM/YYYY"
-                disabled={endDate}
                 onChange={(date) =>
                   handleDateChange(date ? date.$d : null, true)
                 }
@@ -126,7 +126,6 @@ export default function DateRangeCalendar({
               <MobileDatePicker
                 value={startDate}
                 format="DD/MM/YYYY"
-                disabled={endDate}
                 onChange={(date) =>
                   handleDateChange(date ? date.$d : null, true)
                 }
