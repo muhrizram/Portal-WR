@@ -49,7 +49,7 @@ const PopupTask = ({
     listTaskProject.find((item) => item.backlogId === idEffortTask),
   ]);
   const [cekAbsen, setCekabsen] = useState([]);
-  const [openConfirmCancel, setopenConfirmCancel] = useState(false);
+  const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
   const [dataDetailArray, setDataDetailArray] = useState([]);
   const [addTaskinEdit, setAddtaskinEdit] = useState(false);
   const [CekProjectEdit, setCekProjectEdit] = useState([]);
@@ -391,7 +391,7 @@ const PopupTask = ({
               <div className="right-container">
                 <Button
                   onClick={() => {
-                    setopenConfirmCancel(true);
+                    setOpenConfirmCancel(true);
                     refreshdataDetail();
                   }}
                   variant="outlined"
@@ -437,7 +437,7 @@ const PopupTask = ({
               <div className="right-container">
                 <Button
                   onClick={() => {
-                    setopenConfirmCancel(true);
+                    setOpenConfirmCancel(true);
                   }}
                   variant="outlined"
                   className="button-text"
@@ -474,7 +474,7 @@ const PopupTask = ({
       </Dialog>
       <Dialog
         open={openConfirmCancel}
-        onClose={() => setopenConfirmCancel(false)}
+        onClose={() => setOpenConfirmCancel(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -505,7 +505,7 @@ const PopupTask = ({
                 listProject: [clearProject],
               });
               setIdEffortTask("");
-              setopenConfirmCancel(false);
+              setOpenConfirmCancel(false);
               setErrors("");
             }}
           >
@@ -513,7 +513,7 @@ const PopupTask = ({
           </Button>
           <Button
             variant="contained"
-            onClick={() => setopenConfirmCancel(false)}
+            onClick={() => setOpenConfirmCancel(false)}
           >
             {"Back"}
           </Button>
