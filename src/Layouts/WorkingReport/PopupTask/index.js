@@ -40,7 +40,7 @@ const PopupTask = ({
   const [listTaskProject, setlistTaskProject] = useState([]);
   const [listProject, setlistProject] = useState([]);
   const [idEffortTask, setIdEffortTask] = useState();
-  const [opentask, setOpentask] = useState(false);
+  const [opentask, setOpenTask] = useState(false);
   const [statusTask, setstatusTask] = useState([]);
   const [openPopUpMoretask, setPopUpMoretask] = useState(false);
   const [selectedTask, setSelectedTask] = useState([]);
@@ -48,7 +48,7 @@ const PopupTask = ({
   const [taskDurations, setTaskDurations] = useState([
     listTaskProject.find((item) => item.backlogId === idEffortTask),
   ]);
-  const [cekAbsen, setCekabsen] = useState([]);
+  const [checkAbsence, setCheckAbsence] = useState([]);
   const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
   const [dataDetailArray, setDataDetailArray] = useState([]);
   const [addTaskinEdit, setAddtaskinEdit] = useState(false);
@@ -127,7 +127,7 @@ const PopupTask = ({
     if (isEdit) {
       setDataDetailArray(dataDetail);
       refreshdataDetail();
-      setOpentask(true);
+      setOpenTask(true);
       setSelectedTask([]);
     }
     getlistProject(setlistProject);
@@ -323,8 +323,8 @@ const PopupTask = ({
               listProject={listProject}
               setlistTaskProject={setlistTaskProject}
               handleChangeProject={handleChangeProject}
-              setCekabsen={setCekabsen}
-              setOpentask={setOpentask}
+              setCheckAbsence={setCheckAbsence}
+              setOpenTask={setOpenTask}
               onRemoveProject={onRemoveProject}
               setKolomproject={setKolomproject}
               setIdEffortTask={setIdEffortTask}
@@ -344,15 +344,15 @@ const PopupTask = ({
               dataProject={dataProject}
               errorTextStyles={errorTextStyles}
               errors={errors}
-              cekAbsen={cekAbsen}
+              checkAbsence={checkAbsence}
               setProject={setProject}
               opentask={opentask}
               listProject={listProject}
               getlistTaskProject={getlistTaskProject}
               setlistTaskProject={setlistTaskProject}
               handleChangeProject={handleChangeProject}
-              setCekabsen={setCekabsen}
-              setOpentask={setOpentask}
+              setCheckAbsence={setCheckAbsence}
+              setOpenTask={setOpenTask}
               onRemoveProject={onRemoveProject}
               deleteTask={deleteTask}
               selectedTask={selectedTask}
@@ -457,7 +457,7 @@ const PopupTask = ({
                       setDurationTask,
                       setDataAlert,
                       closeTask,
-                      setOpentask,
+                      setOpenTask,
                       setProject,
                       clearProject,
                       setIdEffortTask,
@@ -499,7 +499,7 @@ const PopupTask = ({
             variant="outlined"
             onClick={() => {
               closeTask(false);
-              setOpentask(false);
+              setOpenTask(false);
               setProject({
                 workingReportTaskId: undefined,
                 listProject: [clearProject],

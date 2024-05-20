@@ -20,15 +20,15 @@ const CreateTask = ({
   dataProject,
   errorTextStyles,
   errors,
-  cekAbsen,
+  checkAbsence,
   setProject,
   opentask,
   listProject,
   getlistTaskProject,
   setlistTaskProject,
   handleChangeProject,
-  setCekabsen,
-  setOpentask,
+  setCheckAbsence,
+  setOpenTask,
   onRemoveProject,
   deleteTask,
   selectedTask,
@@ -62,15 +62,15 @@ const CreateTask = ({
                     if (newValue) {
                       getlistTaskProject(newValue.id, setlistTaskProject);
                       handleChangeProject(newValue, idxProject, newValue.absen);
-                      setCekabsen((prevCekAbsen) => {
+                      setCheckAbsence((prevCekAbsen) => {
                         const updatedCekAbsen = [...prevCekAbsen];
                         updatedCekAbsen[idxProject] = newValue.absen;
                         return updatedCekAbsen;
                       });
-                      setOpentask(true);
+                      setOpenTask(true);
                     } else {
                       handleChangeProject(null, idxProject, null);
-                      setCekabsen((prevCekAbsen) => {
+                      setCheckAbsence((prevCekAbsen) => {
                         const updatedCekAbsen = [...prevCekAbsen];
                         updatedCekAbsen[idxProject] = "";
                         return updatedCekAbsen;
@@ -110,7 +110,7 @@ const CreateTask = ({
                 )}
               </Grid>
               <Grid item xs={12}>
-                {cekAbsen[idxProject] ? (
+                {checkAbsence[idxProject] ? (
                   <>
                     {resProject.listTask.map((res, index) => (
                       <Grid
@@ -469,7 +469,7 @@ const CreateTask = ({
                   </>
                 )}
               </Grid>
-              {!cekAbsen[idxProject] &&
+              {!checkAbsence[idxProject] &&
                 dataProject.workingReportId !== undefined && (
                   <Grid container>
                     <Grid item xs={6} textAlign="left">
