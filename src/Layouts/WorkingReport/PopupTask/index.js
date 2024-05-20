@@ -50,7 +50,7 @@ const PopupTask = ({
   ]);
   const [cekAbsen, setCekabsen] = useState([]);
   const [openConfirmCancel, setopenConfirmCancel] = useState(false);
-  const [dataDetailnya, setdataDetailnya] = useState([]);
+  const [dataDetailArray, setDataDetailArray] = useState([]);
   const [addTaskinEdit, setAddtaskinEdit] = useState(false);
   const [CekProjectEdit, setCekProjectEdit] = useState([]);
   const [DurationTask, setDurationTask] = useState();
@@ -125,14 +125,14 @@ const PopupTask = ({
 
   useEffect(() => {
     if (isEdit) {
-      setdataDetailnya(dataDetail);
+      setDataDetailArray(dataDetail);
       refreshdataDetail();
       setOpentask(true);
       setSelectedTask([]);
     }
     getlistProject(setlistProject);
     getstatusTask(setstatusTask);
-  }, [dataProject, dataDetailnya, dataDetail]);
+  }, [dataProject, dataDetailArray, dataDetail]);
 
   const onAddProject = (CekProject) => {
     setDatas({
@@ -373,8 +373,8 @@ const PopupTask = ({
                   onClick={() => {
                     let CekProject = [];
                     for (let i = 0; i < listProject.length; i++) {
-                      if (dataDetailnya[i]) {
-                        if (dataDetailnya[i].attributes.projectName) {
+                      if (dataDetailArray[i]) {
+                        if (dataDetailArray[i].attributes.projectName) {
                           CekProject[i] = true;
                         } else {
                           CekProject[i] = false;
