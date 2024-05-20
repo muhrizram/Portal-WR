@@ -154,7 +154,7 @@ export const SubmitSave = async (
   setDurationTask,
   setDataAlert,
   closeTask,
-  setOpentask,
+  setOpenTask,
   setProject,
   clearProject,
   setIdEffortTask,
@@ -200,16 +200,14 @@ export const SubmitSave = async (
           });
         }
         closeTask(false);
-        setOpentask(false);
+        setOpenTask(false);
         setProject({
           workingReportTaskId: undefined,
           listProject: [clearProject],
         });
         setIdEffortTask("");
-        navigate("/workingReport");
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   } else {
     const validationErrors = {};
     validationProject.error.errors.forEach((err) => {
