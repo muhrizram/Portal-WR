@@ -157,7 +157,7 @@ export const SubmitSave = async (
   setOpentask,
   setProject,
   clearProject,
-  setideffortTask,
+  setIdEffortTask,
   navigate
 ) => {
   const validationProject = projectSchema.safeParse(datas);
@@ -205,7 +205,7 @@ export const SubmitSave = async (
           workingReportTaskId: undefined,
           listProject: [clearProject],
         });
-        setideffortTask("");
+        setIdEffortTask("");
         navigate("/workingReport");
       }
     } catch (error) {

@@ -31,8 +31,8 @@ const EditTask = ({
   setOpentask,
   onRemoveProject,
   setKolomproject,
-  setideffortTask,
-  setfirstEditTask,
+  setIdEffortTask,
+  setFirstEditTask,
   Kolomproject,
   deleteTask,
   AddTask,
@@ -83,7 +83,7 @@ const EditTask = ({
                       onRemoveProject(_event, idxProject);
                       handleChangeProject(null, idxProject, null);
                       setKolomproject(true);
-                      setideffortTask("");
+                      setIdEffortTask("");
                       setCekabsen((prevCekAbsen) => {
                         const updatedCekAbsen = [...prevCekAbsen];
                         updatedCekAbsen[idxProject] = "";
@@ -157,7 +157,7 @@ const EditTask = ({
                               temp.listProject[idxProject].listTask[
                                 index
                               ].taskDuration = numericValue;
-                              setfirstEditTask(temp);
+                              setFirstEditTask(temp);
                             }}
                             className="input-field-crud"
                             type="number"
@@ -185,7 +185,7 @@ const EditTask = ({
                                 _event.target.value === ""
                                   ? null
                                   : _event.target.value;
-                              setfirstEditTask(temp);
+                              setFirstEditTask(temp);
                             }}
                             className="input-field-crud"
                             placeholder="e.g Rest for a while"
@@ -277,7 +277,7 @@ const EditTask = ({
                                     index
                                   ].backlogId =
                                     newValue !== null ? newValue.backlogId : "";
-                                  setfirstEditTask(temp);
+                                  setFirstEditTask(temp);
                                 }}
                                 value={{
                                   taskName: res.taskName,
@@ -429,7 +429,7 @@ const EditTask = ({
                                   temp.listProject[idxProject].listTask[
                                     index
                                   ].taskDuration = numericValue;
-                                  setfirstEditTask(temp);
+                                  setFirstEditTask(temp);
                                 }}
                                 className="input-field-crud"
                                 type="number"
@@ -472,7 +472,7 @@ const EditTask = ({
                                     _event.target.value === ""
                                       ? null
                                       : _event.target.value;
-                                  setfirstEditTask(temp);
+                                  setFirstEditTask(temp);
                                 }}
                                 className="input-field-crud"
                                 placeholder='e.g Create Login Screen"'

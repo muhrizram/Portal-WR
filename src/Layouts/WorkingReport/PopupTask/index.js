@@ -39,14 +39,14 @@ const PopupTask = ({
   const { setDataAlert } = useContext(AlertContext);
   const [listTaskProject, setlistTaskProject] = useState([]);
   const [listProject, setlistProject] = useState([]);
-  const [ideffortTask, setideffortTask] = useState();
+  const [idEffortTask, setIdEffortTask] = useState();
   const [opentask, setOpentask] = useState(false);
   const [statusTask, setstatusTask] = useState([]);
   const [openPopUpMoretask, setPopUpMoretask] = useState(false);
   const [selectedTask, setSelectedTask] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]);
   const [taskDurations, setTaskDurations] = useState([
-    listTaskProject.find((item) => item.backlogId === ideffortTask),
+    listTaskProject.find((item) => item.backlogId === idEffortTask),
   ]);
   const [cekAbsen, setCekabsen] = useState([]);
   const [openConfirmCancel, setopenConfirmCancel] = useState(false);
@@ -84,7 +84,7 @@ const PopupTask = ({
     taskItem: "",
   };
 
-  const [firstEditTask, setfirstEditTask] = useState({
+  const [firstEditTask, setFirstEditTask] = useState({
     workingReportTaskId: null,
     listProject: [],
   });
@@ -93,7 +93,7 @@ const PopupTask = ({
     let tempProject = [];
     for (const data of dataDetail) {
       tempProject.push(data.attributes);
-      setfirstEditTask((prevfirstEditTask) => ({
+      setFirstEditTask((prevfirstEditTask) => ({
         ...prevfirstEditTask,
         workingReportTaskId: parseInt(data.id),
         listProject: tempProject,
@@ -146,7 +146,7 @@ const PopupTask = ({
     if (isEdit) {
       setCekProjectEdit(CekProject);
       setAddtaskinEdit(true);
-      setfirstEditTask((prevState) => ({
+      setFirstEditTask((prevState) => ({
         ...prevState,
         listProject: [...prevState.listProject, clearProject],
       }));
@@ -166,7 +166,7 @@ const PopupTask = ({
       const updatedListProject = [...updatedDataProject.listProject];
       updatedListProject.splice(idxProject, 1);
       updatedDataProject.listProject = updatedListProject;
-      setfirstEditTask(updatedDataProject);
+      setFirstEditTask(updatedDataProject);
       const updatedselectedProject = [...selectedProject];
       updatedselectedProject.splice(idxProject, 1);
       setSelectedProject(updatedselectedProject);
@@ -202,7 +202,7 @@ const PopupTask = ({
     });
     if (isEdit) {
       temp.listProject[idxProject].listTask.push({ ...clearTask });
-      setfirstEditTask(temp);
+      setFirstEditTask(temp);
     } else {
       temp.listProject[idxProject].listTask.push({ ...clearTask });
       setProject(temp);
@@ -230,7 +230,7 @@ const PopupTask = ({
         event.value.id;
       temp.listProject[idxProject].listTask[index][`${event.name}Name`] =
         event.value.name;
-      setfirstEditTask(temp);
+      setFirstEditTask(temp);
     } else {
       const temp = { ...dataProject };
       temp.listProject[idxProject].listTask[index][`${event.name}Id`] =
@@ -256,7 +256,7 @@ const PopupTask = ({
         temp.listProject[idxProject].projectName = newValue.name;
       }
       temp.listProject[idxProject].listTask = [clearTask];
-      setfirstEditTask(temp);
+      setFirstEditTask(temp);
     } else {
       let dataArray = [...datas.projects];
       dataArray[idxProject] = { projectId: String(newValue.name) };
@@ -282,7 +282,7 @@ const PopupTask = ({
     if (isEdit) {
       const tempEdit = { ...firstEditTask };
       tempEdit.listProject[idxProject].listTask.splice(index, 1);
-      setfirstEditTask(tempEdit);
+      setFirstEditTask(tempEdit);
     } else {
       datas.tasks[idxProject].splice(index, 1);
       const tempAdd = { ...dataProject };
@@ -327,8 +327,8 @@ const PopupTask = ({
               setOpentask={setOpentask}
               onRemoveProject={onRemoveProject}
               setKolomproject={setKolomproject}
-              setideffortTask={setideffortTask}
-              setfirstEditTask={setfirstEditTask}
+              setIdEffortTask={setIdEffortTask}
+              setFirstEditTask={setFirstEditTask}
               Kolomproject={Kolomproject}
               deleteTask={deleteTask}
               AddTask={AddTask}
@@ -460,7 +460,7 @@ const PopupTask = ({
                       setOpentask,
                       setProject,
                       clearProject,
-                      setideffortTask,
+                      setIdEffortTask,
                       navigate
                     )
                   }
@@ -504,7 +504,7 @@ const PopupTask = ({
                 workingReportTaskId: undefined,
                 listProject: [clearProject],
               });
-              setideffortTask("");
+              setIdEffortTask("");
               setopenConfirmCancel(false);
               setErrors("");
             }}
