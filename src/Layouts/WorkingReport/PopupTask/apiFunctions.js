@@ -171,6 +171,30 @@ export const SubmitSave = async (
           tempEffort = tempEffort + resTask.duration;
         }
       }
+      let sameTask = false;
+      const taskNames = new Set();
+
+      for (const data of dataProject.listProject) {
+        for (const resTask of data.listTask) {
+          if (taskNames.has(resTask.taskName)) {
+            sameTask = true;
+            break;
+          }
+          taskNames.add(resTask.taskName);
+        }
+        if (sameTask) {
+          break;
+        }
+      }
+
+      if (sameTask) {
+        setDataAlert({
+          severity: "error",
+          message: "Task name must be unique",
+          open: true,
+        });
+        return;
+      }
       if (tempEffort < 8) {
         setPopUpMoretask(true);
         setDurationTask(true);
@@ -207,7 +231,9 @@ export const SubmitSave = async (
         });
         setIdEffortTask("");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   } else {
     const validationErrors = {};
     validationProject.error.errors.forEach((err) => {
