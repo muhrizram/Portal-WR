@@ -89,7 +89,7 @@ const PopupTask = ({
     listProject: [],
   });
 
-  const refreshdataDetail = () => {
+  const refreshDataDetail = () => {
     let tempProject = [];
     for (const data of dataDetail) {
       tempProject.push(data.attributes);
@@ -126,7 +126,7 @@ const PopupTask = ({
   useEffect(() => {
     if (isEdit) {
       setDataDetailArray(dataDetail);
-      refreshdataDetail();
+      refreshDataDetail();
       setOpenTask(true);
       setSelectedTask([]);
     }
@@ -392,7 +392,7 @@ const PopupTask = ({
                 <Button
                   onClick={() => {
                     setOpenConfirmCancel(true);
-                    refreshdataDetail();
+                    refreshDataDetail();
                   }}
                   variant="outlined"
                   className="button-text"
