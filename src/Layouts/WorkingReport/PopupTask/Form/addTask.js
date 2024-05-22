@@ -327,6 +327,7 @@ const CreateTask = ({
                                     className="input-field-crud"
                                     label="Task Name"
                                     placeholder='e.g Create "Login" Screen'
+                                    InputLabelProps={{ shrink: true }}
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},taskName`
@@ -382,7 +383,8 @@ const CreateTask = ({
                                     required
                                     className="input-field-crud"
                                     label="Status Task"
-                                    placeholder='e.g Create "Login" Screen'
+                                    placeholder="e.g In Progress"
+                                    InputLabelProps={{ shrink: true }}
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},statusTaskId`

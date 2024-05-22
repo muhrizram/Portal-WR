@@ -350,6 +350,7 @@ const EditTask = ({
                                     className="input-field-crud"
                                     placeholder='e.g Create "Login" Screen'
                                     label="Task Name"
+                                    InputLabelProps={{ shrink: true }}
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},taskName`
@@ -423,7 +424,8 @@ const EditTask = ({
                                     required
                                     className="input-field-crud"
                                     label="Status Task"
-                                    placeholder='e.g Create "Login" Screen'
+                                    placeholder="e.g In Progress"
+                                    InputLabelProps={{ shrink: true }}
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},statusTaskId`
