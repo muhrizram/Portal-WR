@@ -192,21 +192,21 @@ export default function BigCalendar({
           setonOtherUser(true);
         };
       } else if (isOvertime) {
-        // if (event.checkOut === null || !event.checkOut) {
-        //   clickHere = () => {
-        //     setDataAlert({
-        //       open: true,
-        //       severity: "error",
-        //       message: "Please check out first",
-        //     });
-        //   };
-        // } else {
-        clickHere = () => {
-          setOpenOvertime(true);
-          setId(event.workingReportOvertimeId);
-          setWrDate(event.tanggal);
-        };
-        // }
+        if (event.checkOut === null || !event.checkOut) {
+          clickHere = () => {
+            setDataAlert({
+              open: true,
+              severity: "error",
+              message: "Please check out first",
+            });
+          };
+        } else {
+          clickHere = () => {
+            setOpenOvertime(true);
+            setId(event.workingReportOvertimeId);
+            setWrDate(event.tanggal);
+          };
+        }
       } else if (isTaskNotFilled) {
         clickHere = () => {
           setOpenTask(true);
