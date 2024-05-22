@@ -326,7 +326,7 @@ const CreateTask = ({
                                     required
                                     className="input-field-crud"
                                     label="Task Name"
-                                    placeholder="e.g Create Login Screen"
+                                    placeholder='e.g Create "Login" Screen'
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},taskName`
@@ -382,7 +382,7 @@ const CreateTask = ({
                                     required
                                     className="input-field-crud"
                                     label="Status Task"
-                                    placeholder="e.g Create Login Screen"
+                                    placeholder='e.g Create "Login" Screen'
                                     error={
                                       errors[
                                         `tasks,${idxProject},${index},statusTaskId`
@@ -447,7 +447,7 @@ const CreateTask = ({
                                 }}
                                 className="input-field-crud"
                                 type="number"
-                                placeholder='e.g Create Login Screen"'
+                                placeholder="e.g 1 or 3 (hour)"
                                 label="Estimation Effort"
                                 error={
                                   errors[
@@ -507,8 +507,8 @@ const CreateTask = ({
                                   setProject(temp);
                                 }}
                                 className="input-field-crud"
-                                placeholder='e.g Create Login Screen"'
-                                label="Task Detail"
+                                placeholder='e.g Create "Login" Screen'
+                                label="Task Detail *"
                                 multiline
                                 maxRows={4}
                                 error={
