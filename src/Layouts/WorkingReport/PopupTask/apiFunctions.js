@@ -22,7 +22,9 @@ export const UpdateTask = async (
   setPopUpMoretask,
   setDurationTask,
   closeTask,
-  setDataAlert
+  setDataAlert,
+  handleEditSuccess,
+  navigate
 ) => {
   const validationProject = projectSchema.safeParse(datas);
 
@@ -74,21 +76,21 @@ export const UpdateTask = async (
         endpoint: `/task/update`,
         data: readyUpdate,
       });
-      if (res.data) {
-        closeTask(true);
+      if (!res.isError) {
+        closeTask(false);
         setDataAlert({
           severity: "success",
           open: true,
           message: "Task edited successfully. Let's get things done!",
         });
         setTimeout(() => {
-          window.location.reload();
+          navigate("/workingReport");
         }, 3000);
       } else {
         setDataAlert({
           severity: "error",
           open: true,
-          message: res.detail,
+          message: res.error.detail,
         });
       }
     }
@@ -171,30 +173,6 @@ export const SubmitSave = async (
           tempEffort = tempEffort + resTask.duration;
         }
       }
-      let sameTask = false;
-      const taskNames = new Set();
-
-      for (const data of dataProject.listProject) {
-        for (const resTask of data.listTask) {
-          if (taskNames.has(resTask.taskName)) {
-            sameTask = true;
-            break;
-          }
-          taskNames.add(resTask.taskName);
-        }
-        if (sameTask) {
-          break;
-        }
-      }
-
-      if (sameTask) {
-        setDataAlert({
-          severity: "error",
-          message: "Task name must be unique",
-          open: true,
-        });
-        return;
-      }
       if (tempEffort < 8) {
         setPopUpMoretask(true);
         setDurationTask(true);
@@ -208,6 +186,8 @@ export const SubmitSave = async (
           data: dataProject,
         });
         if (!res.isError) {
+          closeTask(false);
+          setOpenTask(false);
           setDataAlert({
             severity: "success",
             open: true,
@@ -216,20 +196,19 @@ export const SubmitSave = async (
           setTimeout(() => {
             window.location.reload();
           }, 3000);
+
+          setProject({
+            workingReportTaskId: undefined,
+            listProject: [clearProject],
+          });
+          setIdEffortTask("");
         } else {
           setDataAlert({
             severity: "error",
-            message: res.error.meta.message,
+            message: res.error.detail,
             open: true,
           });
         }
-        closeTask(false);
-        setOpenTask(false);
-        setProject({
-          workingReportTaskId: undefined,
-          listProject: [clearProject],
-        });
-        setIdEffortTask("");
       }
     } catch (error) {
       console.error(error);
