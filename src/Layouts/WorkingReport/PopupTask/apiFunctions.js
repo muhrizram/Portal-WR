@@ -23,7 +23,6 @@ export const UpdateTask = async (
   setDurationTask,
   closeTask,
   setDataAlert,
-  handleEditSuccess,
   navigate
 ) => {
   const validationProject = projectSchema.safeParse(datas);

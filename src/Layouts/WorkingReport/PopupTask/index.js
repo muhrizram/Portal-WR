@@ -33,14 +33,16 @@ const PopupTask = ({
 }) => {
   const [datas, setDatas] = useState({
     projects: [{ projectId: "" }],
-    tasks: [[{ taskName: "", statusTaskId: "", duration: "" }]],
+    tasks: [
+      [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
+    ],
   });
   const [errors, setErrors] = useState({});
   const { setDataAlert } = useContext(AlertContext);
   const [listTaskProject, setlistTaskProject] = useState([]);
   const [listProject, setlistProject] = useState([]);
   const [idEffortTask, setIdEffortTask] = useState();
-  const [opentask, setOpenTask] = useState(false);
+  const [openTask, setOpenTask] = useState(false);
   const [statusTask, setstatusTask] = useState([]);
   const [openPopUpMoretask, setPopUpMoretask] = useState(false);
   const [selectedTask, setSelectedTask] = useState([]);
@@ -105,14 +107,19 @@ const PopupTask = ({
 
     dataDetail.forEach((data, projectIndex) => {
       newProjects.push({
-        projectId: String(data.attributes.projectId),
+        projectId: data.attributes.projectId
+          ? String(data.attributes.projectId)
+          : String(data.attributes.absenceId),
       });
       data.attributes.listTask.forEach((task) => {
         newTasks[projectIndex] = newTasks[projectIndex] || [];
         newTasks[projectIndex].push({
-          taskName: task.taskName,
-          statusTaskId: String(task.statusTaskId),
+          taskName: task.taskName ? task.taskName : task.taskCode,
+          statusTaskId: task.statusTaskId
+            ? String(task.statusTaskId)
+            : task.taskCode,
           duration: String(task.taskDuration),
+          taskDetails: task.taskItem !== null ? task.taskItem : "",
         });
       });
     });
@@ -140,7 +147,7 @@ const PopupTask = ({
       projects: [...datas.projects, { projectId: "" }],
       tasks: [
         ...datas.tasks,
-        [{ taskName: "", statusTaskId: "", duration: "" }],
+        [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
       ],
     });
     if (isEdit) {
@@ -195,6 +202,7 @@ const PopupTask = ({
       taskName: "",
       statusTaskId: "",
       duration: "",
+      taskDetails: "",
     };
     setDatas({
       ...datas,
@@ -246,6 +254,16 @@ const PopupTask = ({
       newValue = { id: null, name: "" };
     }
 
+    let dataArray = [...datas.projects];
+    dataArray[idxProject] = {
+      projectId: newValue ? String(newValue.name) : "",
+    };
+
+    setDatas({
+      ...datas,
+      projects: dataArray,
+    });
+
     if (isEdit) {
       const temp = { ...firstEditTask };
       if (absen) {
@@ -258,12 +276,6 @@ const PopupTask = ({
       temp.listProject[idxProject].listTask = [clearTask];
       setFirstEditTask(temp);
     } else {
-      let dataArray = [...datas.projects];
-      dataArray[idxProject] = { projectId: String(newValue.name) };
-      setDatas({
-        ...datas,
-        projects: dataArray,
-      });
       const temp = { ...dataProject };
       temp.workingReportId = selectedWrIdanAbsenceId.workingReportTaskId;
       if (absen) {
@@ -279,6 +291,7 @@ const PopupTask = ({
   };
 
   const deleteTask = (e, idxProject, index) => {
+    datas.tasks.splice(idxProject, 1);
     if (isEdit) {
       const tempEdit = { ...firstEditTask };
       tempEdit.listProject[idxProject].listTask.splice(index, 1);
@@ -317,7 +330,7 @@ const PopupTask = ({
               errors={errors}
               errorTextStyles={errorTextStyles}
               firstEditTask={firstEditTask}
-              opentask={opentask}
+              openTask={openTask}
               addTaskinEdit={addTaskinEdit}
               CekProjectEdit={CekProjectEdit}
               listProject={listProject}
@@ -346,7 +359,7 @@ const PopupTask = ({
               errors={errors}
               checkAbsence={checkAbsence}
               setProject={setProject}
-              opentask={opentask}
+              openTask={openTask}
               listProject={listProject}
               getlistTaskProject={getlistTaskProject}
               setlistTaskProject={setlistTaskProject}
@@ -410,7 +423,8 @@ const PopupTask = ({
                       setPopUpMoretask,
                       setDurationTask,
                       closeTask,
-                      setDataAlert
+                      setDataAlert,
+                      navigate
                     );
                   }}
                 >
