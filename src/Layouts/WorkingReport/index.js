@@ -397,6 +397,7 @@ export default function WorkingReport() {
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
           setIsViewAttendance={setIsViewAttendance}
+          setDataAlert={setDataAlert}
         />
       );
     }
