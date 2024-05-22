@@ -36,7 +36,9 @@ const CreateOvertime = ({
     startTime: "",
     endTime: "",
     projects: [{ projectId: "" }],
-    tasks: [[{ taskName: "", statusTaskId: "", duration: "" }]],
+    tasks: [
+      [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
+    ],
   });
   const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
   const [optProject, setOptProject] = useState([]);
@@ -173,6 +175,7 @@ const CreateOvertime = ({
             taskName: task.taskName,
             statusTaskId: String(task.statusTaskId),
             duration: String(task.taskDuration),
+            taskDetails: task.taskItem !== null ? task.taskItem : "",
           });
         });
       });
@@ -199,6 +202,7 @@ const CreateOvertime = ({
       taskName: "",
       statusTaskId: "",
       duration: "",
+      taskDetails: "",
     };
     setDatas({
       ...datas,
@@ -221,6 +225,7 @@ const CreateOvertime = ({
     const { name, value } = event.target;
     const isDuration = name === "duration";
     const isTaskName = name === "taskName";
+    const isStatusId = name === "statusTaskId";
 
     let dataArray = [...datas.tasks];
 
@@ -284,7 +289,7 @@ const CreateOvertime = ({
           });
           data.listProject[idxProject].listTask[index].backlogId = backlogId;
         }
-      } else {
+      } else if (isStatusId) {
         if (value === null) {
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
@@ -298,6 +303,27 @@ const CreateOvertime = ({
           dataArray[idxProject][index] = {
             ...dataArray[idxProject][index],
             statusTaskId: String(value),
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
+          data.listProject[idxProject].listTask[index][name] = value;
+        }
+      } else {
+        if (value === null) {
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            taskDetails: "",
+          };
+          setDatas({
+            ...datas,
+            tasks: dataArray,
+          });
+        } else {
+          dataArray[idxProject][index] = {
+            ...dataArray[idxProject][index],
+            taskDetails: String(value),
           };
           setDatas({
             ...datas,
@@ -350,12 +376,12 @@ const CreateOvertime = ({
 
   const deleteTask = async (e, idxProject, index) => {
     e.preventDefault();
+    datas.tasks.splice(idxProject, 1);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject[idxProject].listTask.splice(index, 1);
       setDataEditOvertime(temp);
     } else {
-      datas.tasks[idxProject].splice(index, 1);
       const temp = { ...dataOvertime };
       temp.listProject[idxProject].listTask.splice(index, 1);
       setDataOvertime(temp);
@@ -367,6 +393,14 @@ const CreateOvertime = ({
   };
 
   const handleAddProject = useCallback(() => {
+    setDatas({
+      ...datas,
+      projects: [...datas.projects, { projectId: "" }],
+      tasks: [
+        ...datas.tasks,
+        [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
+      ],
+    });
     if (isEdit) {
       let CekProject = [];
       for (let i = 0; i < optProject.length; i++) {
@@ -380,7 +414,7 @@ const CreateOvertime = ({
     } else {
       onAddProject();
     }
-  }, [isEdit, optProject, dataDetailArray, onAddProject]);
+  }, [isEdit, optProject, dataDetailArray, onAddProject, datas]);
 
   const handleCancel = useCallback(() => {
     setDialogCancel(true);
@@ -399,7 +433,9 @@ const CreateOvertime = ({
         startTime: "",
         endTime: "",
         projects: [{ projectId: "" }],
-        tasks: [[{ taskName: "", statusTaskId: "", duration: "" }]],
+        tasks: [
+          [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
+        ],
       });
       closeTask(false);
       setOpenTask(false);
@@ -580,7 +616,6 @@ const CreateOvertime = ({
     (e) => {
       const validationTime = timeSchema.safeParse(datas);
       const validationProject = projectSchema.safeParse(datas);
-      console.log("Submit", datas);
       if (validationTime.success && validationProject.success) {
         setErrors("");
         if (isEdit) {
