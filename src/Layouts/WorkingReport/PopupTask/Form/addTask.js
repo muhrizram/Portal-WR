@@ -22,7 +22,7 @@ const CreateTask = ({
   errors,
   checkAbsence,
   setProject,
-  opentask,
+  openTask,
   listProject,
   getlistTaskProject,
   setlistTaskProject,
@@ -42,7 +42,7 @@ const CreateTask = ({
       {dataProject.listProject.length > 0 &&
         dataProject.listProject.map((resProject, idxProject) => (
           <div
-            className={opentask ? "card-project" : ""}
+            className={openTask ? "card-project" : ""}
             key={`${idxProject + 1}-project`}
           >
             <Grid container rowSpacing={2}>
@@ -193,14 +193,33 @@ const CreateTask = ({
                             value={
                               res.taskItem == undefined ? "" : res.taskItem
                             }
-                            onChange={(_event, newValue) => {
+                            onChange={(event, newValue) => {
+                              let dataArray = [...datas.tasks];
+
+                              if (!dataArray[idxProject]) {
+                                dataArray[idxProject] = [];
+                              }
+
+                              dataArray[idxProject][index] = {
+                                ...dataArray[idxProject][index],
+                                taskDetails: String(
+                                  event.target.value !== null
+                                    ? event.target.value
+                                    : ""
+                                ),
+                              };
+                              setDatas({
+                                ...datas,
+                                tasks: dataArray,
+                              });
+
                               const temp = { ...dataProject };
                               temp.listProject[idxProject].listTask[
                                 index
                               ].taskItem =
-                                _event.target.value === ""
+                                event.target.value === ""
                                   ? null
-                                  : _event.target.value;
+                                  : event.target.value;
                               setProject(temp);
                             }}
                             className="input-field-crud"
@@ -208,7 +227,21 @@ const CreateTask = ({
                             label="Information Details"
                             multiline
                             maxRows={4}
+                            error={
+                              errors[`tasks,${idxProject},${index},taskDetails`]
+                            }
                           />
+                          {errors[
+                            `tasks,${idxProject},${index},taskDetails`
+                          ] && (
+                            <Typography sx={errorTextStyles}>
+                              {
+                                errors[
+                                  `tasks,${idxProject},${index},taskDetails`
+                                ]
+                              }
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                     ))}
@@ -445,14 +478,32 @@ const CreateTask = ({
                                 value={
                                   res.taskItem == undefined ? "" : res.taskItem
                                 }
-                                onChange={(_event, newValue) => {
+                                onChange={(event, newValue) => {
+                                  let dataArray = [...datas.tasks];
+
+                                  if (!dataArray[idxProject]) {
+                                    dataArray[idxProject] = [];
+                                  }
+
+                                  dataArray[idxProject][index] = {
+                                    ...dataArray[idxProject][index],
+                                    taskDetails: String(
+                                      event.target.value !== null
+                                        ? event.target.value
+                                        : ""
+                                    ),
+                                  };
+                                  setDatas({
+                                    ...datas,
+                                    tasks: dataArray,
+                                  });
                                   const temp = { ...dataProject };
                                   temp.listProject[idxProject].listTask[
                                     index
                                   ].taskItem =
-                                    _event.target.value === ""
+                                    event.target.value === ""
                                       ? null
-                                      : _event.target.value;
+                                      : event.target.value;
                                   setProject(temp);
                                 }}
                                 className="input-field-crud"
@@ -460,7 +511,23 @@ const CreateTask = ({
                                 label="Task Detail"
                                 multiline
                                 maxRows={4}
+                                error={
+                                  errors[
+                                    `tasks,${idxProject},${index},taskDetails`
+                                  ]
+                                }
                               />
+                              {errors[
+                                `tasks,${idxProject},${index},taskDetails`
+                              ] && (
+                                <Typography sx={errorTextStyles}>
+                                  {
+                                    errors[
+                                      `tasks,${idxProject},${index},taskDetails`
+                                    ]
+                                  }
+                                </Typography>
+                              )}
                             </Grid>
                           </Grid>
                         </AccordionDetails>

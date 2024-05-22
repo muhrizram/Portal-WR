@@ -21,14 +21,14 @@ const EditTask = ({
   errors,
   errorTextStyles,
   firstEditTask,
-  opentask,
+  openTask,
   addTaskinEdit,
   CekProjectEdit,
   listProject,
   setlistTaskProject,
   handleChangeProject,
-  setCekabsen,
-  setOpentask,
+  setCheckAbsence,
+  setOpenTask,
   onRemoveProject,
   setKolomproject,
   setIdEffortTask,
@@ -46,7 +46,7 @@ const EditTask = ({
       {firstEditTask.listProject.length > 0 &&
         firstEditTask.listProject.map((resProject, idxProject) => (
           <div
-            className={opentask ? "card-project" : ""}
+            className={openTask ? "card-project" : ""}
             key={`${idxProject + 1}-project`}
           >
             <Grid container rowSpacing={2}>
@@ -73,18 +73,18 @@ const EditTask = ({
                     if (newValue) {
                       getlistTaskProject(newValue.id, setlistTaskProject);
                       handleChangeProject(newValue, idxProject, newValue.absen);
-                      setCekabsen((prevCekAbsen) => {
+                      setCheckAbsence((prevCekAbsen) => {
                         const updatedCekAbsen = [...prevCekAbsen];
                         updatedCekAbsen[idxProject] = newValue.absen;
                         return updatedCekAbsen;
                       });
-                      setOpentask(true);
+                      setOpenTask(true);
                     } else {
                       onRemoveProject(_event, idxProject);
                       handleChangeProject(null, idxProject, null);
                       setKolomproject(true);
                       setIdEffortTask("");
-                      setCekabsen((prevCekAbsen) => {
+                      setCheckAbsence((prevCekAbsen) => {
                         const updatedCekAbsen = [...prevCekAbsen];
                         updatedCekAbsen[idxProject] = "";
                         return updatedCekAbsen;
@@ -158,6 +158,31 @@ const EditTask = ({
                                 index
                               ].taskDuration = numericValue;
                               setFirstEditTask(temp);
+
+                              let arrayProject = [...datas.projects];
+                              let dataArray = [...datas.tasks];
+
+                              arrayProject[idxProject] = { projectId: "Absen" };
+
+                              if (!dataArray[idxProject]) {
+                                dataArray[idxProject] = [];
+                              }
+
+                              dataArray[idxProject][index] = {
+                                ...dataArray[idxProject][index],
+                                taskName: "Absen",
+                                statusTaskId: "Absen",
+                                duration: String(
+                                  event.target.value !== null
+                                    ? event.target.value
+                                    : ""
+                                ),
+                              };
+                              setDatas({
+                                ...datas,
+                                projects: arrayProject,
+                                tasks: dataArray,
+                              });
                             }}
                             className="input-field-crud"
                             type="number"
@@ -177,14 +202,32 @@ const EditTask = ({
                             value={
                               res.taskItem == undefined ? "" : res.taskItem
                             }
-                            onChange={(_event, newValue) => {
+                            onChange={(event, newValue) => {
+                              let dataArray = [...datas.tasks];
+
+                              if (!dataArray[idxProject]) {
+                                dataArray[idxProject] = [];
+                              }
+
+                              dataArray[idxProject][index] = {
+                                ...dataArray[idxProject][index],
+                                taskDetails: String(
+                                  event.target.value !== null
+                                    ? event.target.value
+                                    : ""
+                                ),
+                              };
+                              setDatas({
+                                ...datas,
+                                tasks: dataArray,
+                              });
                               const temp = { ...firstEditTask };
                               temp.listProject[idxProject].listTask[
                                 index
                               ].taskItem =
-                                _event.target.value === ""
+                                event.target.value === ""
                                   ? null
-                                  : _event.target.value;
+                                  : event.target.value;
                               setFirstEditTask(temp);
                             }}
                             className="input-field-crud"
@@ -192,7 +235,21 @@ const EditTask = ({
                             label="Information Details"
                             multiline
                             maxRows={4}
+                            error={
+                              errors[`tasks,${idxProject},${index},taskDetails`]
+                            }
                           />
+                          {errors[
+                            `tasks,${idxProject},${index},taskDetails`
+                          ] && (
+                            <Typography sx={errorTextStyles}>
+                              {
+                                errors[
+                                  `tasks,${idxProject},${index},taskDetails`
+                                ]
+                              }
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                     ))}
@@ -464,14 +521,33 @@ const EditTask = ({
                                 value={
                                   res.taskItem == undefined ? "" : res.taskItem
                                 }
-                                onChange={(_event, newValue) => {
+                                onChange={(event, newValue) => {
+                                  let dataArray = [...datas.tasks];
+
+                                  if (!dataArray[idxProject]) {
+                                    dataArray[idxProject] = [];
+                                  }
+
+                                  dataArray[idxProject][index] = {
+                                    ...dataArray[idxProject][index],
+                                    taskDetails: String(
+                                      event.target.value !== null
+                                        ? event.target.value
+                                        : ""
+                                    ),
+                                  };
+                                  setDatas({
+                                    ...datas,
+                                    tasks: dataArray,
+                                  });
+
                                   const temp = { ...firstEditTask };
                                   temp.listProject[idxProject].listTask[
                                     index
                                   ].taskItem =
-                                    _event.target.value === ""
+                                    event.target.value === ""
                                       ? null
-                                      : _event.target.value;
+                                      : event.target.value;
                                   setFirstEditTask(temp);
                                 }}
                                 className="input-field-crud"
@@ -479,7 +555,23 @@ const EditTask = ({
                                 label="Task Detail"
                                 multiline
                                 maxRows={4}
+                                error={
+                                  errors[
+                                    `tasks,${idxProject},${index},taskDetails`
+                                  ]
+                                }
                               />
+                              {errors[
+                                `tasks,${idxProject},${index},taskDetails`
+                              ] && (
+                                <Typography sx={errorTextStyles}>
+                                  {
+                                    errors[
+                                      `tasks,${idxProject},${index},taskDetails`
+                                    ]
+                                  }
+                                </Typography>
+                              )}
                             </Grid>
                           </Grid>
                         </AccordionDetails>
