@@ -21,6 +21,9 @@ export const projectSchema = z.object({
         duration: z.string().min(1, {
           message: "Duration is required",
         }),
+        taskDetails: z.string().min(1, {
+          message: "Information Detail is required",
+        }),
       })
     )
   ),
