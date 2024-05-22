@@ -385,7 +385,21 @@ const EditOvertime = ({
                             }}
                             multiline
                             maxRows={4}
+                            error={
+                              errors[`tasks,${idxProject},${index},taskDetails`]
+                            }
                           />
+                          {errors[
+                            `tasks,${idxProject},${index},taskDetails`
+                          ] && (
+                            <Typography sx={errorTextStyles}>
+                              {
+                                errors[
+                                  `tasks,${idxProject},${index},taskDetails`
+                                ]
+                              }
+                            </Typography>
+                          )}
                         </Grid>
                       </Grid>
                     </AccordionDetails>
