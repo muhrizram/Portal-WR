@@ -247,7 +247,7 @@ const EditOvertime = ({
                               <TextField
                                 {...params}
                                 className="input-field-crud"
-                                placeholder='e.g Create Login Screen"'
+                                placeholder='e.g Create "Login" Screen'
                                 label="Task Name *"
                                 InputLabelProps={{ shrink: true }}
                                 error={
@@ -351,7 +351,7 @@ const EditOvertime = ({
                               }
                             }}
                             className="input-field-crud"
-                            placeholder="e.g Create Login Screen"
+                            placeholder="e.g 1 or 3 (hour)"
                             type="number"
                             label="Estimation Effort *"
                             sx={{
@@ -377,8 +377,8 @@ const EditOvertime = ({
                               handleChange(e, idxProject, index, true)
                             }
                             className="input-field-crud"
-                            placeholder='e.g Create Login Screen"'
-                            label="Task Detail"
+                            placeholder='e.g Create "Login" Screen'
+                            label="Task Detail *"
                             sx={{
                               width: "100%",
                               backgroundColor: "white",
