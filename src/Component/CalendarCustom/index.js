@@ -230,6 +230,18 @@ export default function BigCalendar({
     },
   };
 
+  const isHoliday = (date, events) => {
+    return events.some((event) => {
+      const eventDate = new Date(event.start);
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear() &&
+        event.holiday
+      );
+    });
+  };
+
   const allEvents = createAllEvents();
 
   const filterDate = (date, { startDate, endDate }) => {
@@ -250,13 +262,15 @@ export default function BigCalendar({
         (year === endYear && month < endMonth) ||
         (year === endYear && month === endMonth && day <= endDay));
 
+    const isHolidayDate = isHoliday(date, allEvents);
+
     if (startDate !== null && isWithinRange) {
-      if (date.getDay() === 0 || date.getDay() === 6) {
+      if (date.getDay() === 0 || date.getDay() === 6 || isHolidayDate) {
         return { className: "selected-weekend" };
       }
       return { className: "date-selected" };
     }
-    if (date.getDay() === 0 || date.getDay() === 6) {
+    if (date.getDay() === 0 || date.getDay() === 6 || isHolidayDate) {
       return { className: "date-weekend" };
     }
 
