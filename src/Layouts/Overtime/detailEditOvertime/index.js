@@ -26,6 +26,7 @@ export default function ViewOvertime({
   setonOtherUser,
 }) {
   const [openOvertime, setOpenOvertime] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -65,12 +66,9 @@ export default function ViewOvertime({
   };
 
   useEffect(() => {
+    setIsSubmit(false);
     getDetailOvertime();
-  }, []);
-
-  const handleEditSuccess = () => {
-    getDetailOvertime();
-  };
+  }, [isSubmit]);
 
   return (
     <Grid container spacing={2}>
@@ -240,7 +238,7 @@ export default function ViewOvertime({
             open={openOvertime}
             closeOvertime={() => setOpenOvertime(false)}
             dataDetail={detail}
-            onEditSuccess={handleEditSuccess}
+            setIsSubmit={setIsSubmit}
           />
         </>
       ) : (

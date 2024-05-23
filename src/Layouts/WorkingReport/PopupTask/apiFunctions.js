@@ -23,7 +23,8 @@ export const UpdateTask = async (
   setDurationTask,
   closeTask,
   setDataAlert,
-  navigate
+  navigate,
+  setIsSubmit
 ) => {
   const validationProject = projectSchema.safeParse(datas);
 
@@ -82,6 +83,7 @@ export const UpdateTask = async (
           open: true,
           message: "Task edited successfully. Let's get things done!",
         });
+        setIsSubmit(true);
         setTimeout(() => {
           navigate("/workingReport");
         }, 3000);

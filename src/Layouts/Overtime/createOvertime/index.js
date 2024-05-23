@@ -25,9 +25,9 @@ const CreateOvertime = ({
   closeTask,
   isEdit,
   closeOvertime,
-  onEditSuccess,
   dataDetail,
   wrDate,
+  setIsSubmit,
 }) => {
   const navigate = useNavigate();
   const { setDataAlert } = useContext(AlertContext);
@@ -421,6 +421,7 @@ const CreateOvertime = ({
   }, [setDialogCancel]);
 
   const handleCancelClick = useCallback(() => {
+    setIsSubmit(true);
     if (isEdit) {
       closeOvertime(false);
       setOpenTask(false);
@@ -547,7 +548,7 @@ const CreateOvertime = ({
     }
   };
 
-  const saveEdit = async () => {
+  const saveEdit = async (setIsSubmit) => {
     const dataUpdate = {
       startTime: datas.startTime || dataEditOvertime.startTime,
       endTime: datas.endTime || dataEditOvertime.endTime,
@@ -593,12 +594,12 @@ const CreateOvertime = ({
       data: dataUpdate,
     });
     if (!res.isError) {
+      setIsSubmit(true);
       setDataAlert({
         severity: "success",
         open: true,
         message: res.data.meta.message,
       });
-      onEditSuccess();
       setTimeout(() => {
         navigate("/workingReport");
       }, 3000);
@@ -619,7 +620,7 @@ const CreateOvertime = ({
       if (validationTime.success && validationProject.success) {
         setErrors("");
         if (isEdit) {
-          saveEdit();
+          saveEdit(setIsSubmit);
         } else {
           onSave();
         }

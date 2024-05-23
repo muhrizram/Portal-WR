@@ -26,8 +26,12 @@ export default function ViewTask({
   const [taskData, setTaskData] = useState([]);
   const [todaysWorkingReport, setTodaysWorkingReport] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
+  const [isSubmit, setIsSubmit] = useState(false);
 
-  useEffect(() => (getDetailTask(), checkForMatch()), []);
+  useEffect(
+    () => (getDetailTask(), setIsSubmit(false), checkForMatch()),
+    [isSubmit]
+  );
 
   const checkForMatch = () => {
     for (const item of dataAll) {
@@ -282,6 +286,7 @@ export default function ViewTask({
               open={openTask}
               closeTask={() => setOpenTask(false)}
               dataDetail={taskData}
+              setIsSubmit={setIsSubmit}
             />
           </>
         ) : (

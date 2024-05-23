@@ -30,6 +30,7 @@ const PopupTask = ({
   isEdit,
   selectedWrIdanAbsenceId,
   dataDetail,
+  setIsSubmit,
 }) => {
   const [datas, setDatas] = useState({
     projects: [{ projectId: "" }],
@@ -424,7 +425,8 @@ const PopupTask = ({
                       setDurationTask,
                       closeTask,
                       setDataAlert,
-                      navigate
+                      navigate,
+                      setIsSubmit
                     );
                   }}
                 >
@@ -521,6 +523,7 @@ const PopupTask = ({
               setIdEffortTask("");
               setOpenConfirmCancel(false);
               setErrors("");
+              setIsSubmit(true);
             }}
           >
             {"Cancel without saving"}
