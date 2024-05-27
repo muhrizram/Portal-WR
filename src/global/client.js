@@ -6,25 +6,25 @@ const instance = axios.create();
 // const auth = useAuth()
 
 const refreshToken = async (Token) => {
-  try {    
+  try {
     const host = process.env.REACT_APP_BASE_API;
     const refreshTokenEndpoint = `${host}/auth/refreshToken`;
     const response = await axios.post(refreshTokenEndpoint, {
       refreshToken: Token,
-    }); 
+    });
     if (response.status === 200) {
       window.location.reload();
-      localStorage.setItem('token', response.data.accessToken);
-      localStorage.setItem('refreshtoken', response.data.refreshToken);      
+      localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("refreshtoken", response.data.refreshToken);
       return true;
     }
   } catch (error) {
     console.error("Token Refresh Error: ", error.message);
     localStorage.clear();
+    window.location.reload();
     return false;
   }
 };
-
 
 export const clientState = {
   requesting: false,
@@ -54,11 +54,12 @@ const requestAPI = async ({
     "Content-Type": "application/vnd.api+json",
     Accept: "application/vnd.api+json",
   };
-  if (!isLogin) optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
+  if (!isLogin)
+    optHeaders = { ...optHeaders, Authorization: `Bearer ${token}` };
 
   const reqConfig = { url, method, timeout, headers: optHeaders, data };
   if (!endpoint) throw new Error("Parameter url diperlukan");
-  
+
   clientState.requesting = true;
 
   try {
@@ -77,23 +78,23 @@ const requestAPI = async ({
       }
     });
     result = { ...apiResponse.data, isError: false };
-    
+
     clientState.requesting = false;
 
     return result;
   } catch (error) {
     if (error.response.status === 401) {
-      if (!clientState.refreshingToken) { 
+      if (!clientState.refreshingToken) {
         clientState.refreshingToken = true;
         const refreshTokennya = localStorage.getItem("refreshtoken");
         const refreshTokenSuccess = await refreshToken(refreshTokennya);
         clientState.refreshingToken = false;
         if (refreshTokenSuccess) {
-          return await requestAPI({ method, endpoint, data, headers }); 
+          return await requestAPI({ method, endpoint, data, headers });
         }
       }
     }
-    
+
     clientState.requesting = false;
     result = {
       status: error.response.status,
