@@ -12,6 +12,7 @@ import UploaderFile from "../../../Component/UploaderFile";
 import client from "../../../global/client";
 import { AlertContext } from "../../../context";
 import moment from "moment";
+import { ABSENCE } from "../../../global/constant/absence";
 const Attendance = ({
   dataPeriod,
   setIsCheckin,
@@ -66,7 +67,7 @@ const Attendance = ({
 
   const onContinue = async () => {
     let body = {};
-    if (presence.value === "42") {
+    if (presence.value === ABSENCE.hadir.code) {
       body = {
         periodId: dataPeriod.period,
         presenceId: parseInt(presence.value),
@@ -105,12 +106,12 @@ const Attendance = ({
           severity: "success",
           open: true,
           message:
-            presence.value == "43"
-              ? "Your sick leave request has been approved. Take care and get well soon!"
-              : presence.value == "44"
-              ? "Your work leave request has been processed successfully!"
-              : presence.value == "45"
-              ? "Success! Your authorized absence has been recorded. Enjoy"
+            presence.value === ABSENCE.sakit.code
+              ? ABSENCE.sakit.message
+              : presence.value === ABSENCE.cuti.code
+              ? ABSENCE.cuti.message
+              : presence.value === ABSENCE.izin.code
+              ? ABSENCE.izin.message
               : null,
         });
         setTimeout(() => {
@@ -128,7 +129,7 @@ const Attendance = ({
 
   const renderBottom = () => {
     let dom = null;
-    if (presence.value === "42") {
+    if (presence.value === ABSENCE.hadir.code) {
       dom = (
         <TextField
           value={location}
@@ -146,7 +147,10 @@ const Attendance = ({
           ))}
         </TextField>
       );
-    } else if (presence.value !== "42" && presence.value !== undefined) {
+    } else if (
+      presence.value !== ABSENCE.hadir.code &&
+      presence.value !== undefined
+    ) {
       dom = (
         <UploaderFile onCompleteUpload={(urlFile) => setFilePath(urlFile)} />
       );
@@ -202,7 +206,7 @@ const Attendance = ({
           item
           xs={12}
           textAlign="center"
-          mt={presence.value === "42" ? 21 : 15}
+          mt={presence.value === ABSENCE.hadir.code ? 21 : 15}
         >
           <Button
             style={{ marginRight: "16px" }}
@@ -219,7 +223,9 @@ const Attendance = ({
             variant="saveButton"
             onClick={() => onContinue()}
           >
-            {presence.value === "42" ? "Continue" : "Submit Evidence"}
+            {presence.value === ABSENCE.hadir.code
+              ? "Continue"
+              : "Submit Evidence"}
           </Button>
         </Grid>
       </Grid>

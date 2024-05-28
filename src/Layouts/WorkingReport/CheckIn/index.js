@@ -20,6 +20,7 @@ import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
 import moment from "moment";
 import { AlertContext } from "../../../context";
+import { ABSENCE } from "../../../global/constant/absence";
 
 export default function CheckinTime({
   setIsCheckin,
@@ -47,10 +48,10 @@ export default function CheckinTime({
 
   const onContinue = () => {
     const presence = localStorage.getItem("presence");
-    if (beforeThanToday && presence === "42") {
+    if (beforeThanToday && presence === ABSENCE.hadir.code) {
       setIsTakePicture(true);
     } else if (!beforeThanToday) {
-      if (presence === "42") {
+      if (presence === ABSENCE.hadir.code) {
         hadirNotToday();
       } else {
         TidakhadirNotToday();
