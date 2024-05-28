@@ -6,9 +6,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid,
-  TextField,
-  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import "../../../App.css";
@@ -18,11 +15,19 @@ import {
   SubmitSave,
   UpdateTask,
   getlistProject,
-  getlistTaskProject,
+  getListTaskProject,
   getstatusTask,
 } from "./apiFunctions";
 import EditTask from "./Form/editTask";
 import CreateTask from "./Form/addTask";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { taskSchema } from "../../../global/taskSchema";
+import {
+  clearProjectTaskErrors,
+  clearTaskErrors,
+  resetFormValues,
+} from "../../../global/formFunctions";
 
 const PopupTask = ({
   open,
@@ -32,32 +37,23 @@ const PopupTask = ({
   dataDetail,
   setIsSubmit,
 }) => {
-  const [datas, setDatas] = useState({
-    projects: [{ projectId: "" }],
-    tasks: [
-      [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
-    ],
-  });
-  const [errors, setErrors] = useState({});
   const { setDataAlert } = useContext(AlertContext);
-  const [listTaskProject, setlistTaskProject] = useState([]);
+  const [listTaskProject, setListTaskProject] = useState([]);
   const [listProject, setlistProject] = useState([]);
   const [idEffortTask, setIdEffortTask] = useState();
   const [openTask, setOpenTask] = useState(false);
-  const [statusTask, setstatusTask] = useState([]);
+  const [statusTask, setStatusTask] = useState([]);
   const [openPopUpMoretask, setPopUpMoretask] = useState(false);
   const [selectedTask, setSelectedTask] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]);
-  const [taskDurations, setTaskDurations] = useState([
-    listTaskProject.find((item) => item.backlogId === idEffortTask),
-  ]);
+  const [defaultEditData, setDefaultEditData] = useState([]);
   const [checkAbsence, setCheckAbsence] = useState([]);
   const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
   const [dataDetailArray, setDataDetailArray] = useState([]);
-  const [addTaskinEdit, setAddtaskinEdit] = useState(false);
-  const [CekProjectEdit, setCekProjectEdit] = useState([]);
+  const [addTaskinEdit, setAddTaskinEdit] = useState(false);
+  const [CekProjectEdit, setCheckProjectEdit] = useState([]);
   const [DurationTask, setDurationTask] = useState();
-  const [Kolomproject, setKolomproject] = useState(false);
+  const [projectColumn, setProjectColumn] = useState(false);
   const navigate = useNavigate();
 
   const errorTextStyles = {
@@ -74,7 +70,7 @@ const PopupTask = ({
     listTask: [],
   };
 
-  const [dataProject, setProject] = useState({
+  const [dataProject, setDataProject] = useState({
     workingReportId: undefined,
     listProject: [clearProject],
   });
@@ -103,32 +99,27 @@ const PopupTask = ({
       }));
     }
 
-    const newProjects = [];
-    const newTasks = [];
-
-    dataDetail.forEach((data, projectIndex) => {
-      newProjects.push({
-        projectId: data.attributes.projectId
-          ? String(data.attributes.projectId)
-          : String(data.attributes.absenceId),
-      });
-      data.attributes.listTask.forEach((task) => {
-        newTasks[projectIndex] = newTasks[projectIndex] || [];
-        newTasks[projectIndex].push({
-          taskName: task.taskName ? task.taskName : task.taskCode,
-          statusTaskId: task.statusTaskId
-            ? String(task.statusTaskId)
-            : task.taskCode,
-          duration: String(task.taskDuration),
-          taskDetails: task.taskItem !== null ? task.taskItem : "",
-        });
-      });
-    });
-    setDatas((prevDatas) => ({
-      ...prevDatas,
-      projects: newProjects,
-      tasks: newTasks,
+    let tempProjects = dataDetail.map((data) => ({
+      projectId: data.attributes.projectId
+        ? data.attributes.projectId
+        : data.attributes.absenceId,
     }));
+
+    let tempTasks = dataDetail.map((data) =>
+      data.attributes.listTask.map((task) => ({
+        taskName: data.attributes.projectId ? task.taskName : "Absence",
+        statusTaskId: data.attributes.projectId
+          ? task.statusTaskId
+          : data.attributes.absenceId,
+        taskDuration: String(task.taskDuration),
+        taskDetails: task.taskItem,
+      }))
+    );
+
+    setDefaultEditData({
+      listProject: tempProjects,
+      listTask: tempTasks,
+    });
   };
 
   useEffect(() => {
@@ -139,27 +130,54 @@ const PopupTask = ({
       setSelectedTask([]);
     }
     getlistProject(setlistProject);
-    getstatusTask(setstatusTask);
+    getstatusTask(setStatusTask);
   }, [dataProject, dataDetailArray, dataDetail]);
 
-  const onAddProject = (CekProject) => {
-    setDatas({
-      ...datas,
-      projects: [...datas.projects, { projectId: "" }],
-      tasks: [
-        ...datas.tasks,
-        [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
+  const {
+    control,
+    handleSubmit,
+    clearErrors,
+    setValue,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm({
+    resolver: zodResolver(taskSchema),
+    mode: "onChange",
+    defaultValues: defaultEditData || {
+      listProject: [{ projectId: null }],
+      listTask: [
+        [
+          {
+            taskName: "",
+            statusTaskId: "",
+            taskDuration: "",
+            taskDetails: "",
+          },
+        ],
       ],
-    });
+    },
+  });
+
+  useEffect(() => {
+    if (defaultEditData) {
+      reset({
+        listProject: defaultEditData.listProject,
+        listTask: defaultEditData.listTask,
+      });
+    }
+  }, [defaultEditData, reset]);
+
+  const onAddProject = (checkProject) => {
     if (isEdit) {
-      setCekProjectEdit(CekProject);
-      setAddtaskinEdit(true);
+      setCheckProjectEdit(checkProject);
+      setAddTaskinEdit(true);
       setFirstEditTask((prevState) => ({
         ...prevState,
         listProject: [...prevState.listProject, clearProject],
       }));
     } else {
-      setProject((prevState) => ({
+      setDataProject((prevState) => ({
         ...prevState,
         listProject: [...prevState.listProject, clearProject],
       }));
@@ -167,8 +185,9 @@ const PopupTask = ({
   };
 
   const onRemoveProject = (e, idxProject) => {
-    datas.projects.splice(idxProject, 1);
-    datas.tasks.splice(idxProject, 1);
+    clearProjectTaskErrors(errors, clearErrors, idxProject, false);
+
+    resetFormValues(setValue, watch, idxProject, false);
     if (isEdit) {
       const updatedDataProject = { ...firstEditTask };
       const updatedListProject = [...updatedDataProject.listProject];
@@ -183,56 +202,30 @@ const PopupTask = ({
       const updatedListProject = [...updatedDataProject.listProject];
       updatedListProject.splice(idxProject, 1);
       updatedDataProject.listProject = updatedListProject;
-      setProject(updatedDataProject);
+      setDataProject(updatedDataProject);
       const updatedselectedProject = [...selectedProject];
       updatedselectedProject.splice(idxProject, 1);
       setSelectedProject(updatedselectedProject);
     }
   };
 
-  const AddTask = (idxProject) => {
+  const addTask = (idxProject) => {
     let temp = null;
     if (isEdit) {
       temp = { ...firstEditTask };
     } else {
       temp = { ...dataProject };
     }
-    let dataArray = [...datas.tasks];
-    const taskLength = temp.listProject[idxProject].listTask.length;
-    dataArray[idxProject][taskLength] = {
-      taskName: "",
-      statusTaskId: "",
-      duration: "",
-      taskDetails: "",
-    };
-    setDatas({
-      ...datas,
-      tasks: dataArray,
-    });
     if (isEdit) {
       temp.listProject[idxProject].listTask.push({ ...clearTask });
       setFirstEditTask(temp);
     } else {
       temp.listProject[idxProject].listTask.push({ ...clearTask });
-      setProject(temp);
+      setDataProject(temp);
     }
   };
 
   const handleChange = (event, idxProject, index, backlogId) => {
-    let dataArray = [...datas.tasks];
-
-    if (!dataArray[idxProject]) {
-      dataArray[idxProject] = [];
-    }
-
-    dataArray[idxProject][index] = {
-      ...dataArray[idxProject][index],
-      statusTaskId: String(event.value.id),
-    };
-    setDatas({
-      ...datas,
-      tasks: dataArray,
-    });
     if (isEdit) {
       const temp = { ...firstEditTask };
       temp.listProject[idxProject].listTask[index][`${event.name}Id`] =
@@ -246,7 +239,7 @@ const PopupTask = ({
         event.value.id;
       temp.listProject[idxProject].listTask[index][`${event.name}Name`] =
         event.value.name;
-      setProject(temp);
+      setDataProject(temp);
     }
   };
 
@@ -254,16 +247,6 @@ const PopupTask = ({
     if (newValue === null) {
       newValue = { id: null, name: "" };
     }
-
-    let dataArray = [...datas.projects];
-    dataArray[idxProject] = {
-      projectId: newValue ? String(newValue.name) : "",
-    };
-
-    setDatas({
-      ...datas,
-      projects: dataArray,
-    });
 
     if (isEdit) {
       const temp = { ...firstEditTask };
@@ -287,21 +270,51 @@ const PopupTask = ({
         temp.listProject[idxProject].projectName = newValue.name;
       }
       temp.listProject[idxProject].listTask = [clearTask];
-      setProject(temp);
+      setDataProject(temp);
     }
   };
 
   const deleteTask = (e, idxProject, index) => {
-    datas.tasks.splice(idxProject, 1);
     if (isEdit) {
       const tempEdit = { ...firstEditTask };
       tempEdit.listProject[idxProject].listTask.splice(index, 1);
       setFirstEditTask(tempEdit);
     } else {
-      datas.tasks[idxProject].splice(index, 1);
       const tempAdd = { ...dataProject };
       tempAdd.listProject[idxProject].listTask.splice(index, 1);
-      setProject(tempAdd);
+      setDataProject(tempAdd);
+    }
+    clearTaskErrors(clearErrors, idxProject, index);
+
+    const updatedTasks = watch(`listTask.${idxProject}`).filter(
+      (_, i) => i !== index
+    );
+    setValue(`listTask.${idxProject}`, updatedTasks);
+  };
+
+  const onSubmit = () => {
+    if (isEdit) {
+      UpdateTask(
+        firstEditTask,
+        setPopUpMoretask,
+        setDurationTask,
+        closeTask,
+        setDataAlert,
+        setIsSubmit,
+        navigate
+      );
+    } else {
+      SubmitSave(
+        dataProject,
+        setDataProject,
+        setPopUpMoretask,
+        setDurationTask,
+        closeTask,
+        setOpenTask,
+        setDataAlert,
+        clearProject,
+        setIdEffortTask
+      );
     }
   };
 
@@ -318,174 +331,121 @@ const PopupTask = ({
           {isEdit ? "Edit Task" : "Add Task"}
         </DialogTitle>
         <DialogContent className="dialog-task-content">
-          <DialogContentText
-            className="dialog-delete-text-content"
-            id="alert-dialog-description"
-          >
-            Assign and track employee tasks easily
-          </DialogContentText>
-          {isEdit ? (
-            <EditTask
-              datas={datas}
-              setDatas={setDatas}
-              errors={errors}
-              errorTextStyles={errorTextStyles}
-              firstEditTask={firstEditTask}
-              openTask={openTask}
-              addTaskinEdit={addTaskinEdit}
-              CekProjectEdit={CekProjectEdit}
-              listProject={listProject}
-              setlistTaskProject={setlistTaskProject}
-              handleChangeProject={handleChangeProject}
-              setCheckAbsence={setCheckAbsence}
-              setOpenTask={setOpenTask}
-              onRemoveProject={onRemoveProject}
-              setKolomproject={setKolomproject}
-              setIdEffortTask={setIdEffortTask}
-              setFirstEditTask={setFirstEditTask}
-              Kolomproject={Kolomproject}
-              deleteTask={deleteTask}
-              AddTask={AddTask}
-              selectedTask={selectedTask}
-              listTaskProject={listTaskProject}
-              statusTask={statusTask}
-              handleChange={handleChange}
-            />
-          ) : (
-            <CreateTask
-              datas={datas}
-              setDatas={setDatas}
-              dataProject={dataProject}
-              errorTextStyles={errorTextStyles}
-              errors={errors}
-              checkAbsence={checkAbsence}
-              setProject={setProject}
-              openTask={openTask}
-              listProject={listProject}
-              getlistTaskProject={getlistTaskProject}
-              setlistTaskProject={setlistTaskProject}
-              handleChangeProject={handleChangeProject}
-              setCheckAbsence={setCheckAbsence}
-              setOpenTask={setOpenTask}
-              onRemoveProject={onRemoveProject}
-              deleteTask={deleteTask}
-              selectedTask={selectedTask}
-              listTaskProject={listTaskProject}
-              statusTask={statusTask}
-              handleChange={handleChange}
-              AddTask={AddTask}
-            />
-          )}
+          <form onSubmit={handleSubmit(onSubmit)} id="task-form">
+            <DialogContentText
+              className="dialog-delete-text-content"
+              id="alert-dialog-description"
+            >
+              Assign and track employee tasks easily
+            </DialogContentText>
+            {isEdit ? (
+              <EditTask
+                control={control}
+                errors={errors}
+                errorTextStyles={errorTextStyles}
+                listProject={listProject}
+                listTaskProject={listTaskProject}
+                firstEditTask={firstEditTask}
+                onRemoveProject={onRemoveProject}
+                handleChangeProject={handleChangeProject}
+                setProjectColumn={setProjectColumn}
+                setIdEffortTask={setIdEffortTask}
+                setCheckAbsence={setCheckAbsence}
+                setOpenTask={setOpenTask}
+                setListTaskProject={setListTaskProject}
+                projectColumn={projectColumn}
+                setFirstEditTask={setFirstEditTask}
+                selectedTask={selectedTask}
+                statusTask={statusTask}
+                handleChange={handleChange}
+                addTask={addTask}
+                openTask={openTask}
+                setValue={setValue}
+                clearErrors={clearErrors}
+                checkAbsence={checkAbsence}
+                deleteTask={deleteTask}
+              />
+            ) : (
+              <CreateTask
+                control={control}
+                clearErrors={clearErrors}
+                errors={errors}
+                setValue={setValue}
+                dataProject={dataProject}
+                errorTextStyles={errorTextStyles}
+                checkAbsence={checkAbsence}
+                setDataProject={setDataProject}
+                openTask={openTask}
+                listProject={listProject}
+                getListTaskProject={getListTaskProject}
+                setListTaskProject={setListTaskProject}
+                handleChangeProject={handleChangeProject}
+                setCheckAbsence={setCheckAbsence}
+                setOpenTask={setOpenTask}
+                onRemoveProject={onRemoveProject}
+                deleteTask={deleteTask}
+                selectedTask={selectedTask}
+                listTaskProject={listTaskProject}
+                statusTask={statusTask}
+                handleChange={handleChange}
+                addTask={addTask}
+              />
+            )}
+          </form>
         </DialogContent>
         <DialogActions>
-          {isEdit ? (
-            <>
-              <div className="left-container">
-                <Button
-                  variant="outlined"
-                  className="green-button button-text"
-                  onClick={() => {
-                    let CekProject = [];
+          {(isEdit || dataProject.workingReportId !== undefined) && (
+            <div className="left-container">
+              <Button
+                variant="outlined"
+                className="green-button button-text"
+                onClick={() => {
+                  if (isEdit) {
+                    let checkProject = [];
                     for (let i = 0; i < listProject.length; i++) {
                       if (dataDetailArray[i]) {
                         if (dataDetailArray[i].attributes.projectName) {
-                          CekProject[i] = true;
+                          checkProject[i] = true;
                         } else {
-                          CekProject[i] = false;
+                          checkProject[i] = false;
                         }
                       }
                     }
-                    onAddProject(CekProject);
-                  }}
-                  startIcon={<AddIcon />}
-                >
-                  Add Project
-                </Button>
-              </div>
-              <div className="right-container">
-                <Button
-                  onClick={() => {
-                    setOpenConfirmCancel(true);
-                    refreshDataDetail();
-                  }}
-                  variant="outlined"
-                  className="button-text"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="saveButton"
-                  className="button-text"
-                  onClick={() => {
-                    UpdateTask(
-                      datas,
-                      setErrors,
-                      firstEditTask,
-                      setPopUpMoretask,
-                      setDurationTask,
-                      closeTask,
-                      setDataAlert,
-                      navigate,
-                      setIsSubmit
-                    );
-                  }}
-                >
-                  Submit
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              {dataProject.workingReportId !== undefined && (
-                <>
-                  <div className="left-container">
-                    <Button
-                      variant="outlined"
-                      className="green-button button-text"
-                      onClick={() => onAddProject()}
-                      startIcon={<AddIcon />}
-                    >
-                      Add Project
-                    </Button>
-                  </div>
-                </>
-              )}
-              <div className="right-container">
-                <Button
-                  onClick={() => {
-                    setOpenConfirmCancel(true);
-                  }}
-                  variant="outlined"
-                  className="button-text"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  disabled={dataProject.workingReportId === undefined}
-                  variant="saveButton"
-                  className="button-text"
-                  onClick={() =>
-                    SubmitSave(
-                      datas,
-                      setErrors,
-                      dataProject,
-                      setPopUpMoretask,
-                      setDurationTask,
-                      setDataAlert,
-                      closeTask,
-                      setOpenTask,
-                      setProject,
-                      clearProject,
-                      setIdEffortTask,
-                      navigate
-                    )
+                    onAddProject(checkProject);
+                  } else {
+                    onAddProject();
                   }
-                >
-                  Submit
-                </Button>
-              </div>
-            </>
+                }}
+                startIcon={<AddIcon />}
+              >
+                Add Project
+              </Button>
+            </div>
           )}
+          <div className="right-container">
+            <Button
+              onClick={() => {
+                setOpenConfirmCancel(true);
+                if (isEdit) {
+                  refreshDataDetail();
+                }
+              }}
+              variant="outlined"
+              className="button-text"
+              type="button"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={!isEdit && dataProject.workingReportId === undefined}
+              variant="saveButton"
+              className="button-text"
+              type="submit"
+              form="task-form"
+            >
+              Submit
+            </Button>
+          </div>
         </DialogActions>
       </Dialog>
       <Dialog
@@ -516,14 +476,16 @@ const PopupTask = ({
             onClick={() => {
               closeTask(false);
               setOpenTask(false);
-              setProject({
+              setDataProject({
                 workingReportTaskId: undefined,
                 listProject: [clearProject],
               });
               setIdEffortTask("");
               setOpenConfirmCancel(false);
-              setErrors("");
-              setIsSubmit(true);
+              if (isEdit) {
+                setIsSubmit(true);
+              }
+              reset();
             }}
           >
             {"Cancel without saving"}

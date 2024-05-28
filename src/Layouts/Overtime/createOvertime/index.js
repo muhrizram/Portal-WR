@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Button,
   Dialog,
@@ -10,15 +10,26 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import "../../../App.css";
 import { useNavigate } from "react-router-dom";
-import client from "../../../global/client";
 import { AlertContext } from "../../../context";
-import { calculateTimeDifference, parseTime } from "./timeUtils";
-import { getDataTask, getDataProject, getDataStatus } from "./apiFunctions";
+import { calculateTimeDifference } from "./timeUtils";
+import {
+  getDataTask,
+  getDataProject,
+  getDataStatus,
+  onSave,
+  saveEdit,
+} from "./apiFunctions";
 import AddOvertime from "./Form/addOvertime";
-import { timeSchema } from "../../../global/timeSchema";
-import { projectSchema } from "../../../global/projectSchema";
+import { overtimeSchema } from "../../../global/overtimeSchema";
 import EditOvertime from "./Form/editOvertime";
 import dayjs from "dayjs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  clearProjectTaskErrors,
+  clearTaskErrors,
+  resetFormValues,
+} from "../../../global/formFunctions";
 
 const CreateOvertime = ({
   open,
@@ -29,26 +40,18 @@ const CreateOvertime = ({
   wrDate,
   setIsSubmit,
 }) => {
+  const [defaultEditData, setDefaultEditData] = useState([]);
   const navigate = useNavigate();
   const { setDataAlert } = useContext(AlertContext);
   const [dialogCancel, setDialogCancel] = useState(false);
-  const [datas, setDatas] = useState({
-    startTime: "",
-    endTime: "",
-    projects: [{ projectId: "" }],
-    tasks: [
-      [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
-    ],
-  });
   const [isLocalizationFilled, setIsLocalizationFilled] = useState(false);
   const [optProject, setOptProject] = useState([]);
   const [optTask, setOptTask] = useState([]);
   const [optStatus, setOptStatus] = useState([]);
   const [openTask, setOpenTask] = useState(false);
-  const [errors, setErrors] = useState({});
   const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
-  const [addTaskInEdit, setAddTaskInEdit] = useState(false);
+  const [addTaskInEdit, setaddTaskInEdit] = useState(false);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
 
@@ -74,20 +77,7 @@ const CreateOvertime = ({
   };
 
   const [dataOvertime, setDataOvertime] = useState({
-    listProject: [
-      {
-        projectId: "",
-        listTask: [
-          {
-            backlogId: null,
-            taskName: "",
-            statusTaskId: "",
-            duration: "",
-            taskItem: "",
-          },
-        ],
-      },
-    ],
+    listProject: [clearProject],
   });
 
   const [dataEditOvertime, setDataEditOvertime] = useState({
@@ -96,17 +86,9 @@ const CreateOvertime = ({
   });
 
   const onAddProject = (checkProject) => {
-    setDatas({
-      ...datas,
-      projects: [...datas.projects, { projectId: "" }],
-      tasks: [
-        ...datas.tasks,
-        [{ taskName: "", statusTaskId: "", duration: "" }],
-      ],
-    });
     if (isEdit) {
       setProjectEdit(checkProject);
-      setAddTaskInEdit(true);
+      setaddTaskInEdit(true);
       const temp = { ...dataEditOvertime };
       temp.listProject = [
         ...dataEditOvertime.listProject,
@@ -122,7 +104,7 @@ const CreateOvertime = ({
         ...dataOvertime.listProject,
         {
           projectId: null,
-          listTask: [{ ...clearProject }],
+          listTask: [clearTask],
         },
       ];
       setDataOvertime(temp);
@@ -130,8 +112,9 @@ const CreateOvertime = ({
   };
 
   const RemoveProject = (projectIndex) => {
-    datas.projects.splice(projectIndex, 1);
-    datas.tasks.splice(projectIndex, 1);
+    clearProjectTaskErrors(errors, clearErrors, projectIndex, true);
+
+    resetFormValues(setValue, watch, projectIndex, true);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject.splice(projectIndex, 1);
@@ -158,56 +141,84 @@ const CreateOvertime = ({
         createdBy: currentUserId,
         updatedBy: currentUserId,
       }));
-
-      const newProjects = [];
-      const newTasks = [];
-
-      const newStartTime = dataDetail.attributes.startTime;
-      const newEndTime = dataDetail.attributes.endTime;
-
-      dataDetail.attributes.listProject.forEach((data, projectIndex) => {
-        newProjects.push({
-          projectId: String(data.projectId),
-        });
-        data.listTask.forEach((task) => {
-          newTasks[projectIndex] = newTasks[projectIndex] || [];
-          newTasks[projectIndex].push({
-            taskName: task.taskName,
-            statusTaskId: String(task.statusTaskId),
-            duration: String(task.taskDuration),
-            taskDetails: task.taskItem !== null ? task.taskItem : "",
-          });
-        });
-      });
-      setDatas((prevDatas) => ({
-        ...prevDatas,
-        startTime: newStartTime,
-        endTime: newEndTime,
-        projects: newProjects,
-        tasks: newTasks,
-      }));
     }
+
+    let tempProjects = dataDetail.attributes.listProject.map((data) => ({
+      projectId: data.projectId,
+    }));
+
+    let tempTasks = dataDetail.attributes.listProject.map((data) =>
+      data.listTask.map((task) => ({
+        taskName: task.taskCode + " - " + task.taskName,
+        statusTaskId: task.statusTaskId,
+        taskDuration: String(task.duration),
+        taskDetails: task.taskItem,
+      }))
+    );
+
+    setDefaultEditData({
+      time: {
+        startTime: dataDetail.attributes.startTime,
+        endTime: dataDetail.attributes.endTime,
+      },
+      task: {
+        listProject: tempProjects,
+        listTask: tempTasks,
+      },
+    });
   };
 
-  const AddTask = (idxProject) => {
+  const {
+    control,
+    handleSubmit,
+    clearErrors,
+    setValue,
+    formState: { errors },
+    watch,
+    getValues,
+    reset,
+  } = useForm({
+    resolver: zodResolver(overtimeSchema),
+    mode: "onChange",
+    defaultValues: defaultEditData || {
+      time: {
+        startTime: "",
+        endTime: "",
+      },
+      task: {
+        listProject: [{ projectId: null }],
+        listTask: [
+          [
+            {
+              taskName: "",
+              statusTaskId: "",
+              taskDuration: "",
+              taskDetails: "",
+            },
+          ],
+        ],
+      },
+    },
+  });
+
+  const time = getValues("time");
+
+  useEffect(() => {
+    if (defaultEditData) {
+      reset({
+        time: defaultEditData.time,
+        task: defaultEditData.task,
+      });
+    }
+  }, [defaultEditData, reset]);
+
+  const addTask = (idxProject) => {
     let temp = null;
     if (isEdit) {
       temp = { ...dataEditOvertime };
     } else {
       temp = { ...dataOvertime };
     }
-    const taskLength = temp.listProject[idxProject].listTask.length;
-    let dataArray = [...datas.tasks];
-    dataArray[idxProject][taskLength] = {
-      taskName: "",
-      statusTaskId: "",
-      duration: "",
-      taskDetails: "",
-    };
-    setDatas({
-      ...datas,
-      tasks: dataArray,
-    });
     if (isEdit) {
       temp.listProject[idxProject].listTask.push({
         ...clearTask,
@@ -227,110 +238,24 @@ const CreateOvertime = ({
     const isTaskName = name === "taskName";
     const isStatusId = name === "statusTaskId";
 
-    let dataArray = [...datas.tasks];
-
-    if (!dataArray[idxProject]) {
-      dataArray[idxProject] = [];
-    }
-
     const updateData = (data) => {
       if (isDuration) {
-        if (value !== "") {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            duration: value,
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-          const parsedValue = parseFloat(value);
-          if (parsedValue < 0) {
-            data.listProject[idxProject].listTask[index][name] = "0";
-          } else {
-            const calculatedValue = Math.min(
-              parsedValue,
-              calculateTimeDifference(
-                datas.startTime || data.startTime,
-                datas.endTime || data.endTime
-              )
-            );
-            data.listProject[idxProject].listTask[index][name] =
-              calculatedValue;
-          }
+        const parsedValue = parseFloat(value);
+        if (parsedValue < 0) {
+          data.listProject[idxProject].listTask[index][name] = "0";
         } else {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            duration: "",
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
+          const calculatedValue = Math.min(
+            parsedValue,
+            calculateTimeDifference(time.startTime, time.endTime)
+          );
+          data.listProject[idxProject].listTask[index][name] = calculatedValue;
         }
       } else if (isTaskName) {
-        if (value === null) {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            taskName: "",
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-        } else {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            taskName: String(value),
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-          data.listProject[idxProject].listTask[index].backlogId = backlogId;
-        }
+        data.listProject[idxProject].listTask[index].backlogId = backlogId;
       } else if (isStatusId) {
-        if (value === null) {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            statusTaskId: "",
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-        } else {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            statusTaskId: String(value),
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-          data.listProject[idxProject].listTask[index][name] = value;
-        }
+        data.listProject[idxProject].listTask[index][name] = value;
       } else {
-        if (value === null) {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            taskDetails: "",
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-        } else {
-          dataArray[idxProject][index] = {
-            ...dataArray[idxProject][index],
-            taskDetails: String(value),
-          };
-          setDatas({
-            ...datas,
-            tasks: dataArray,
-          });
-          data.listProject[idxProject].listTask[index][name] = value;
-        }
+        data.listProject[idxProject].listTask[index][name] = value;
       }
 
       return data;
@@ -346,37 +271,27 @@ const CreateOvertime = ({
   };
 
   const handleChangeProject = (value, idxProject) => {
-    let dataArray = [...datas.projects];
-    dataArray[idxProject] = { projectId: String(value) };
-    setDatas({
-      ...datas,
-      projects: dataArray,
-    });
-    if (value !== null) {
-      if (isEdit) {
-        const temp = { ...dataEditOvertime };
-        temp.listProject[idxProject].projectId = value;
-        temp.listProject[idxProject].listTask = [clearTask];
-        setDataEditOvertime(temp);
-      } else {
-        const temp = { ...dataOvertime };
-        temp.listProject[idxProject].projectId = value;
-        temp.listProject[idxProject].listTask = [clearTask];
-        setDataOvertime(temp);
-      }
+    if (isEdit) {
+      const temp = { ...dataEditOvertime };
+      temp.listProject[idxProject].projectId = value;
+      temp.listProject[idxProject].listTask = [clearTask];
+      setDataEditOvertime(temp);
     } else {
-      let dataArray = [...datas.projects];
-      dataArray[idxProject] = { projectId: "" };
-      setDatas({
-        ...datas,
-        projects: dataArray,
-      });
+      const temp = { ...dataOvertime };
+      temp.listProject[idxProject].projectId = value;
+      temp.listProject[idxProject].listTask = [clearTask];
+      setDataOvertime(temp);
     }
   };
 
   const deleteTask = async (e, idxProject, index) => {
     e.preventDefault();
-    datas.tasks.splice(idxProject, 1);
+    clearTaskErrors(clearErrors, idxProject, index, true);
+
+    const updatedTasks = watch(`task.listTask.${idxProject}`).filter(
+      (_, i) => i !== index
+    );
+    setValue(`task.listTask.${idxProject}`, updatedTasks);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject[idxProject].listTask.splice(index, 1);
@@ -392,15 +307,7 @@ const CreateOvertime = ({
     setDialogCancel(false);
   };
 
-  const handleAddProject = useCallback(() => {
-    setDatas({
-      ...datas,
-      projects: [...datas.projects, { projectId: "" }],
-      tasks: [
-        ...datas.tasks,
-        [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
-      ],
-    });
+  const handleAddProject = () => {
     if (isEdit) {
       let CekProject = [];
       for (let i = 0; i < optProject.length; i++) {
@@ -414,35 +321,28 @@ const CreateOvertime = ({
     } else {
       onAddProject();
     }
-  }, [isEdit, optProject, dataDetailArray, onAddProject, datas]);
+  };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     setDialogCancel(true);
-  }, [setDialogCancel]);
+  };
 
-  const handleCancelClick = useCallback(() => {
-    setIsSubmit(true);
+  const handleCancelClick = () => {
+    reset();
+    if (isEdit) {
+      setIsSubmit(true);
+    }
     if (isEdit) {
       closeOvertime(false);
       setOpenTask(false);
       setDataOvertime([clearProject]);
       setIsLocalizationFilled(false);
       setDialogCancel(false);
-      setErrors({});
     } else {
-      setDatas({
-        startTime: "",
-        endTime: "",
-        projects: [{ projectId: "" }],
-        tasks: [
-          [{ taskName: "", statusTaskId: "", duration: "", taskDetails: "" }],
-        ],
-      });
       closeTask(false);
       setOpenTask(false);
       setIsLocalizationFilled(false);
       setDialogCancel(false);
-      setErrors({});
       setDataOvertime({
         listProject: [
           {
@@ -460,18 +360,7 @@ const CreateOvertime = ({
         ],
       });
     }
-  }, [
-    isEdit,
-    closeOvertime,
-    setOpenTask,
-    setDataOvertime,
-    clearProject,
-    setIsLocalizationFilled,
-    setDialogCancel,
-    setErrors,
-    setDatas,
-    closeTask,
-  ]);
+  };
 
   const setTimeTo = (timeString) => {
     const currentDate = dayjs();
@@ -489,165 +378,31 @@ const CreateOvertime = ({
     getDataStatus(setOptStatus);
   }, [dataOvertime, dataDetailArray, dataDetail]);
 
-  const onSave = async () => {
-    const data = {
-      startTime: datas.startTime,
-      endTime: datas.endTime,
-      date: wrDate,
-      listProject: [],
-      createdBy: currentUserId,
-      updatedBy: currentUserId,
-    };
-
-    for (const project of dataOvertime.listProject) {
-      const updateFilled = {
-        projectId: project.projectId,
-        listTask: [],
-      };
-      for (const task of project.listTask) {
-        let duration;
-        const wholeHours = Math.floor(parseFloat(task.duration));
-        if (parseFloat(task.duration) >= wholeHours + 0.75) {
-          duration = Math.ceil(parseFloat(task.duration));
-        } else {
-          duration = parseFloat(task.duration);
-        }
-        const updateTask = {
-          backlogId: task.backlogId,
-          taskName: task.taskName,
-          statusTaskId: task.statusTaskId,
-          duration: parseFloat(duration),
-          taskItem: task.taskItem,
-        };
-        updateFilled.listTask.push(updateTask);
-      }
-      data.listProject.push(updateFilled);
-    }
-
-    const res = await client.requestAPI({
-      method: "POST",
-      endpoint: `/overtime/addOvertime`,
-      data,
-    });
-
-    if (!res.isError) {
-      setDataAlert({
-        severity: "success",
-        open: true,
-        message: res.data.meta.message,
-      });
-      window.location.href = "/workingReport";
-      closeTask(false);
-      setOpenTask(false);
+  const onSubmit = () => {
+    if (isEdit) {
+      saveEdit(
+        time.startTime,
+        time.endTime,
+        setIsSubmit,
+        dataEditOvertime,
+        currentUserId,
+        setDataAlert,
+        navigate,
+        closeOvertime
+      );
     } else {
-      setDataAlert({
-        severity: "error",
-        message: res.error.detail,
-        open: true,
-      });
+      onSave(
+        time.startTime,
+        time.endTime,
+        wrDate,
+        currentUserId,
+        dataOvertime,
+        setDataAlert,
+        closeTask,
+        setOpenTask
+      );
     }
   };
-
-  const saveEdit = async (setIsSubmit) => {
-    const dataUpdate = {
-      startTime: datas.startTime || dataEditOvertime.startTime,
-      endTime: datas.endTime || dataEditOvertime.endTime,
-      workingReportId: null,
-      listProjectId: [],
-      createdBy: currentUserId,
-      updatedBy: currentUserId,
-    };
-    dataUpdate.workingReportId = dataEditOvertime.workingReportOvertimeId;
-    for (const project of dataEditOvertime.listProject) {
-      const updateFilled = {
-        projectId: project.projectId,
-        listTask: [],
-      };
-      for (const task of project.listTask) {
-        if (task.taskId === null) {
-          task.backlogId = null;
-        }
-        let duration;
-        const wholeHours = Math.floor(parseFloat(task.duration));
-        if (parseFloat(task.duration) >= wholeHours + 0.75) {
-          duration = Math.ceil(parseFloat(task.duration));
-        } else {
-          duration = parseFloat(task.duration);
-        }
-        const updateTask = {
-          taskId: task.taskId,
-          workingReportId: dataUpdate.workingReportOvertimeId,
-          backlogId: task.backlogId,
-          taskName: task.taskName,
-          statusTaskId: task.statusTaskId,
-          duration: parseFloat(duration),
-          taskItem: task.taskItem,
-        };
-        updateFilled.listTask.push(updateTask);
-      }
-      dataUpdate.listProjectId.push(updateFilled);
-    }
-
-    const res = await client.requestAPI({
-      method: "POST",
-      endpoint: `/overtime`,
-      data: dataUpdate,
-    });
-    if (!res.isError) {
-      setIsSubmit(true);
-      setDataAlert({
-        severity: "success",
-        open: true,
-        message: res.data.meta.message,
-      });
-      setTimeout(() => {
-        navigate("/workingReport");
-      }, 3000);
-    } else {
-      setDataAlert({
-        severity: "error",
-        message: res.error.detail,
-        open: true,
-      });
-    }
-    closeOvertime(true);
-  };
-
-  const handleFormSubmit = useCallback(
-    (e) => {
-      const validationTime = timeSchema.safeParse(datas);
-      const validationProject = projectSchema.safeParse(datas);
-      if (validationTime.success && validationProject.success) {
-        setErrors("");
-        if (isEdit) {
-          saveEdit(setIsSubmit);
-        } else {
-          onSave();
-        }
-      } else {
-        const validationErrors = {};
-        if (
-          validationTime.error &&
-          Array.isArray(validationTime.error.errors)
-        ) {
-          validationTime.error.errors.forEach((err) => {
-            validationErrors[err.path] = err.message;
-          });
-        }
-
-        if (
-          validationProject.error &&
-          Array.isArray(validationProject.error.errors)
-        ) {
-          validationProject.error.errors.forEach((err) => {
-            validationErrors[err.path] = err.message;
-          });
-        }
-        setErrors(validationErrors);
-      }
-    },
-    [datas, timeSchema, projectSchema, isEdit, setErrors, saveEdit, onSave]
-  );
 
   return (
     <>
@@ -663,62 +418,67 @@ const CreateOvertime = ({
           {isEdit ? "Edit Overtime" : "Add Overtime"}
         </DialogTitle>
         <DialogContent className="dialog-task-content">
-          <DialogContentText
-            className="dialog-delete-text-content"
-            id="alert-dialog-description"
-          >
-            Note: If an employee chooses to perform overtime for a spesific
-            task, a notification will be sent to the Human Resources Department
-          </DialogContentText>
+          <form onSubmit={handleSubmit(onSubmit)} id="overtime-form">
+            <DialogContentText
+              className="dialog-delete-text-content"
+              id="alert-dialog-description"
+            >
+              Note: If an employee chooses to perform overtime for a spesific
+              task, a notification will be sent to the Human Resources
+              Department
+            </DialogContentText>
 
-          {isEdit ? (
-            <EditOvertime
-              addTaskInEdit={addTaskInEdit}
-              projectEdit={projectEdit}
-              errors={errors}
-              errorTextStyles={errorTextStyles}
-              currentUserId={currentUserId}
-              setOptTask={setOptTask}
-              datas={datas}
-              setDatas={setDatas}
-              dataEditOvertime={dataEditOvertime}
-              setTimeTo={setTimeTo}
-              openTask={openTask}
-              setOpenTask={setOpenTask}
-              optProject={optProject}
-              optTask={optTask}
-              optStatus={optStatus}
-              handleChange={handleChange}
-              handleChangeProject={handleChangeProject}
-              AddTask={AddTask}
-              RemoveProject={RemoveProject}
-              deleteTask={deleteTask}
-              setIsLocalizationFilled={setIsLocalizationFilled}
-            />
-          ) : (
-            <AddOvertime
-              errors={errors}
-              handleChange={handleChange}
-              handleChangeProject={handleChangeProject}
-              datas={datas}
-              setDatas={setDatas}
-              dataOvertime={dataOvertime}
-              optProject={optProject}
-              optTask={optTask}
-              optStatus={optStatus}
-              isLocalizationFilled={isLocalizationFilled}
-              setIsLocalizationFilled={setIsLocalizationFilled}
-              openTask={openTask}
-              setOpenTask={setOpenTask}
-              deleteTask={deleteTask}
-              AddTask={AddTask}
-              RemoveProject={RemoveProject}
-              errorTextStyles={errorTextStyles}
-              getDataTask={getDataTask}
-              currentUserId={currentUserId}
-              setOptTask={setOptTask}
-            />
-          )}
+            {isEdit ? (
+              <EditOvertime
+                control={control}
+                clearErrors={clearErrors}
+                setValue={setValue}
+                addTaskInEdit={addTaskInEdit}
+                projectEdit={projectEdit}
+                errors={errors}
+                errorTextStyles={errorTextStyles}
+                currentUserId={currentUserId}
+                setOptTask={setOptTask}
+                dataEditOvertime={dataEditOvertime}
+                setTimeTo={setTimeTo}
+                openTask={openTask}
+                setOpenTask={setOpenTask}
+                optProject={optProject}
+                optTask={optTask}
+                optStatus={optStatus}
+                handleChange={handleChange}
+                handleChangeProject={handleChangeProject}
+                addTask={addTask}
+                RemoveProject={RemoveProject}
+                deleteTask={deleteTask}
+                setIsLocalizationFilled={setIsLocalizationFilled}
+              />
+            ) : (
+              <AddOvertime
+                control={control}
+                errors={errors}
+                setValue={setValue}
+                clearErrors={clearErrors}
+                handleChange={handleChange}
+                handleChangeProject={handleChangeProject}
+                dataOvertime={dataOvertime}
+                optProject={optProject}
+                optTask={optTask}
+                optStatus={optStatus}
+                isLocalizationFilled={isLocalizationFilled}
+                setIsLocalizationFilled={setIsLocalizationFilled}
+                openTask={openTask}
+                setOpenTask={setOpenTask}
+                deleteTask={deleteTask}
+                addTask={addTask}
+                RemoveProject={RemoveProject}
+                errorTextStyles={errorTextStyles}
+                getDataTask={getDataTask}
+                currentUserId={currentUserId}
+                setOptTask={setOptTask}
+              />
+            )}
+          </form>
         </DialogContent>
         <DialogActions>
           <div className="left-container">
@@ -742,7 +502,8 @@ const CreateOvertime = ({
             <Button
               variant="saveButton"
               className="button-text"
-              onClick={handleFormSubmit}
+              type="submit"
+              form="overtime-form"
             >
               Submit
             </Button>

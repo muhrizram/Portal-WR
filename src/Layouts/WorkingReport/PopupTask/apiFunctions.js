@@ -1,111 +1,97 @@
 import client from "../../../global/client";
-import { projectSchema } from "../../../global/projectSchema";
 
-export const getstatusTask = async (setstatusTask) => {
+export const getstatusTask = async (setStatusTask) => {
   const res = await client.requestAPI({
     method: "GET",
     endpoint: `/ol/status?search=`,
   });
   if (res.data) {
-    const datastatusTask = res.data.map((item) => ({
+    const dataStatusTask = res.data.map((item) => ({
       id: parseInt(item.id),
       name: item.attributes.name,
     }));
-    setstatusTask(datastatusTask);
+    setStatusTask(dataStatusTask);
   }
 };
 
 export const UpdateTask = async (
-  datas,
-  setErrors,
   firstEditTask,
   setPopUpMoretask,
   setDurationTask,
   closeTask,
   setDataAlert,
-  navigate,
-  setIsSubmit
+  setIsSubmit,
+  navigate
 ) => {
-  const validationProject = projectSchema.safeParse(datas);
+  const readyUpdate = {
+    workingReportId: null,
+    listProject: [],
+  };
+  readyUpdate.workingReportId = firstEditTask.workingReportTaskId;
 
-  if (validationProject.success) {
-    const readyUpdate = {
-      workingReportId: null,
-      listProject: [],
-    };
-    readyUpdate.workingReportId = firstEditTask.workingReportTaskId;
+  for (const project of firstEditTask.listProject) {
+    const newProject = {};
 
-    for (const project of firstEditTask.listProject) {
-      const newProject = {};
+    newProject.projectId = project.projectId;
+    newProject.absenceId = project.absenceId;
 
-      newProject.projectId = project.projectId;
-      newProject.absenceId = project.absenceId;
-
-      newProject.listTask = [];
-      for (const task of project.listTask) {
-        if (task.taskId === null) {
-          task.backlogId = null;
-        }
-        const newTask = {};
-
-        newTask.taskId = task.taskId;
-        newTask.backlogId = task.backlogId;
-        newTask.taskName = task.taskName;
-        newTask.statusTaskId = task.statusTaskId;
-        newTask.duration = parseFloat(task.taskDuration);
-        newTask.taskItem = task.taskItem;
-        newProject.listTask.push(newTask);
+    newProject.listTask = [];
+    for (const task of project.listTask) {
+      if (task.taskId === null) {
+        task.backlogId = null;
       }
-      readyUpdate.listProject.push(newProject);
+      const newTask = {};
+
+      newTask.taskId = task.taskId;
+      newTask.backlogId = task.backlogId;
+      newTask.taskName = task.taskName;
+      newTask.statusTaskId = task.statusTaskId;
+      newTask.duration = parseFloat(task.taskDuration);
+      newTask.taskItem = task.taskItem;
+      newProject.listTask.push(newTask);
     }
-    let tempEffort = 0;
-    for (const data of readyUpdate.listProject) {
-      for (const resTask of data.listTask) {
-        tempEffort = tempEffort + resTask.duration;
-      }
+    readyUpdate.listProject.push(newProject);
+  }
+  let tempEffort = 0;
+  for (const data of readyUpdate.listProject) {
+    for (const resTask of data.listTask) {
+      tempEffort = tempEffort + resTask.duration;
     }
-    if (tempEffort < 8) {
-      setPopUpMoretask(true);
-      setDurationTask(true);
-    } else if (tempEffort > 8) {
-      setPopUpMoretask(true);
-      setDurationTask(false);
-    } else {
-      const res = await client.requestAPI({
-        method: "PUT",
-        endpoint: `/task/update`,
-        data: readyUpdate,
-      });
-      if (!res.isError) {
-        closeTask(false);
-        setDataAlert({
-          severity: "success",
-          open: true,
-          message: "Task edited successfully. Let's get things done!",
-        });
-        setIsSubmit(true);
-        setTimeout(() => {
-          navigate("/workingReport");
-        }, 3000);
-      } else {
-        setDataAlert({
-          severity: "error",
-          open: true,
-          message: res.error.detail,
-        });
-      }
-    }
+  }
+  if (tempEffort < 8) {
+    setPopUpMoretask(true);
+    setDurationTask(true);
+  } else if (tempEffort > 8) {
+    setPopUpMoretask(true);
+    setDurationTask(false);
   } else {
-    const validationErrors = {};
-    validationProject.error.errors.forEach((err) => {
-      validationErrors[err.path] = err.message;
+    const res = await client.requestAPI({
+      method: "PUT",
+      endpoint: `/task/update`,
+      data: readyUpdate,
     });
-
-    setErrors(validationErrors);
+    if (!res.isError) {
+      closeTask(false);
+      setDataAlert({
+        severity: "success",
+        open: true,
+        message: "Task edited successfully. Let's get things done!",
+      });
+      setIsSubmit(true);
+      setTimeout(() => {
+        navigate("/workingReport");
+      }, 3000);
+    } else {
+      setDataAlert({
+        severity: "error",
+        open: true,
+        message: res.error.detail,
+      });
+    }
   }
 };
 
-export const getlistTaskProject = async (id, setlistTaskProject) => {
+export const getListTaskProject = async (id, setListTaskProject) => {
   const res = await client.requestAPI({
     method: "GET",
     endpoint: `/ol/taskProject?projectId=${id}&userId=${localStorage.getItem(
@@ -118,7 +104,7 @@ export const getlistTaskProject = async (id, setlistTaskProject) => {
       taskName: item.attributes.taskName,
       actualEffort: item.attributes.actualEffort,
     }));
-    setlistTaskProject(datalisttask);
+    setListTaskProject(datalisttask);
   }
 };
 
@@ -150,76 +136,61 @@ export const getlistProject = async (setlistProject) => {
 };
 
 export const SubmitSave = async (
-  datas,
-  setErrors,
   dataProject,
+  setDataProject,
   setPopUpMoretask,
   setDurationTask,
-  setDataAlert,
   closeTask,
   setOpenTask,
-  setProject,
+  setDataAlert,
   clearProject,
-  setIdEffortTask,
-  navigate
+  setIdEffortTask
 ) => {
-  const validationProject = projectSchema.safeParse(datas);
-
-  if (validationProject.success) {
-    setErrors("");
-    try {
-      let tempEffort = 0;
-      for (const data of dataProject.listProject) {
-        for (const resTask of data.listTask) {
-          tempEffort = tempEffort + resTask.duration;
-        }
+  try {
+    let tempEffort = 0;
+    for (const data of dataProject.listProject) {
+      for (const resTask of data.listTask) {
+        tempEffort = tempEffort + resTask.duration;
       }
-      if (tempEffort < 8) {
-        setPopUpMoretask(true);
-        setDurationTask(true);
-      } else if (tempEffort > 8) {
-        setPopUpMoretask(true);
-        setDurationTask(false);
-      } else {
-        const res = await client.requestAPI({
-          method: "POST",
-          endpoint: `/task/addTask`,
-          data: dataProject,
-        });
-        if (!res.isError) {
-          closeTask(false);
-          setOpenTask(false);
-          setDataAlert({
-            severity: "success",
-            open: true,
-            message: res.data.meta.message,
-          });
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-
-          setProject({
-            workingReportTaskId: undefined,
-            listProject: [clearProject],
-          });
-          setIdEffortTask("");
-        } else {
-          setDataAlert({
-            severity: "error",
-            message: res.error.detail,
-            open: true,
-          });
-        }
-      }
-    } catch (error) {
-      console.error(error);
     }
-  } else {
-    const validationErrors = {};
-    validationProject.error.errors.forEach((err) => {
-      validationErrors[err.path] = err.message;
-    });
+    if (tempEffort < 8) {
+      setPopUpMoretask(true);
+      setDurationTask(true);
+    } else if (tempEffort > 8) {
+      setPopUpMoretask(true);
+      setDurationTask(false);
+    } else {
+      const res = await client.requestAPI({
+        method: "POST",
+        endpoint: `/task/addTask`,
+        data: dataProject,
+      });
+      if (!res.isError) {
+        closeTask(false);
+        setOpenTask(false);
+        setDataAlert({
+          severity: "success",
+          open: true,
+          message: res.data.meta.message,
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
 
-    setErrors(validationErrors);
+        setDataProject({
+          workingReportTaskId: undefined,
+          listProject: [clearProject],
+        });
+        setIdEffortTask("");
+      } else {
+        setDataAlert({
+          severity: "error",
+          message: res.error.detail,
+          open: true,
+        });
+      }
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
