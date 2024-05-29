@@ -159,12 +159,6 @@ const PopupTask = ({
     },
   });
 
-  const pemantau = watch();
-  useEffect(() => {
-    console.log("Pemantau", pemantau);
-    console.log("Errornya", errors);
-  }, [pemantau, errors]);
-
   useEffect(() => {
     if (defaultEditData) {
       reset({

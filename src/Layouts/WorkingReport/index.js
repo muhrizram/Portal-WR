@@ -278,6 +278,7 @@ export default function WorkingReport() {
             descHoliday: value.attributes.listDate.descHoliday,
           }
         : {
+            checkOut: value.attributes.listDate.checkOut,
             period: value.attributes.period,
             holiday: value.attributes.listDate.holiday,
             tanggal: moment(value.attributes.listDate.date).format(
