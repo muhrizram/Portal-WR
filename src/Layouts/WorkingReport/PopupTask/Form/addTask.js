@@ -48,7 +48,7 @@ const CreateTask = ({
     dataProject.listProject.forEach((resProject, idxProject) => {
       if (checkAbsence[idxProject]) {
         setValue(`listTask.${idxProject}.${index}.taskName`, "Absence");
-        setValue(`listTask.${idxProject}.${index}.statusTaskId`, "Absence");
+        setValue(`listTask.${idxProject}.${index}.statusTaskId`, 1);
       }
     });
   }, [checkAbsence, dataProject, setValue, index]);
