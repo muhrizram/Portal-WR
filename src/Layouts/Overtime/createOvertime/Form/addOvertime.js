@@ -525,7 +525,7 @@ const AddOvertime = ({
                 container
                 sx={{ display: "flex", justifyContent: "space-between" }}
               >
-                {dataOvertime.listProject[0].listTask[0] && (
+                {resProject.listTask.length > 0 ? (
                   <Grid item xs={6} textAlign="left">
                     <Button
                       onClick={() => addTask(idxProject)}
@@ -536,6 +536,8 @@ const AddOvertime = ({
                       Add Task
                     </Button>
                   </Grid>
+                ) : (
+                  <Grid item xs={6} />
                 )}
                 {idxProject > 0 && (
                   <Grid item xs={6} textAlign="right">

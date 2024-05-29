@@ -51,7 +51,7 @@ const CreateOvertime = ({
   const [openTask, setOpenTask] = useState(false);
   const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
-  const [addTaskInEdit, setaddTaskInEdit] = useState(false);
+  const [addTaskInEdit, setAddTaskInEdit] = useState(false);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
 
@@ -88,25 +88,13 @@ const CreateOvertime = ({
   const onAddProject = (checkProject) => {
     if (isEdit) {
       setProjectEdit(checkProject);
-      setaddTaskInEdit(true);
+      setAddTaskInEdit(true);
       const temp = { ...dataEditOvertime };
-      temp.listProject = [
-        ...dataEditOvertime.listProject,
-        {
-          projectId: null,
-          listTask: [{ ...clearProject }],
-        },
-      ];
+      temp.listProject = [...dataEditOvertime.listProject, clearProject];
       setDataEditOvertime(temp);
     } else {
       const temp = { ...dataOvertime };
-      temp.listProject = [
-        ...dataOvertime.listProject,
-        {
-          projectId: null,
-          listTask: [clearTask],
-        },
-      ];
+      temp.listProject = [...dataOvertime.listProject, clearProject];
       setDataOvertime(temp);
     }
   };

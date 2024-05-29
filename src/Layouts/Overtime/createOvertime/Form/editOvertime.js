@@ -541,16 +541,20 @@ const EditOvertime = ({
               container
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
-              <Grid item xs={6} textAlign="left">
-                <Button
-                  onClick={() => addTask(idxProject)}
-                  variant="outlined"
-                  className="button-text"
-                  startIcon={<AddIcon />}
-                >
-                  Add Task
-                </Button>
-              </Grid>
+              {resProject.listTask.length > 0 ? (
+                <Grid item xs={6} textAlign="left">
+                  <Button
+                    onClick={() => addTask(idxProject)}
+                    variant="outlined"
+                    className="button-text"
+                    startIcon={<AddIcon />}
+                  >
+                    Add Task
+                  </Button>
+                </Grid>
+              ) : (
+                <Grid item xs={6} />
+              )}
               {idxProject > 0 && (
                 <Grid item xs={6} textAlign="right">
                   <Button
