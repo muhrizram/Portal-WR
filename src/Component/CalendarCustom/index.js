@@ -263,14 +263,26 @@ export default function BigCalendar({
         (year === endYear && month === endMonth && day <= endDay));
 
     const isHolidayDate = isHoliday(date, allEvents);
+    const weekend = {
+      sunday: 0,
+      saturday: 6,
+    };
 
     if (startDate !== null && isWithinRange) {
-      if (date.getDay() === 0 || date.getDay() === 6 || isHolidayDate) {
+      if (
+        date.getDay() === weekend.sunday ||
+        date.getDay() === weekend.saturday ||
+        isHolidayDate
+      ) {
         return { className: "selected-weekend" };
       }
       return { className: "date-selected" };
     }
-    if (date.getDay() === 0 || date.getDay() === 6 || isHolidayDate) {
+    if (
+      date.getDay() === weekend.sunday ||
+      date.getDay() === weekend.saturday ||
+      isHolidayDate
+    ) {
       return { className: "date-weekend" };
     }
 
