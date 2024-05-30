@@ -62,6 +62,7 @@ export default function BigCalendar({
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
   const [descHoliday, setdescHoliday] = useState(null);
   const [_finalDateCalendar, setfinalDateCalendar] = useState();
+  const [holiday, setHoliday] = useState(false);
 
   const ResetFilterRef = useRef(null);
 
@@ -205,6 +206,7 @@ export default function BigCalendar({
             setOpenOvertime(true);
             setId(event.workingReportOvertimeId);
             setWrDate(event.tanggal);
+            setHoliday(event.holiday);
           };
         }
       } else if (isTaskNotFilled) {
@@ -445,6 +447,7 @@ export default function BigCalendar({
         open={openOvertime}
         closeTask={() => setOpenOvertime(false)}
         wrDate={wrDate}
+        holiday={holiday}
       />
       <PopupTask
         selectedWrIdanAbsenceId={wrId}

@@ -7,47 +7,55 @@ const timeSchema = z
     startTime: z
       .string()
       .min(1, { message: "Start Time is required" })
-      .refine(
-        (value) => {
-          return moment(value, "HH:mm:ss").isValid();
-        },
-        { message: "Start Time is invalid" }
-      )
-      .refine(
-        (value) => {
-          const time = moment(value, "HH:mm:ss");
-          const startRange = moment("08:00:00", "HH:mm:ss");
-          const endRange = moment("17:00:00", "HH:mm:ss");
-          return !time.isBetween(startRange, endRange, null, "[)");
-        },
-        { message: "Start Time cannot be between 08:00 and 17:00" }
-      ),
+      .refine((value) => moment(value, "HH:mm:ss").isValid(), {
+        message: "Start Time is invalid",
+      }),
     endTime: z
       .string()
       .min(1, { message: "End Time is required" })
-      .refine(
-        (value) => {
-          return moment(value, "HH:mm:ss").isValid();
-        },
-        { message: "End Time is invalid" }
-      )
-      .refine(
-        (value) => {
-          const time = moment(value, "HH:mm:ss");
-          const startRange = moment("08:00:00", "HH:mm:ss");
-          const endRange = moment("17:00:00", "HH:mm:ss");
-          return !time.isBetween(startRange, endRange, null, "[)");
-        },
-        { message: "End Time cannot be between 08:00 and 17:00" }
-      ),
+      .refine((value) => moment(value, "HH:mm:ss").isValid(), {
+        message: "End Time is invalid",
+      }),
+    isHoliday: z.boolean(),
   })
-  .refine((data) => data.startTime <= data.endTime, {
-    message: "End time can not be earlier than start time",
-    path: ["endTime"],
-  })
-  .refine((data) => data.startTime !== data.endTime, {
-    message: "End time can not be same with start time",
-    path: ["endTime"],
+  .superRefine((data, ctx) => {
+    const { startTime, endTime, isHoliday } = data;
+    const startMoment = moment(startTime, "HH:mm:ss");
+    const endMoment = moment(endTime, "HH:mm:ss");
+    const startRange = moment("08:00:00", "HH:mm:ss");
+    const endRange = moment("17:00:00", "HH:mm:ss");
+
+    if (!isHoliday && startMoment.isBetween(startRange, endRange, null, "[)")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Start Time cannot be between 08:00 and 17:00",
+        path: ["startTime"],
+      });
+    }
+
+    if (!isHoliday && endMoment.isBetween(startRange, endRange, null, "[)")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End Time cannot be between 08:00 and 17:00",
+        path: ["endTime"],
+      });
+    }
+
+    if (startMoment.isAfter(endMoment)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End time cannot be earlier than start time",
+        path: ["endTime"],
+      });
+    }
+
+    if (startMoment.isSame(endMoment)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End time cannot be the same as start time",
+        path: ["endTime"],
+      });
+    }
   });
 
 export const overtimeSchema = z.object({

@@ -39,6 +39,7 @@ const CreateOvertime = ({
   dataDetail,
   wrDate,
   setIsSubmit,
+  holiday,
 }) => {
   const [defaultEditData, setDefaultEditData] = useState([]);
   const navigate = useNavigate();
@@ -153,6 +154,7 @@ const CreateOvertime = ({
         listProject: tempProjects,
         listTask: tempTasks,
       },
+      holiday: "",
     });
   };
 
@@ -186,8 +188,13 @@ const CreateOvertime = ({
           ],
         ],
       },
+      holiday: "",
     },
   });
+
+  useEffect(() => {
+    setValue("time.isHoliday", holiday);
+  }, [open]);
 
   const time = getValues("time");
 
@@ -443,6 +450,7 @@ const CreateOvertime = ({
               />
             ) : (
               <AddOvertime
+                holiday={holiday}
                 control={control}
                 errors={errors}
                 setValue={setValue}
