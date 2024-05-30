@@ -43,12 +43,13 @@ const CreateTask = ({
   handleChange,
   addTask,
 }) => {
+  const Absence = 1;
   const index = 0;
   useEffect(() => {
     dataProject.listProject.forEach((resProject, idxProject) => {
       if (checkAbsence[idxProject]) {
         setValue(`listTask.${idxProject}.${index}.taskName`, "Absence");
-        setValue(`listTask.${idxProject}.${index}.statusTaskId`, 1);
+        setValue(`listTask.${idxProject}.${index}.statusTaskId`, Absence);
       }
     });
   }, [checkAbsence, dataProject, setValue, index]);

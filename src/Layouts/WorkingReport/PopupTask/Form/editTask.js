@@ -48,7 +48,6 @@ const EditTask = ({
   clearErrors,
   checkAbsence,
 }) => {
-  console.log("firstEditTask", firstEditTask);
   const index = 0;
   useEffect(() => {
     firstEditTask.listProject.forEach((resProject, idxProject) => {
