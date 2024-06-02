@@ -104,6 +104,9 @@ export default function BigCalendar({
       .filter((event) => moment(event.tanggal).isSameOrBefore(today, "day"))
       .forEach((event) => {
         let title = "";
+        const eventDate = moment(event.tanggal);
+        const threeDaysBeforeToday = moment().subtract(3, "days");
+        const isExpired = eventDate.isBefore(threeDaysBeforeToday, "day");
 
         if (event.presenceName === null && event.holiday === false) {
           title = "Attendance";
@@ -117,6 +120,7 @@ export default function BigCalendar({
           title: title,
           start: event.tanggal,
           end: event.tanggal,
+          expiredDate: isExpired,
         };
         mappedEvents.push(attendance);
 
@@ -156,9 +160,11 @@ export default function BigCalendar({
   const components = {
     event: ({ event }) => {
       let clickHere = null;
-      const isNotCheckIn = event.title === "Attendance";
+      const isNotCheckIn = event.title === "Attendance" && !event.expiredDate;
       const isCheckInButNotPresent =
-        event.presenceName !== "Hadir" && event.paramAttendance;
+        event.presenceName !== "Hadir" &&
+        event.paramAttendance &&
+        event.title !== "Attendance";
       const isHoliday = event.title === "Holiday";
       const isViewOvertime = event.title === "View Overtime";
       const isOvertime =
@@ -327,6 +333,14 @@ export default function BigCalendar({
         ...finalStyle,
         opacity: 1,
         cursor: "pointer",
+      };
+    }
+
+    if (event.title === "Attendance" && !event.expiredDate) {
+      finalStyle = {
+        ...finalStyle,
+        cursor: "pointer",
+        opacity: 1,
       };
     }
 

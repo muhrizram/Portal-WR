@@ -34,8 +34,6 @@ export const cellStyle = {
   Attendance: {
     backgroundColor: "#B1C5F6",
     color: "#3267E3",
-    opacity: 1,
-    cursor: "pointer",
   },
   Task: {
     backgroundColor: "#F0F3FF",
