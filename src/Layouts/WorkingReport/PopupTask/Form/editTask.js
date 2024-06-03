@@ -48,6 +48,15 @@ const EditTask = ({
   clearErrors,
   checkAbsence,
 }) => {
+  const selectedProjectIds = firstEditTask.listProject
+    .map((project) => project.projectId)
+    .concat(firstEditTask.listProject.map((project) => project.absenceId))
+    .filter((id) => id !== undefined);
+
+  const filteredOptProject = listProject.filter(
+    (option) => !selectedProjectIds.includes(option.id)
+  );
+
   const index = 0;
   useEffect(() => {
     firstEditTask.listProject.forEach((resProject, idxProject) => {
@@ -83,7 +92,7 @@ const EditTask = ({
                       disablePortal
                       name="project"
                       className="autocomplete-input autocomplete-on-popup"
-                      options={listProject}
+                      options={filteredOptProject}
                       getOptionLabel={(option) => option.name}
                       sx={{
                         width: "100%",
@@ -308,330 +317,342 @@ const EditTask = ({
                   </>
                 ) : (
                   <>
-                    {resProject.listTask.map((res, index) => (
-                      <Accordion
-                        key={res.id}
-                        onChange={() =>
-                          projectColumn
-                            ? setListTaskProject([])
-                            : getListTaskProject(
-                                resProject.projectId,
-                                setListTaskProject
-                              )
-                        }
-                        sx={{ boxShadow: "none", width: "100%" }}
-                      >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          className="header-accordion"
+                    {resProject.listTask.map((res, index) => {
+                      const selectedTaskId = resProject.listTask.map(
+                        (task) => task.backlogId
+                      );
+                      const filteredOptTask = listTaskProject.filter(
+                        (option) => !selectedTaskId.includes(option.backlogId)
+                      );
+                      return (
+                        <Accordion
+                          key={res.id}
+                          onChange={() =>
+                            projectColumn
+                              ? setListTaskProject([])
+                              : getListTaskProject(
+                                  resProject.projectId,
+                                  setListTaskProject
+                                )
+                          }
+                          sx={{ boxShadow: "none", width: "100%" }}
                         >
-                          <Typography sx={{ fontSize: "24px" }}>
-                            Task {index + 1}
-                          </Typography>
-                          {index > 0 && (
-                            <DeleteIcon
-                              className="icon-trash"
-                              onClick={(e) => deleteTask(e, idxProject, index)}
-                            />
-                          )}
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Grid container rowSpacing={2}>
-                            <Grid item xs={12}>
-                              <Controller
-                                name={`listTask.${idxProject}.${index}.taskName`}
-                                control={control}
-                                render={({ field }) => (
-                                  <Autocomplete
-                                    {...field}
-                                    disablePortal
-                                    name="taskName"
-                                    className="autocomplete-input autocomplete-on-popup"
-                                    defaultValue={
-                                      res.backlogId
-                                        ? {
-                                            backlogId: res.backlogId,
-                                            taskName:
-                                              res.taskCode +
-                                              " - " +
-                                              res.taskName,
-                                            actualEffort: res.duration,
-                                          } || null
-                                        : selectedTask[index]
-                                    }
-                                    options={listTaskProject}
-                                    getOptionLabel={(option) => option.taskName}
-                                    sx={{
-                                      width: "100%",
-                                      marginTop: "20px",
-                                      backgroundColor: "white",
-                                    }}
-                                    onChange={(_event, newValue) => {
-                                      field.onChange(
-                                        newValue ? newValue.taskName : ""
-                                      );
-                                      const temp = { ...firstEditTask };
-                                      temp.listProject[idxProject].listTask[
-                                        index
-                                      ].taskName =
-                                        newValue !== null
-                                          ? newValue.taskName
-                                          : "";
-                                      temp.listProject[idxProject].listTask[
-                                        index
-                                      ].backlogId =
-                                        newValue !== null
-                                          ? newValue.backlogId
-                                          : "";
-                                      setFirstEditTask(temp);
-                                    }}
-                                    value={{
-                                      taskName: res.taskName,
-                                      id: res.taskId,
-                                    }}
-                                    isOptionEqualToValue={(option, value) =>
-                                      option.value === value.value
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        className="input-field-crud"
-                                        placeholder='e.g Create "Login" Screen'
-                                        label="Task Name"
-                                        InputLabelProps={{ shrink: true }}
-                                        error={Boolean(
-                                          getErrorArrayPosition(errors, [
-                                            "listTask",
-                                            idxProject,
-                                            index,
-                                            "taskName",
-                                          ])
-                                        )}
-                                      />
-                                    )}
-                                  />
-                                )}
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            className="header-accordion"
+                          >
+                            <Typography sx={{ fontSize: "24px" }}>
+                              Task {index + 1}
+                            </Typography>
+                            {index > 0 && (
+                              <DeleteIcon
+                                className="icon-trash"
+                                onClick={(e) =>
+                                  deleteTask(e, idxProject, index)
+                                }
                               />
-                              {Boolean(
-                                getErrorArrayPosition(errors, [
-                                  "listTask",
-                                  idxProject,
-                                  index,
-                                  "taskName",
-                                ])
-                              ) && (
-                                <Typography sx={errorTextStyles}>
-                                  {
-                                    errors.listTask[idxProject][index].taskName
-                                      .message
-                                  }
-                                </Typography>
-                              )}
-                            </Grid>
-                            <Grid item xs={12}>
-                              <Controller
-                                name={`listTask.${idxProject}.${index}.statusTaskId`}
-                                control={control}
-                                render={({ field }) => (
-                                  <Autocomplete
-                                    {...field}
-                                    disablePortal
-                                    name="statusTaskId"
-                                    className="autocomplete-input autocomplete-on-popup"
-                                    options={statusTask}
-                                    getOptionLabel={(option) => option.name}
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                    onChange={(_event, newValue) => {
-                                      field.onChange(
-                                        newValue ? newValue.id : null
-                                      );
-                                      handleChange(
-                                        {
-                                          value: { ...newValue },
-                                          name: "statusTask",
-                                        },
-                                        idxProject,
-                                        index
-                                      );
-                                    }}
-                                    value={
-                                      res.statusTaskName == undefined
-                                        ? null
-                                        : {
-                                            id: res.statusTaskId,
-                                            name: res.statusTaskName,
-                                          }
+                            )}
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            <Grid container rowSpacing={2}>
+                              <Grid item xs={12}>
+                                <Controller
+                                  name={`listTask.${idxProject}.${index}.taskName`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <Autocomplete
+                                      {...field}
+                                      disablePortal
+                                      name="taskName"
+                                      className="autocomplete-input autocomplete-on-popup"
+                                      defaultValue={
+                                        res.backlogId
+                                          ? {
+                                              backlogId: res.backlogId,
+                                              taskName:
+                                                res.taskCode +
+                                                " - " +
+                                                res.taskName,
+                                              actualEffort: res.duration,
+                                            } || null
+                                          : selectedTask[index]
+                                      }
+                                      options={filteredOptTask}
+                                      getOptionLabel={(option) =>
+                                        option.taskName
+                                      }
+                                      sx={{
+                                        width: "100%",
+                                        marginTop: "20px",
+                                        backgroundColor: "white",
+                                      }}
+                                      onChange={(_event, newValue) => {
+                                        field.onChange(
+                                          newValue ? newValue.taskName : ""
+                                        );
+                                        const temp = { ...firstEditTask };
+                                        temp.listProject[idxProject].listTask[
+                                          index
+                                        ].taskName =
+                                          newValue !== null
+                                            ? newValue.taskName
+                                            : "";
+                                        temp.listProject[idxProject].listTask[
+                                          index
+                                        ].backlogId =
+                                          newValue !== null
+                                            ? newValue.backlogId
+                                            : "";
+                                        setFirstEditTask(temp);
+                                      }}
+                                      value={{
+                                        taskName: res.taskName,
+                                        id: res.taskId,
+                                      }}
+                                      isOptionEqualToValue={(option, value) =>
+                                        option.value === value.value
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className="input-field-crud"
+                                          placeholder='e.g Create "Login" Screen'
+                                          label="Task Name"
+                                          InputLabelProps={{ shrink: true }}
+                                          error={Boolean(
+                                            getErrorArrayPosition(errors, [
+                                              "listTask",
+                                              idxProject,
+                                              index,
+                                              "taskName",
+                                            ])
+                                          )}
+                                        />
+                                      )}
+                                    />
+                                  )}
+                                />
+                                {Boolean(
+                                  getErrorArrayPosition(errors, [
+                                    "listTask",
+                                    idxProject,
+                                    index,
+                                    "taskName",
+                                  ])
+                                ) && (
+                                  <Typography sx={errorTextStyles}>
+                                    {
+                                      errors.listTask[idxProject][index]
+                                        .taskName.message
                                     }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        className="input-field-crud"
-                                        label="Status Task"
-                                        placeholder="e.g In Progress"
-                                        InputLabelProps={{ shrink: true }}
-                                        error={Boolean(
-                                          getErrorArrayPosition(errors, [
-                                            "listTask",
-                                            idxProject,
-                                            index,
-                                            "statusTaskId",
-                                          ])
-                                        )}
-                                      />
-                                    )}
-                                  />
+                                  </Typography>
                                 )}
-                              />
-                              {Boolean(
-                                getErrorArrayPosition(errors, [
-                                  "listTask",
-                                  idxProject,
-                                  index,
-                                  "statusTaskId",
-                                ])
-                              ) && (
-                                <Typography sx={errorTextStyles}>
-                                  {
-                                    errors.listTask[idxProject][index]
-                                      .statusTaskId.message
-                                  }
-                                </Typography>
-                              )}
-                            </Grid>
-                            <Grid item xs={12}>
-                              <Controller
-                                name={`listTask.${idxProject}.${index}.taskDuration`}
-                                control={control}
-                                render={({ field }) => (
-                                  <TextField
-                                    {...field}
-                                    focused
-                                    name="taskDuration"
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                    value={
-                                      res.taskDuration == undefined
-                                        ? ""
-                                        : res.taskDuration
-                                    }
-                                    onChange={(event) => {
-                                      field.onChange(
-                                        event ? event.target.value : ""
-                                      );
-                                      const temp = { ...firstEditTask };
-                                      const inputValue = event.target.value;
-                                      const numericValue =
-                                        inputValue === ""
-                                          ? ""
-                                          : parseFloat(inputValue);
-                                      temp.listProject[idxProject].listTask[
-                                        index
-                                      ].taskDuration = numericValue;
-                                      setFirstEditTask(temp);
-                                    }}
-                                    className="input-field-crud"
-                                    type="number"
-                                    placeholder="e.g 1 or 3 (hour)"
-                                    label="Estimation Effort"
-                                    error={Boolean(
-                                      getErrorArrayPosition(errors, [
-                                        "listTask",
-                                        idxProject,
-                                        index,
-                                        "taskDuration",
-                                      ])
-                                    )}
-                                  />
-                                )}
-                              />
-                              {Boolean(
-                                getErrorArrayPosition(errors, [
-                                  "listTask",
-                                  idxProject,
-                                  index,
-                                  "taskDuration",
-                                ])
-                              ) && (
-                                <Typography sx={errorTextStyles}>
-                                  {
-                                    errors.listTask[idxProject][index]
-                                      .taskDuration.message
-                                  }
-                                </Typography>
-                              )}
-                            </Grid>
-                            <Grid item xs={12}>
-                              <Controller
-                                name={`listTask.${idxProject}.${index}.taskDetails`}
-                                control={control}
-                                render={({ field }) => (
-                                  <TextField
-                                    {...field}
-                                    focused
-                                    name="taskItem"
-                                    sx={{
-                                      width: "100%",
-                                      backgroundColor: "white",
-                                    }}
-                                    value={
-                                      res.taskItem == undefined
-                                        ? ""
-                                        : res.taskItem
-                                    }
-                                    onChange={(event, newValue) => {
-                                      field.onChange(
-                                        event ? event.target.value : ""
-                                      );
-                                      const temp = { ...firstEditTask };
-                                      temp.listProject[idxProject].listTask[
-                                        index
-                                      ].taskItem =
-                                        event.target.value === ""
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Controller
+                                  name={`listTask.${idxProject}.${index}.statusTaskId`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <Autocomplete
+                                      {...field}
+                                      disablePortal
+                                      name="statusTaskId"
+                                      className="autocomplete-input autocomplete-on-popup"
+                                      options={statusTask}
+                                      getOptionLabel={(option) => option.name}
+                                      sx={{
+                                        width: "100%",
+                                        backgroundColor: "white",
+                                      }}
+                                      onChange={(_event, newValue) => {
+                                        field.onChange(
+                                          newValue ? newValue.id : null
+                                        );
+                                        handleChange(
+                                          {
+                                            value: { ...newValue },
+                                            name: "statusTask",
+                                          },
+                                          idxProject,
+                                          index
+                                        );
+                                      }}
+                                      value={
+                                        res.statusTaskName == undefined
                                           ? null
-                                          : event.target.value;
-                                      setFirstEditTask(temp);
-                                    }}
-                                    className="input-field-crud"
-                                    placeholder='e.g Create "Login" Screen'
-                                    label="Task Detail *"
-                                    multiline
-                                    maxRows={4}
-                                    error={Boolean(
-                                      getErrorArrayPosition(errors, [
-                                        "listTask",
-                                        idxProject,
-                                        index,
-                                        "taskDetails",
-                                      ])
-                                    )}
-                                  />
+                                          : {
+                                              id: res.statusTaskId,
+                                              name: res.statusTaskName,
+                                            }
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          className="input-field-crud"
+                                          label="Status Task"
+                                          placeholder="e.g In Progress"
+                                          InputLabelProps={{ shrink: true }}
+                                          error={Boolean(
+                                            getErrorArrayPosition(errors, [
+                                              "listTask",
+                                              idxProject,
+                                              index,
+                                              "statusTaskId",
+                                            ])
+                                          )}
+                                        />
+                                      )}
+                                    />
+                                  )}
+                                />
+                                {Boolean(
+                                  getErrorArrayPosition(errors, [
+                                    "listTask",
+                                    idxProject,
+                                    index,
+                                    "statusTaskId",
+                                  ])
+                                ) && (
+                                  <Typography sx={errorTextStyles}>
+                                    {
+                                      errors.listTask[idxProject][index]
+                                        .statusTaskId.message
+                                    }
+                                  </Typography>
                                 )}
-                              />
-                              {Boolean(
-                                getErrorArrayPosition(errors, [
-                                  "listTask",
-                                  idxProject,
-                                  index,
-                                  "taskDetails",
-                                ])
-                              ) && (
-                                <Typography sx={errorTextStyles}>
-                                  {
-                                    errors.listTask[idxProject][index]
-                                      .taskDetails.message
-                                  }
-                                </Typography>
-                              )}
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Controller
+                                  name={`listTask.${idxProject}.${index}.taskDuration`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TextField
+                                      {...field}
+                                      focused
+                                      name="taskDuration"
+                                      sx={{
+                                        width: "100%",
+                                        backgroundColor: "white",
+                                      }}
+                                      value={
+                                        res.taskDuration == undefined
+                                          ? ""
+                                          : res.taskDuration
+                                      }
+                                      onChange={(event) => {
+                                        field.onChange(
+                                          event ? event.target.value : ""
+                                        );
+                                        const temp = { ...firstEditTask };
+                                        const inputValue = event.target.value;
+                                        const numericValue =
+                                          inputValue === ""
+                                            ? ""
+                                            : parseFloat(inputValue);
+                                        temp.listProject[idxProject].listTask[
+                                          index
+                                        ].taskDuration = numericValue;
+                                        setFirstEditTask(temp);
+                                      }}
+                                      className="input-field-crud"
+                                      type="number"
+                                      placeholder="e.g 1 or 3 (hour)"
+                                      label="Estimation Effort"
+                                      error={Boolean(
+                                        getErrorArrayPosition(errors, [
+                                          "listTask",
+                                          idxProject,
+                                          index,
+                                          "taskDuration",
+                                        ])
+                                      )}
+                                    />
+                                  )}
+                                />
+                                {Boolean(
+                                  getErrorArrayPosition(errors, [
+                                    "listTask",
+                                    idxProject,
+                                    index,
+                                    "taskDuration",
+                                  ])
+                                ) && (
+                                  <Typography sx={errorTextStyles}>
+                                    {
+                                      errors.listTask[idxProject][index]
+                                        .taskDuration.message
+                                    }
+                                  </Typography>
+                                )}
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Controller
+                                  name={`listTask.${idxProject}.${index}.taskDetails`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <TextField
+                                      {...field}
+                                      focused
+                                      name="taskItem"
+                                      sx={{
+                                        width: "100%",
+                                        backgroundColor: "white",
+                                      }}
+                                      value={
+                                        res.taskItem == undefined
+                                          ? ""
+                                          : res.taskItem
+                                      }
+                                      onChange={(event, newValue) => {
+                                        field.onChange(
+                                          event ? event.target.value : ""
+                                        );
+                                        const temp = { ...firstEditTask };
+                                        temp.listProject[idxProject].listTask[
+                                          index
+                                        ].taskItem =
+                                          event.target.value === ""
+                                            ? null
+                                            : event.target.value;
+                                        setFirstEditTask(temp);
+                                      }}
+                                      className="input-field-crud"
+                                      placeholder='e.g Create "Login" Screen'
+                                      label="Task Detail *"
+                                      multiline
+                                      maxRows={4}
+                                      error={Boolean(
+                                        getErrorArrayPosition(errors, [
+                                          "listTask",
+                                          idxProject,
+                                          index,
+                                          "taskDetails",
+                                        ])
+                                      )}
+                                    />
+                                  )}
+                                />
+                                {Boolean(
+                                  getErrorArrayPosition(errors, [
+                                    "listTask",
+                                    idxProject,
+                                    index,
+                                    "taskDetails",
+                                  ])
+                                ) && (
+                                  <Typography sx={errorTextStyles}>
+                                    {
+                                      errors.listTask[idxProject][index]
+                                        .taskDetails.message
+                                    }
+                                  </Typography>
+                                )}
+                              </Grid>
                             </Grid>
-                          </Grid>
-                        </AccordionDetails>
-                      </Accordion>
-                    ))}
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    })}
                   </>
                 )}
               </Grid>
