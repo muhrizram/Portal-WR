@@ -11,16 +11,9 @@ import moment from "moment";
 export default function DateRangeCalendar({
   setIsDataObtained,
   updateFilterDates,
-  setActiveMonth,
   setStartDateCall,
   setEndDateCall,
-  setResetFilterRef,
 }) {
-  useEffect(() => {
-    if (setResetFilterRef) {
-      setResetFilterRef(ResetFilter);
-    }
-  }, [setResetFilterRef]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
