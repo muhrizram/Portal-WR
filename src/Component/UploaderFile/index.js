@@ -4,7 +4,8 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
 import "../../App.css";
-const UploaderFile = ({ onCompleteUpload }) => {
+
+const UploaderFile = ({ onCompleteUpload, overtime }) => {
   const [status, setStatus] = useState("Loading");
 
   // specify upload params and url for your files
@@ -28,6 +29,9 @@ const UploaderFile = ({ onCompleteUpload }) => {
       const text = `minio/view?file=${json.data.attributes.filePath}`;
       setStatus("Complete");
       onCompleteUpload(text);
+    } else if (status === "removed") {
+      setStatus("");
+      onCompleteUpload("");
     }
     let elementCard = document.getElementById("card-uploader-custom");
     if (elementCard) {
@@ -77,6 +81,13 @@ const UploaderFile = ({ onCompleteUpload }) => {
             className="uploader-file-card dzu-dropzone"
           >
             <Grid container rowSpacing={1}>
+              {overtime && (
+                <Grid item xs={12} textAlign="center">
+                  <span className="uploader-text">
+                    Approval Document <span style={{ color: "red" }}>*</span>
+                  </span>
+                </Grid>
+              )}
               <Grid item xs={12} textAlign="center">
                 <UploadFileIcon className="icon-uploader" />
               </Grid>
@@ -125,7 +136,7 @@ const UploaderFile = ({ onCompleteUpload }) => {
       onChangeStatus={handleChangeStatus}
       onSubmit={handleSubmit}
       maxSizeBytes={3145728}
-      accept="image/*"
+      accept={overtime ? "image/*,application/pdf" : "image/*"}
       LayoutComponent={(props) => renderDom(props)}
     />
   );
