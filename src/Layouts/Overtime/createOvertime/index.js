@@ -52,6 +52,7 @@ const CreateOvertime = ({
   const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
   const [addTaskInEdit, setAddTaskInEdit] = useState(false);
+  const [file, setFile] = useState(null);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
 
@@ -85,33 +86,8 @@ const CreateOvertime = ({
     listProject: [clearProject],
   });
 
-  const onAddProject = (checkProject) => {
-    if (isEdit) {
-      setProjectEdit(checkProject);
-      setAddTaskInEdit(true);
-      const temp = { ...dataEditOvertime };
-      temp.listProject = [...dataEditOvertime.listProject, clearProject];
-      setDataEditOvertime(temp);
-    } else {
-      const temp = { ...dataOvertime };
-      temp.listProject = [...dataOvertime.listProject, clearProject];
-      setDataOvertime(temp);
-    }
-  };
-
-  const RemoveProject = (projectIndex) => {
-    clearProjectTaskErrors(clearErrors, projectIndex, true);
-    removeListProject(projectIndex);
-    removeListTask(projectIndex);
-    if (isEdit) {
-      const temp = { ...dataEditOvertime };
-      temp.listProject.splice(projectIndex, 1);
-      setDataEditOvertime(temp);
-    } else {
-      const temp = { ...dataOvertime };
-      temp.listProject.splice(projectIndex, 1);
-      setDataOvertime(temp);
-    }
+  const handleChangeFile = (file) => {
+    setFile(file);
   };
 
   const onEdit = () => {
@@ -304,22 +280,6 @@ const CreateOvertime = ({
     setDialogCancel(false);
   };
 
-  const handleAddProject = () => {
-    if (isEdit) {
-      let checkProject = [];
-      for (let i = 0; i < optProject.length; i++) {
-        if (dataDetailArray[i]) {
-          checkProject[i] = dataDetailArray[i].attributes.projectName
-            ? true
-            : false;
-        }
-      }
-      onAddProject(checkProject);
-    } else {
-      onAddProject();
-    }
-  };
-
   const handleCancel = () => {
     setDialogCancel(true);
   };
@@ -376,6 +336,7 @@ const CreateOvertime = ({
       );
     } else {
       onSave(
+        file,
         time.startTime,
         time.endTime,
         wrDate,
@@ -433,7 +394,6 @@ const CreateOvertime = ({
                 handleChange={handleChange}
                 handleChangeProject={handleChangeProject}
                 addTask={addTask}
-                RemoveProject={RemoveProject}
                 deleteTask={deleteTask}
                 setIsLocalizationFilled={setIsLocalizationFilled}
               />
@@ -456,26 +416,16 @@ const CreateOvertime = ({
                 setOpenTask={setOpenTask}
                 deleteTask={deleteTask}
                 addTask={addTask}
-                RemoveProject={RemoveProject}
                 errorTextStyles={errorTextStyles}
                 getDataTask={getDataTask}
                 currentUserId={currentUserId}
                 setOptTask={setOptTask}
+                handleChangeFile={handleChangeFile}
               />
             )}
           </form>
         </DialogContent>
         <DialogActions>
-          <div className="left-container">
-            <Button
-              variant="outlined"
-              className="green-button button-text"
-              onClick={handleAddProject}
-              startIcon={<AddIcon />}
-            >
-              Add Project
-            </Button>
-          </div>
           <div className="right-container">
             <Button
               variant="outlined"
@@ -485,6 +435,7 @@ const CreateOvertime = ({
               Cancel
             </Button>
             <Button
+              disabled={!file}
               variant="saveButton"
               className="button-text"
               type="submit"

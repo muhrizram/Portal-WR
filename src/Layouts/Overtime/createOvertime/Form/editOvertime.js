@@ -44,7 +44,6 @@ const EditOvertime = ({
   handleChange,
   handleChangeProject,
   addTask,
-  RemoveProject,
   deleteTask,
   setIsLocalizationFilled,
 }) => {
@@ -574,19 +573,6 @@ const EditOvertime = ({
                 </Grid>
               ) : (
                 <Grid item xs={6} />
-              )}
-              {idxProject > 0 && (
-                <Grid item xs={6} textAlign="right">
-                  <Button
-                    onClick={() => RemoveProject(idxProject)}
-                    variant="outlined"
-                    color="error"
-                    className="button-text"
-                    startIcon={<Remove />}
-                  >
-                    Remove Project
-                  </Button>
-                </Grid>
               )}
             </Grid>
           </Grid>

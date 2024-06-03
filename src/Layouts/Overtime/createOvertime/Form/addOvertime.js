@@ -23,6 +23,7 @@ import {
   clearListTaskErrorsAndValues,
   getErrorArrayPosition,
 } from "../../../../global/formFunctions";
+import UploaderFile from "../../../../Component/UploaderFile";
 
 const AddOvertime = ({
   control,
@@ -41,11 +42,11 @@ const AddOvertime = ({
   setOpenTask,
   deleteTask,
   addTask,
-  RemoveProject,
   errorTextStyles,
   getDataTask,
   currentUserId,
   setOptTask,
+  handleChangeFile,
 }) => {
   const selectedProjectIds = dataOvertime.listProject.map(
     (project) => project.projectId
@@ -133,6 +134,12 @@ const AddOvertime = ({
             className={openTask ? "card-project" : ""}
             key={`${idxProject + 1}-project`}
           >
+            <UploaderFile
+              onCompleteUpload={(urlFile) =>
+                handleChangeFile(urlFile, idxProject)
+              }
+              overtime={true}
+            />
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
                 <Controller
@@ -557,19 +564,6 @@ const AddOvertime = ({
                   </Grid>
                 ) : (
                   <Grid item xs={6} />
-                )}
-                {idxProject > 0 && (
-                  <Grid item xs={6} textAlign="right">
-                    <Button
-                      onClick={() => RemoveProject(idxProject)}
-                      variant="outlined"
-                      color="error"
-                      className="button-text"
-                      startIcon={<Remove />}
-                    >
-                      Remove Project
-                    </Button>
-                  </Grid>
                 )}
               </Grid>
             </Grid>

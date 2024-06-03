@@ -11,8 +11,12 @@ const UploaderFile = ({ onCompleteUpload, overtime }) => {
   // specify upload params and url for your files
   const getUploadParams = ({ meta }) => {
     const token = localStorage.getItem("token");
+    const pathAbsence = "absence";
+    const pathOvertime = "overtime";
     return {
-      url: "https://portalwr-dev-api.cloudias79.com/minio/uploadFile?path=absence",
+      url: `https://portalwr-dev-api.cloudias79.com/minio/uploadFile?path=${
+        overtime ? pathOvertime : pathAbsence
+      }`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -39,7 +43,6 @@ const UploaderFile = ({ onCompleteUpload, overtime }) => {
     }
   };
 
-  // receives array of files that are done uploading when submit button is clicked
   const handleSubmit = (files, allFiles) => {
     allFiles.forEach((f) => f.remove());
   };
@@ -97,7 +100,7 @@ const UploaderFile = ({ onCompleteUpload, overtime }) => {
               </Grid>
               <Grid item xs={12} textAlign="center">
                 <span className="uploader-text-bottom">
-                  PNG or JPG (max. 3MB)
+                  {overtime && "PDF,"} PNG or JPG (max. 3MB)
                 </span>
               </Grid>
               <Grid item xs={12}>

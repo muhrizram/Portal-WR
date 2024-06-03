@@ -39,6 +39,7 @@ export const getDataStatus = async (setOptStatus) => {
 };
 
 export const onSave = async (
+  filePath,
   startTimeSave,
   endTimeSave,
   wrDate,
@@ -51,6 +52,7 @@ export const onSave = async (
   const data = {
     startTime: startTimeSave,
     endTime: endTimeSave,
+    file: filePath,
     date: wrDate,
     listProject: [],
     createdBy: currentUserId,
