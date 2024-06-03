@@ -24,11 +24,10 @@ import { overtimeSchema } from "../../../global/overtimeSchema";
 import EditOvertime from "./Form/editOvertime";
 import dayjs from "dayjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   clearProjectTaskErrors,
   clearTaskErrors,
-  resetFormValues,
 } from "../../../global/formFunctions";
 
 const CreateOvertime = ({
@@ -101,9 +100,9 @@ const CreateOvertime = ({
   };
 
   const RemoveProject = (projectIndex) => {
-    clearProjectTaskErrors(errors, clearErrors, projectIndex, true);
-
-    resetFormValues(setValue, watch, projectIndex, true);
+    clearProjectTaskErrors(clearErrors, projectIndex, true);
+    removeListProject(projectIndex);
+    removeListTask(projectIndex);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject.splice(projectIndex, 1);
@@ -208,21 +207,17 @@ const CreateOvertime = ({
   }, [defaultEditData, reset]);
 
   const addTask = (idxProject) => {
-    let temp = null;
+    const temp = isEdit ? { ...dataEditOvertime } : { ...dataOvertime };
+    const newTask = { ...clearTask };
+
+    temp.listProject[idxProject].listTask = [
+      ...temp.listProject[idxProject].listTask,
+      newTask,
+    ];
+
     if (isEdit) {
-      temp = { ...dataEditOvertime };
-    } else {
-      temp = { ...dataOvertime };
-    }
-    if (isEdit) {
-      temp.listProject[idxProject].listTask.push({
-        ...clearTask,
-      });
       setDataEditOvertime(temp);
     } else {
-      temp.listProject[idxProject].listTask.push({
-        ...clearTask,
-      });
       setDataOvertime(temp);
     }
   };
@@ -279,14 +274,18 @@ const CreateOvertime = ({
     }
   };
 
+  const { remove: removeListTask } = useFieldArray({
+    control,
+    name: `task.listTask`,
+  });
+
+  const { remove: removeListProject } = useFieldArray({
+    control,
+    name: `task.listProject`,
+  });
+
   const deleteTask = async (e, idxProject, index) => {
     e.preventDefault();
-    clearTaskErrors(clearErrors, idxProject, index, true);
-
-    const updatedTasks = watch(`task.listTask.${idxProject}`).filter(
-      (_, i) => i !== index
-    );
-    setValue(`task.listTask.${idxProject}`, updatedTasks);
     if (isEdit) {
       const temp = { ...dataEditOvertime };
       temp.listProject[idxProject].listTask.splice(index, 1);
@@ -296,6 +295,9 @@ const CreateOvertime = ({
       temp.listProject[idxProject].listTask.splice(index, 1);
       setDataOvertime(temp);
     }
+
+    clearTaskErrors(clearErrors, idxProject, index, true);
+    removeListTask(`[${idxProject}][${index}]`);
   };
 
   const handleClose = () => {

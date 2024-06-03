@@ -13,36 +13,15 @@ export const clearTaskErrors = (clearErrors, idxProject, index, isOvertime) => {
 };
 
 export const clearProjectTaskErrors = (
-  errors,
   clearErrors,
   idxProject,
   isOvertime
 ) => {
-  const overtimeErrorsPath = errors.task;
-  const taskErrorsPath = errors;
-
   clearErrors(
     isOvertime
       ? `task.listProject.${idxProject}.projectId`
       : `listProject.${idxProject}.projectId`
   );
-  if (
-    (overtimeErrorsPath &&
-      overtimeErrorsPath.listTask &&
-      overtimeErrorsPath.listTask[idxProject]) ||
-    (taskErrorsPath &&
-      taskErrorsPath.listTask &&
-      taskErrorsPath.listTask[idxProject])
-  ) {
-    const listTaskErrors = isOvertime
-      ? overtimeErrorsPath.listTask[idxProject]
-      : taskErrorsPath.listTask[idxProject];
-    listTaskErrors.forEach((_, taskIndex) => {
-      isOvertime
-        ? clearTaskErrors(clearErrors, idxProject, taskIndex, true)
-        : clearTaskErrors(clearErrors, idxProject, taskIndex, false);
-    });
-  }
 };
 
 export const resetFormValues = (setValue, watch, idxProject, isOvertime) => {

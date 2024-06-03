@@ -20,13 +20,12 @@ import {
 } from "./apiFunctions";
 import EditTask from "./Form/editTask";
 import CreateTask from "./Form/addTask";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskSchema } from "../../../global/taskSchema";
 import {
   clearProjectTaskErrors,
   clearTaskErrors,
-  resetFormValues,
 } from "../../../global/formFunctions";
 
 const PopupTask = ({
@@ -159,6 +158,16 @@ const PopupTask = ({
     },
   });
 
+  const { remove: removeListTask } = useFieldArray({
+    control,
+    name: `listTask`,
+  });
+
+  const { remove: removeListProject } = useFieldArray({
+    control,
+    name: `listProject`,
+  });
+
   useEffect(() => {
     if (defaultEditData) {
       reset({
@@ -185,9 +194,9 @@ const PopupTask = ({
   };
 
   const onRemoveProject = (e, idxProject) => {
-    clearProjectTaskErrors(errors, clearErrors, idxProject, false);
-
-    resetFormValues(setValue, watch, idxProject, false);
+    clearProjectTaskErrors(clearErrors, idxProject, true);
+    removeListProject(idxProject);
+    removeListTask(idxProject);
     if (isEdit) {
       const updatedDataProject = { ...firstEditTask };
       const updatedListProject = [...updatedDataProject.listProject];
@@ -288,12 +297,9 @@ const PopupTask = ({
       tempAdd.listProject[idxProject].listTask.splice(index, 1);
       setDataProject(tempAdd);
     }
-    clearTaskErrors(clearErrors, idxProject, index);
 
-    const updatedTasks = watch(`listTask.${idxProject}`).filter(
-      (_, i) => i !== index
-    );
-    setValue(`listTask.${idxProject}`, updatedTasks);
+    clearTaskErrors(clearErrors, idxProject, index, false);
+    removeListTask(`[${idxProject}][${index}]`);
   };
 
   const onSubmit = () => {
