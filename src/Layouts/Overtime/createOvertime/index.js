@@ -304,15 +304,15 @@ const CreateOvertime = ({
 
   const handleAddProject = () => {
     if (isEdit) {
-      let CekProject = [];
+      let checkProject = [];
       for (let i = 0; i < optProject.length; i++) {
         if (dataDetailArray[i]) {
-          CekProject[i] = dataDetailArray[i].attributes.projectName
+          checkProject[i] = dataDetailArray[i].attributes.projectName
             ? true
             : false;
         }
       }
-      onAddProject(CekProject);
+      onAddProject(checkProject);
     } else {
       onAddProject();
     }
@@ -339,20 +339,7 @@ const CreateOvertime = ({
       setIsLocalizationFilled(false);
       setDialogCancel(false);
       setDataOvertime({
-        listProject: [
-          {
-            projectId: "",
-            listTask: [
-              {
-                backlogId: null,
-                taskName: "",
-                statusTaskId: "",
-                duration: "",
-                taskItem: "",
-              },
-            ],
-          },
-        ],
+        listProject: [clearProject],
       });
     }
   };
