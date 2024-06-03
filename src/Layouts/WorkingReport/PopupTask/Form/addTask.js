@@ -631,7 +631,8 @@ const CreateTask = ({
               </Grid>
               <Grid container>
                 {!checkAbsence[idxProject] &&
-                  dataProject.workingReportId !== undefined && (
+                  dataProject.workingReportId !== undefined &&
+                  (resProject.listTask.length > 0 ? (
                     <Grid item xs={6} textAlign="left">
                       <Button
                         onClick={() => addTask(idxProject)}
@@ -642,7 +643,9 @@ const CreateTask = ({
                         Add Task
                       </Button>
                     </Grid>
-                  )}
+                  ) : (
+                    <Grid item xs={6} />
+                  ))}
 
                 <Grid
                   item
