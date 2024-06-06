@@ -23,6 +23,7 @@ import {
   clearListTaskErrorsAndValues,
   getErrorArrayPosition,
 } from "../../../../global/formFunctions";
+import UploaderFile from "../../../../Component/UploaderFile";
 
 const EditOvertime = ({
   control,
@@ -46,6 +47,8 @@ const EditOvertime = ({
   addTask,
   deleteTask,
   setIsLocalizationFilled,
+  handleChangeFile,
+  file,
 }) => {
   const selectedProjectIds = dataEditOvertime.listProject.map(
     (project) => project.projectId
@@ -131,6 +134,13 @@ const EditOvertime = ({
           className={openTask ? "card-project" : ""}
           key={`${idxProject + 1}-project`}
         >
+          <UploaderFile
+            onCompleteUpload={(urlFile) =>
+              handleChangeFile(urlFile, idxProject)
+            }
+            overtime={true}
+            file={file}
+          />
           <Grid container rowSpacing={2}>
             <Grid item xs={12}>
               <Controller

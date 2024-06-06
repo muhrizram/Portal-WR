@@ -4,9 +4,11 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import "react-dropzone-uploader/dist/styles.css";
 import Dropzone from "react-dropzone-uploader";
 import "../../App.css";
+import { Close, TextSnippet } from "@mui/icons-material";
 
-const UploaderFile = ({ onCompleteUpload, overtime }) => {
+const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
   const [status, setStatus] = useState("Loading");
+  const [firstPreview, setFirstPreview] = useState(true);
 
   // specify upload params and url for your files
   const getUploadParams = ({ meta }) => {
@@ -73,65 +75,98 @@ const UploaderFile = ({ onCompleteUpload, overtime }) => {
   };
 
   const renderDom = (props) => {
-    return (
-      <Grid container rowSpacing={2}>
-        <Grid item xs={12}>
-          <div
-            {...props.dropzoneProps}
-            onDragEnter={() => handleDragEnter()}
-            onDragLeave={() => handleDragLeave()}
-            id="card-uploader-custom"
-            className="uploader-file-card dzu-dropzone"
-          >
-            <Grid container rowSpacing={1}>
-              {overtime && (
+    if (file && firstPreview) {
+      return (
+        <Grid container rowSpacing={2}>
+          <Grid item xs={12}>
+            <div>
+              <Grid
+                container
+                rowSpacing={1}
+                alignItems="flex-start"
+                justifyContent="flex-start"
+              >
                 <Grid item xs={12} textAlign="center">
-                  <span className="uploader-text">
-                    Approval Document <span style={{ color: "red" }}>*</span>
-                  </span>
+                  <TextSnippet style={{ fontSize: 100 }} />
+                  <Close
+                    className="remove-file-icon"
+                    onClick={
+                      (() => onCompleteUpload(""), setFirstPreview(false))
+                    }
+                    style={{ cursor: "pointer" }}
+                  />
                 </Grid>
-              )}
-              <Grid item xs={12} textAlign="center">
-                <UploadFileIcon className="icon-uploader" />
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <span className="uploader-text-underline">Click to upload</span>
-                <span className="uploader-text"> or drag and drop</span>
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <span className="uploader-text-bottom">
-                  {overtime && "PDF,"} PNG or JPG (max. 3MB)
-                </span>
-              </Grid>
-              <Grid item xs={12}>
-                {props.input}
-              </Grid>
-            </Grid>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          {props.files.length > 0 && (
-            <div className="bottom-card-uploader">
-              <Grid container>
-                <Grid item xs={12}>
-                  <span className="text-files-name">
-                    {props.files[0].file.name}
-                  </span>
-                </Grid>
-                <Grid item xs={12}>
-                  <span className="text-files-sizes">
-                    {convertSize(props.files[0].file.size)} {status}
-                  </span>
-                </Grid>
-                <Grid item xs={12}>
-                  {props.previews.length > 0 && props.previews[0]}
+                <Grid item xs={12} textAlign="center">
+                  <span>{file}</span>
                 </Grid>
               </Grid>
             </div>
-          )}
+          </Grid>
         </Grid>
-      </Grid>
-    );
+      );
+    } else {
+      return (
+        <Grid container rowSpacing={2}>
+          <Grid item xs={12}>
+            <div
+              {...props.dropzoneProps}
+              onDragEnter={() => handleDragEnter()}
+              onDragLeave={() => handleDragLeave()}
+              id="card-uploader-custom"
+              className="uploader-file-card dzu-dropzone"
+            >
+              <Grid container rowSpacing={1}>
+                {overtime && (
+                  <Grid item xs={12} textAlign="center">
+                    <span className="uploader-text">
+                      Approval Document <span style={{ color: "red" }}>*</span>
+                    </span>
+                  </Grid>
+                )}
+                <Grid item xs={12} textAlign="center">
+                  <UploadFileIcon className="icon-uploader" />
+                </Grid>
+                <Grid item xs={12} textAlign="center">
+                  <span className="uploader-text-underline">
+                    Click to upload
+                  </span>
+                  <span className="uploader-text"> or drag and drop</span>
+                </Grid>
+                <Grid item xs={12} textAlign="center">
+                  <span className="uploader-text-bottom">
+                    {overtime && "PDF,"} PNG or JPG (max. 3MB)
+                  </span>
+                </Grid>
+                <Grid item xs={12}>
+                  {props.input}
+                </Grid>
+              </Grid>
+            </div>
+          </Grid>
+          <Grid item xs={12}>
+            {props.files.length > 0 && (
+              <div className="bottom-card-uploader">
+                <Grid container>
+                  <Grid item xs={12}>
+                    <span className="text-files-name">
+                      {props.files[0].file.name}
+                    </span>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <span className="text-files-sizes">
+                      {convertSize(props.files[0].file.size)} {status}
+                    </span>
+                  </Grid>
+                  <Grid item xs={12}>
+                    {props.previews.length > 0 && props.previews[0]}
+                  </Grid>
+                </Grid>
+              </div>
+            )}
+          </Grid>
+        </Grid>
+      );
+    }
   };
   return (
     <Dropzone

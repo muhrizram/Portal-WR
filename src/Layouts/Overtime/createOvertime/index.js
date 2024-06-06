@@ -7,7 +7,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import "../../../App.css";
 import { useNavigate } from "react-router-dom";
 import { AlertContext } from "../../../context";
@@ -105,6 +104,7 @@ const CreateOvertime = ({
         createdBy: currentUserId,
         updatedBy: currentUserId,
       }));
+      setFile(dataDetail.attributes.file);
     }
 
     let tempProjects = dataDetail.attributes.listProject.map((data) => ({
@@ -325,6 +325,7 @@ const CreateOvertime = ({
   const onSubmit = () => {
     if (isEdit) {
       saveEdit(
+        file,
         time.startTime,
         time.endTime,
         setIsSubmit,
@@ -396,6 +397,8 @@ const CreateOvertime = ({
                 addTask={addTask}
                 deleteTask={deleteTask}
                 setIsLocalizationFilled={setIsLocalizationFilled}
+                handleChangeFile={handleChangeFile}
+                file={file}
               />
             ) : (
               <AddOvertime

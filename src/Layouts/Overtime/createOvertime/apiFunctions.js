@@ -109,6 +109,7 @@ export const onSave = async (
 };
 
 export const saveEdit = async (
+  filePath,
   startTimeSave,
   endTimeSave,
   setIsSubmit,
@@ -121,6 +122,7 @@ export const saveEdit = async (
   const dataUpdate = {
     startTime: startTimeSave || dataEditOvertime.startTime,
     endTime: endTimeSave || dataEditOvertime.endTime,
+    file: filePath,
     workingReportId: null,
     listProjectId: [],
     createdBy: currentUserId,
