@@ -262,7 +262,7 @@ const PopupTask = ({
       if (absen) {
         temp.listProject[idxProject].absenceId = newValue.id;
         temp.listProject[idxProject].projectId = null;
-        temp.listProject[idxProject].projectName = newValue.name;
+        temp.listProject[idxProject].absenceName = newValue.name;
       } else {
         temp.listProject[idxProject].absenceId = null;
         temp.listProject[idxProject].projectId = newValue.id;
