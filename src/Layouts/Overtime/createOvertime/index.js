@@ -25,19 +25,20 @@ import dayjs from "dayjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
-  clearProjectTaskErrors,
   clearTaskErrors,
 } from "../../../global/formFunctions";
 
 const CreateOvertime = ({
   open,
+  firstPreview,
+  setFirstPreview,
   closeTask,
   isEdit,
   closeOvertime,
   dataDetail,
   wrDate,
   setIsSubmit,
-  holiday,
+  isHoliday,
 }) => {
   const [defaultEditData, setDefaultEditData] = useState([]);
   const navigate = useNavigate();
@@ -116,7 +117,7 @@ const CreateOvertime = ({
         taskName: task.taskCode + " - " + task.taskName,
         statusTaskId: task.statusTaskId,
         taskDuration: String(task.duration),
-        taskDetails: task.taskItem,
+        taskDetails: task.taskItem ? task.taskItem : "",
       }))
     );
 
@@ -168,7 +169,7 @@ const CreateOvertime = ({
   });
 
   useEffect(() => {
-    setValue("time.isHoliday", holiday);
+    setValue("time.isHoliday", isHoliday);
   }, [open]);
 
   const time = getValues("time");
@@ -324,6 +325,7 @@ const CreateOvertime = ({
 
   const onSubmit = () => {
     if (isEdit) {
+      console.log("Masuk edit");
       saveEdit(
         file,
         time.startTime,
@@ -399,10 +401,11 @@ const CreateOvertime = ({
                 setIsLocalizationFilled={setIsLocalizationFilled}
                 handleChangeFile={handleChangeFile}
                 file={file}
+                firstPreview={firstPreview}
+                setFirstPreview={setFirstPreview}
               />
             ) : (
               <AddOvertime
-                holiday={holiday}
                 control={control}
                 errors={errors}
                 setValue={setValue}

@@ -6,9 +6,14 @@ import Dropzone from "react-dropzone-uploader";
 import "../../App.css";
 import { Close, TextSnippet } from "@mui/icons-material";
 
-const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
+const UploaderFile = ({
+  onCompleteUpload,
+  overtime,
+  file,
+  firstPreview,
+  setFirstPreview,
+}) => {
   const [status, setStatus] = useState("Loading");
-  const [firstPreview, setFirstPreview] = useState(true);
 
   // specify upload params and url for your files
   const getUploadParams = ({ meta }) => {
@@ -74,6 +79,11 @@ const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
     return text;
   };
 
+  const handleRemoveExistingFilePath = () => {
+    onCompleteUpload("");
+    setFirstPreview(false);
+  };
+
   const renderDom = (props) => {
     if (file && firstPreview) {
       return (
@@ -90,9 +100,7 @@ const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
                   <TextSnippet style={{ fontSize: 100 }} />
                   <Close
                     className="remove-file-icon"
-                    onClick={
-                      (() => onCompleteUpload(""), setFirstPreview(false))
-                    }
+                    onClick={() => handleRemoveExistingFilePath()}
                     style={{ cursor: "pointer" }}
                   />
                 </Grid>
