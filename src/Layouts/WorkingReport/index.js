@@ -64,6 +64,7 @@ export default function WorkingReport() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [DataPresence, setDataPresence] = useState();
   const [isDataObtained, setIsDataObtained] = useState(false);
+  const [isHoliday, setIsHoliday] = useState(false);
 
   const open = dropMenu;
   const handleClick = (event) => {
@@ -368,6 +369,7 @@ export default function WorkingReport() {
           onCloseViewOvertime={() => setIsViewOvertime(false)}
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
+          isHoliday={isHoliday}
         />
       );
     } else if (ViewAttendance) {
@@ -399,6 +401,8 @@ export default function WorkingReport() {
           setonOtherUser={setonOtherUser}
           setIsViewAttendance={setIsViewAttendance}
           setDataAlert={setDataAlert}
+          setIsHoliday={setIsHoliday}
+          isHoliday={isHoliday}
         />
       );
     }

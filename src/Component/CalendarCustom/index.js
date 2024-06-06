@@ -41,6 +41,8 @@ export default function BigCalendar({
   setonOtherUser,
   setIsViewAttendance,
   setDataAlert,
+  setIsHoliday,
+  isHoliday,
 }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
@@ -62,7 +64,6 @@ export default function BigCalendar({
   const [tanggalHoliday, setTanggalHoliday] = useState(null);
   const [descHoliday, setdescHoliday] = useState(null);
   const [_finalDateCalendar, setfinalDateCalendar] = useState();
-  const [holiday, setHoliday] = useState(false);
 
   useEffect(() => {
     if (isDataObtained) {
@@ -163,7 +164,7 @@ export default function BigCalendar({
         event.presenceName !== "Hadir" &&
         event.paramAttendance &&
         event.title !== "Attendance";
-      const isHoliday = event.title === "Holiday";
+      const holiday = event.title === "Holiday";
       const isViewOvertime = event.title === "View Overtime";
       const isOvertime =
         (event.title === "Overtime" &&
@@ -183,7 +184,7 @@ export default function BigCalendar({
           setWrIdDetail(event.workingReportTaskId);
           setIsViewAttendance(true);
         };
-      } else if (isHoliday) {
+      } else if (holiday) {
         clickHere = () => {
           setdescHoliday(event.descHoliday);
           setTanggalHoliday(event.tanggal);
@@ -194,6 +195,7 @@ export default function BigCalendar({
           setId(event.workingReportOvertimeId);
           setWrIdDetail(event.workingReportOvertimeId);
           setIsViewOvertime(true);
+          setIsHoliday(event.holiday);
           setonOtherUser(true);
         };
       } else if (isOvertime) {
@@ -210,7 +212,7 @@ export default function BigCalendar({
             setOpenOvertime(true);
             setId(event.workingReportOvertimeId);
             setWrDate(event.tanggal);
-            setHoliday(event.holiday);
+            setIsHoliday(event.holiday);
           };
         }
       } else if (isTaskNotFilled) {
@@ -236,7 +238,7 @@ export default function BigCalendar({
     },
   };
 
-  const isHoliday = (date, events) => {
+  const checkHoliday = (date, events) => {
     return events.some((event) => {
       const eventDate = new Date(event.start);
       return (
@@ -268,7 +270,7 @@ export default function BigCalendar({
         (year === endYear && month < endMonth) ||
         (year === endYear && month === endMonth && day <= endDay));
 
-    const isHolidayDate = isHoliday(date, allEvents);
+    const isHolidayDate = checkHoliday(date, allEvents);
     const weekend = {
       sunday: 0,
       saturday: 6,
@@ -454,7 +456,7 @@ export default function BigCalendar({
         open={openOvertime}
         closeTask={() => setOpenOvertime(false)}
         wrDate={wrDate}
-        holiday={holiday}
+        isHoliday={isHoliday}
       />
       <PopupTask
         selectedWrIdanAbsenceId={wrId}

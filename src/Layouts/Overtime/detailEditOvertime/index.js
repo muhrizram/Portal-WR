@@ -24,9 +24,11 @@ export default function ViewOvertime({
   onCloseViewOvertime,
   onStatusHr,
   setonOtherUser,
+  isHoliday,
 }) {
   const [openOvertime, setOpenOvertime] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
+  const [firstPreview, setFirstPreview] = useState(false);
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -69,6 +71,13 @@ export default function ViewOvertime({
     setIsSubmit(false);
     getDetailOvertime();
   }, [isSubmit]);
+
+  const handleEditOvertime = () => {
+    setOpenOvertime(true);
+    if (detail.attributes.file) {
+      setFirstPreview(true);
+    }
+  };
 
   return (
     <Grid container spacing={2}>
@@ -224,7 +233,7 @@ export default function ViewOvertime({
                     startIcon={<CreateIcon />}
                     variant="outlined"
                     onClick={() => {
-                      setOpenOvertime(true);
+                      handleEditOvertime();
                     }}
                   >
                     Edit Task
@@ -236,9 +245,12 @@ export default function ViewOvertime({
           <CreateOvertime
             isEdit={true}
             open={openOvertime}
+            setFirstPreview={setFirstPreview}
+            firstPreview={firstPreview}
             closeOvertime={() => setOpenOvertime(false)}
             dataDetail={detail}
             setIsSubmit={setIsSubmit}
+            isHoliday={isHoliday}
           />
         </>
       ) : (
