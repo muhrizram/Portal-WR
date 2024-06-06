@@ -49,8 +49,6 @@ const EditOvertime = ({
   setIsLocalizationFilled,
   handleChangeFile,
   file,
-  firstPreview,
-  setFirstPreview,
 }) => {
   const selectedProjectIds = dataEditOvertime.listProject.map(
     (project) => project.projectId
@@ -142,8 +140,6 @@ const EditOvertime = ({
             }
             overtime={true}
             file={file}
-            firstPreview={firstPreview}
-            setFirstPreview={setFirstPreview}
           />
           <Grid container rowSpacing={2}>
             <Grid item xs={12}>

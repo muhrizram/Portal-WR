@@ -74,9 +74,6 @@ export default function ViewOvertime({
 
   const handleEditOvertime = () => {
     setOpenOvertime(true);
-    if (detail.attributes.file) {
-      setFirstPreview(true);
-    }
   };
 
   return (
@@ -245,8 +242,6 @@ export default function ViewOvertime({
           <CreateOvertime
             isEdit={true}
             open={openOvertime}
-            setFirstPreview={setFirstPreview}
-            firstPreview={firstPreview}
             closeOvertime={() => setOpenOvertime(false)}
             dataDetail={detail}
             setIsSubmit={setIsSubmit}
