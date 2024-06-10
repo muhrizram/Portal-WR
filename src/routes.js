@@ -222,9 +222,7 @@ export const finalRoutes = () => {
     }
   }, [token, navigate]);
 
-  // localStorage.setItem('privilage', JSON.stringify(tempRoute))
   const userRoutes = JSON.parse(localStorage.getItem("privilage") || "[]");
-  // console.log('app route: ', routes)
   let temp = closedRoutes.filter((res) => {
     let isSame = false;
 
