@@ -4,12 +4,13 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import EmojiPeople from "@mui/icons-material/EmojiPeople";
 import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
-import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
-import FestivalOutlinedIcon from '@mui/icons-material/FestivalOutlined';
+import SummarizeOutlinedIcon from "@mui/icons-material/SummarizeOutlined";
+import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
+import FestivalOutlinedIcon from "@mui/icons-material/FestivalOutlined";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -53,6 +54,9 @@ const closedRoutes = [
   {
     path: "/",
     element: <Dashboard />,
+    key: "dashboard",
+    name: "Dashboard",
+    icon: <DashboardIcon />,
   },
   {
     path: "/workingReport",
@@ -185,10 +189,14 @@ const closedRoutes = [
     element: <Holiday />,
     name: "Holiday",
     key: "master holiday",
-    icon: <FestivalOutlinedIcon/>
-  }, 
+    icon: <FestivalOutlinedIcon />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/workingReport" />,
+    key: "not found",
+  },
 ];
-
 
 // default all routes
 // export const finalRoutes = temp
@@ -196,9 +204,9 @@ const closedRoutes = [
 // final routes with controll
 export const finalRoutes = () => {
   const navigate = useNavigate();
-  
+
   const openRoutes = [{ path: "/login", element: <LoginScreen /> }];
-  const userId = localStorage.getItem("userId") || null
+  const userId = localStorage.getItem("userId") || null;
   const token = localStorage.getItem("token");
   // Comment if route user already exist
   // const tempRoute = ['master-holiday', 'master-company']
@@ -215,12 +223,14 @@ export const finalRoutes = () => {
   }, [token, navigate]);
 
   // localStorage.setItem('privilage', JSON.stringify(tempRoute))
-  const userRoutes = JSON.parse(localStorage.getItem("privilage") || '[]');
+  const userRoutes = JSON.parse(localStorage.getItem("privilage") || "[]");
   // console.log('app route: ', routes)
   let temp = closedRoutes.filter((res) => {
     let isSame = false;
 
-    isSame = userRoutes.some((privilege) => privilege.privilegeName === res.key);
+    isSame = userRoutes.some(
+      (privilege) => privilege.privilegeName === res.key
+    );
     if (!isSame) {
       return;
     }
@@ -228,6 +238,12 @@ export const finalRoutes = () => {
   });
 
   temp = [...temp, ...openRoutes];
-  temp = userId ? [...temp, { path: "/", element: <Dashboard />,}] : openRoutes
-  return temp
+  temp = userId ? [...temp] : openRoutes;
+  temp.push({
+    path: "*",
+    element: <Navigate to="/workingReport" />,
+    key: "catch-all",
+  });
+
+  return temp;
 };
