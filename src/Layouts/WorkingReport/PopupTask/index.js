@@ -53,6 +53,7 @@ const PopupTask = ({
   const [CekProjectEdit, setCheckProjectEdit] = useState([]);
   const [DurationTask, setDurationTask] = useState();
   const [projectColumn, setProjectColumn] = useState(false);
+  const [addDisabled, setAddDisabled] = useState(isEdit ? true : false);
   const navigate = useNavigate();
 
   const errorTextStyles = {
@@ -157,7 +158,7 @@ const PopupTask = ({
       ],
     },
   });
-
+  
   const { remove: removeListTask } = useFieldArray({
     control,
     name: `listTask`,
@@ -235,19 +236,44 @@ const PopupTask = ({
   };
 
   const handleChange = (event, idxProject, index, backlogId) => {
+    const isDuration =
+      event.name === "duration" || event.name === "taskDuration";
+
+    const updateTask = (temp) => {
+      const task = temp.listProject[idxProject].listTask[index];
+      if (isDuration) {
+        task[event.name] =
+          event.value === ""
+            ? null
+            : parseFloat(event.value) > 0
+            ? event.value
+            : "1";
+      } else {
+        task[`${event.name}Id`] = event.value.id;
+        task[`${event.name}Name`] = event.value.name;
+      }
+    };
+
+    const calculateTotalDuration = (projects) => {
+      return projects.reduce((total, project) => {
+        return (
+          total +
+          project.listTask.reduce((taskTotal, task) => {
+            return taskTotal + parseFloat(task[event.name] || 0);
+          }, 0)
+        );
+      }, 0);
+    };
+
+    const temp = isEdit ? { ...firstEditTask } : { ...dataProject };
+    updateTask(temp);
+
+    const totalDuration = calculateTotalDuration(temp.listProject);
+    setAddDisabled(totalDuration >= 8);
+
     if (isEdit) {
-      const temp = { ...firstEditTask };
-      temp.listProject[idxProject].listTask[index][`${event.name}Id`] =
-        event.value.id;
-      temp.listProject[idxProject].listTask[index][`${event.name}Name`] =
-        event.value.name;
       setFirstEditTask(temp);
     } else {
-      const temp = { ...dataProject };
-      temp.listProject[idxProject].listTask[index][`${event.name}Id`] =
-        event.value.id;
-      temp.listProject[idxProject].listTask[index][`${event.name}Name`] =
-        event.value.name;
       setDataProject(temp);
     }
   };
@@ -374,6 +400,7 @@ const PopupTask = ({
                 clearErrors={clearErrors}
                 checkAbsence={checkAbsence}
                 deleteTask={deleteTask}
+                addDisabled={addDisabled}
               />
             ) : (
               <CreateTask
@@ -399,6 +426,7 @@ const PopupTask = ({
                 statusTask={statusTask}
                 handleChange={handleChange}
                 addTask={addTask}
+                addDisabled={addDisabled}
               />
             )}
           </form>
@@ -407,8 +435,13 @@ const PopupTask = ({
           {(isEdit || dataProject.workingReportId !== undefined) && (
             <div className="left-container">
               <Button
+                disabled={addDisabled}
                 variant="outlined"
                 className="green-button button-text"
+                style={{
+                  opacity: addDisabled ? 0.5 : 1,
+                  cursor: addDisabled ? "not-allowed" : "pointer",
+                }}
                 onClick={() => {
                   if (isEdit) {
                     let checkProject = [];

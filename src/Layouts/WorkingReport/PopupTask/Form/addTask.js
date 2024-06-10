@@ -42,6 +42,7 @@ const CreateTask = ({
   statusTask,
   handleChange,
   addTask,
+  addDisabled,
 }) => {
   const selectedProjectIds = dataProject.listProject
     .map((project) => project.projectId)
@@ -52,13 +53,13 @@ const CreateTask = ({
     (option) => !selectedProjectIds.includes(option.id)
   );
 
-  const Absence = 1;
+  const absence = 1;
   const index = 0;
   useEffect(() => {
     dataProject.listProject.forEach((resProject, idxProject) => {
-      if (checkAbsence[idxProject]) {
+      if (checkAbsence[idxProject] || resProject.absenceId) {
         setValue(`listTask.${idxProject}.${index}.taskName`, "Absence");
-        setValue(`listTask.${idxProject}.${index}.statusTaskId`, Absence);
+        setValue(`listTask.${idxProject}.${index}.statusTaskId`, absence);
       }
     });
   }, [checkAbsence, dataProject, setValue, index]);
@@ -190,16 +191,14 @@ const CreateTask = ({
                                   field.onChange(
                                     event ? event.target.value : ""
                                   );
-                                  const temp = { ...dataProject };
-                                  const inputValue = event.target.value;
-                                  const numericValue =
-                                    inputValue === ""
-                                      ? null
-                                      : parseFloat(inputValue);
-                                  temp.listProject[idxProject].listTask[
+                                  handleChange(
+                                    {
+                                      value: event.target.value,
+                                      name: "duration",
+                                    },
+                                    idxProject,
                                     index
-                                  ].duration = numericValue;
-                                  setDataProject(temp);
+                                  );
                                 }}
                                 value={
                                   res.duration == undefined ? "" : res.duration
@@ -516,16 +515,14 @@ const CreateTask = ({
                                         field.onChange(
                                           event ? event.target.value : ""
                                         );
-                                        const temp = { ...dataProject };
-                                        const inputValue = event.target.value;
-                                        const numericValue =
-                                          inputValue === ""
-                                            ? null
-                                            : parseFloat(inputValue);
-                                        temp.listProject[idxProject].listTask[
+                                        handleChange(
+                                          {
+                                            value: event.target.value,
+                                            name: "duration",
+                                          },
+                                          idxProject,
                                           index
-                                        ].duration = numericValue;
-                                        setDataProject(temp);
+                                        );
                                       }}
                                       className="input-field-crud"
                                       type="number"
@@ -635,6 +632,11 @@ const CreateTask = ({
                   (resProject.listTask.length > 0 ? (
                     <Grid item xs={6} textAlign="left">
                       <Button
+                        disabled={addDisabled}
+                        style={{
+                          opacity: addDisabled ? 0.5 : 1,
+                          cursor: addDisabled ? "not-allowed" : "pointer",
+                        }}
                         onClick={() => addTask(idxProject)}
                         variant="outlined"
                         className="button-text"

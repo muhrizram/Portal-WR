@@ -47,6 +47,7 @@ const EditTask = ({
   setValue,
   clearErrors,
   checkAbsence,
+  addDisabled,
 }) => {
   const selectedProjectIds = firstEditTask.listProject
     .map((project) => project.projectId)
@@ -58,11 +59,13 @@ const EditTask = ({
   );
 
   const index = 0;
+  const absence = 1;
   useEffect(() => {
+    console.log(firstEditTask);
     firstEditTask.listProject.forEach((resProject, idxProject) => {
-      if (checkAbsence[idxProject]) {
+      if (checkAbsence[idxProject] || resProject.absenceId) {
         setValue(`listTask.${idxProject}.${index}.taskName`, "Absence");
-        setValue(`listTask.${idxProject}.${index}.statusTaskId`, "Absence");
+        setValue(`listTask.${idxProject}.${index}.statusTaskId`, absence);
       }
     });
   }, [checkAbsence, firstEditTask, setValue, index]);
@@ -208,16 +211,14 @@ const EditTask = ({
                                   field.onChange(
                                     event ? event.target.value : ""
                                   );
-                                  const temp = { ...firstEditTask };
-                                  const inputValue = event.target.value;
-                                  const numericValue =
-                                    inputValue === ""
-                                      ? null
-                                      : parseFloat(inputValue);
-                                  temp.listProject[idxProject].listTask[
+                                  handleChange(
+                                    {
+                                      value: event.target.value,
+                                      name: "taskDuration",
+                                    },
+                                    idxProject,
                                     index
-                                  ].taskDuration = numericValue;
-                                  setFirstEditTask(temp);
+                                  );
                                 }}
                                 className="input-field-crud"
                                 type="number"
@@ -543,16 +544,14 @@ const EditTask = ({
                                         field.onChange(
                                           event ? event.target.value : ""
                                         );
-                                        const temp = { ...firstEditTask };
-                                        const inputValue = event.target.value;
-                                        const numericValue =
-                                          inputValue === ""
-                                            ? ""
-                                            : parseFloat(inputValue);
-                                        temp.listProject[idxProject].listTask[
+                                        handleChange(
+                                          {
+                                            value: event.target.value,
+                                            name: "taskDuration",
+                                          },
+                                          idxProject,
                                           index
-                                        ].taskDuration = numericValue;
-                                        setFirstEditTask(temp);
+                                        );
                                       }}
                                       className="input-field-crud"
                                       type="number"
@@ -662,6 +661,11 @@ const EditTask = ({
                     (resProject.listTask.length > 0 ? (
                       <Grid item xs={6} textAlign="left">
                         <Button
+                          disabled={addDisabled}
+                          style={{
+                            opacity: addDisabled ? 0.5 : 1,
+                            cursor: addDisabled ? "not-allowed" : "pointer",
+                          }}
                           onClick={() => addTask(idxProject)}
                           variant="outlined"
                           className="button-text"
