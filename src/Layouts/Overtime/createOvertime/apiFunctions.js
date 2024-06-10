@@ -1,4 +1,5 @@
 import client from "../../../global/client";
+import { calculateTimeDifference } from "./timeUtils";
 
 export const getDataTask = async (id, currentUserId, setOptTask) => {
   const res = await client.requestAPI({
@@ -59,6 +60,7 @@ export const onSave = async (
     updatedBy: currentUserId,
   };
 
+  let totalDuration = 0;
   for (const project of dataOvertime.listProject) {
     const updateFilled = {
       projectId: project.projectId,
@@ -72,6 +74,7 @@ export const onSave = async (
       } else {
         duration = parseFloat(task.duration);
       }
+      totalDuration += duration;
       const updateTask = {
         backlogId: task.backlogId,
         taskName: task.taskName,
@@ -82,6 +85,17 @@ export const onSave = async (
       updateFilled.listTask.push(updateTask);
     }
     data.listProject.push(updateFilled);
+  }
+
+  const maxDuration = calculateTimeDifference(data.startTime, data.endTime);
+
+  if (totalDuration > maxDuration || totalDuration < maxDuration) {
+    setDataAlert({
+      severity: "error",
+      message: `Total duration cannot be more or less than ${maxDuration} hour(s).`,
+      open: true,
+    });
+    return;
   }
 
   const res = await client.requestAPI({
@@ -129,6 +143,7 @@ export const saveEdit = async (
     updatedBy: currentUserId,
   };
   dataUpdate.workingReportId = dataEditOvertime.workingReportOvertimeId;
+  let totalDuration = 0;
   for (const project of dataEditOvertime.listProject) {
     const updateFilled = {
       projectId: project.projectId,
@@ -145,6 +160,7 @@ export const saveEdit = async (
       } else {
         duration = parseFloat(task.duration);
       }
+      totalDuration += duration;
       const updateTask = {
         taskId: task.taskId,
         workingReportId: dataUpdate.workingReportOvertimeId,
@@ -157,6 +173,17 @@ export const saveEdit = async (
       updateFilled.listTask.push(updateTask);
     }
     dataUpdate.listProjectId.push(updateFilled);
+  }
+
+  const maxDuration = calculateTimeDifference(dataUpdate.startTime, dataUpdate.endTime);
+
+  if (totalDuration > maxDuration || totalDuration < maxDuration) {
+    setDataAlert({
+      severity: "error",
+      message: `Total duration cannot be more or less than ${maxDuration} hour(s).`,
+      open: true,
+    });
+    return;
   }
 
   const res = await client.requestAPI({

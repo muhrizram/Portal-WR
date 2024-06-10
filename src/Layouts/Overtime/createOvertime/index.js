@@ -24,9 +24,7 @@ import EditOvertime from "./Form/editOvertime";
 import dayjs from "dayjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
-import {
-  clearTaskErrors,
-} from "../../../global/formFunctions";
+import { clearTaskErrors } from "../../../global/formFunctions";
 
 const CreateOvertime = ({
   open,
@@ -52,6 +50,7 @@ const CreateOvertime = ({
   const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
   const [addTaskInEdit, setAddTaskInEdit] = useState(false);
+  const [addDisabled, setAddDisabled] = useState(isEdit ? true : false);
   const [file, setFile] = useState(null);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
@@ -202,39 +201,38 @@ const CreateOvertime = ({
   const handleChange = (event, idxProject, index, isEdit, backlogId) => {
     const { name, value } = event.target;
     const isDuration = name === "duration";
-    const isTaskName = name === "taskName";
-    const isStatusId = name === "statusTaskId";
+    const timeDifference = calculateTimeDifference(
+      time.startTime,
+      time.endTime
+    );
+
+    const calculateTotalDuration = (projects) =>
+      projects.reduce(
+        (total, project) =>
+          total +
+          project.listTask.reduce(
+            (taskTotal, task) => taskTotal + parseFloat(task.duration || 0),
+            0
+          ),
+        0
+      );
 
     const updateData = (data) => {
+      const task = data.listProject[idxProject].listTask[index];
       if (isDuration) {
         const parsedValue = parseFloat(value);
-        if (parsedValue < 0) {
-          data.listProject[idxProject].listTask[index][name] = "0";
-        } else {
-          const calculatedValue = Math.min(
-            parsedValue,
-            calculateTimeDifference(time.startTime, time.endTime)
-          );
-          data.listProject[idxProject].listTask[index][name] = calculatedValue;
-        }
-      } else if (isTaskName) {
-        data.listProject[idxProject].listTask[index].backlogId = backlogId;
-      } else if (isStatusId) {
-        data.listProject[idxProject].listTask[index][name] = value;
+        task[name] = Math.min(Math.max(parsedValue, 1), timeDifference);
+        const totalDuration = calculateTotalDuration(data.listProject);
+        setAddDisabled(totalDuration >= timeDifference);
       } else {
-        data.listProject[idxProject].listTask[index][name] = value;
+        task[name] = value;
+        if (name === "taskName") task.backlogId = backlogId;
       }
-
       return data;
     };
 
-    if (isEdit) {
-      const updatedData = updateData({ ...dataEditOvertime });
-      setDataEditOvertime(updatedData);
-    } else {
-      const updatedData = updateData({ ...dataOvertime });
-      setDataOvertime(updatedData);
-    }
+    const updateState = isEdit ? setDataEditOvertime : setDataOvertime;
+    updateState((prevData) => updateData({ ...prevData }));
   };
 
   const handleChangeProject = (value, idxProject) => {
@@ -403,6 +401,7 @@ const CreateOvertime = ({
                 file={file}
                 firstPreview={firstPreview}
                 setFirstPreview={setFirstPreview}
+                addDisabled={addDisabled}
               />
             ) : (
               <AddOvertime
@@ -427,6 +426,8 @@ const CreateOvertime = ({
                 currentUserId={currentUserId}
                 setOptTask={setOptTask}
                 handleChangeFile={handleChangeFile}
+                file={file}
+                addDisabled={addDisabled}
               />
             )}
           </form>

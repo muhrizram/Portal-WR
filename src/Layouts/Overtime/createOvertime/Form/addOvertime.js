@@ -47,6 +47,8 @@ const AddOvertime = ({
   currentUserId,
   setOptTask,
   handleChangeFile,
+  file,
+  addDisabled,
 }) => {
   const selectedProjectIds = dataOvertime.listProject.map(
     (project) => project.projectId
@@ -139,6 +141,7 @@ const AddOvertime = ({
                 handleChangeFile(urlFile, idxProject)
               }
               overtime={true}
+              file={file}
             />
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
@@ -554,6 +557,11 @@ const AddOvertime = ({
                 {resProject.listTask.length > 0 ? (
                   <Grid item xs={6} textAlign="left">
                     <Button
+                      disabled={addDisabled}
+                      style={{
+                        opacity: addDisabled ? 0.5 : 1,
+                        cursor: addDisabled ? "not-allowed" : "pointer",
+                      }}
                       onClick={() => addTask(idxProject)}
                       variant="outlined"
                       className="button-text"

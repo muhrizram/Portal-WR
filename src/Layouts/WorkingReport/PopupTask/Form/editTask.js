@@ -61,7 +61,6 @@ const EditTask = ({
   const index = 0;
   const absence = 1;
   useEffect(() => {
-    console.log(firstEditTask);
     firstEditTask.listProject.forEach((resProject, idxProject) => {
       if (checkAbsence[idxProject] || resProject.absenceId) {
         setValue(`listTask.${idxProject}.${index}.taskName`, "Absence");
