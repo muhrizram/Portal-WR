@@ -50,7 +50,6 @@ const CreateOvertime = ({
   const [dataDetailArray, setDataDetailArray] = useState({});
   const [projectEdit, setProjectEdit] = useState([]);
   const [addTaskInEdit, setAddTaskInEdit] = useState(false);
-  const [addDisabled, setAddDisabled] = useState(isEdit ? true : false);
   const [file, setFile] = useState(null);
 
   const currentUserId = parseInt(localStorage.getItem("userId"));
@@ -222,8 +221,6 @@ const CreateOvertime = ({
       if (isDuration) {
         const parsedValue = parseFloat(value);
         task[name] = Math.min(Math.max(parsedValue, 1), timeDifference);
-        const totalDuration = calculateTotalDuration(data.listProject);
-        setAddDisabled(totalDuration >= timeDifference);
       } else {
         task[name] = value;
         if (name === "taskName") task.backlogId = backlogId;
@@ -401,7 +398,6 @@ const CreateOvertime = ({
                 file={file}
                 firstPreview={firstPreview}
                 setFirstPreview={setFirstPreview}
-                addDisabled={addDisabled}
               />
             ) : (
               <AddOvertime
@@ -427,7 +423,6 @@ const CreateOvertime = ({
                 setOptTask={setOptTask}
                 handleChangeFile={handleChangeFile}
                 file={file}
-                addDisabled={addDisabled}
               />
             )}
           </form>

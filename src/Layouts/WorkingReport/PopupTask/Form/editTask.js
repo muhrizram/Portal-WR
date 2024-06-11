@@ -47,7 +47,6 @@ const EditTask = ({
   setValue,
   clearErrors,
   checkAbsence,
-  addDisabled,
 }) => {
   const selectedProjectIds = firstEditTask.listProject
     .map((project) => project.projectId)
@@ -660,11 +659,6 @@ const EditTask = ({
                     (resProject.listTask.length > 0 ? (
                       <Grid item xs={6} textAlign="left">
                         <Button
-                          disabled={addDisabled}
-                          style={{
-                            opacity: addDisabled ? 0.5 : 1,
-                            cursor: addDisabled ? "not-allowed" : "pointer",
-                          }}
                           onClick={() => addTask(idxProject)}
                           variant="outlined"
                           className="button-text"
