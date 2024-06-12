@@ -32,6 +32,7 @@ const DataTable = ({
   totalData,
   onEmployee,
   loading = false,
+  dashboard,
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
@@ -110,165 +111,177 @@ const DataTable = ({
 
   return (
     <Grid container rowSpacing={3}>
-      <Grid item xs={12} pb={2}>
-        <Grid container className="containerHeader">
-          <Grid item>
-            <div className="dividerHeader" />
-          </Grid>
-          <Grid item xs={11} sm={6}>
-            <Typography variant="headerCardMenu">{`Master ${title}`}</Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid
-        item
-        justifyContent="space-between"
-        container
-        xs={12}
-        paddingTop={3}
-      >
-        {!onUpload ? (
-          <Grid
-            item
-            xs={12}
-            sm={4}
-            alignSelf="center"
-            sx={{ textAlign: { xs: "start", sm: "end" } }}
-          >
-            <SearchBar
-              placeholder={placeSearch}
-              label={searchTitle}
-              onChange={handleChangeSearch}
-            />
-          </Grid>
-        ) : (
-          <Grid
-            container
-            direction="row"
-            item
-            xs={6}
-            alignItems="center"
-            justifyContent="flex-start"
-            spacing={2}
-          >
-            <Grid item xs={12} sm={8} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  views={["month"]}
-                  openTo="month"
-                  name="month"
-                  label="Select Month"
-                  inputFormat="MM"
-                  onChange={handleChangeMonthFilter}
-                  slots={{
-                    textField: (params) => (
-                      <TextField {...params} name="month" variant="outlined" />
-                    ),
-                  }}
-                  slotProps={{
-                    actionBar: {
-                      actions: ["clear"],
-                    },
-                  }}
-                />
-              </LocalizationProvider>
-            </Grid>
-
-            <Grid item xs={12} sm={8} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  views={["year"]}
-                  openTo="year"
-                  name="year"
-                  label="Select Year"
-                  inputFormat="YYYY"
-                  defaultValue={dayjs(new Date().getFullYear().toString())}
-                  onChange={handleChangeYearFilter}
-                  slots={{
-                    textField: (params) => (
-                      <TextField {...params} name="year" variant="outlined" />
-                    ),
-                  }}
-                  slotProps={{
-                    actionBar: {
-                      actions: ["clear"],
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+      {!dashboard && (
+        <>
+          <Grid item xs={12} pb={2}>
+            <Grid container className="containerHeader">
+              <Grid item>
+                <div className="dividerHeader" />
+              </Grid>
+              <Grid item xs={11} sm={6}>
+                <Typography variant="headerCardMenu">{`Master ${title}`}</Typography>
+              </Grid>
             </Grid>
           </Grid>
-        )}
-
-        {onEmployee && (
           <Grid
             item
-            xs={12}
-            sm={4}
-            mt={1}
-            alignSelf="center"
-            sx={{ textAlign: { xs: "start", sm: "end" } }}
-          >
-            <Button
-              variant="contained"
-              className="button-text"
-              onClick={() => onEmployee()}
-              startIcon={<SyncOutlinedIcon />}
-            >
-              Synchronise
-            </Button>
-          </Grid>
-        )}
-
-        {onUpload && (
-          <Grid
+            justifyContent="space-between"
             container
-            direction="row"
-            item
             xs={12}
-            sm={6}
-            mt={1}
-            gap={1}
-            alignItems="center"
-            sx={{ justifyContent: { xs: "start", sm: "end" } }}
+            paddingTop={3}
           >
-            <Button
-              variant="contained"
-              onClick={() => onAdd()}
-              startIcon={<AddIcon />}
-            >
-              {title}
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => onUpload()}
-              startIcon={<UploadFileOutlined />}
-              sx={{ paddingY: 1 }}
-            >
-              Upload Holiday
-            </Button>
-          </Grid>
-        )}
+            {!onUpload ? (
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                alignSelf="center"
+                sx={{ textAlign: { xs: "start", sm: "end" } }}
+              >
+                <SearchBar
+                  placeholder={placeSearch}
+                  label={searchTitle}
+                  onChange={handleChangeSearch}
+                />
+              </Grid>
+            ) : (
+              <Grid
+                container
+                direction="row"
+                item
+                xs={6}
+                alignItems="center"
+                justifyContent="flex-start"
+                spacing={2}
+              >
+                <Grid item xs={12} sm={8} md={3}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      views={["month"]}
+                      openTo="month"
+                      name="month"
+                      label="Select Month"
+                      inputFormat="MM"
+                      onChange={handleChangeMonthFilter}
+                      slots={{
+                        textField: (params) => (
+                          <TextField
+                            {...params}
+                            name="month"
+                            variant="outlined"
+                          />
+                        ),
+                      }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ["clear"],
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
 
-        {!onEmployee && !onUpload && (
-          <Grid
-            item
-            xs={12}
-            sm={4}
-            mt={1}
-            alignSelf="center"
-            sx={{ textAlign: { xs: "start", sm: "end" } }}
-          >
-            <Button
-              variant="contained"
-              onClick={() => onAdd()}
-              startIcon={<AddIcon />}
-            >
-              {title}
-            </Button>
+                <Grid item xs={12} sm={8} md={3}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      views={["year"]}
+                      openTo="year"
+                      name="year"
+                      label="Select Year"
+                      inputFormat="YYYY"
+                      defaultValue={dayjs(new Date().getFullYear().toString())}
+                      onChange={handleChangeYearFilter}
+                      slots={{
+                        textField: (params) => (
+                          <TextField
+                            {...params}
+                            name="year"
+                            variant="outlined"
+                          />
+                        ),
+                      }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ["clear"],
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+              </Grid>
+            )}
+
+            {onEmployee && (
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                mt={1}
+                alignSelf="center"
+                sx={{ textAlign: { xs: "start", sm: "end" } }}
+              >
+                <Button
+                  variant="contained"
+                  className="button-text"
+                  onClick={() => onEmployee()}
+                  startIcon={<SyncOutlinedIcon />}
+                >
+                  Synchronise
+                </Button>
+              </Grid>
+            )}
+
+            {onUpload && (
+              <Grid
+                container
+                direction="row"
+                item
+                xs={12}
+                sm={6}
+                mt={1}
+                gap={1}
+                alignItems="center"
+                sx={{ justifyContent: { xs: "start", sm: "end" } }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => onAdd()}
+                  startIcon={<AddIcon />}
+                >
+                  {title}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => onUpload()}
+                  startIcon={<UploadFileOutlined />}
+                  sx={{ paddingY: 1 }}
+                >
+                  Upload Holiday
+                </Button>
+              </Grid>
+            )}
+
+            {!onEmployee && !onUpload && (
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                mt={1}
+                alignSelf="center"
+                sx={{ textAlign: { xs: "start", sm: "end" } }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => onAdd()}
+                  startIcon={<AddIcon />}
+                >
+                  {title}
+                </Button>
+              </Grid>
+            )}
           </Grid>
-        )}
-      </Grid>
+        </>
+      )}
       {data.length > 0 ? (
         <Grid item xs={12}>
           <DataGrid

@@ -199,7 +199,7 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12}>
           <DataTable
-            title="Employee Check In"
+            dashboard={true}
             columns={columns}
             data={dataEmployee}
             disableRowSelectionOnClick
