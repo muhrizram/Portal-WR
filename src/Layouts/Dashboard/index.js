@@ -179,14 +179,20 @@ const Dashboard = () => {
               <ClickableCard
                 title="Employee Check In"
                 employeeCount={employeeCheckIn}
-                handleCardClick={() => setCheckIn(true)}
+                handleCardClick={() => {
+                  setCheckIn(true);
+                  setFilter({ ...filter, page: 0, size: 10 });
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <ClickableCard
                 title="Employee Not Check In"
                 employeeCount={employeeNotCheckIn}
-                handleCardClick={() => setCheckIn(false)}
+                handleCardClick={() => {
+                  setCheckIn(false);
+                  setFilter({ ...filter, page: 0, size: 10 });
+                }}
               />
             </Grid>
           </Grid>
