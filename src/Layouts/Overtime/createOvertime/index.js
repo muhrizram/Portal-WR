@@ -320,7 +320,6 @@ const CreateOvertime = ({
 
   const onSubmit = () => {
     if (isEdit) {
-      console.log("Masuk edit");
       saveEdit(
         file,
         time.startTime,
