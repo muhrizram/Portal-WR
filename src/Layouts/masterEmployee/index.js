@@ -45,7 +45,7 @@ const Employee = () => {
       field: "nip",
       headerName: "NIP",
       flex: 0.5,
-      minWidth: 180
+      minWidth: 180,
     },
     {
       field: "firstName",
@@ -103,7 +103,7 @@ const Employee = () => {
       field: "departement",
       headerName: "Departement",
       flex: 1,
-      minWidth: 160
+      minWidth: 160,
     },
   ];
 
@@ -150,7 +150,7 @@ const Employee = () => {
 
   const handleCloseDialog = () => {
     setOpen(false);
-    setFilter({...filter, sortName:"userId", sortType:"desc"});
+    setFilter({ ...filter, sortName: "userId", sortType: "desc" });
     getData();
   };
 
