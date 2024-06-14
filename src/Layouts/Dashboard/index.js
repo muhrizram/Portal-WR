@@ -106,13 +106,13 @@ const Dashboard = () => {
     {
       field: "email",
       headerName: "Work Email",
-      flex: 1,
+      flex: 0.6,
       minWidth: 270,
     },
     {
       field: "departement",
       headerName: "Departement",
-      flex: 1,
+      flex: 0,
       minWidth: 160,
     },
   ];
@@ -122,9 +122,7 @@ const Dashboard = () => {
       page: dataFilter.page,
       size: dataFilter.pageSize,
       sortName:
-        dataFilter.sorting.field !== ""
-          ? dataFilter.sorting[0].field
-          : "",
+        dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "",
       search: filter.search,
