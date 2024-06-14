@@ -127,7 +127,7 @@ const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
       justifyContent="flex-start"
     >
       <Grid item xs={12} textAlign="center">
-        <TextSnippet style={{ fontSize: 100 }} />
+        <TextSnippet style={{ fontSize: 100, color: "#0078D7" }} />
         {fileLength <= 0 && (
           <Close
             className="remove-file-icon"
