@@ -48,10 +48,11 @@ const Dashboard = () => {
   const { setDataAlert } = useContext(AlertContext);
   const [totalDataEmployee, setTotalDataEmployee] = useState(0);
   const [checkIn, setCheckIn] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState({
     page: 0,
     size: 10,
-    sortName: "fullName",
+    sortName: "firstName",
     sortType: "asc",
     search: "",
   });
@@ -69,7 +70,7 @@ const Dashboard = () => {
       minWidth: 180,
     },
     {
-      field: "fullName",
+      field: "firstName",
       headerName: "Name",
       flex: 1,
       minWidth: 270,
@@ -94,7 +95,7 @@ const Dashboard = () => {
                 alt="Profile Image"
               />
               <div style={{ marginLeft: "0.5rem" }}>
-                <span className="text-name">{params.row.fullName}</span>
+                <span className="text-name">{params.row.firstName}</span>
                 <span className="text-position">{params.row.position}</span>
               </div>
             </div>
@@ -138,7 +139,7 @@ const Dashboard = () => {
         no: number + (index + 1),
         id: value.id,
         nip: value.attributes.nip,
-        fullName: value.attributes.fullName,
+        firstName: value.attributes.fullName,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
         email: value.attributes.email !== "false" ? value.attributes.email : "",
@@ -157,9 +158,9 @@ const Dashboard = () => {
       setDataAlert
     );
     if (!checkIn) {
-      getEmployeeNotCheckIn(rebuildData, setDataAlert, filter);
+      getEmployeeNotCheckIn(rebuildData, setDataAlert, filter, setLoading);
     } else {
-      getEmployeeCheckIn(rebuildData, setDataAlert, filter);
+      getEmployeeCheckIn(rebuildData, setDataAlert, filter, setLoading);
     }
   }, [filter, checkIn]);
 
@@ -199,7 +200,7 @@ const Dashboard = () => {
             columns={columns}
             data={dataEmployee}
             disableRowSelectionOnClick
-            loading={false}
+            loading={loading}
             hideFooterPagination
             hideFooter
             disableColumnFilter

@@ -21,10 +21,16 @@ export const getCountEmployeeCheckIn = async (
   }
 };
 
-export const getEmployeeCheckIn = async (rebuildData, setDataAlert, filter) => {
+export const getEmployeeCheckIn = async (
+  rebuildData,
+  setDataAlert,
+  filter,
+  setLoading
+) => {
+  setLoading(true);
   const res = await client.requestAPI({
     method: "GET",
-    endpoint: `/dashboard/employee-check-in?page=${filter.page}&size=${filter.size}`,
+    endpoint: `/dashboard/employee-check-in?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
   });
   if (!res.isError) {
     rebuildData(res);
@@ -35,16 +41,19 @@ export const getEmployeeCheckIn = async (rebuildData, setDataAlert, filter) => {
       severity: "error",
     });
   }
+  setLoading(false);
 };
 
 export const getEmployeeNotCheckIn = async (
   rebuildData,
   setDataAlert,
-  filter
+  filter,
+  setLoading
 ) => {
+  setLoading(true);
   const res = await client.requestAPI({
     method: "GET",
-    endpoint: `/dashboard/employee-not-check-in?page=${filter.page}&size=${filter.size}`,
+    endpoint: `/dashboard/employee-not-check-in?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}`,
   });
   if (!res.isError) {
     rebuildData(res);
@@ -55,4 +64,5 @@ export const getEmployeeNotCheckIn = async (
       severity: "error",
     });
   }
+  setLoading(false);
 };
