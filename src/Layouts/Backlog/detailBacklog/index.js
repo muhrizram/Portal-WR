@@ -261,7 +261,7 @@ const DetailBacklog = () => {
 
   const dataBreadDetailBacklog = [
     {
-      href: "/dashboard",
+      href: "/",
       title: "Dashboard",
       current: false,
     },
@@ -284,7 +284,7 @@ const DetailBacklog = () => {
 
   const dataBreadEditBacklog = [
     {
-      href: "/dashboard",
+      href: "/",
       title: "Dashboard",
       current: false,
     },

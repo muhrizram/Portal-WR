@@ -220,7 +220,7 @@ const ListBackLog = () => {
 
   const dataBread = [
     {
-      href: "/dashboard",
+      href: "/",
       title: "Dashboard",
       current: false,
     },

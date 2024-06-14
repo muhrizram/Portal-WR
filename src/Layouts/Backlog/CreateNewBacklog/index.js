@@ -305,7 +305,7 @@ const CreateNewBacklog = () => {
 
   const dataBread = [
     {
-      href: "/dashboard",
+      href: "/",
       title: "Dashboard",
       current: false,
     },
