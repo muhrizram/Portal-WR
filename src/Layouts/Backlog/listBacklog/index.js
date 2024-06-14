@@ -244,7 +244,7 @@ const ListBackLog = () => {
           title="Backlog"
           data={data}
           columns={columns}
-          placeSearch="Project Name, task code, etc"
+          placeSearch="Task code, Task name etc"
           searchTitle="Search By"
           onAdd={() => onAdd()}
           onFilter={(dataFilter) => onFilter(dataFilter)}
