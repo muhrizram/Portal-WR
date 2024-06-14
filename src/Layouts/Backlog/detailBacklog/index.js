@@ -112,7 +112,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
               >
                 Priority *
               </Typography>
-              <Controller 
+              <Controller
                 control={control}
                 name={`priority-${task.id}`}
                 render={({field}) => (
@@ -147,7 +147,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
               inputProps={{
                 maxLength: 255,
               }}
-            />                   
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <Controller
@@ -235,21 +235,21 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
                       helperText={errors[`assignedTo-${task.id}`] ? errors[`assignedTo-${task.id}`].message : ''}
                     />
                   )}
-                />         
+                />
               )}
-            />            
+            />
           </Grid>
         </Grid>
       </AccordionDetails>
     </Accordion>
   );
-};  
+};
 
 const DetailBacklog = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [dataDetail, setDataDetail] = useState({});  
-  const [ProjectName, setProjectName] = useState([]); 
+  const [dataDetail, setDataDetail] = useState({});
+  const [ProjectName, setProjectName] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [valueproject, setValueproject] = useState();
   const [isSave, setIsSave] = useState(false)
@@ -267,7 +267,12 @@ const DetailBacklog = () => {
     },
     {
       href: "/masterbacklog",
-      title: "Master Backlog",
+      title: "Master Project Backlog",
+      current: false,
+    },
+    {
+      href: "/masterbacklog/listBacklog",
+      title: "Backlog",
       current: false,
     },
     {
@@ -286,6 +291,11 @@ const DetailBacklog = () => {
     {
       href: "/masterbacklog",
       title: "Master Backlog",
+      current: false,
+    },
+    {
+      href: "/masterbacklog/listBacklog",
+      title: "Backlog",
       current: false,
     },
     {
@@ -343,7 +353,7 @@ const DetailBacklog = () => {
     const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));       
     setStatusBacklogOl(data)
   }
-  
+
   const getDataDetail = async () => {
     const idDetail = localStorage.getItem("idBacklog")
     const res = await client.requestAPI({
@@ -354,25 +364,25 @@ const DetailBacklog = () => {
   };
 
   const rebuildDataDetail = (resData) => {
-    const idInt = parseInt(resData.data.id);    
+    const idInt = parseInt(resData.data.id);
     let tempDetail = {
-        id: idInt,
-        projectId: resData.data.attributes.projectId,
-        statusBacklog: resData.data.attributes.statusBacklog,
-        userId: resData.data.attributes.userId,
-        projectName: resData.data.attributes.projectName,
-        status: resData.data.attributes.status,
-        assignedTo: resData.data.attributes.assignedTo,
-        taskName: resData.data.attributes.taskName,
-        taskDescription: resData.data.attributes.taskDescription,
-        estimationTime: resData.data.attributes.estimationTime,
-        actualTime: resData.data.attributes.actualTime,
-        createdBy: resData.data.attributes.createdBy,
-        updatedBy: resData.data.attributes.updatedBy,
-        createdOn: resData.data.attributes.createdOn,
-        updatedOn: resData.data.attributes.updatedOn,
-        priority: resData.data.attributes.priority,
-        taskCode: resData.data.attributes.taskCode,    
+      id: idInt,
+      projectId: resData.data.attributes.projectId,
+      statusBacklog: resData.data.attributes.statusBacklog,
+      userId: resData.data.attributes.userId,
+      projectName: resData.data.attributes.projectName,
+      status: resData.data.attributes.status,
+      assignedTo: resData.data.attributes.assignedTo,
+      taskName: resData.data.attributes.taskName,
+      taskDescription: resData.data.attributes.taskDescription,
+      estimationTime: resData.data.attributes.estimationTime,
+      actualTime: resData.data.attributes.actualTime,
+      createdBy: resData.data.attributes.createdBy,
+      updatedBy: resData.data.attributes.updatedBy,
+      createdOn: resData.data.attributes.createdOn,
+      updatedOn: resData.data.attributes.updatedOn,
+      priority: resData.data.attributes.priority,
+      taskCode: resData.data.attributes.taskCode,
         projectInitial: resData.data.attributes.projectInitial    
       }        
     setDataDetail(tempDetail)
@@ -387,7 +397,7 @@ const DetailBacklog = () => {
     setIsEdit(true);
   };
 
-  const handleClose = () => {    
+  const handleClose = () => {
     setOpen(false);
   };
 
@@ -395,7 +405,7 @@ const DetailBacklog = () => {
     setIsSave(true)
     setOpen(true);
   };
-  
+
   const handleClickOpenCancel = () => {
     setIsSave(false)
     setOpen(true);
@@ -405,13 +415,13 @@ const DetailBacklog = () => {
     if (!isSave){
       setIsEdit(false);
     }
-    setOpen(false);    
-  }; 
+    setOpen(false);
+  };
 
   const handleUpdateTasks = (deletedTaskId) => {
     const updatedTasks = tasks.map((task) => {
       if (task.id === deletedTaskId) {
-        return null; 
+        return null;
       }
       if (task.id > deletedTaskId) {
         return {
@@ -420,8 +430,8 @@ const DetailBacklog = () => {
         };
       }
       return task;
-    });  
-    const filteredTasks = updatedTasks.filter((task) => task !== null); 
+    });
+    const filteredTasks = updatedTasks.filter((task) => task !== null);
     setTasks(filteredTasks);
   };
 
@@ -431,7 +441,7 @@ const DetailBacklog = () => {
     setTasks(updatedTasks);
   };
 
-  const handleUpdateTask = (updatedTask) => {    
+  const handleUpdateTask = (updatedTask) => {
     const updatedTasks = tasks.map((task) =>
       task.id === updatedTask.id ? updatedTask : task
     );
@@ -496,7 +506,7 @@ const DetailBacklog = () => {
       }
     }
   }
-  
+
   useEffect(() => {
     getProjectName()
     getDataDetail()
@@ -520,12 +530,12 @@ const DetailBacklog = () => {
                   <form onSubmit={handleSubmit(handleClickOpenSave)}>
                     <Grid container direction="column" spacing={3.75}>
                       <Grid item xs={12}>
-                        <Autocomplete                    
+                        <Autocomplete
                           disablePortal
                           disabled
                           id="combo-box-demo"
                           name="ProjectName"
-                          options={ProjectName}      
+                          options={ProjectName}
                           defaultValue={ProjectName.find((option) => option.id === (dataDetail.projectInitial && dataDetail.projectId)) || null}
                           sx={{ width: "100%", marginTop: "8px", backgroundColor: "#EDEDED" }}                    
                           getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
@@ -558,26 +568,26 @@ const DetailBacklog = () => {
                       </Grid>
 
                       <Grid item container spacing={2} justifyContent="flex-end" mt={3.5}>
-                      <Grid item xs={12} sm={2} textAlign="right">
-                        <Button
-                          fullWidth
-                          variant="cancelButton"
-                          onClick={() => handleClickOpenCancel()}
-                        >
-                          Cancel Data
-                        </Button>
+                        <Grid item xs={12} sm={2} textAlign="right">
+                          <Button
+                            fullWidth
+                            variant="cancelButton"
+                            onClick={() => handleClickOpenCancel()}
+                          >
+                            Cancel Data
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={2} textAlign="right">
+                          <Button
+                            fullWidth
+                            disabled={tasks.length === 0}
+                            variant="saveButton"
+                            type="submit"
+                          >
+                            Save Data
+                          </Button>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} sm={2} textAlign="right">
-                        <Button 
-                          fullWidth
-                          disabled={tasks.length === 0}
-                          variant="saveButton"
-                          type="submit"
-                        >
-                          Save Data
-                        </Button>
-                      </Grid>
-                    </Grid>
                     </Grid>
                   </form>
                 </FormProvider>
@@ -658,7 +668,7 @@ const DetailBacklog = () => {
                           <Typography variant="backlogDetailText" marginRight="12px">
                             {!isEdit && `${dataDetail.taskName} :: ` }{dataDetail.taskCode}
                           </Typography>
-                        </AccordionSummary> 
+                        </AccordionSummary>
                       </Grid>
                     </Grid>
                     <AccordionDetails style={{ padding:0 }}>
@@ -667,7 +677,7 @@ const DetailBacklog = () => {
                           <Typography sx={{ color: "text.secondary", fontSize: "12px" }}>
                             Task Description
                           </Typography>
-                          <Typography 
+                          <Typography
                             variant="descBaklog"
                             maxWidth="100%"
                             sx={{

@@ -243,13 +243,15 @@ const DataTable = ({
                 alignItems="center"
                 sx={{ justifyContent: { xs: "start", sm: "end" } }}
               >
-                <Button
-                  variant="contained"
-                  onClick={() => onAdd()}
-                  startIcon={<AddIcon />}
-                >
-                  {title}
-                </Button>
+                {onAdd && (
+                  <Button
+                    variant="contained"
+                    onClick={() => onAdd()}
+                    startIcon={<AddIcon />}
+                  >
+                    {title}
+                  </Button>
+                )}
                 <Button
                   variant="outlined"
                   onClick={() => onUpload()}
@@ -270,13 +272,15 @@ const DataTable = ({
                 alignSelf="center"
                 sx={{ textAlign: { xs: "start", sm: "end" } }}
               >
-                <Button
-                  variant="contained"
-                  onClick={() => onAdd()}
-                  startIcon={<AddIcon />}
-                >
-                  {title}
-                </Button>
+                {onAdd && (
+                  <Button
+                    variant="contained"
+                    onClick={() => onAdd()}
+                    startIcon={<AddIcon />}
+                  >
+                    {title}
+                  </Button>
+                )}
               </Grid>
             )}
           </Grid>

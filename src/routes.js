@@ -11,6 +11,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import DetailProject from "./Layouts/Project/Detail";
 import CreateProject from "./Layouts/Project/Create";
 import { useNavigate, Navigate } from "react-router-dom";
+import ListBackLog from "./Layouts/Backlog/listBacklog";
 
 const LoginScreen = lazy(() => import("./Layouts/Login"));
 const Dashboard = lazy(() => import("./Layouts/Dashboard"));
@@ -141,13 +142,8 @@ const closedRoutes = [
     key: "master backlog",
   },
   {
-    path: "masterbacklog/create",
-    element: <CreateNewBacklog />,
-    key: "master backlog",
-  },
-  {
-    path: "masterbacklog/detail",
-    element: <DetailBacklog />,
+    path: "/masterbacklog/listBacklog",
+    element: <ListBackLog />,
     key: "master backlog",
   },
   {
