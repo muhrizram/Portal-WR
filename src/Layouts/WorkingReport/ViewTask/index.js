@@ -245,6 +245,7 @@ export default function ViewTask({
 
                 <Grid item>
                   <Button
+                    disabled={todaysWorkingReport ? false : true}
                     startIcon={<CreateIcon />}
                     variant="outlined"
                     onClick={() => setOpenTask(true)}
