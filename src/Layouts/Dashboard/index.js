@@ -1,9 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../../Component/Sidebar";
-// import RolePrivilege from "../RolePrivilege";
-// import DetailRolePrivilege from "../detailRolePrivilege";
-// import Jobgroup from "../JobGroup";
-// import DetailBacklog from "../detailBacklog";
 import Header from "../../Component/Header";
 import {
   Card,
