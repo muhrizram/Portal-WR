@@ -42,7 +42,7 @@ const ClickableCard = ({ title, employeeCount, handleCardClick }) => {
 };
 
 const CardStyle = styled(Card)(({ title }) => ({
-  backgroundColor: title === cardNotCheckIn ? "#EE4E4E" : "#97BE5A",
+  backgroundColor: title === cardNotCheckIn ? "#DC7C76" : "#97BE5A",
 }));
 
 const Dashboard = () => {
