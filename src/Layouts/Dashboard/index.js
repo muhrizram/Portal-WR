@@ -124,9 +124,9 @@ const Dashboard = () => {
       sortName:
         dataFilter.sorting.field !== ""
           ? dataFilter.sorting[0].field
-          : "firstName",
+          : "",
       sortType:
-        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "asc",
+        dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "",
       search: filter.search,
     });
   };
