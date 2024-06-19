@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import DataTable from '../../Component/DataTable';
-import SideBar from '../../Component/Sidebar';
+import React, { useState, useEffect } from "react";
+import DataTable from "../../Component/DataTable";
+import SideBar from "../../Component/Sidebar";
 import { useNavigate } from "react-router";
 import client from "../../global/client";
 
 const Backlog = () => {
   const columns = [
     {
-      field: 'no',
-      headerName: 'No',
+      field: "no",
+      headerName: "No",
       flex: 0,
       sortable: false,
     },
@@ -19,7 +19,6 @@ const Backlog = () => {
       minWidth: 200,
     },
   ];
-
 
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -32,22 +31,21 @@ const Backlog = () => {
     search: "",
   });
 
-
   useEffect(() => {
-    getData()
-  }, [filter])
+    getData();
+  }, [filter]);
 
   const getData = async () => {
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`
-    })
-    rebuildData(res)
-  }
+      method: "GET",
+      endpoint: `/backlog?page=${filter.page}&size=${filter.size}&sort=${filter.sortName},${filter.sortType}&search=${filter.search}`,
+    });
+    rebuildData(res);
+  };
 
   const rebuildData = (resData) => {
-    let temp = []
-    let number = filter.page * filter.size
+    let temp = [];
+    let number = filter.page * filter.size;
     temp = resData.data.map((value, index) => {
       return {
         no: number + (index + 1),
@@ -57,12 +55,12 @@ const Backlog = () => {
         taskName: value.attributes.taskName,
         priority: value.attributes.priority,
         status: value.attributes.status,
-        assignedTo: value.attributes.assignedTo
-      }
-    })    
-    setData([...temp])
-    setTotalData(resData.meta.page.totalElements)
-  }
+        assignedTo: value.attributes.assignedTo,
+      };
+    });
+    setData([...temp]);
+    setTotalData(resData.meta.page.totalElements);
+  };
 
   const handleDetail = async (id) => {
     localStorage.setItem("projectId", id);
@@ -73,9 +71,9 @@ const Backlog = () => {
     setFilter({
       ...filter,
       page: event.target.value != "" ? 0 : filter.page,
-      search: event.target.value
+      search: event.target.value,
     });
-  }
+  };
 
   const onFilter = (dataFilter) => {
     setFilter({
@@ -85,29 +83,34 @@ const Backlog = () => {
         dataFilter.sorting.field !== "" ? dataFilter.sorting[0].field : "",
       sortType:
         dataFilter.sorting.sort !== "" ? dataFilter.sorting[0].sort : "",
-      search: filter.search
-    })
-  }
+      search: filter.search,
+    });
+  };
+
+  const onAdd = () => {
+    navigate("/masterbacklog/create");
+  };
 
   return (
     <div>
       <SideBar>
         <DataTable
-          title='Backlog'
+          title="Backlog"
           data={data}
           columns={columns}
           placeSearch="Project Name"
           searchTitle="Search By"
-          onAdd={false}
-          onFilter={(dataFilter => onFilter(dataFilter))}
+          onAdd={() => onAdd()}
+          onFilter={(dataFilter) => onFilter(dataFilter)}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}
           totalData={totalData}
-          getRowHeight={() => 'auto'} getEstimatedRowHeight={() => 200}
+          getRowHeight={() => "auto"}
+          getEstimatedRowHeight={() => 200}
         />
       </SideBar>
     </div>
-  )
-}
+  );
+};
 
-export default Backlog
+export default Backlog;

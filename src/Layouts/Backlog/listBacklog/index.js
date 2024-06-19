@@ -93,10 +93,10 @@ const ListBackLog = () => {
   const [totalData, setTotalData] = useState();
   const { setDataAlert } = useContext(AlertContext);
   const [filter, setFilter] = useState({
-    page: 1,
+    page: 0,
     size: 10,
-    sortName: "projectName",
-    sortType: "asc",
+    sortName: "",
+    sortType: "",
     search: "",
   });
 
@@ -137,7 +137,7 @@ const ListBackLog = () => {
     const active = 1;
     const res = await client.requestAPI({
       method: "GET",
-      endpoint: `/backlog/projects/${projectId}?page=${filter.page}&limit=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}&isActive=${active}`,
+      endpoint: `/backlog/projects/${projectId}?page=${filter.page}&size=${filter.size}&search=${filter.search}&sort=${filter.sortName},${filter.sortType}&isActive=${active}`,
     });
     rebuildData(res);
   };
@@ -202,10 +202,6 @@ const ListBackLog = () => {
     });
   };
 
-  const onAdd = () => {
-    navigate("/masterbacklog/create");
-  };
-
   const onFilter = (dataFilter) => {
     setFilter({
       page: dataFilter.page,
@@ -246,7 +242,6 @@ const ListBackLog = () => {
           columns={columns}
           placeSearch="Task code, Task name etc"
           searchTitle="Search By"
-          onAdd={() => onAdd()}
           onFilter={(dataFilter) => onFilter(dataFilter)}
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => handleDetail(id)}

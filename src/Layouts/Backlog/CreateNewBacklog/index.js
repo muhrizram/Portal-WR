@@ -315,6 +315,11 @@ const CreateNewBacklog = () => {
       current: false,
     },
     {
+      href: "/masterbacklog/listBacklog",
+      title: "Backlog",
+      current: false,
+    },
+    {
       href: "/",
       title: "Create New Backlog",
       current: true,
@@ -523,7 +528,7 @@ useEffect(() => {
                       )}
                     />
                     
-                    {addTask && valueproject ? (
+                    {addTask && valueproject && (
                       <>
                       {tasks.map((task, index) => (
                         <TaskItem
@@ -540,34 +545,7 @@ useEffect(() => {
                         />
                       ))}
                       </>
-                    ) : (                  
-                      <>                    
-                        <Grid
-                          sx={{
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <img src={Allura} alt="blank-table" style={{ maxWidth: '100%', height: 'auto' }} />
-                          <Typography
-                            sx={{
-                              marginTop: "20px",
-                              fontFamily: "Poppins",
-                              fontSize: "16px",
-                              fontWeight: "500",
-                              lineHeight: "24px",
-                              letterSpacing: "0em",
-                              textAlign: "left",
-                            }}
-                          >
-                            Sorry, the data you are looking for could not be found
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
+                    ) }
                     <Grid container spacing={2} mt={3.5} alignItems="center" justifyContent="space-between">
                     <Grid item xs={12} sm={3}>
                       <Button
