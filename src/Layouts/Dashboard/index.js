@@ -8,6 +8,7 @@ import {
   Typography,
   Grid,
   Avatar,
+  Box,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import {
@@ -23,14 +24,23 @@ const cardNotCheckIn = "Employee Not Check In";
 const ClickableCard = ({ title, employeeCount, handleCardClick }) => {
   return (
     <CardStyle title={title} onClick={handleCardClick}>
-      <CardActionArea>
-        <CardContent>
-          <Typography variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="p" color="text.secondary">
-            Total: {employeeCount}
-          </Typography>
+      <CardActionArea style={{ height: "100%" }}>
+        <CardContent
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <Box>
+            <Typography variant="h5">{title}</Typography>
+          </Box>
+          <Box>
+            <Typography color="text.secondary" style={{ fontSize: "0.875rem" }}>
+              Total: {employeeCount}
+            </Typography>
+          </Box>
         </CardContent>
       </CardActionArea>
     </CardStyle>
@@ -38,6 +48,7 @@ const ClickableCard = ({ title, employeeCount, handleCardClick }) => {
 };
 
 const CardStyle = styled(Card)(({ title }) => ({
+  height: "125px",
   backgroundColor: title === cardNotCheckIn ? "#DC7C76" : "#97BE5A",
 }));
 
@@ -164,7 +175,7 @@ const Dashboard = () => {
 
   return (
     <SideBar>
-      <Grid container spacing={3} direction="column">
+      <Grid container spacing={3} direction="column" mb={3}>
         <Grid item xs={12}>
           <Header judul="Dashboard" />
         </Grid>
@@ -192,24 +203,22 @@ const Dashboard = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <DataTable
-            dashboard={true}
-            columns={columns}
-            data={dataEmployee}
-            disableRowSelectionOnClick
-            loading={loading}
-            hideFooterPagination
-            hideFooter
-            disableColumnFilter
-            disableColumnMenu
-            sortingMode="server"
-            onFilter={(dataFilter) => onFilter(dataFilter)}
-            totalData={totalDataEmployee}
-            filter={filter}
-          />
-        </Grid>
       </Grid>
+      <DataTable
+        dashboard={true}
+        columns={columns}
+        data={dataEmployee}
+        disableRowSelectionOnClick
+        loading={loading}
+        hideFooterPagination
+        hideFooter
+        disableColumnFilter
+        disableColumnMenu
+        sortingMode="server"
+        onFilter={(dataFilter) => onFilter(dataFilter)}
+        totalData={totalDataEmployee}
+        filter={filter}
+      />
     </SideBar>
   );
 };
