@@ -249,6 +249,7 @@ const ListBackLog = () => {
           totalData={totalData}
           getRowHeight={() => "auto"}
           getEstimatedRowHeight={() => 200}
+          filter={filter}
         />
         <Dialog
           open={open}

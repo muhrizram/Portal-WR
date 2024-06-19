@@ -224,6 +224,7 @@ const RoleUser = () => {
           onFilter={(dataFilter => onFilter(dataFilter))}
           totalData={totalData}
           getRowHeight={() => 'auto'}
+          filter={filter}
         />
 
         <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={deleteData} id={dataIduser} />       

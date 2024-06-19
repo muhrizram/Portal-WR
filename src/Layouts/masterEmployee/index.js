@@ -228,6 +228,7 @@ const Employee = () => {
           totalData={totalData}
           loading={loading}
           onDetail={(id) => redirectDetail(id)}
+          filter={filter}
         />
       </SideBar>
       <Dialog

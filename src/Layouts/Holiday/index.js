@@ -174,6 +174,7 @@ const MasterHoliday = () => {
           handleChangeYearFilter={(value) => value ? handleYearFilter(value.format("YYYY")) : handleYearFilter(null)}
           onAdd={() => handleAdd()}
           onUpload={() => handleUpload()}
+          filter={filter}
         />
       </SideBar>
       <CreateHoliday openAdd={openAdd} setOpenAdd={setOpenAdd} onSaveSuccess={handleSaveSuccess} />

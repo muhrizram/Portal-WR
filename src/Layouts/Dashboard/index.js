@@ -206,6 +206,7 @@ const Dashboard = () => {
             sortingMode="server"
             onFilter={(dataFilter) => onFilter(dataFilter)}
             totalData={totalDataEmployee}
+            filter={filter}
           />
         </Grid>
       </Grid>

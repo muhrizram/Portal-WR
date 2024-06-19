@@ -207,6 +207,7 @@ const MasterCompany = () => {
           handleChangeSearch={handleChangeSearch}
           onDetail={(id) => redirectDetail(id)}
           onDelete={(id) => handleClickOpen(id)}
+          filter={filter}
         />
         <Dialog
           open={open}

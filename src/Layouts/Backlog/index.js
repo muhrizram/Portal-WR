@@ -107,6 +107,7 @@ const Backlog = () => {
           totalData={totalData}
           getRowHeight={() => "auto"}
           getEstimatedRowHeight={() => 200}
+          filter={filter}
         />
       </SideBar>
     </div>

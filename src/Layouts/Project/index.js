@@ -174,6 +174,7 @@ export default function Project() {
         onFilter={(dataFilter => onFilter(dataFilter))}
         onAdd={() => handleAdd()}
         onDelete={(id) => handleDelete(id)}
+        filter={filter}
       />
       <DeleteDialog dialogOpen={open} handleClose={handleClose} deleteData={handleDeleteProject} id={dataId} />
     </SideBar>

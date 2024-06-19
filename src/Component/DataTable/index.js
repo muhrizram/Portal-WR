@@ -33,6 +33,7 @@ const DataTable = ({
   onEmployee,
   loading = false,
   dashboard,
+  filter,
 }) => {
   const [pagination, setPagination] = useState({ page: 0, pageSize: 10 });
   const [sorting, setSort] = useState([]);
@@ -76,6 +77,10 @@ const DataTable = ({
     };
     handleBuildList(filter);
   }, [sorting, pagination]);
+
+  useEffect(() => {
+    setPagination({ ...pagination, page: 0 });
+  }, [filter.search]);
 
   useEffect(() => {
     const temp = [...columns];

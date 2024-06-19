@@ -205,6 +205,7 @@ const RolePrivilege = () => {
           onDelete={(id) => handleClickOpen(id)}
           totalData={totalData}
           getRowHeight={() => 'auto'}
+          filter={filter}
         />
         </Grid>
         <Dialog
