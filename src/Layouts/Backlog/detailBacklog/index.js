@@ -1,18 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
 import Grid from "@mui/material/Grid";
-import { Autocomplete, Button, Divider, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  Divider,
+  TextField,
+  Typography,
+} from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import { ArrowDropDownOutlined } from "@mui/icons-material";
 import client from "../../../global/client";
-import FormInputText from '../../../Component/FormInputText';
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { AlertContext } from '../../../context';
-import { yupResolver } from '@hookform/resolvers/yup';
-import createTaskSchema from "../shema";
+import { AlertContext } from "../../../context";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addBacklogSchema } from "../schema";
+import FormTextField from "../form";
 
 //dialog
 import Dialog from "@mui/material/Dialog";
@@ -29,45 +35,33 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 //rating
 import Rating from "@mui/material/Rating";
 import Box from "@mui/material/Box";
-import dayjs from "dayjs";
+import { getErrorArrayPosition } from "../../../global/formFunctions";
 
-
-const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedToOl, setValue }) => {
-  const [taskData, setTaskData] = useState(task);
-  const [taskDataUpdate, setTaskDataUpdate] = useState(task);
+const TaskItem = ({
+  errors,
+  control,
+  data,
+  number,
+  statusBacklogOl,
+  assignedToOl,
+  onTaskChange,
+  setValue,
+}) => {
   useEffect(() => {
-    onUpdate(taskDataUpdate);
-  }, [taskDataUpdate]);
-
-  useEffect(()=>{
-    setValue(`taskName-${task.id}`, task.taskName);
-    setValue(`priority-${task.id}`, parseInt(task.priority));
-    setValue(`taskDescription-${task.id}`, task.taskDescription);
-    setValue(`statusBacklog-${task.id}`, task.statusBacklog);
-    setValue(`estimationTime-${task.id}`, task.estimationTime);
-    setValue(`actualTime-${task.id}`, task.actualTime);
-    setValue(`assignedTo-${task.id}`, task.userId);
-  },[]);
-
-  const handleChangeAutocomplete = (name, value) => {
-    console.log("Task before: ", taskData[name])
-    setTaskData((prevData) => ({...prevData, [name]: value}));
-    setTaskDataUpdate((prevData) => ({...prevData, [name]: value }))
-    console.log("Task after: ", taskData[name])
-  }
-
-  const handleKeyPress = (event) => {
-    const charCode = event.which ? event.which : event.keyCode;
-    if (
-      (charCode < 48 || charCode > 57) && 
-      charCode !== 46
-    ) {
-      event.preventDefault();
-    }
-  };
+    setValue(`listTask.${number}.taskName`, data.taskName);
+    setValue(`listTask.${number}.priority`, parseFloat(data.priority));
+    setValue(`listTask.${number}.taskDescription`, data.taskDescription);
+    setValue(`listTask.${number}.statusBacklog`, String(data.statusBacklog));
+    setValue(
+      `listTask.${number}.estimationTime`,
+      parseInt(data.estimationTime)
+    );
+    setValue(`listTask.${number}.actualTime`, data.actualTime);
+    setValue(`listTask.${number}.assignedTo`, data.userId);
+  }, [data]);
 
   return (
-    <Accordion defaultExpanded key={taskData.id} elevation={0}>
+    <Accordion defaultExpanded key={number} elevation={0}>
       <Grid
         container
         direction="row"
@@ -85,20 +79,26 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
             style={{ padding: 0 }}
           >
             <Typography fontSize="1.5rem" marginRight="12px">
-              {taskData.taskCode}
+              {data.taskCode}
             </Typography>
           </AccordionSummary>
         </Grid>
       </Grid>
-      <AccordionDetails style={{ padding:0 }}>
+      <AccordionDetails style={{ padding: 0 }}>
         <Grid container direction="row" spacing={3.75}>
           <Grid item xs={12} sm={6}>
-            <FormInputText
+            <FormTextField
+              style={{ paddingRight: "10px" }}
+              control={control}
+              errors={errors}
+              onTaskChange={onTaskChange}
+              position={{ list: "listTask", number, name: "taskName" }}
               focused
-              name={`taskName-${task.id}`}
-              className='input-field-crud'
+              name={`listTask.${number}.taskName`}
+              className="input-field-crud"
               placeholder='e.g Create Login Screen"'
-              label='Task Name *'
+              label="Task Name *"
+              value={data.taskName ? data.taskName : ""}
               inputProps={{
                 maxLength: 100,
               }}
@@ -108,42 +108,62 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
             <Box sx={{ width: "100%" }}>
               <Typography
                 component="legend"
-                sx={{ color: errors[`priority-${task.id}`] ? "#D32F2F" : "grey"}}
+                sx={{
+                  color: Boolean(
+                    getErrorArrayPosition(errors, [
+                      "listTask",
+                      number,
+                      "priority",
+                    ])
+                  )
+                    ? "#D32F2F"
+                    : "grey",
+                }}
               >
                 Priority *
               </Typography>
               <Controller
                 control={control}
-                name={`priority-${task.id}`}
-                render={({field}) => (
+                name={`listTask.${number}.priority`}
+                render={({ field }) => (
                   <Rating
                     variant="outlined"
-                    name={`priority-${task.id}`}
-                    value={field.value? field.value : null}
-                    onChange={(event, newValue)=>field.onChange(newValue)}
+                    name={`listTask.${number}.priority`}
+                    value={data.priority ? parseFloat(data.priority) : 0}
+                    onChange={(event, newValue) => {
+                      field.onChange(newValue);
+                      onTaskChange(number, "priority", newValue);
+                    }}
                   />
                 )}
               />
-              {errors[`priority-${task.id}`] && (
+              {Boolean(
+                getErrorArrayPosition(errors, ["listTask", number, "priority"])
+              ) && (
                 <Typography
                   color="#d32f2f"
                   textAlign={"left"}
                   fontSize={12}
-                  paddingY={'3px'}
-                  paddingX={'6px'}
+                  paddingY={"3px"}
+                  paddingX={"6px"}
                 >
-                  {errors[`priority-${task.id}`].message}
+                  {errors.listTask[number].priority.message}
                 </Typography>
               )}
             </Box>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormInputText
+            <FormTextField
               focused
-              name={`taskDescription-${task.id}`}
-              className='input-field-crud'
-              placeholder='e.g Create Login Screen - Front End'
-              label='Task Decription'
+              control={control}
+              errors={errors}
+              position={{ list: "listTask", number, name: "taskDescription" }}
+              name={`listTask.${number}.taskDescription`}
+              value={data.taskDescription ? data.taskDescription : ""}
+              onTaskChange={onTaskChange}
+              className="input-field-crud"
+              placeholder="e.g Create Login Screen - Front End"
+              label="Task Decription"
               inputProps={{
                 maxLength: 255,
               }}
@@ -151,7 +171,7 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
           </Grid>
           <Grid item xs={12} sm={6}>
             <Controller
-              name={`statusBacklog-${task.id}`}
+              name={`listTask.${number}.statusBacklog`}
               control={control}
               render={({ field }) => (
                 <Autocomplete
@@ -159,80 +179,162 @@ const TaskItem = ({ errors, control, task, onUpdate, statusBacklogOl, assignedTo
                   id="combo-box-demo"
                   name="statusBacklog"
                   options={statusBacklogOl}
-                  value={statusBacklogOl.find((option) => option.id === field.value) || null}
+                  value={
+                    statusBacklogOl.find(
+                      (option) => option.id === data.statusBacklog
+                    ) || null
+                  }
                   getOptionLabel={(option) => option.name}
                   onChange={(_, newValue) => {
-                      handleChangeAutocomplete('statusBacklog', newValue ? newValue.id : null);
-                      field.onChange(newValue ? newValue.id : null)
-                    }
-                  }
+                    onTaskChange(
+                      number,
+                      "statusBacklog",
+                      newValue ? newValue.id : ""
+                    );
+                    field.onChange(newValue ? String(newValue.id) : "");
+                  }}
                   sx={{ width: "100%" }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Backlog Status *"
                       placeholder="Select Status"
-                      error={!!errors[`statusBacklog-${task.id}`]}
-                      helperText={errors[`statusBacklog-${task.id}`] ? errors[`statusBacklog-${task.id}`].message : ''}
+                      error={Boolean(
+                        getErrorArrayPosition(errors, [
+                          "listTask",
+                          number,
+                          "statusBacklog",
+                        ])
+                      )}
+                      helperText={
+                        Boolean(
+                          getErrorArrayPosition(errors, [
+                            "listTask",
+                            number,
+                            "statusBacklog",
+                          ])
+                        )
+                          ? errors.listTask[number].statusBacklog.message
+                          : ""
+                      }
                     />
                   )}
                 />
               )}
             />
           </Grid>
-        </Grid>
-        <Grid
-          container
-          direction="row"
-        >
-          <Grid item xs={12} sm={6} mt={2}>
-            <FormInputText
-              style={{ paddingRight: "10px" }}
-              focused
-              onKeyPress={handleKeyPress}
-              name={`estimationTime-${task.id}`}
-              className='input-field-crud'
-              placeholder='e.g 1 Hour'
-              label='Estimation Duration *'
-              inputProps={{
-                maxLength: 5,
-              }}
+          <Grid item xs={12} sm={6}>
+            <Controller
+              name={`listTask.${number}.estimationTime`}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  style={{ paddingRight: "10px" }}
+                  focused
+                  className="input-field-crud"
+                  placeholder="e.g 1 Hour"
+                  label="Estimation Duration *"
+                  type="number"
+                  inputProps={{
+                    maxLength: 5,
+                  }}
+                  value={data.estimationTime ? data.estimationTime : ""}
+                  onChange={(e) => {
+                    if (e.target.value < 1 && e.target.value) {
+                      e.target.value = 1;
+                    }
+                    field.onChange(
+                      e.target.value ? parseInt(e.target.value) : null
+                    );
+                    onTaskChange(number, "estimationTime", e.target.value);
+                  }}
+                  error={Boolean(
+                    getErrorArrayPosition(errors, [
+                      "listTask",
+                      number,
+                      "estimationTime",
+                    ])
+                  )}
+                  helperText={
+                    Boolean(
+                      getErrorArrayPosition(errors, [
+                        "listTask",
+                        number,
+                        "estimationTime",
+                      ])
+                    )
+                      ? errors.listTask[number].estimationTime.message
+                      : ""
+                  }
+                />
+              )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} mt={2}>
-            <FormInputText
-              style={{ paddingLeft: "5px" }}
+          <Grid item xs={12} sm={6}>
+            <FormTextField
               focused
               disabled
-              name={`actualTime-${task.id}`}
-              className='input-field-crud'
-              placeholder='e.g 1 Hour'
-              label='Actual Duration'
+              control={control}
+              errors={errors}
+              name={`listTask.${number}.actualTime`}
+              position={("listTask", number, "actualTime")}
+              value={data.actualTime ? data.actualTime : ""}
+              className="input-field-crud"
+              placeholder="e.g 1 Hour"
+              label="Actual Duration"
             />
           </Grid>
+        </Grid>
+        <Grid container direction="row">
           <Grid item xs={12} mt={2}>
             <Controller
-              name={`assignedTo-${task.id}`}
+              name={`listTask.${number}.assignedTo`}
               control={control}
               render={({ field }) => (
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
-                  name={`assignedTo-${task.id}`}
+                  name={`listTask.${number}.assignedTo`}
                   options={assignedToOl}
                   getOptionLabel={(option) => option.fullName}
-                  value={assignedToOl.find((option) => option.id === field.value) || null}
+                  value={
+                    assignedToOl.find((option) => option.id === data.userId) ||
+                    null
+                  }
                   onChange={(_, newValue) => {
-                    handleChangeAutocomplete("assignedTo", newValue ? newValue.id : null);
-                    field.onChange(newValue ? newValue.id : null)
+                    onTaskChange(
+                      number,
+                      "assignedTo",
+                      newValue ? newValue.id : null,
+                      true
+                    );
+
+                    field.onChange(newValue ? newValue.id : null);
                   }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Assigned To *"
                       placeholder="Select Talent"
-                      error={!!errors[`assignedTo-${task.id}`]}
-                      helperText={errors[`assignedTo-${task.id}`] ? errors[`assignedTo-${task.id}`].message : ''}
+                      error={Boolean(
+                        getErrorArrayPosition(errors, [
+                          "listTask",
+                          number,
+                          "assignedTo",
+                        ])
+                      )}
+                      helperText={
+                        Boolean(
+                          getErrorArrayPosition(errors, [
+                            "listTask",
+                            number,
+                            "assignedTo",
+                          ])
+                        )
+                          ? errors.listTask[number].assignedTo.message
+                          : ""
+                      }
                     />
                   )}
                 />
@@ -250,13 +352,14 @@ const DetailBacklog = () => {
   const [open, setOpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [ProjectName, setProjectName] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  const [dataTasks, setDataTasks] = useState([]);
   const [valueproject, setValueproject] = useState();
-  const [isSave, setIsSave] = useState(false)
-  const { setDataAlert } = useContext(AlertContext)
-  const [initialProject, setInitialProject] = useState()
+  const [isSave, setIsSave] = useState(false);
+  const { setDataAlert } = useContext(AlertContext);
+  const [initialProject, setInitialProject] = useState();
   const [statusBacklogOl, setStatusBacklogOl] = useState([]);
   const [assignedToOl, setAssignedToOl] = useState([]);
+  const [defaultEditData, setDefaultEditData] = useState([]);
   const navigate = useNavigate();
 
   const dataBreadDetailBacklog = [
@@ -276,7 +379,7 @@ const DetailBacklog = () => {
       current: false,
     },
     {
-      href: "/",
+      href: "/masterbacklog/detail",
       title: "Detail Backlog",
       current: true,
     },
@@ -290,7 +393,7 @@ const DetailBacklog = () => {
     },
     {
       href: "/masterbacklog",
-      title: "Master Backlog",
+      title: "Master Project Backlog",
       current: false,
     },
     {
@@ -299,7 +402,7 @@ const DetailBacklog = () => {
       current: false,
     },
     {
-      href: "/",
+      href: "/masterbacklog/detail",
       title: "Edit Backlog",
       current: true,
     },
@@ -307,60 +410,70 @@ const DetailBacklog = () => {
 
   const getStatusColor = (status) => {
     const statusColors = {
-      'to do': '#FDECEB',
-      'Backlog' : '#7367F029',
-      'In Progress': '#E6F2FB',
-      'Completed' : '#EBF6EE', 
-      'Done': '#EBF6EE'
+      "to do": "#FDECEB",
+      Backlog: "#7367F029",
+      "In Progress": "#E6F2FB",
+      Completed: "#EBF6EE",
+      Done: "#EBF6EE",
     };
-    return statusColors[status] || '#ccc';
+    return statusColors[status] || "#ccc";
   };
 
   const getStatusFontColor = (status) => {
     const statusFontColors = {
-      'to do': '#EE695D',
-      'Backlog' : '#4C4DDC',
-      'In Progress': '#3393DF',
-      'Completed' : '#5DB975',
-      'Done': '#5DB975'
+      "to do": "#EE695D",
+      Backlog: "#4C4DDC",
+      "In Progress": "#3393DF",
+      Completed: "#5DB975",
+      Done: "#5DB975",
     };
-    return statusFontColors[status] || '#fff';
+    return statusFontColors[status] || "#fff";
   };
 
   const getProjectName = async () => {
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: '/ol/project?search=',      
-    })    
-    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name, projectInitial: item.attributes.projectInitial}));        
-    setProjectName(data)
-  }
+      method: "GET",
+      endpoint: "/ol/project?search=",
+    });
+    const data = res.data.map((item) => ({
+      id: parseInt(item.id),
+      name: item.attributes.name,
+      projectInitial: item.attributes.projectInitial,
+    }));
+    setProjectName(data);
+  };
 
   const getAssignedTo = async () => {
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/ol/backlogUser?search=${dataDetail.projectId}`
-    })
-    const data = res.data.map(item => ({id : parseInt(item.id), fullName: item.attributes.userName}));    
-    setAssignedToOl(data)
-  }
+      method: "GET",
+      endpoint: `/ol/backlogUser?search=${dataDetail.projectId}`,
+    });
+    const data = res.data.map((item) => ({
+      id: parseInt(item.id),
+      fullName: item.attributes.userName,
+    }));
+    setAssignedToOl(data);
+  };
 
   const getStatusBacklog = async () => {
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: '/ol/status?search=',      
-    })
-    const data = res.data.map(item => ({id : parseInt(item.id), name: item.attributes.name}));       
-    setStatusBacklogOl(data)
-  }
+      method: "GET",
+      endpoint: "/ol/status?search=",
+    });
+    const data = res.data.map((item) => ({
+      id: parseInt(item.id),
+      name: item.attributes.name,
+    }));
+    setStatusBacklogOl(data);
+  };
 
   const getDataDetail = async () => {
-    const idDetail = localStorage.getItem("idBacklog")
+    const idDetail = localStorage.getItem("idBacklog");
     const res = await client.requestAPI({
-      method: 'GET',
-      endpoint: `/backlog/${idDetail}`
-    })
-    rebuildDataDetail(res)
+      method: "GET",
+      endpoint: `/backlog/${idDetail}`,
+    });
+    rebuildDataDetail(res);
   };
 
   const rebuildDataDetail = (resData) => {
@@ -383,13 +496,13 @@ const DetailBacklog = () => {
       updatedOn: resData.data.attributes.updatedOn,
       priority: resData.data.attributes.priority,
       taskCode: resData.data.attributes.taskCode,
-        projectInitial: resData.data.attributes.projectInitial    
-      }        
-    setDataDetail(tempDetail)
-    setInitialProject(resData.data.attributes.projectInitial)
-    const newTasks = [tempDetail];
-    setTasks(newTasks);
-  }
+      projectInitial: resData.data.attributes.projectInitial,
+    };
+    setDataDetail(tempDetail);
+    setInitialProject(resData.data.attributes.projectInitial);
+    setDataTasks([tempDetail]);
+    setDefaultEditData({ listTask: [tempDetail] });
+  };
 
   const clickEdit = () => {
     getAssignedTo();
@@ -402,119 +515,104 @@ const DetailBacklog = () => {
   };
 
   const handleClickOpenSave = () => {
-    setIsSave(true)
+    setIsSave(true);
     setOpen(true);
   };
 
   const handleClickOpenCancel = () => {
-    setIsSave(false)
+    setIsSave(false);
     setOpen(true);
   };
 
   const handleCloseOpenCancelData = () => {
-    if (!isSave){
+    if (!isSave) {
       setIsEdit(false);
     }
     setOpen(false);
   };
 
-  const handleUpdateTasks = (deletedTaskId) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === deletedTaskId) {
-        return null;
-      }
-      if (task.id > deletedTaskId) {
-        return {
-          ...task,
-          id: task.id - 1,
-        };
-      }
-      return task;
-    });
-    const filteredTasks = updatedTasks.filter((task) => task !== null);
-    setTasks(filteredTasks);
-  };
+  const handleChangeTask = (index, key, value, assigning) => {
+    const temp = [...dataTasks];
 
-  const handleDeleteTask = (taskId) => {
-    handleUpdateTasks(taskId);
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-  };
+    temp[index] = {
+      ...temp[index],
+      [key]: value,
+      ...(assigning && { userId: value }),
+    };
 
-  const handleUpdateTask = (updatedTask) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === updatedTask.id ? updatedTask : task
-    );
-    setTasks(updatedTasks);
+    setDataTasks(temp);
   };
-
-  const methods = useForm({resolver: yupResolver(createTaskSchema(tasks))})
 
   const {
-    handleSubmit,
     control,
+    handleSubmit,
     formState: { errors },
+    watch,
     setValue,
-    getValues,
-  } = methods
+  } = useForm({
+    resolver: zodResolver(addBacklogSchema),
+    mode: "onChange",
+  });
 
-  const SubmitSave = async (formData) => {
-    const data = {
-      actualTime:formData[`actualTime-${tasks[0].id}`],
-      estimationTime:formData[`estimationTime-${tasks[0].id}`],
-      id:tasks[0].id,
-      priority:formData[`priority-${tasks[0].id}`],
-      projectId:tasks[0].projectId,
-      projectName:tasks[0].projectName,
-      statusBacklog:parseInt(formData[`statusBacklog-${tasks[0].id}`]),
-      taskCode:tasks[0].taskCode,
-      taskDescription:formData[`taskDescription-${tasks[0].id}`],
-      taskName:formData[`taskName-${tasks[0].id}`],
-      updatedBy:parseInt(localStorage.getItem('userId')),
-      updatedOn:dayjs(new Date()).format('YYYY-MM-DD'),
-      userId:parseInt(formData[`assignedTo-${tasks[0].id}`]),
-    }
-    if (!isSave){
+  const SubmitSave = async () => {
+    let saveData = null;
+    dataTasks.map((task) => {
+      saveData = {
+        projectId: task.projectId,
+        statusBacklog: task.statusBacklog,
+        userId: task.userId,
+        taskName: task.taskName,
+        taskDescription: task.taskDescription,
+        estimationTime: task.estimationTime,
+        actualTime: task.actualTime,
+        priority: task.priority,
+        assignedTo: task.assignedTo,
+        taskCode: task.taskCode,
+      };
+    });
+    console.log(saveData);
+    if (!isSave) {
       setOpen(false);
-    }else{    
+    } else {
       try {
         const res = await client.requestAPI({
-          method: 'PUT',
-          endpoint: `/backlog/${tasks[0].id}`,
-          data: data,
+          method: "PUT",
+          endpoint: `/backlog/${dataTasks[0].id}`,
+          data: saveData,
         });
-        if(!res.isError){
+        if (!res.isError) {
           setDataAlert({
-            severity: 'success',
+            severity: "success",
             open: true,
-            message: res.data.meta.message
-          }) 
+            message: res.data.meta.message,
+          });
           setTimeout(() => {
-            navigate('/masterbacklog');
+            navigate("/masterbacklog/listBacklog");
           }, 3000);
-        }
-        else {
+        } else {
           setDataAlert({
-            severity: 'error',
+            severity: "error",
             message: res.error.detail,
-            open: true
-          })
+            open: true,
+          });
         }
         setOpen(false);
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    getProjectName()
-    getDataDetail()
-  }, [valueproject])
+    getProjectName();
+    getDataDetail();
+  }, [valueproject]);
 
   return (
     <SideBar>
-      <Breadcrumbs breadcrumbs={ isEdit ? dataBreadEditBacklog : dataBreadDetailBacklog} />
+      <Breadcrumbs
+        breadcrumbs={isEdit ? dataBreadEditBacklog : dataBreadDetailBacklog}
+      />
       {isEdit ? (
         <Grid container rowSpacing={2.5}>
           <Grid item xs={12}>
@@ -526,71 +624,88 @@ const DetailBacklog = () => {
             </Grid>
             <Grid className="HeaderDetail">
               <Grid item xs={12}>
-                <FormProvider {...methods}>
-                  <form onSubmit={handleSubmit(handleClickOpenSave)}>
-                    <Grid container direction="column" spacing={3.75}>
-                      <Grid item xs={12}>
-                        <Autocomplete
-                          disablePortal
-                          disabled
-                          id="combo-box-demo"
-                          name="ProjectName"
-                          options={ProjectName}
-                          defaultValue={ProjectName.find((option) => option.id === (dataDetail.projectInitial && dataDetail.projectId)) || null}
-                          sx={{ width: "100%", marginTop: "8px", backgroundColor: "#EDEDED" }}                    
-                          getOptionLabel={(option) => option.projectInitial + ' - ' + option.name}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Project Name *" placeholder="Select Backlog" />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Divider/>
-                      </Grid>
-                      <Grid item xs={12}>
-                        {tasks.map((task) => (
-                          <TaskItem
-                            key={task.id}
-                            task={task}
-                            onDelete={handleDeleteTask}
-                            onUpdate={handleUpdateTask}
-                            onUpdateTasks={handleUpdateTasks}
-                            initialProject={initialProject}
-                            idProject={dataDetail.projectId}
-                            control={control}
-                            errors={errors}
-                            setValue={setValue}
-                            getValues={getValues}
-                            assignedToOl={assignedToOl}
-                            statusBacklogOl={statusBacklogOl}
+                <form onSubmit={handleSubmit(handleClickOpenSave)}>
+                  <Grid container direction="column" spacing={3.75}>
+                    <Grid item xs={12}>
+                      <Autocomplete
+                        disablePortal
+                        disabled
+                        id="combo-box-demo"
+                        name="ProjectName"
+                        options={ProjectName}
+                        defaultValue={
+                          ProjectName.find(
+                            (option) =>
+                              option.id ===
+                              (dataDetail.projectInitial &&
+                                dataDetail.projectId)
+                          ) || null
+                        }
+                        sx={{
+                          width: "100%",
+                          marginTop: "8px",
+                          backgroundColor: "#EDEDED",
+                        }}
+                        getOptionLabel={(option) =>
+                          option.projectInitial + " - " + option.name
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Project Name *"
+                            placeholder="Select Backlog"
                           />
-                        ))}
-                      </Grid>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider />
+                    </Grid>
+                    <Grid item xs={12}>
+                      {dataTasks.map((task, index) => (
+                        <TaskItem
+                          key={index}
+                          errors={errors}
+                          control={control}
+                          data={task}
+                          number={index}
+                          statusBacklogOl={statusBacklogOl}
+                          assignedToOl={assignedToOl}
+                          onTaskChange={handleChangeTask}
+                          setValue={setValue}
+                        />
+                      ))}
+                    </Grid>
 
-                      <Grid item container spacing={2} justifyContent="flex-end" mt={3.5}>
-                        <Grid item xs={12} sm={2} textAlign="right">
-                          <Button
-                            fullWidth
-                            variant="cancelButton"
-                            onClick={() => handleClickOpenCancel()}
-                          >
-                            Cancel Data
-                          </Button>
-                        </Grid>
-                        <Grid item xs={12} sm={2} textAlign="right">
-                          <Button
-                            fullWidth
-                            disabled={tasks.length === 0}
-                            variant="saveButton"
-                            type="submit"
-                          >
-                            Save Data
-                          </Button>
-                        </Grid>
+                    <Grid
+                      item
+                      container
+                      spacing={2}
+                      justifyContent="flex-end"
+                      mt={3.5}
+                    >
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          variant="cancelButton"
+                          onClick={() => handleClickOpenCancel()}
+                        >
+                          Cancel Data
+                        </Button>
+                      </Grid>
+                      <Grid item xs={12} sm={2} textAlign="right">
+                        <Button
+                          fullWidth
+                          disabled={dataTasks.length === 0}
+                          variant="saveButton"
+                          type="submit"
+                        >
+                          Save Data
+                        </Button>
                       </Grid>
                     </Grid>
-                  </form>
-                </FormProvider>
+                  </Grid>
+                </form>
                 <Dialog
                   open={open}
                   onClose={handleClose}
@@ -606,20 +721,28 @@ const DetailBacklog = () => {
                     }}
                     id="alert-dialog-title"
                   >
-                    {isSave ? 'Save Data' : 'Cancel Data'}
+                    {isSave ? "Save Data" : "Cancel Data"}
                   </DialogTitle>
                   <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                      {isSave ? "Save your progress: Don't forget to save your data before leaving" : "Warning: Canceling will result in data loss without saving!"}
+                      {isSave
+                        ? "Save your progress: Don't forget to save your data before leaving"
+                        : "Warning: Canceling will result in data loss without saving!"}
                     </DialogContentText>
-                    
                   </DialogContent>
                   <DialogActions className="dialog-delete-actions">
-                    <Button variant="cancelButton" onClick={handleCloseOpenCancelData}>
+                    <Button
+                      variant="cancelButton"
+                      onClick={handleCloseOpenCancelData}
+                    >
                       {isSave ? "Back" : "Cancel without saving"}
                     </Button>
-                    <Button variant="saveButton" onClick={handleSubmit(SubmitSave)} autoFocus>
-                      {isSave ? 'Save Data' : 'Back'}
+                    <Button
+                      variant="saveButton"
+                      onClick={handleSubmit(SubmitSave)}
+                      autoFocus
+                    >
+                      {isSave ? "Save Data" : "Back"}
                     </Button>
                   </DialogActions>
                 </Dialog>
@@ -635,7 +758,13 @@ const DetailBacklog = () => {
                 <Header judul="Detail Backlog" />
               </Grid>
               <Grid item />
-              <Grid item xs={12} sm={4} alignSelf="center" sx={{textAlign: {xs: "start", sm:"end"}}}>
+              <Grid
+                item
+                xs={12}
+                sm={4}
+                alignSelf="center"
+                sx={{ textAlign: { xs: "start", sm: "end" } }}
+              >
                 <Button
                   variant="outlined"
                   startIcon={<CreateIcon />}
@@ -648,7 +777,11 @@ const DetailBacklog = () => {
             </Grid>
             <Grid container className="HeaderDetail">
               <Grid item xs={12} container direction="row">
-                <Grid container direction="row" borderBottom="solid 1px #0000001F">
+                <Grid
+                  container
+                  direction="row"
+                  borderBottom="solid 1px #0000001F"
+                >
                   <Grid item xs={12} sm={6}>
                     <Typography variant="backlogDetail">
                       {dataDetail.projectInitial} - {dataDetail.projectName}
@@ -663,18 +796,24 @@ const DetailBacklog = () => {
                           expandIcon={<ArrowDropDownOutlined />}
                           aria-controls="panel1a-content"
                           id="panel1a-header"
-                          style={{ padding:0 }}
+                          style={{ padding: 0 }}
                         >
-                          <Typography variant="backlogDetailText" marginRight="12px">
-                            {!isEdit && `${dataDetail.taskName} :: ` }{dataDetail.taskCode}
+                          <Typography
+                            variant="backlogDetailText"
+                            marginRight="12px"
+                          >
+                            {!isEdit && `${dataDetail.taskName} :: `}
+                            {dataDetail.taskCode}
                           </Typography>
                         </AccordionSummary>
                       </Grid>
                     </Grid>
-                    <AccordionDetails style={{ padding:0 }}>
+                    <AccordionDetails style={{ padding: 0 }}>
                       <Grid container direction="row" spacing={3.75}>
                         <Grid item xs={12} sm={4}>
-                          <Typography sx={{ color: "text.secondary", fontSize: "12px" }}>
+                          <Typography
+                            sx={{ color: "text.secondary", fontSize: "12px" }}
+                          >
                             Task Description
                           </Typography>
                           <Typography
@@ -690,17 +829,22 @@ const DetailBacklog = () => {
                           </Typography>
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                          <Typography sx={{ color: "text.secondary", fontSize: "12px" }}>
+                          <Typography
+                            sx={{ color: "text.secondary", fontSize: "12px" }}
+                          >
                             Backlog Status
                           </Typography>
-                          <Typography variant="descBaklog"
+                          <Typography
+                            variant="descBaklog"
                             sx={{
-                              backgroundColor: getStatusColor(dataDetail.status),
+                              backgroundColor: getStatusColor(
+                                dataDetail.status
+                              ),
                               color: getStatusFontColor(dataDetail.status),
-                              padding: '5px 10px',
-                              gap: '10px',
-                              borderRadius: '4px',
-                              fontSize: '12px',
+                              padding: "5px 10px",
+                              gap: "10px",
+                              borderRadius: "4px",
+                              fontSize: "12px",
                             }}
                           >
                             {dataDetail.status}
@@ -755,7 +899,7 @@ const DetailBacklog = () => {
                     </AccordionDetails>
                   </Accordion>
                   <Grid item xs={12} mt={5}>
-                    <Divider/>
+                    <Divider />
                   </Grid>
                 </Grid>
               </Grid>
