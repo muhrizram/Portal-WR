@@ -121,8 +121,9 @@ const Dashboard = () => {
       minWidth: 270,
     },
     {
-      field: "departement",
-      headerName: "Departement",
+      field: "projectName",
+      headerName: "Project Name",
+      sortable: false,
       flex: 0,
       minWidth: 160,
     },
@@ -148,11 +149,15 @@ const Dashboard = () => {
         no: number + (index + 1),
         id: value.id,
         nip: value.attributes.nip,
-        firstName: value.attributes.fullName,
+        firstName: value.attributes.fullname,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
         email: value.attributes.email !== "false" ? value.attributes.email : "",
-        departement: value.attributes.department,
+        projectName: value.attributes.projects
+          .map((project) => {
+            return project.projectName;
+          })
+          .join(", "),
       };
     });
 
