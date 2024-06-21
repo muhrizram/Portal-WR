@@ -1,31 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import Grid from "@mui/material/Grid";
-import {
-  Autocomplete,
-  Button,
-  Divider,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Divider, Typography } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import Breadcrumbs from "../../../Component/BreadCumb";
 import Header from "../../../Component/Header";
 import SideBar from "../../../Component/Sidebar";
 import { ArrowDropDownOutlined } from "@mui/icons-material";
 import client from "../../../global/client";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { AlertContext } from "../../../context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addBacklogSchema } from "../schema";
-import FormTextField from "../form";
-
-//dialog
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 
 //acordion
 import Accordion from "@mui/material/Accordion";
@@ -34,324 +20,13 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 
 //rating
 import Rating from "@mui/material/Rating";
-import Box from "@mui/material/Box";
-import { getErrorArrayPosition } from "../../../global/formFunctions";
-
-const TaskItem = ({
-  errors,
-  control,
-  data,
-  number,
-  statusBacklogOl,
-  assignedToOl,
-  onTaskChange,
-  setValue,
-}) => {
-  useEffect(() => {
-    setValue(`listTask.${number}.taskName`, data.taskName);
-    setValue(`listTask.${number}.priority`, parseFloat(data.priority));
-    setValue(`listTask.${number}.taskDescription`, data.taskDescription);
-    setValue(`listTask.${number}.statusBacklog`, String(data.statusBacklog));
-    setValue(
-      `listTask.${number}.estimationTime`,
-      parseInt(data.estimationTime)
-    );
-    setValue(`listTask.${number}.actualTime`, data.actualTime);
-    setValue(`listTask.${number}.assignedTo`, data.userId);
-  }, [data]);
-
-  return (
-    <Accordion defaultExpanded key={number} elevation={0}>
-      <Grid
-        container
-        direction="row"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Grid item>
-          <AccordionSummary
-            expandIcon={<ArrowDropDownOutlined />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-            style={{ padding: 0 }}
-          >
-            <Typography fontSize="1.5rem" marginRight="12px">
-              {data.taskCode}
-            </Typography>
-          </AccordionSummary>
-        </Grid>
-      </Grid>
-      <AccordionDetails style={{ padding: 0 }}>
-        <Grid container direction="row" spacing={3.75}>
-          <Grid item xs={12} sm={6}>
-            <FormTextField
-              style={{ paddingRight: "10px" }}
-              control={control}
-              errors={errors}
-              onTaskChange={onTaskChange}
-              position={{ list: "listTask", number, name: "taskName" }}
-              focused
-              name={`listTask.${number}.taskName`}
-              className="input-field-crud"
-              placeholder='e.g Create Login Screen"'
-              label="Task Name *"
-              value={data.taskName ? data.taskName : ""}
-              inputProps={{
-                maxLength: 100,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Box sx={{ width: "100%" }}>
-              <Typography
-                component="legend"
-                sx={{
-                  color: Boolean(
-                    getErrorArrayPosition(errors, [
-                      "listTask",
-                      number,
-                      "priority",
-                    ])
-                  )
-                    ? "#D32F2F"
-                    : "grey",
-                }}
-              >
-                Priority *
-              </Typography>
-              <Controller
-                control={control}
-                name={`listTask.${number}.priority`}
-                render={({ field }) => (
-                  <Rating
-                    variant="outlined"
-                    name={`listTask.${number}.priority`}
-                    value={data.priority ? parseFloat(data.priority) : 0}
-                    onChange={(event, newValue) => {
-                      field.onChange(newValue);
-                      onTaskChange(number, "priority", newValue);
-                    }}
-                  />
-                )}
-              />
-              {Boolean(
-                getErrorArrayPosition(errors, ["listTask", number, "priority"])
-              ) && (
-                <Typography
-                  color="#d32f2f"
-                  textAlign={"left"}
-                  fontSize={12}
-                  paddingY={"3px"}
-                  paddingX={"6px"}
-                >
-                  {errors.listTask[number].priority.message}
-                </Typography>
-              )}
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormTextField
-              focused
-              control={control}
-              errors={errors}
-              position={{ list: "listTask", number, name: "taskDescription" }}
-              name={`listTask.${number}.taskDescription`}
-              value={data.taskDescription ? data.taskDescription : ""}
-              onTaskChange={onTaskChange}
-              className="input-field-crud"
-              placeholder="e.g Create Login Screen - Front End"
-              label="Task Decription"
-              inputProps={{
-                maxLength: 255,
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name={`listTask.${number}.statusBacklog`}
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  name="statusBacklog"
-                  options={statusBacklogOl}
-                  value={
-                    statusBacklogOl.find(
-                      (option) => option.id === data.statusBacklog
-                    ) || null
-                  }
-                  getOptionLabel={(option) => option.name}
-                  onChange={(_, newValue) => {
-                    onTaskChange(
-                      number,
-                      "statusBacklog",
-                      newValue ? newValue.id : ""
-                    );
-                    field.onChange(newValue ? String(newValue.id) : "");
-                  }}
-                  sx={{ width: "100%" }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Backlog Status *"
-                      placeholder="Select Status"
-                      error={Boolean(
-                        getErrorArrayPosition(errors, [
-                          "listTask",
-                          number,
-                          "statusBacklog",
-                        ])
-                      )}
-                      helperText={
-                        Boolean(
-                          getErrorArrayPosition(errors, [
-                            "listTask",
-                            number,
-                            "statusBacklog",
-                          ])
-                        )
-                          ? errors.listTask[number].statusBacklog.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name={`listTask.${number}.estimationTime`}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  style={{ paddingRight: "10px" }}
-                  focused
-                  className="input-field-crud"
-                  placeholder="e.g 1 Hour"
-                  label="Estimation Duration *"
-                  type="number"
-                  inputProps={{
-                    maxLength: 5,
-                  }}
-                  value={data.estimationTime ? data.estimationTime : ""}
-                  onChange={(e) => {
-                    if (e.target.value < 1 && e.target.value) {
-                      e.target.value = 1;
-                    }
-                    field.onChange(
-                      e.target.value ? parseInt(e.target.value) : null
-                    );
-                    onTaskChange(number, "estimationTime", e.target.value);
-                  }}
-                  error={Boolean(
-                    getErrorArrayPosition(errors, [
-                      "listTask",
-                      number,
-                      "estimationTime",
-                    ])
-                  )}
-                  helperText={
-                    Boolean(
-                      getErrorArrayPosition(errors, [
-                        "listTask",
-                        number,
-                        "estimationTime",
-                      ])
-                    )
-                      ? errors.listTask[number].estimationTime.message
-                      : ""
-                  }
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormTextField
-              focused
-              disabled
-              control={control}
-              errors={errors}
-              name={`listTask.${number}.actualTime`}
-              position={("listTask", number, "actualTime")}
-              value={data.actualTime ? data.actualTime : ""}
-              className="input-field-crud"
-              placeholder="e.g 1 Hour"
-              label="Actual Duration"
-            />
-          </Grid>
-        </Grid>
-        <Grid container direction="row">
-          <Grid item xs={12} mt={2}>
-            <Controller
-              name={`listTask.${number}.assignedTo`}
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  name={`listTask.${number}.assignedTo`}
-                  options={assignedToOl}
-                  getOptionLabel={(option) => option.fullName}
-                  value={
-                    assignedToOl.find((option) => option.id === data.userId) ||
-                    null
-                  }
-                  onChange={(_, newValue) => {
-                    onTaskChange(
-                      number,
-                      "assignedTo",
-                      newValue ? newValue.id : null,
-                      true
-                    );
-
-                    field.onChange(newValue ? newValue.id : null);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Assigned To *"
-                      placeholder="Select Talent"
-                      error={Boolean(
-                        getErrorArrayPosition(errors, [
-                          "listTask",
-                          number,
-                          "assignedTo",
-                        ])
-                      )}
-                      helperText={
-                        Boolean(
-                          getErrorArrayPosition(errors, [
-                            "listTask",
-                            number,
-                            "assignedTo",
-                          ])
-                        )
-                          ? errors.listTask[number].assignedTo.message
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      </AccordionDetails>
-    </Accordion>
-  );
-};
+import FormEdit from "./formEdit";
 
 const DetailBacklog = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
-  const [ProjectName, setProjectName] = useState([]);
+  const [projectList, setProjectList] = useState([]);
   const [dataTasks, setDataTasks] = useState([]);
   const [valueproject, setValueproject] = useState();
   const [isSave, setIsSave] = useState(false);
@@ -440,7 +115,7 @@ const DetailBacklog = () => {
       name: item.attributes.name,
       projectInitial: item.attributes.projectInitial,
     }));
-    setProjectName(data);
+    setProjectList(data);
   };
 
   const getAssignedTo = async () => {
@@ -554,7 +229,7 @@ const DetailBacklog = () => {
     mode: "onChange",
   });
 
-  const SubmitSave = async () => {
+  const submitSave = async () => {
     let saveData = null;
     dataTasks.map((task) => {
       saveData = {
@@ -570,7 +245,6 @@ const DetailBacklog = () => {
         taskCode: task.taskCode,
       };
     });
-    console.log(saveData);
     if (!isSave) {
       setOpen(false);
     } else {
@@ -614,142 +288,25 @@ const DetailBacklog = () => {
         breadcrumbs={isEdit ? dataBreadEditBacklog : dataBreadDetailBacklog}
       />
       {isEdit ? (
-        <Grid container rowSpacing={2.5}>
-          <Grid item xs={12}>
-            <Grid container>
-              <Grid item xs={9.9}>
-                <Header judul="Edit Backlog" />
-              </Grid>
-              <Grid item />
-            </Grid>
-            <Grid className="HeaderDetail">
-              <Grid item xs={12}>
-                <form onSubmit={handleSubmit(handleClickOpenSave)}>
-                  <Grid container direction="column" spacing={3.75}>
-                    <Grid item xs={12}>
-                      <Autocomplete
-                        disablePortal
-                        disabled
-                        id="combo-box-demo"
-                        name="ProjectName"
-                        options={ProjectName}
-                        defaultValue={
-                          ProjectName.find(
-                            (option) =>
-                              option.id ===
-                              (dataDetail.projectInitial &&
-                                dataDetail.projectId)
-                          ) || null
-                        }
-                        sx={{
-                          width: "100%",
-                          marginTop: "8px",
-                          backgroundColor: "#EDEDED",
-                        }}
-                        getOptionLabel={(option) =>
-                          option.projectInitial + " - " + option.name
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Project Name *"
-                            placeholder="Select Backlog"
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Divider />
-                    </Grid>
-                    <Grid item xs={12}>
-                      {dataTasks.map((task, index) => (
-                        <TaskItem
-                          key={index}
-                          errors={errors}
-                          control={control}
-                          data={task}
-                          number={index}
-                          statusBacklogOl={statusBacklogOl}
-                          assignedToOl={assignedToOl}
-                          onTaskChange={handleChangeTask}
-                          setValue={setValue}
-                        />
-                      ))}
-                    </Grid>
-
-                    <Grid
-                      item
-                      container
-                      spacing={2}
-                      justifyContent="flex-end"
-                      mt={3.5}
-                    >
-                      <Grid item xs={12} sm={2} textAlign="right">
-                        <Button
-                          fullWidth
-                          variant="cancelButton"
-                          onClick={() => handleClickOpenCancel()}
-                        >
-                          Cancel Data
-                        </Button>
-                      </Grid>
-                      <Grid item xs={12} sm={2} textAlign="right">
-                        <Button
-                          fullWidth
-                          disabled={dataTasks.length === 0}
-                          variant="saveButton"
-                          type="submit"
-                        >
-                          Save Data
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </form>
-                <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                  className="dialog-delete"
-                >
-                  <DialogTitle
-                    sx={{
-                      alignSelf: "center",
-                      fontSize: "30px",
-                      fontStyle: "Poppins",
-                    }}
-                    id="alert-dialog-title"
-                  >
-                    {isSave ? "Save Data" : "Cancel Data"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      {isSave
-                        ? "Save your progress: Don't forget to save your data before leaving"
-                        : "Warning: Canceling will result in data loss without saving!"}
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions className="dialog-delete-actions">
-                    <Button
-                      variant="cancelButton"
-                      onClick={handleCloseOpenCancelData}
-                    >
-                      {isSave ? "Back" : "Cancel without saving"}
-                    </Button>
-                    <Button
-                      variant="saveButton"
-                      onClick={handleSubmit(SubmitSave)}
-                      autoFocus
-                    >
-                      {isSave ? "Save Data" : "Back"}
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+        <FormEdit
+          handleSubmit={handleSubmit}
+          handleClickOpenSave={handleClickOpenSave}
+          projectList={projectList}
+          dataDetail={dataDetail}
+          dataTasks={dataTasks}
+          errors={errors}
+          control={control}
+          statusBacklogOl={statusBacklogOl}
+          assignedToOl={assignedToOl}
+          handleChangeTask={handleChangeTask}
+          setValue={setValue}
+          handleClickOpenCancel={handleClickOpenCancel}
+          openDialog={open}
+          handleClose={handleClose}
+          isSave={isSave}
+          handleCloseOpenCancelData={handleCloseOpenCancelData}
+          submitSave={submitSave}
+        />
       ) : (
         <Grid container rowSpacing={2.5}>
           <Grid item xs={12}>
