@@ -77,14 +77,14 @@ const Dashboard = () => {
     {
       field: "nip",
       headerName: "NIP",
-      flex: 0.5,
-      minWidth: 180,
+      flex: 0,
+      minWidth: 150,
     },
     {
       field: "firstName",
       headerName: "Name",
-      flex: 1,
-      minWidth: 270,
+      flex: 0.3,
+      minWidth: 180,
       renderCell: (params) => {
         const urlMinio = params.row.image
           ? convertBase64(params.row.image)
@@ -117,15 +117,15 @@ const Dashboard = () => {
     {
       field: "email",
       headerName: "Work Email",
-      flex: 0.6,
-      minWidth: 270,
+      flex: 0.3,
+      minWidth: 170,
     },
     {
       field: "projectName",
       headerName: "Project Name",
       sortable: false,
-      flex: 0,
-      minWidth: 160,
+      flex: 0.5,
+      minWidth: 200,
     },
   ];
 
