@@ -26,7 +26,6 @@ const DetailBacklog = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
-  const [projectList, setProjectList] = useState([]);
   const [dataTasks, setDataTasks] = useState([]);
   const [valueproject, setValueproject] = useState();
   const [isSave, setIsSave] = useState(false);
@@ -103,19 +102,6 @@ const DetailBacklog = () => {
       Done: "#5DB975",
     };
     return statusFontColors[status] || "#fff";
-  };
-
-  const getProjectName = async () => {
-    const res = await client.requestAPI({
-      method: "GET",
-      endpoint: "/ol/project?search=",
-    });
-    const data = res.data.map((item) => ({
-      id: parseInt(item.id),
-      name: item.attributes.name,
-      projectInitial: item.attributes.projectInitial,
-    }));
-    setProjectList(data);
   };
 
   const getAssignedTo = async () => {
@@ -278,7 +264,6 @@ const DetailBacklog = () => {
   };
 
   useEffect(() => {
-    getProjectName();
     getDataDetail();
   }, [valueproject]);
 
@@ -291,7 +276,6 @@ const DetailBacklog = () => {
         <FormEdit
           handleSubmit={handleSubmit}
           handleClickOpenSave={handleClickOpenSave}
-          projectList={projectList}
           dataDetail={dataDetail}
           dataTasks={dataTasks}
           errors={errors}

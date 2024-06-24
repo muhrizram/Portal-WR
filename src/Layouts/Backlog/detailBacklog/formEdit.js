@@ -17,7 +17,6 @@ import TaskItemEditBacklog from "./taskItem";
 const FormEdit = ({
   handleSubmit,
   handleClickOpenSave,
-  projectList,
   dataDetail,
   dataTasks,
   errors,
@@ -51,23 +50,13 @@ const FormEdit = ({
                     disablePortal
                     disabled
                     id="combo-box-demo"
-                    name="ProjectName"
-                    options={projectList}
-                    defaultValue={
-                      projectList.find(
-                        (option) =>
-                          option.id ===
-                          (dataDetail.projectInitial && dataDetail.projectId)
-                      ) || null
-                    }
+                    value={dataDetail.projectName}
+                    options={[]}
                     sx={{
                       width: "100%",
                       marginTop: "8px",
                       backgroundColor: "#EDEDED",
                     }}
-                    getOptionLabel={(option) =>
-                      option.projectInitial + " - " + option.name
-                    }
                     renderInput={(params) => (
                       <TextField
                         {...params}
