@@ -152,12 +152,15 @@ const Dashboard = () => {
         firstName: value.attributes.fullname,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
-        email: value.attributes.email !== "false" ? value.attributes.email : "",
-        projectName: value.attributes.projects
-          .map((project) => {
-            return project.projectName;
-          })
-          .join(", "),
+        email: value.attributes.email !== "" ? value.attributes.email : "-",
+        projectName:
+          value.attributes.projects.length > 0
+            ? value.attributes.projects
+                .map((project) => {
+                  return project.projectName;
+                })
+                .join(", ")
+            : "-",
       };
     });
 
