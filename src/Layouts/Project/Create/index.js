@@ -63,6 +63,18 @@ const CreateProject = () => {
   if(!!userAdmin) {
     listUserAdmin = userAdmin
   }
+
+  useEffect(() => {
+    setData(prevData => ({
+      ...prevData,
+      listUser: listUserAdmin.map((member) => ({
+        userId: member.userId,
+        roleProjectId: 70,
+        joinDate: null,
+        endDate: null
+      }))
+    }));
+  }, []);
   
   const columnsProject = [
     {
@@ -223,10 +235,12 @@ const CreateProject = () => {
       sortable: false,
       minWidth: 100,
       renderCell: (params) => {
+        const isFirstRow = params.row.no === 1;
         return (
           <IconButton
             onClick={() => handleDeleteMember(params.row.userId)}
             color="default"
+            disabled={isFirstRow}
           >
             <DeleteOutlineOutlined />
           </IconButton>
@@ -330,35 +344,37 @@ const CreateProject = () => {
   const updateData = [...listUserAdmin, ...selectedMember.map((row, index) => ({ ...row, no: 1 + (index + 1) }))]
 
   const handleDeleteMember = (userId) => {
-    let updatedSelected;
-    setSelectedMember((prevSelected) => {
-      updatedSelected = prevSelected.filter(
-        (existingMember) => existingMember.userId !== userId
+    if(userId !== parseInt(currentUserId)) {
+      let updatedSelected;
+      setSelectedMember((prevSelected) => {
+        updatedSelected = prevSelected.filter(
+          (existingMember) => existingMember.userId !== userId
+        );
+        return updatedSelected;
+      });
+  
+      const updatedListUser = sendData.listUser.filter(
+        (user) => user.userId !== userId
       );
-      return updatedSelected;
-    });
-
-    const updatedListUser = sendData.listUser.filter(
-      (user) => user.userId !== userId
-    );
-
-    const updatedDataUser = dataUser.filter(
-      (user) => user.userId !== userId
-    );
-
-    const updatedValueUser = updatedSelected.map((member) => ({
-      id: member.userId,
-      firstName: member.firstName,
-      lastName: member.lastName
-    }));
-    setValueUser(updatedValueUser);
-
-    setData((prevData) => ({
-      ...prevData,
-      listUser: updatedListUser,
-    }));
-
-    setDataUser(updatedDataUser);
+  
+      const updatedDataUser = dataUser.filter(
+        (user) => user.userId !== userId
+      );
+  
+      const updatedValueUser = updatedSelected.map((member) => ({
+        id: member.userId,
+        firstName: member.firstName,
+        lastName: member.lastName
+      }));
+      setValueUser(updatedValueUser);
+  
+      setData((prevData) => ({
+        ...prevData,
+        listUser: updatedListUser,
+      }));
+  
+      setDataUser(updatedDataUser);
+    }
   };
 
   const getOptDataUser = async (value) => {
@@ -487,6 +503,17 @@ const CreateProject = () => {
     const dataForm = methods.getValues()
     delete dataForm.userId
     
+    if(sendData.listUser.length === 1){
+      setDataAlert({
+        severity: 'error',
+        message: 'Please invite at least 1 member',
+        open: true
+      })
+      setIsSaveLoading(false)
+      setOpen(false)
+      return
+    }
+
     const data = {
       ...sendData,
       ...dataForm
@@ -542,9 +569,7 @@ const CreateProject = () => {
   }
 
   const searchMember = (value) => {
-    // setTimeout(() => {
     getOptDataUser(value)
-    // }, 200)
   }
 
   const hanldeChangePhone = (event) =>{
@@ -570,7 +595,7 @@ const CreateProject = () => {
                       focused
                       name="projectName"
                       className="input-field-crud"
-                      placeholder="e.g Project Internal 79"
+                      placeholder="e.g Project Internal"
                       label="Project Name *"
                       inputProps={{ maxLength:100 }}
                     />
@@ -639,7 +664,7 @@ const CreateProject = () => {
                             format="DD/MM/YYYY"
                             name={field.name}
                             sx={{ width: "100%" }}
-                            value={field.value ? dayjs(field.value) : ""}
+                            value={field.value ? dayjs(field.value) : null}
                             onChange={(startProjectDate) => {
                               field.onChange(startProjectDate ? startProjectDate.format("YYYY-MM-DD") : "");
                               setStartProject(startProjectDate ? startProjectDate.format("YYYY-MM-DD") : "");
@@ -709,7 +734,7 @@ const CreateProject = () => {
                       focused
                       name="initialProject"
                       className="input-field-crud"
-                      placeholder="e.g BIO-APF"
+                      placeholder="e.g CN-PI"
                       label="Initial Project *"
                       inputProps={{maxLength:20}}
                     />
@@ -774,7 +799,7 @@ const CreateProject = () => {
                 </Grid>
                 <Grid item container mt={4} spacing={2}>
                   <Grid item xs={12}>
-                    <Typography variant="inputDetail" sx={{fontWeight: 'bold', fontSize: 20}}>Teams Member</Typography>
+                    <Typography variant="inputDetail" sx={{fontWeight: 'bold', fontSize: 20}}>Team Members</Typography>
                   </Grid>
                   <Grid item xs={12} mb={2}>
                     <div className='card-project' >
