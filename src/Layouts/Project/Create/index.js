@@ -433,6 +433,7 @@ const CreateProject = () => {
 
   const methods = useForm({
     resolver: yupResolver(schemacompany),
+    mode: 'onChange',
     defaultValues: {
       picProjectName: '',
       picProjectPhone: '',
@@ -708,7 +709,7 @@ const CreateProject = () => {
                       focused
                       name="initialProject"
                       className="input-field-crud"
-                      placeholder="e.g T-PR-WR-001"
+                      placeholder="e.g BIO-APF"
                       label="Initial Project *"
                       inputProps={{maxLength:20}}
                     />

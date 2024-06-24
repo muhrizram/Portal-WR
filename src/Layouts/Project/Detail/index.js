@@ -1007,7 +1007,7 @@ const DetailProject = () => {
                         focused
                         name="initialProject"
                         className="input-field-crud"
-                        placeholder="e.g T-PR-WR-001"
+                        placeholder="e.g BIO-APF"
                         label="Initial Project *"
                         value={editData.initialProject || ""}
                         onChange={(e) => handleEditChange(e, "initialProject")}
