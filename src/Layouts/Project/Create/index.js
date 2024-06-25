@@ -74,6 +74,7 @@ const CreateProject = () => {
         endDate: null
       }))
     }));
+    setSelectedMember(listUserAdmin);
   }, []);
   
   const columnsProject = [
@@ -127,6 +128,8 @@ const CreateProject = () => {
       minWidth: 400,
       cellClassName: "joinDate-cell",
       renderCell: (params) => {
+        const [startJoinProject, setStartJoinProject] = useState(params.row.joinDate ? dayjs(params.row.joinDate) : null);
+        const [endJoinProject, setEndJoinProject] = useState(params.row.endDate ? dayjs(params.row.endDate) : null);
         return (
           <Grid container columnSpacing={1}>
             <Grid item xs={5.5}>
@@ -134,8 +137,9 @@ const CreateProject = () => {
                 <DatePicker
                   className="date-input-table"
                   format="DD/MM/YYYY"
-                  onChange={(startJoinProject) => {
-                    const newJoinDate = startJoinProject.format("YYYY-MM-DD");
+                  onChange={(startJoinProjectDate) => {
+                    const newJoinDate = startJoinProjectDate.format("YYYY-MM-DD");
+                    setStartJoinProject(startJoinProjectDate);
                     const updatedListUser = sendData.listUser.map(u => {
                       if (u.userId === params.row.userId || currentUserId == params.row.userId) {
                         return { ...u, joinDate: newJoinDate };
@@ -148,6 +152,8 @@ const CreateProject = () => {
                       listUser: updatedListUser
                     }));
                   }}
+                  minDate={dayjs(startProject)}
+                  maxDate={dayjs(endProject)}
                 />
               </LocalizationProvider>
             </Grid>
@@ -159,8 +165,9 @@ const CreateProject = () => {
                 <DatePicker
                   className="date-input-table"
                   format="DD/MM/YYYY"
-                  onChange={(endJoinProject) => {
-                    const newEndDate = endJoinProject.format("YYYY-MM-DD");
+                  onChange={(endJoinProjectDate) => {
+                    const newEndDate = endJoinProjectDate.format("YYYY-MM-DD");
+                    setEndJoinProject(endJoinProjectDate);
                     const updatedListUser = sendData.listUser.map(u => {
                       if (u.userId === params.row.userId || currentUserId == params.row.userId) {
                         return { ...u, endDate: newEndDate };
@@ -173,6 +180,8 @@ const CreateProject = () => {
                       listUser: updatedListUser
                     }));
                   }}
+                  minDate={startJoinProject || dayjs(startProject)}
+                  maxDate={dayjs(endProject)}
                 />
               </LocalizationProvider>
             </Grid>
@@ -314,7 +323,8 @@ const CreateProject = () => {
       }
     }
 
-    setSelectedMember((prevSelected) => [...prevSelected, ...newMembers])
+    const updatedSelectedMember = [...selectedMember, ...newMembers];
+    setSelectedMember(updatedSelectedMember);
 
     let listMemberAdmin;
     if(sendData.listUser.length !== 0) {
@@ -339,11 +349,19 @@ const CreateProject = () => {
       ...prevData,
       listUser: updatedListUser
     }));
+
+    const updatedValueUser = updatedSelectedMember.map((member) => ({
+      id: member.userId,
+      firstName: member.firstName,
+      lastName: member.lastName
+    }));
+
+    setValueUser(updatedValueUser);
     
     setIsInviteDisabled(true)
   }
 
-  const updateData = [...listUserAdmin, ...selectedMember.map((row, index) => ({ ...row, no: 1 + (index + 1) }))]
+  const updateData = [...selectedMember.map((row, index) => ({ ...row, no: index + 1 }))]
 
   const handleDeleteMember = (userId) => {
     if(userId !== parseInt(currentUserId)) {
@@ -715,6 +733,8 @@ const CreateProject = () => {
                                 error: !!errors.endDate,
                               },
                             }}
+                            disabled={!startProject}
+                            minDate={dayjs(startProject)}
                           />
                         )}
                       />
@@ -822,6 +842,7 @@ const CreateProject = () => {
                               onChange={(_event, newValue) => {
                                 setValueUser([...newValue])
                               }}
+                              value={valueUser}
                               className="input-field-crud bg-white auto-chips"
                               onKeyUpCapture={debounce((event) => searchMember(event.target.value), 500)}
                               options={dataUser}
