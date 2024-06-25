@@ -140,8 +140,8 @@ const Employee = () => {
         firstName: value.attributes.fullName,
         position: value.attributes.position,
         image: value.attributes.photoProfile,
-        email: value.attributes.email !== "false" ? value.attributes.email : "",
-        departement: value.attributes.department,
+        email: value.attributes.email !== "" ? value.attributes.email : "-",
+        departement: value.attributes.department !== "" ? value.attributes.department : "-",
       };
     });
     setData([...temp]);
@@ -182,17 +182,29 @@ const Employee = () => {
       method: "POST",
       endpoint: "/syncWithOdoo",
     });
-    if (!res.isError) {
-      setSynchroniseMessage(res.data.meta.message);
-      setSynchroniseData(res.data);
-      setSynchroniseLoading(false);
-    } else {
+
+    try{
+      if (!res.isError) {
+        setSynchroniseMessage(res.data.meta.message);
+        setSynchroniseData(res.data);
+        setSynchroniseLoading(false);
+      } else {
+        setDataAlert({
+          severity: "error",
+          message: res.error.detail,
+          open: true,
+        });
+        setSynchroniseLoading(false);
+      }
+    }catch(e){
       setDataAlert({
         severity: "error",
-        message: res.error.detail,
+        message: "Failed to synchronize data",
         open: true,
       });
+      setSynchroniseLoading(false);
     }
+
   };
 
   const onFilter = (dataFilter) => {

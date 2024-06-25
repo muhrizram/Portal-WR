@@ -46,7 +46,8 @@ const requestAPI = async ({
   let result = {};
   const host = process.env.REACT_APP_BASE_API;
   const url = `${host}${endpoint}`;
-  const timeout = process.env.REACT_APP_DEFAULT_TIMEOUT;
+  // timeout in 5 minutes
+  const timeout = 300000;
   const token = localStorage.getItem("token");
   let optHeaders = {
     ...headers,
