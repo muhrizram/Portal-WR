@@ -163,7 +163,7 @@ export default function CheckinTime({
                     {moment(dataPeriod.tanggal).format("dddd, DD MMMM YYYY")}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mt: 4}}>
                   <FormControl
                     fullWidth
                     sx={{ backgroundColor: "#EDEDED", borderRadius: 2 }}
@@ -217,10 +217,11 @@ export default function CheckinTime({
                         Cancel
                       </Button>
                     </Grid>
-                    <Grid item xs={1.2} display="flex" alignItems="center">
+                    <Grid item xs={1.2} display="flex" alignItems="center" sx={{ ml:2 }}>
                       <Button
                         disabled={lat == "" || lon == ""}
-                        variant="contained"
+                        variant="saveButton"
+                        size="small "
                         onClick={() => onContinue()}
                       >
                         Continue

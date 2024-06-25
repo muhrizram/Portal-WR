@@ -1,4 +1,4 @@
-import { Button, Card, Grid, Typography } from "@mui/material";
+import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import uploadFile from "./../../../global/uploadFile";
 import client from "../../../global/client";
@@ -53,20 +53,23 @@ export default function CheckOut({
     <Grid container>
       <Grid item xs={12}>
         <Card>
-          <Grid item p={4} xs={12}>
-            <Grid item xs={12} display="flex" justifyContent="center">
-              <Typography variant="title">Geolocation</Typography>
+        <Grid justifyContent="center">
+          <Grid item xs={12} display="flex" direction="column" alignItems="center">
+            <Grid item xs={12}>
+              <Typography variant="title" align="center">Geolocation</Typography>
             </Grid>
-            <Typography>Latitude : {lat}</Typography>
-            <Typography>Longitude : {lon}</Typography>
-            <iframe id="iframeId" height="=100%" width="90%"></iframe>
+            <Box width="80%">
+              <Typography>Latitude : {lat}</Typography>
+              <Typography>Longitude : {lon}</Typography>
+            </Box>
+            <iframe id="iframeId" height="500px" width="80%"></iframe>
           </Grid>
+        </Grid>
           <Grid container p={4} spacing={2}>
             <Grid item xs={12}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Grid container justifyContent="center">
-                    <Grid item xs={2} display="flex" alignItems="center">
+                  <Grid container justifyContent="center" gap="10px">
                       <Button
                         variant="outlined"
                         onClick={() => {
@@ -75,16 +78,13 @@ export default function CheckOut({
                       >
                         Back
                       </Button>
-                    </Grid>
-                    <Grid item xs={2} display="flex" alignItems="center">
                       <Button
-                        variant="contained"
+                        variant="saveButton"
                         disabled={lat == "" || lon == ""}
                         onClick={() => checkIn()}
                       >
                         Check Out
                       </Button>
-                    </Grid>
                   </Grid>
                 </Grid>
               </Grid>
