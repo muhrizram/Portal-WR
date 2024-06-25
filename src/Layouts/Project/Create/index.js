@@ -301,14 +301,16 @@ const CreateProject = () => {
 
     const newMembers = [];
     for (const newUser of valueUser) {
-      let exists = false;
-      for (const existingMember of selectedMember) {
-        if (newUser.id === existingMember.id) {
-          exists = true;
+      let exists = false; 
+      if(newUser.id !== Number(currentUserId)) {
+        for (const existingMember of selectedMember) {
+          if (newUser.id === existingMember.id) {
+            exists = true;
+          }
         }
-      }
-      if (!exists) {
-        newMembers.push(newUser);
+        if (!exists) {
+          newMembers.push(newUser);
+        }
       }
     }
 

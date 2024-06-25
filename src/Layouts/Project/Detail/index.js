@@ -256,8 +256,10 @@ const DetailProject = () => {
             minWidth: 100,
             sortable: false,
             renderCell: (params) => {
+              const isCurrentUser = parseInt(params.row.id) === currentUserId;
               return (
                 <IconButton
+                  disabled={isCurrentUser}
                   onClick={(e) => deleteMember(params.row.id)}
                   color="default"
                 >
@@ -422,32 +424,32 @@ const DetailProject = () => {
       }))
       .filter(newMember => !dataMember.some(existingMember => newMember.id == existingMember.id));
   
-    setSelectedMember(prevSelected => [...prevSelected, ...newMembers]);
-  
-    const updatedListUser = editData.teamMember
-      .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
-      .concat(newMembers.map((member, index) => ({
-        no: editData.teamMember.length + index + 1,
-        id: member.id,
-        name: member.name,
-        userId: parseInt(member.userId),
-        roleId: parseInt(member.roleId),
-        joinDate: member.joinDate,
-        endDate: member.endDate,
-      })));
-  
-    setEditData(prevData => ({
-      ...prevData,
-      teamMember: updatedListUser
-    }));
-    setIsInviteDisabled(true)
+      setdataMember(prevSelected => [...prevSelected, ...newMembers]);
+    
+      const updatedListUser = editData.teamMember
+        .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
+        .concat(newMembers.map((member, index) => ({
+          no: editData.teamMember.length + index + 1,
+          id: member.id,
+          name: member.name,
+          userId: parseInt(member.userId),
+          roleId: parseInt(member.roleId),
+          joinDate: member.joinDate,
+          endDate: member.endDate,
+        })));
+    
+      setEditData(prevData => ({
+        ...prevData,
+        teamMember: updatedListUser
+      }));
+      setIsInviteDisabled(true)
   }
 
   const updateData = [
-    ...dataMember,
-    ...selectedMember.map((row, index) => ({
+    ...selectedMember,
+    ...dataMember.map((row, index) => ({
       ...row,
-      no: dataMember.length + index + 1,
+      no: index + 1,
     })),
   ];
 
@@ -741,7 +743,7 @@ const DetailProject = () => {
                         value={editData.projectName || ""}
                         onChange={(e) => handleEditChange(e, "projectName")}
                         className="input-field-crud"
-                        placeholder="e.g Project Internal 79"
+                        placeholder="e.g Project Internal"
                         label="Project Name"
                         required={true}
                         inputProps={{ maxLength: 100 }}
@@ -1007,7 +1009,7 @@ const DetailProject = () => {
                         focused
                         name="initialProject"
                         className="input-field-crud"
-                        placeholder="e.g BIO-APF"
+                        placeholder="e.g CN-PI"
                         label="Initial Project *"
                         value={editData.initialProject || ""}
                         onChange={(e) => handleEditChange(e, "initialProject")}

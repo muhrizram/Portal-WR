@@ -6,7 +6,7 @@ const schemacompany = yup.object({
   projectName: yup.string().max(100).required(`${textPlease} Project Name`),
   companyId: yup.string().max(30).required(`Please Select Company`),
   picProjectName: yup.string().max(100).required(`${textPlease} PIC Project Name`),
-  picProjectPhone: yup.string().max(15).required(`${textPlease} PIC Project Phone`),
+  picProjectPhone: yup.string().max(15, `PIC Project Phone must be at most 15 characters`).required(`${textPlease} PIC Project Phone`),
   projectType: yup.string().max(30).required(`Please Select Project Type`),
   initialProject: yup.string().max(20).required(`${textPlease} Initial Project`),
   startDate: yup
