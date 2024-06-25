@@ -95,7 +95,6 @@ const Reset = ({ open, onClose }) => {
       data: dataPassword,
     });
     if (res.isError) {
-      console.error("Invalid current password");
       setDataAlert({
         severity: "error",
         open: true,
