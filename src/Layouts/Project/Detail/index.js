@@ -71,7 +71,7 @@ const DetailProject = () => {
     );
     setValue("endDate", moment(dataDetail.endDateProject).format("YYYY-MM-DD"));
     setValue("projectDescription", dataDetail.projectDescription);
-  }, [dataDetail, isEdit]);
+  }, [isEdit]);
 
   const [dataMember, setdataMember] = useState([
     {
@@ -143,6 +143,7 @@ const DetailProject = () => {
             minWidth: 400,
             sortable: false,
             renderCell: (params) => {
+              const member = editData.teamMember ? editData.teamMember.find(u => u.userId == params.row.id) : {};
               return (
                 <Grid container>
                   <Grid item xs={5.5}>
@@ -151,8 +152,8 @@ const DetailProject = () => {
                         className="date-input-table"
                         format="DD/MM/YYYY"
                         defaultValue={dayjs(params.row.joinDate)}
-                        onChange={(startJoinProject) => {
-                          const newStartDate = startJoinProject.format("YYYY-MM-DD");
+                        onChange={(startJoinProjectDate) => {
+                          const newStartDate = startJoinProjectDate.format("YYYY-MM-DD");
                           const updatedListUser = editData.teamMember.map(u => {
                             if (u.userId == params.row.id) {
                               return { ...u, joinDate: newStartDate };
@@ -167,6 +168,8 @@ const DetailProject = () => {
   
                         }}
                         sx={{ paddingRight: "2px" }}
+                        minDate={dayjs(editData.startDateProject)}
+                        maxDate={dayjs(editData.endDateProject)}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -179,8 +182,8 @@ const DetailProject = () => {
                         className="date-input-table"
                         format="DD/MM/YYYY"
                         defaultValue={dayjs(params.row.endDate)}
-                        onChange={(endJoinProject) => {
-                          const newEndDate = endJoinProject.format("YYYY-MM-DD");
+                        onChange={(endJoinProjectDate) => {
+                          const newEndDate = endJoinProjectDate.format("YYYY-MM-DD");
                           const updatedListUser = editData.teamMember.map(u => {
                             if (u.userId == params.row.id) {
                               return { ...u, endDate: newEndDate };
@@ -194,6 +197,8 @@ const DetailProject = () => {
                           });
   
                         }}
+                        minDate={member && member.joinDate ? dayjs(member.joinDate) : dayjs(editData.startDateProject)}
+                        maxDate={dayjs(editData.endDateProject)}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -347,7 +352,7 @@ const DetailProject = () => {
 
   const dataBread = [
     {
-      href: "/dashboard",
+      href: "/",
       title: "Dashboard",
       current: false,
     },
@@ -396,7 +401,7 @@ const DetailProject = () => {
     }));
     setValueUser(updatedValueUser);
 
-    setDataDetail((prevData) => ({
+    setEditData((prevData) => ({
       ...prevData,
       teamMember: updatedListUser,
     }));
@@ -418,13 +423,14 @@ const DetailProject = () => {
         roleId: parseInt(newUser.roleSelect.id),
         nip: newUser.nip,
         assignment: newUser.position,
-        joinDate: newUser.startJoin,
-        endDate: newUser.endDate,
+        joinDate: editData.startDateProject,
+        endDate: editData.endDateProject,
         dataSelect: newUser.roleSelect
       }))
       .filter(newMember => !dataMember.some(existingMember => newMember.id == existingMember.id));
   
-      setdataMember(prevSelected => [...prevSelected, ...newMembers]);
+      const updatedDataMember = [...dataMember, ...newMembers];
+      setdataMember(updatedDataMember);
     
       const updatedListUser = editData.teamMember
         .filter(existingMember => !newMembers.some(newMember => newMember.id === existingMember.id))
@@ -437,11 +443,20 @@ const DetailProject = () => {
           joinDate: member.joinDate,
           endDate: member.endDate,
         })));
-    
+
       setEditData(prevData => ({
         ...prevData,
         teamMember: updatedListUser
       }));
+
+      const updatedValueUser = updatedDataMember.map(member => ({
+        id: member.id,
+        firstName: member.firstName,
+        lastName: member.lastName,
+      }));
+
+      setValueUser(updatedValueUser);
+
       setIsInviteDisabled(true)
   }
 
@@ -543,6 +558,7 @@ const DetailProject = () => {
 
   let methods = useForm({
     resolver: yupResolver(schemacompany),
+    mode: "onChange",
     defaultValues: {
       projectName: "",
       picProjectName: "",
@@ -591,6 +607,17 @@ const DetailProject = () => {
       }),
     };
 
+
+    if(data.listUser.length === 1){
+      setDataAlert({
+        severity: 'error',
+        message: 'Please invite at least 1 member',
+        open: true
+      })
+      setIsSaveLoading(false)
+      setOpen(false)
+      return
+    }
     const id = localStorage.getItem("projectId");
     const res = await client.requestAPI({
       method: "PUT",
@@ -721,9 +748,10 @@ const DetailProject = () => {
             }
           }}>
             <Button
+              disabled={company.length === 0}
               variant="outlined"
               className="button-text"
-              startIcon={<EditOutlinedIcon />}
+              startIcon={company.length === 0 ? <CircularProgress size={10} sx={{ color: 'grey' }} /> : <EditOutlinedIcon />}
               onClick={() => setIsEdit(true)}
             >
               Edit Data Project
@@ -971,6 +999,8 @@ const DetailProject = () => {
                                   error: !!errors.endDate,
                                 },
                               }}
+                              disabled={!editData.startDateProject}
+                              minDate={dayjs(editData.startDateProject)}  
                             />
                           )}
                         />
