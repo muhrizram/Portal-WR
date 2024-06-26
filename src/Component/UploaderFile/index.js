@@ -15,7 +15,7 @@ const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
     const pathAbsence = "absence";
     const pathOvertime = "overtime";
     return {
-      url: `https://portalwr-dev-api.cloudias79.com/minio/uploadFile?path=${
+      url: `https://portalwr.tujuhsembilan.com/minio/uploadFile?path=${
         overtime ? pathOvertime : pathAbsence
       }`,
       headers: {
