@@ -14,8 +14,9 @@ const UploaderFile = ({ onCompleteUpload, overtime, file }) => {
     const token = localStorage.getItem("token");
     const pathAbsence = "absence";
     const pathOvertime = "overtime";
+    const url = process.env.REACT_APP_BASE_API;
     return {
-      url: `https://portalwr.tujuhsembilan.com/minio/uploadFile?path=${
+      url: `${url}/minio/uploadFile?path=${
         overtime ? pathOvertime : pathAbsence
       }`,
       headers: {
