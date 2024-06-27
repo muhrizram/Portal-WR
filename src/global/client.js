@@ -85,13 +85,15 @@ const requestAPI = async ({
     return result;
   } catch (error) {
     if (error.response.status === 401) {
-      if (!clientState.refreshingToken) {
-        clientState.refreshingToken = true;
-        const refreshTokennya = localStorage.getItem("refreshtoken");
-        const refreshTokenSuccess = await refreshToken(refreshTokennya);
-        clientState.refreshingToken = false;
-        if (refreshTokenSuccess) {
-          return await requestAPI({ method, endpoint, data, headers });
+      if(!isLogin){
+        if (!clientState.refreshingToken) {
+          clientState.refreshingToken = true;
+          const refreshTokennya = localStorage.getItem("refreshtoken");
+          const refreshTokenSuccess = await refreshToken(refreshTokennya);
+          clientState.refreshingToken = false;
+          if (refreshTokenSuccess) {
+            return await requestAPI({ method, endpoint, data, headers });
+          }
         }
       }
     }
