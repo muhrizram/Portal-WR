@@ -63,7 +63,7 @@ export default function WorkingReport() {
   const [StatusSearch, setStatusSearch] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [DataPresence, setDataPresence] = useState();
-  const [obtainedData, setObtainedData] = useState();
+  const [obtainedData, setObtainedData] = useState("");
   const [isHoliday, setIsHoliday] = useState(false);
 
   const open = dropMenu;
