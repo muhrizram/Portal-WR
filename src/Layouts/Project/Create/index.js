@@ -57,25 +57,25 @@ const CreateProject = () => {
   const [isInviteDisabled, setIsInviteDisabled] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState(null);
   const currentUserId = localStorage.getItem("userId");
-  const userAdmin = JSON.parse(localStorage.getItem('listUserAdmin'))
-
-  let listUserAdmin = []
-  if(!!userAdmin) {
-    listUserAdmin = userAdmin
-  }
+  const [listUserAdmin, setListUserAdmin] = useState(() => {
+    const userAdmin = JSON.parse(localStorage.getItem('listUserAdmin'));
+    return userAdmin || [];
+  });
 
   useEffect(() => {
-    setData(prevData => ({
-      ...prevData,
-      listUser: listUserAdmin.map((member) => ({
-        userId: member.userId,
-        roleProjectId: 70,
-        joinDate: null,
-        endDate: null
-      }))
-    }));
-    setSelectedMember(listUserAdmin);
-  }, []);
+    if (listUserAdmin.length > 0) {
+      setData(prevData => ({
+        ...prevData,
+        listUser: listUserAdmin.map((member) => ({
+          userId: member.userId,
+          roleProjectId: 70,
+          joinDate: null,
+          endDate: null
+        }))
+      }));
+      setSelectedMember(listUserAdmin);
+    }
+  }, [listUserAdmin]);
   
   const columnsProject = [
     {
@@ -425,10 +425,10 @@ const CreateProject = () => {
       }
       user.no = i + 1
     });
+
+    setListUserAdmin(newMembers);
     setDataProject(newMembers)
-    if(!(!!userAdmin)) {
-      localStorage.setItem('listUserAdmin', JSON.stringify(newMembers))
-    }
+    localStorage.setItem('listUserAdmin', JSON.stringify(newMembers));
     setLoading(false)
   }
 
