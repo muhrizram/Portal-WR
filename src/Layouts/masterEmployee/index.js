@@ -178,12 +178,11 @@ const Employee = () => {
     setOpen(true);
     setSynchroniseLoading(true);
 
-    const res = await client.requestAPI({
-      method: "POST",
-      endpoint: "/syncWithOdoo",
-    });
-
     try{
+      const res = await client.requestAPI({
+        method: "POST",
+        endpoint: "/syncWithOdoo",
+      });
       if (!res.isError) {
         setSynchroniseMessage(res.data.meta.message);
         setSynchroniseData(res.data);
@@ -258,15 +257,25 @@ const Employee = () => {
         ) : (
           <React.Fragment>
             <DialogContent className="dialog-info-content">
-              <DialogContentText
-                id="alert-dialog-text"
-                className="dialog-info-text-content"
-              >
-                Synchronization Successful!
-              </DialogContentText>
-              <DialogContentText className="dialog-info-text-content">
-                Data synchronization has been completed successfully.
-              </DialogContentText>
+              {synchroniseMessage.length < 1 ? (
+                <>
+                  <DialogContentText id="alert-dialog-text" className="dialog-info-text-content">
+                    Synchronization Failed!
+                  </DialogContentText>
+                  <DialogContentText className="dialog-info-text-content">
+                    Data synchronization has failed.
+                  </DialogContentText>
+                </>
+                ) : (
+                  <>
+                    <DialogContentText id="alert-dialog-text" className="dialog-info-text-content">
+                      Synchronization Successful!
+                    </DialogContentText>
+                    <DialogContentText className="dialog-info-text-content">
+                      Data synchronization has been completed successfully.
+                    </DialogContentText>
+                  </>
+                )}
               <DialogContentText className="dialog-info-text-content">
                 <RenderSyncMessage />
               </DialogContentText>
