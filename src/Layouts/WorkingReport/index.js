@@ -63,7 +63,7 @@ export default function WorkingReport() {
   const [StatusSearch, setStatusSearch] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [DataPresence, setDataPresence] = useState();
-  const [isDataObtained, setIsDataObtained] = useState(false);
+  const [obtainedData, setObtainedData] = useState();
   const [isHoliday, setIsHoliday] = useState(false);
 
   const open = dropMenu;
@@ -78,7 +78,11 @@ export default function WorkingReport() {
   const date = new Date(),
     y = date.getFullYear(),
     m = date.getMonth();
-  const [filter, setFilter] = useState({
+  const [jumpMonth, setJumpMonth] = useState({
+    startDate: new Date(y, m, 1),
+    endDate: new Date(y, m + 1, 0),
+  });
+  const [filterDate, setFilterDate] = useState({
     startDate: new Date(y, m, 1),
     endDate: new Date(y, m + 1, 0),
   });
@@ -113,7 +117,7 @@ export default function WorkingReport() {
       }
     }
     getData();
-  }, [filter, JSON.stringify(selectedUser)]);
+  }, [jumpMonth, JSON.stringify(selectedUser)]);
 
   const updateStatusHr = (newValue) => {
     if (newValue === null) {
@@ -133,19 +137,26 @@ export default function WorkingReport() {
     }
   };
 
-  const updateFilterDates = (newActiveMonth) => {
+  const updateJumpMonth = (newActiveMonth) => {
     const newEndDate = moment(newActiveMonth).endOf("month").toDate();
     const newStartDate = moment(newActiveMonth).startOf("month").toDate();
-    setFilter({
+    setJumpMonth({
+      startDate: newStartDate,
+      endDate: newEndDate,
+    });
+  };
+
+  const updateFilterDate = (newStartDate, newEndDate) => {
+    setFilterDate({
       startDate: newStartDate,
       endDate: newEndDate,
     });
   };
 
   const getData = async () => {
-    let endpoint = `/workingReport/${moment(filter.startDate).format(
+    let endpoint = `/workingReport/${moment(jumpMonth.startDate).format(
       "yyyy-MM-DD"
-    )}/${moment(filter.endDate).format("yyyy-MM-DD")}`;
+    )}/${moment(jumpMonth.endDate).format("yyyy-MM-DD")}`;
     const idUser = selectedUser ? selectedUser.id : currentUserId;
     endpoint += `/${idUser}`;
     const res = await client.requestAPI({
@@ -154,14 +165,14 @@ export default function WorkingReport() {
     });
     if (!res.isError) {
       rebuildData(res);
-      setIsDataObtained(true);
+      setObtainedData(res);
     } else {
       setDataAlert({
         severity: "error",
         message: "Working Report Not Found",
         open: true,
       });
-      setIsDataObtained(false);
+      setObtainedData(res);
     }
 
     const resUser = await client.requestAPI({
@@ -211,8 +222,8 @@ export default function WorkingReport() {
 
   const downloadFormatFile = (employeeId = 1, isExcel, url = "") => {
     setIsDownloading(true);
-    const start = moment(filter.startDate).format("yyyy-MM-DD");
-    const end = moment(filter.endDate).format("yyyy-MM-DD");
+    const start = moment(filterDate.startDate).format("yyyy-MM-DD");
+    const end = moment(filterDate.endDate).format("yyyy-MM-DD");
     const downloadUrl = isExcel
       ? getWorkingReportExcelUrl(employeeId, start, end, url)
       : getWorkingReportPdfUrl(employeeId, start, end, url);
@@ -393,10 +404,10 @@ export default function WorkingReport() {
           setIsViewOvertime={setIsViewOvertime}
           events={data}
           setWrIdDetail={setWrIdDetail}
-          setIsDataObtained={setIsDataObtained}
-          isDataObtained={isDataObtained}
-          filter={filter}
-          updateFilterDates={updateFilterDates}
+          obtainedData={obtainedData}
+          dateFilter={filterDate}
+          updateJumpMonth={updateJumpMonth}
+          updateFilterDate={updateFilterDate}
           onStatusHr={onStatusHr}
           setonOtherUser={setonOtherUser}
           setIsViewAttendance={setIsViewAttendance}

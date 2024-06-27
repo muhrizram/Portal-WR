@@ -9,8 +9,9 @@ import { AlertContext } from "../../context";
 import moment from "moment";
 
 export default function DateRangeCalendar({
-  setIsDataObtained,
-  updateFilterDates,
+  updateFilterDate,
+  updateJumpMonth,
+  activeMonth,
   setStartDateCall,
   setEndDateCall,
 }) {
@@ -31,6 +32,8 @@ export default function DateRangeCalendar({
   };
 
   const ResetFilter = () => {
+    updateFilterDate(moment(activeMonth).startOf('month').toDate(), moment(activeMonth).endOf('month').toDate());
+    updateJumpMonth(moment(activeMonth).startOf('month').toDate());
     setStartDateCall(null);
     setStartDate(null);
     setEndDateCall(null);
@@ -55,8 +58,8 @@ export default function DateRangeCalendar({
     }
 
     if (startDate !== null && endDate !== null) {
-      setIsDataObtained(false);
-      updateFilterDates(moment(startDate).toDate());
+      updateJumpMonth(moment(startDate).toDate());
+      updateFilterDate(moment(startDate).toDate(), moment(endDate).toDate());
       setStartDateCall(startDate);
       setEndDateCall(endDate);
     }
