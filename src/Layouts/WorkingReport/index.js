@@ -103,6 +103,7 @@ export default function WorkingReport() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserDetail, setSelectedUserDetail] = useState();
   const [userProfile, setUserProfile] = useState();
+  const [hasCheckouted, setHasCheckouted] = useState(false);
   const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -228,9 +229,18 @@ export default function WorkingReport() {
       ? getWorkingReportExcelUrl(employeeId, start, end, url)
       : getWorkingReportPdfUrl(employeeId, start, end, url);
 
-    const fileName = `Timesheet - ${userProfile.name} - ${moment()
-      .month(m)
-      .format("MMMM")} ${y}.${isExcel ? "xlsx" : "pdf"}`;
+    const startMoment = moment(start);
+    const endMoment = moment(end);
+
+    let month;
+    if(startMoment.isSame(endMoment, "month")) {
+      month = startMoment.format("MMMM YYYY");
+    }else {
+      const formattedStart = startMoment.format("D MMMM YYYY");
+      const formattedEnd = endMoment.format("D MMMM YYYY");
+      month = `${formattedStart} - ${formattedEnd}`;
+    }
+    const fileName = `${userProfile.name} - ${month}.${isExcel ? "xlsx" : "pdf"}`;
 
     fetch(downloadUrl)
       .then((response) => {
@@ -365,6 +375,7 @@ export default function WorkingReport() {
             setIsViewTask(false);
             setIsCheckOut(true);
           }}
+          hasCheckouted={hasCheckouted}
           WrIdDetail={WrIdDetail}
           dataAll={data}
           onStatusHr={onStatusHr}
@@ -414,6 +425,7 @@ export default function WorkingReport() {
           setDataAlert={setDataAlert}
           setIsHoliday={setIsHoliday}
           isHoliday={isHoliday}
+          setHasCheckouted={setHasCheckouted}
         />
       );
     }
