@@ -42,6 +42,7 @@ export default function BigCalendar({
   setDataAlert,
   setIsHoliday,
   isHoliday,
+  setHasCheckouted,
 }) {
   const [open, setOpen] = useState(false);
   const [openTask, setOpenTask] = useState(false);
@@ -231,6 +232,7 @@ export default function BigCalendar({
           });
           setWrIdDetail(event.workingReportTaskId);
           setIsViewTask(true);
+          setHasCheckouted(event.checkOut);
         };
       }
 

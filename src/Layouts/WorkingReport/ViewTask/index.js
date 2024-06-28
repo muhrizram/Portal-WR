@@ -21,6 +21,7 @@ export default function ViewTask({
   setonOtherUser,
   setIsViewTask,
   StatusSearch,
+  hasCheckouted,
 }) {
   const [openTask, setOpenTask] = useState(false);
   const [taskData, setTaskData] = useState([]);
@@ -258,8 +259,10 @@ export default function ViewTask({
                     <>
                       <Grid item>
                         <Button
+                          disabled={hasCheckouted}
+                          variant={hasCheckouted ? "outlined" : ""}
                           startIcon={<AccessTimeIcon />}
-                          className="delete-button button-text"
+                          className={!hasCheckouted ? "delete-button button-text" : ""}
                           onClick={() => setIsCheckOut()}
                         >
                           Check Out
@@ -270,8 +273,10 @@ export default function ViewTask({
                     <>
                       <Grid item>
                         <Button
+                          disabled={hasCheckouted}
+                          variant={hasCheckouted ? "outlined" : ""}
                           startIcon={<AccessTimeIcon />}
-                          className="delete-button button-text"
+                          className={!hasCheckouted ? "delete-button button-text" : ""}
                           onClick={() => setIsCheckOut()}
                         >
                           Check Out
