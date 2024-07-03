@@ -11,12 +11,14 @@ import moment from "moment";
 export default function DateRangeCalendar({
   updateFilterDate,
   updateJumpMonth,
-  activeMonth,
+  resetFilter,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
   setStartDateCall,
   setEndDateCall,
 }) {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const { setDataAlert } = useContext(AlertContext);
   const [minDate, setMinDate] = useState(null);
 
@@ -29,15 +31,6 @@ export default function DateRangeCalendar({
     } else {
       setEndDate(formattedDate);
     }
-  };
-
-  const ResetFilter = () => {
-    updateFilterDate(moment(activeMonth).startOf('month').toDate(), moment(activeMonth).endOf('month').toDate());
-    updateJumpMonth(moment(activeMonth).startOf('month').toDate());
-    setStartDateCall(null);
-    setStartDate(null);
-    setEndDateCall(null);
-    setEndDate(null);
   };
 
   const handleApplyFilter = () => {
@@ -108,7 +101,7 @@ export default function DateRangeCalendar({
               >
                 Filters
               </Button>
-              <Button onClick={ResetFilter} sx={{ textTransform: "none" }}>
+              <Button onClick={() => resetFilter()} sx={{ textTransform: "none" }}>
                 Reset
               </Button>
             </Grid>
@@ -150,7 +143,7 @@ export default function DateRangeCalendar({
               >
                 Filters
               </Button>
-              <Button onClick={ResetFilter} sx={{ textTransform: "none" }}>
+              <Button onClick={() => resetFilter()} sx={{ textTransform: "none" }}>
                 Reset
               </Button>
             </Grid>

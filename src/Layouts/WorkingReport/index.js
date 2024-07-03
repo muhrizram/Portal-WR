@@ -416,7 +416,7 @@ export default function WorkingReport() {
           events={data}
           setWrIdDetail={setWrIdDetail}
           obtainedData={obtainedData}
-          dateFilter={filterDate}
+          jumpMonth={jumpMonth}
           updateJumpMonth={updateJumpMonth}
           updateFilterDate={updateFilterDate}
           onStatusHr={onStatusHr}

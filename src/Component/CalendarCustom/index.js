@@ -36,7 +36,7 @@ export default function BigCalendar({
   obtainedData,
   updateFilterDate,
   updateJumpMonth,
-  dateFilter,
+  jumpMonth,
   setonOtherUser,
   setIsViewAttendance,
   setDataAlert,
@@ -55,8 +55,10 @@ export default function BigCalendar({
     workingReportTaskId: null,
   });
   const [changeCurrentMonth, _setchangeCurrentMonth] = useState(false);
-  const [StartDate, setStartDate] = useState();
-  const [EndDate, setEndDate] = useState();
+  const [filterStartDate, setFilterStartDate] = useState();
+  const [filterEndDate, setFilterEndDate] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [activeMonth, setActiveMonth] = useState(new Date());
   const [wrDate, setWrDate] = useState(null);
   const [dialogOpenHoliday, setDialogOpenHoliday] = useState(false);
@@ -65,27 +67,45 @@ export default function BigCalendar({
 
   useEffect(() => {
     if (obtainedData.data) {
-      setActiveMonth(moment(dateFilter.startDate).toDate());
+      setActiveMonth(moment(jumpMonth.startDate).toDate());
+    }else{
+      resetFilter();
     }
   }, [obtainedData]);
+
+
+  const resetFilter = () => {
+    updateFilterDate(moment(activeMonth).startOf('month').toDate(), moment(activeMonth).endOf('month').toDate());
+    updateJumpMonth(moment(activeMonth).startOf('month').toDate());
+    setFilterStartDate(null);
+    setFilterEndDate(null);
+    setStartDate(null);
+    setEndDate(null);
+  };
 
   const navigateNextMonth = () => {
     setActiveMonth(moment(activeMonth).add(1, "month").toDate());
     updateJumpMonth(moment(activeMonth).add(1, "month").toDate());
-    updateFilterDate(moment(activeMonth).add(1, "month").startOf('month').toDate(), moment(activeMonth).add(1, "month").endOf('month').toDate());
+    if(filterEndDate === null && filterStartDate === null){
+      updateFilterDate(moment(activeMonth).add(1, "month").startOf('month').toDate(), moment(activeMonth).add(1, "month").endOf('month').toDate());
+    }
   };
 
   const navigatePreviousMonth = () => {
     setActiveMonth(moment(activeMonth).subtract(1, "month").toDate());
     updateJumpMonth(moment(activeMonth).subtract(1, "month").toDate());
-    updateFilterDate(moment(activeMonth).subtract(1, "month").startOf('month').toDate(), moment(activeMonth).subtract(1, "month").endOf('month').toDate());
+    if(filterEndDate === null && filterStartDate === null){
+      updateFilterDate(moment(activeMonth).subtract(1, "month").startOf('month').toDate(), moment(activeMonth).subtract(1, "month").endOf('month').toDate());
+    }
   };
 
   const navigateCurrent = () => {
     const currentDate = new Date();
     setActiveMonth(currentDate);
     updateJumpMonth(moment(currentDate).toDate());
-    updateFilterDate(moment(currentDate).startOf('month').toDate(), moment(currentDate).endOf('month').toDate());
+    if(filterEndDate === null && filterStartDate === null){
+      updateFilterDate(moment(currentDate).startOf('month').toDate(), moment(currentDate).endOf('month').toDate());
+    }
   };
 
   function handleClose() {
@@ -388,9 +408,13 @@ export default function BigCalendar({
       <DateRangeCalendar
         updateFilterDate={updateFilterDate}
         updateJumpMonth={updateJumpMonth}
-        activeMonth={activeMonth}
-        setEndDateCall={setEndDate}
-        setStartDateCall={setStartDate}
+        resetFilter={resetFilter}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        setEndDateCall={setFilterEndDate}
+        setStartDateCall={setFilterStartDate}
       />
 
       <Calendar
@@ -402,7 +426,7 @@ export default function BigCalendar({
         date={activeMonth}
         toolbar={false}
         dayPropGetter={(date) =>
-          filterDate(date, { startDate: StartDate, endDate: EndDate })
+          filterDate(date, { startDate: filterStartDate, endDate: filterEndDate })
         }
         eventPropGetter={eventStyle}
       />
